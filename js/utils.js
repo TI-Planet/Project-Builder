@@ -52,6 +52,7 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
             var lastHeaders = parseResponseHeaders(xhr.getAllResponseHeaders());
             if (lastHeaders['pb-csrf-token'] !== undefined) {
                 window.CSRFToken = lastHeaders['pb-csrf-token'];
+                document.getElementById('newProjLink').setAttribute('href', "/pb/?new=1&csrf_token=" + window.CSRFToken);
             }
 
             if (typeof callbackAlways === "function") {
