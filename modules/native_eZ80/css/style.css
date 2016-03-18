@@ -1,0 +1,245 @@
+/* Sometimes, height and min-height are both needed (for flex-related reasons, maybe...) */
+
+h2 {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+div.filelist {
+    height: 24px;
+    min-height: 24px;
+}
+
+div.filelist .nav-tabs {
+    border: none;
+}
+div.filelist .nav-tabs>li>a {
+    padding: 1px 8px;
+    border: 1px solid #666;
+}
+div.filelist .nav-tabs>li>a:hover {
+    border: 1px solid #666;
+    color: blue;
+}
+div.filelist .nav-tabs>li.active>a:hover {
+    color: initial;
+}
+div.filelist .nav-tabs>li.active.tabover {
+    position:relative;
+    z-index: 10;
+}
+div.filelist .nav-tabs>li.active.tabover > a {
+    border-bottom: 1px white solid !important;
+}
+
+div.CodeMirror {
+    font-size: 13px;
+    border: 1px solid #666;
+    border-radius: 0 0 5px 5px;
+    height: 80%;
+}
+
+.inline-lint-msg {
+    display: inline-block;
+    font-family: monospace !important;
+    font-size: 13px;
+    padding: 0 2px !important;
+}
+
+#userlist {
+    position: absolute;
+    top: 26px;
+    right: 0;
+    margin: 10px;
+    width: 225px;
+    height: 390px;
+}
+
+div.firepad {
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+div.subfirepad {
+    margin-bottom: 10px;
+    height: 34px;
+    min-height: 34px;
+}
+
+div.console {
+    height: 22%;
+    min-height: 22%;
+}
+
+#consoletextarea {
+    width: 100% !important;
+    height: 100%;
+    font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+}
+
+#prgmNameContainer {
+    transform: translateY(25%);
+    -ms-transform: translateY(25%);
+    -moz-transform: translateY(25%);
+    -webkit-transform: translateY(25%);
+    -o-transform: translateY(25%);
+}
+div.subfirepad > * {
+    display: inline-block;
+}
+#prgmNameContainer {
+    float: right;
+}
+
+.firepad-userlist {
+  color: #404040;
+}
+
+.firepad-userlist {
+  text-align: left;
+  font-family: 'Helvetica Neue', sans-serif;
+  line-height: normal;
+}
+
+.firepad-userlist-heading {
+  height: 20px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 2px solid #c9c9c9;
+}
+
+.firepad-userlist-users {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.firepad-userlist-user {
+  position: relative;
+  margin: 3px 0;
+  border-bottom: 1px solid #c9c9c9;
+  padding-bottom: 5px;
+  width:500px;
+}
+
+.firepad-userlist-color-indicator {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    vertical-align: middle;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 1px 4px;
+}
+
+.firepad-userlist-name {
+    display: inline-block;
+    max-width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-height: 21px;
+    word-wrap: break-word;
+    word-break: break-all;
+    margin-left: 4px;
+}
+
+.inlineTooltip {
+  border: 1px solid silver;
+  border-radius: 3px;
+  color: #444;
+  padding: 0 2px;
+  font-size: 90%;
+  font-family: monospace;
+  background-color: white;
+  white-space: pre-wrap;
+  max-width: 40em;
+  position: absolute;
+  z-index: 10;
+  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+}
+
+.inlineTooltip > .CodeMirror {
+    border-radius: 0;
+    border: none;
+}
+
+/* Link elsewhere instead, less obtrusive */
+.powered-by-firepad {
+    display: none !important;
+}
+
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+
+span#buildTimestamp.buildOK:before {
+    content: '✔ ';
+    color: green;
+}
+
+span#buildTimestamp.buildError:before {
+    content: '✘ ';
+    color: red;
+}
+
+div.filelist li.active.pull-right > * {
+    cursor: pointer !important;
+}
+
+div.filelist li span.glyphicon-trash {
+    position: relative;
+    top: 2px;
+}
+
+button > span.loadingicon {
+    position: relative;
+    top: 1px;
+    margin-left: 2px;
+}
+
+#firechat-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    width: 225px;
+    height: 390px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    text-align: center;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 4px 20px #666;
+    -moz-box-shadow: 0 4px 20px #666;
+    box-shadow: 0 4px 20px #666;
+}
+#firechat-wrapper #firechat #firechat-tabs {
+    height: 385px;
+    border-top: 1px solid #CCC;
+}
+#firechat-wrapper #firechat #firechat-header, #firechat-wrapper #firechat #firechat-header, #firechat-wrapper #firechat-tab-list, #firechat-wrapper #firechat .tab-pane-menu {
+    display: none !important;
+}
+
+#multiuser-invite {
+    text-align: center;
+}

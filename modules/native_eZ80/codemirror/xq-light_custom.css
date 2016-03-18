@@ -1,0 +1,55 @@
+/*
+Copyright (C) 2011 by MarkLogic Corporation
+Author: Mike Brevoort <mike@brevoort.com>
+
+---Modified by Adrien "Adriweb" Bertrand---
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+.cm-s-xq-light span.cm-keyword { line-height: 1em; font-weight: bold; color: #5A5CAD; }
+.cm-s-xq-light span.cm-atom { color: #6C8CD5; }
+.cm-s-xq-light span.cm-number { color: #164; }
+.cm-s-xq-light span.cm-def { text-decoration:underline; }
+.cm-s-xq-light span.cm-variable { color: black; }
+.cm-s-xq-light span.cm-variable-2 { color: green; }
+.cm-s-xq-light span.cm-variable-3 { color: darkorange; }
+.cm-s-xq-light span.cm-property { color:green }
+.cm-s-xq-light span.cm-operator { color: #00c; }
+.cm-s-xq-light span.cm-comment { color: #0080FF; font-style: italic; }
+.cm-s-xq-light span.cm-string { color: red; }
+.cm-s-xq-light span.cm-meta { color: darkgreen; }
+.cm-s-xq-light span.cm-qualifier { color: grey; }
+.cm-s-xq-light span.cm-builtin { color: #7EA656; }
+.cm-s-xq-light span.cm-bracket { color: #cc7; }
+.cm-s-xq-light span.cm-tag { color: #3F7F7F; }
+.cm-s-xq-light span.cm-attribute { color: #7F007F; }
+.cm-s-xq-light span.cm-error { color: #f00; }
+
+.cm-s-xq-light .CodeMirror-activeline-background { background: #F1F7FF; }
+.cm-s-xq-light .CodeMirror-matchingbracket { outline:1px solid lightgrey;color:black !important;background:lightyellow; }
+
+.CodeMirror-focused .cm-matchhighlight {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+        background-position: bottom;
+        background-repeat: repeat-x;
+      }
+
+.lint-error {font-family: Arial, sans-serif; background: #ffa; color: #a00; padding: 2px 5px 3px; }
+.lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
+.lint-warning-icon {color: white; background-color: orange; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
