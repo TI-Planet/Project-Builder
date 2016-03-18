@@ -18,7 +18,7 @@ namespace ProjectBuilder;
 
 function genSidebar()
 {
-    global $pb;
+    global $pb, $initialCSRFToken; // $initialCSRFToken is created in existingProject.php
 
     $currUser = $pb->getCurrentUser();
     $currProject = $pb->getCurrentProject();
@@ -31,7 +31,7 @@ function genSidebar()
 
     $userProjects = $pb->getUserProjectsFromDB();
 
-    $content .= '<div id="projectListHeader"><a href="/pb/?new=1" class="btn btn-success btn-xs" style="float:right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project</a><b>My projects:</b></div>';
+    $content .= '<div id="projectListHeader"><a href="/pb/?new=1&amp;csrf_token=' . $initialCSRFToken . '" class="btn btn-success btn-xs" style="float:right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project</a><b>My projects:</b></div>';
 
     $content .= '<div id="projectList"><ul>';
     foreach ($userProjects as $project)

@@ -41,7 +41,20 @@ if ($projectID !== null)
     }
 } else {
     $wantNew = isset($_GET['new']) && $_GET['new'] == 1;
+
     if ($wantNew) {
+        /******** CSRF Token stuff ********/
+        require "nocsrf.php";
+        try {
+            // Run CSRF check, on POST data, in exception mode, no expiration, in one-time mode.
+            \NoCSRF::check('csrf_token', $_GET, true, null, false);
+        } catch ( \Exception $e ) {
+            // CSRF attack detected
+            header("HTTP/1.0 400 Bad request");
+            die("[Error] Bad CSRF token. Please refresh.");
+        }
+        /******** CSRF Token stuff ********/
+
         require "templates/newOrLoadProject.php";
     } else
     {
