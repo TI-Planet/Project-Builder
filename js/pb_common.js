@@ -77,7 +77,7 @@ function disableMultiUser()
 
 function deleteProject()
 {
-    ajax("ActionHandler.php", "id=" + proj.pid + "&action=deleteproj", function() {
+    ajax("ActionHandler.php", "id=" + proj.pid + "&action=deleteProj", function() {
         alert('Project succesfully deleted from the server');
         window.location.replace("https://tiplanet.org/pb/");
     });

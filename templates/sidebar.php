@@ -53,7 +53,7 @@ function genSidebar()
             $content .= '</br> Updated: ' . $jsUpdatedDate;
 
             $content .= '</br> <button class="btn btn-primary btn-xs" disabled><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</button>
-                               <button class="btn btn-danger btn-xs" disabled><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete...</button>';
+                               <button class="btn btn-danger btn-xs" onclick="deleteProject();"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete...</button>';
         }
         $content .= '</li>';
     }
