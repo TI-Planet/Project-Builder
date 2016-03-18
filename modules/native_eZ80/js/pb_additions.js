@@ -48,8 +48,6 @@ function changePrgmName()
 
 function saveFile(callback)
 {
-    localStorage.setItem("source_" + proj.pid + "_" + proj.currFile, editor.getValue());
-
     var saveButton = document.getElementById('saveButton');
     removeClass(saveButton.children[1], "hidden");
     saveButton.disabled = true;

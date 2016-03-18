@@ -42,7 +42,6 @@ function forkProject()
         saveFile(function() {
             ajax("ActionHandler.php", "id=" + proj.pid + "&action=fork", function(data) {
                 alert("Forked succesfully - You will now be redirected to your new project");
-                localStorage.removeItem("source");
                 window.onbeforeunload = null;
                 window.location.replace(window.location.href.split('?')[0] + '?id=' + JSON.parse(data));
             });
@@ -87,7 +86,6 @@ function deleteProject()
 function resetAll()
 {
     deleteProject();
-    localStorage.removeItem("source");
     window.onbeforeunload = null;
     window.location.replace(window.location.href.split('?')[0]);
 }
