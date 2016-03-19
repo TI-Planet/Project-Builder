@@ -85,6 +85,7 @@ if (!isset($pb))
             {
                 firepad.setText(fakeContainer.textContent);
             }
+            getCheckLogAndUpdateHints();
             savedSinceLastChange = true;
             document.getElementById('saveButton').disabled = true;
         });
@@ -124,6 +125,8 @@ if (!isset($pb))
     editor.setValue(fakeContainer.textContent);
     savedSinceLastChange = true;
 
+    getCheckLogAndUpdateHints();
+
     var saveButton = document.getElementById('saveButton');
     if (saveButton) saveButton.disabled = true;
 
@@ -136,4 +139,5 @@ if (!isset($pb))
     {
         document.getElementById('postForm').setAttribute('target', '_blank');
     }
+
 </script>

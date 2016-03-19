@@ -125,20 +125,20 @@ function buildAndDownload()
     });
 }
 
-function getLog()
+function getBuildLogAndUpdateHints()
 {
     ajax("ActionHandler.php", "id=" + proj.pid + "&action=getBuildLog", function(result) {
         build_output_raw = JSON.parse(result);
         build_output = parseBuildLog(build_output_raw);
-        updateHints();
+        updateHints(true);
     });
 }
 
-function getCheck()
+function getCheckLogAndUpdateHints()
 {
     ajax("ActionHandler.php", "id=" + proj.pid + "&action=getCheckLog", function(result) {
         build_check = parseCheckLog(JSON.parse(result));
-        updateHints();
+        updateHints(true);
     });
 }
 
@@ -183,7 +183,7 @@ function buildAndGetLog(callback)
             // Call cppcheck
             ajax("ActionHandler.php", "id="+proj.pid + "&action=getCheckLog", function(result) {
                 build_check = parseCheckLog(JSON.parse(result));
-                updateHints();
+                updateHints(false);
                 addClass(callback && builddlButton.children[1] || buildButton.children[1], "hidden");
                 document.getElementById('buildButton').disabled = document.getElementById('builddlButton').disabled = false;
             });

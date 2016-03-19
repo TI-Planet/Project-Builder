@@ -34,7 +34,7 @@ editor.addKeyMap({
     }
 });
 
-function updateHints()
+function updateHints(silent)
 {
     editor.operation(function()
     {
@@ -71,8 +71,9 @@ function updateHints()
             linesProcessed.push(err.line);
         }
         editor.refresh(); editor.focus();
-        if (errOnOtherFiles)
+        if (errOnOtherFiles && silent === false) {
             alert("Warnings/Errors have been found in other files, please check them.");
+        }
     });
     var info = editor.getScrollInfo();
     var after = editor.charCoords({
