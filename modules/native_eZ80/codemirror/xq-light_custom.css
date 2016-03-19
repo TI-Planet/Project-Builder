@@ -53,3 +53,9 @@ THE SOFTWARE.
 .lint-error {font-family: Arial, sans-serif; background: #ffa; color: #a00; padding: 2px 5px 3px; }
 .lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
 .lint-warning-icon {color: white; background-color: orange; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
+
+.cm-trailingspace {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
+    background-position: bottom left;
+    background-repeat: repeat-x;
+}
