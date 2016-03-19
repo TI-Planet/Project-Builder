@@ -18,7 +18,6 @@ var build_output = [];
 var build_check  = [];
 var lastSavedSource = '';
 
-
 function applyPrgmNameChange(name)
 {
     proj.prgmName = name;

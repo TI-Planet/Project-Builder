@@ -130,4 +130,10 @@ if (!isset($pb))
     <?php } ?>
 
     lastSavedSource = editor.getValue();
+
+    // If not Safari ("popup" issues), enable target='_blank' on the form
+    if (!(navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1))
+    {
+        document.getElementById('postForm').setAttribute('target', '_blank');
+    }
 </script>
