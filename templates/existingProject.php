@@ -23,6 +23,7 @@ if (!isset($pb))
 
 require "nocsrf.php";
 $initialCSRFToken = \NoCSRF::generate('csrf_token');
+header('pb-csrf-token: ' . $initialCSRFToken);
 
 // TODO : FireChat can be global, not per-module.
 
@@ -68,7 +69,7 @@ $templatePath = $modulePath . "templates/";
     <div id="rightSidebarToggle" class="sidebarToggle" onclick="toggleRightSidebar();"></div>
     <div id="rightSidebarBorder"></div>
 
-<div class="wrapper">
+<div class="wrapper" id="editorContainer">
     <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?></h3>
 
 <?php include $templatePath . "body.php"; ?>

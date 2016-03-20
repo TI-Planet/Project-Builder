@@ -68,6 +68,20 @@ function saveFile(callback)
     saveProjConfig();
 }
 
+function goToFile(newfile)
+{
+    $.get('?id=' + proj.pid + '&file=' + newfile, function(data, textStatus, jqXHR) {
+        $('#editorContainer').empty().append($(data).find('#editorContainer').children());
+        updateCSRFTokenFromHeaders(jqXHR.getAllResponseHeaders());
+        localStorage.setItem("invalidateFirebaseContent", "true");
+        $(".firepad-userlist").remove();
+        proj.currFile = newfile;
+        init_post_js_1();
+        do_cm_custom();
+        init_post_js_2();
+    });
+}
+
 function isValidFileName(name)
 {
     return /^[a-zA-Z0-9_]+\.(c|h|asm)$/i.test(name);
