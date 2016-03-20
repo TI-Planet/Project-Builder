@@ -68,7 +68,10 @@ if ($currProject->isMultiuser())
 <script src="<?= $modulePath ?>codemirror/search.js"></script>
 <script src="<?= $modulePath ?>codemirror/searchcursor.js"></script>
 <script src="<?= $modulePath ?>codemirror/match-highlighter.js"></script>
+<script src="<?= $modulePath ?>codemirror/annotatescrollbar.js"></script>
+<script src="<?= $modulePath ?>codemirror/matchesonscrollbar.js"></script>
 <script src="<?= $modulePath ?>codemirror/trailingspace.js"></script>
+<script src="<?= $modulePath ?>codemirror/jump-to-line.js"></script>
 
 <?php if ($currProject->isMulti_ReadWrite()) { ?>
     <link rel='stylesheet' href='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.css' />
