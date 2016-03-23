@@ -13,6 +13,11 @@
  * GNU General Public License for more details.
  */
 
+/* Additions to the common PB JS things
+ * This concerns users with enough rights to edit etc.
+ * Common things (not much) can go directly into js_pre.php
+ */
+
 var build_output_raw = [];
 var build_output = [];
 var build_check  = [];
@@ -66,20 +71,6 @@ function saveFile(callback)
         if (typeof callback === "function") callback();
     }
     saveProjConfig();
-}
-
-function goToFile(newfile)
-{
-    $.get('?id=' + proj.pid + '&file=' + newfile, function(data, textStatus, jqXHR) {
-        $('#editorContainer').empty().append($(data).find('#editorContainer').children());
-        updateCSRFTokenFromHeaders(jqXHR.getAllResponseHeaders());
-        localStorage.setItem("invalidateFirebaseContent", "true");
-        $(".firepad-userlist").remove();
-        proj.currFile = newfile;
-        init_post_js_1();
-        do_cm_custom();
-        init_post_js_2();
-    });
 }
 
 function isValidFileName(name)
@@ -244,3 +235,14 @@ function parseCheckLog(log)
     }
     return arr;
 }
+
+window.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+            case 's':
+                event.preventDefault();
+                saveFile();
+                break;
+        }
+    }
+});

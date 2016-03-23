@@ -6,8 +6,8 @@ h2 {
 }
 
 div.filelist {
-    height: 24px;
-    min-height: 24px;
+    height: auto;
+    min-height: auto;
 }
 
 div.filelist .nav-tabs {
@@ -169,9 +169,11 @@ div.subfirepad > * {
     border: none;
 }
 
-/* Link elsewhere instead, less obtrusive */
 .powered-by-firepad {
-    display: none !important;
+    opacity: .15 !important;
+}
+.powered-by-firepad:hover {
+    opacity: .25 !important;
 }
 
 .glyphicon.spinning {
@@ -201,6 +203,7 @@ span#buildTimestamp.buildError:before {
 
 div.filelist li.active.pull-right > * {
     cursor: pointer !important;
+    z-index: 99;
 }
 
 div.filelist li span.glyphicon-trash {

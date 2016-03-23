@@ -5,4 +5,4 @@
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/show-hint.css">
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/foldgutter.css">
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/dialog.css">
-<link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.2.0/firepad.css" />
+<link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.css" />
