@@ -69,3 +69,22 @@ if (!isset($pb))
         <textarea id="consoletextarea" disabled></textarea>
     </div>
 <?php } ?>
+
+<div id="bootstrapPopup">
+    <div class="modal fade" id="modalDiffSource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">C Source and ASM</h4>
+                </div>
+                <div class="modal-body" id="modalDiffSourceBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

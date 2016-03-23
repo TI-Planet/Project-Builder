@@ -236,6 +236,48 @@ function parseCheckLog(log)
     return arr;
 }
 
+function dispSrc()
+{
+    ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=getCurrentSrc", function(data) {
+        if (data === "null")
+        {
+            alert("There is no ASM file for this C source.\nHave you built the project yet?");
+        } else {
+            data = data.replace("\\r", "");
+            data = JSON.parse(data);
+            data = data.replace(/^;\s+\d+\t/gm, "").replace(/^;.*$/gm, "").replace(/\+\-/gm, "-");
+            var orig = editor.getValue();
+            var target = document.getElementById('modalDiffSourceBody');
+            target.innerHTML = "";
+            mergeView = CodeMirror.MergeView(target, {
+                value: orig,
+                origRight: data,
+                lineNumbers: false,
+                mode: "text/x-ez80",
+                highlightDifferences: true,
+                connect: null,
+                collapseIdentical: false
+            });
+            mergeView.editor().setValue(mergeView.editor().getValue());
+            mergeView.editor().setOption("mode", "text/x-csrc");
+            mergeView.editor().setOption("theme", "xq-light");
+            $('#modalDiffSource').modal();
+            $('#modalDiffSource').find('div.modal-dialog').css("width", "80%");
+            setTimeout(function ()
+            {
+                $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.5 * ($(document).height())) + 'px');
+                mergeView.editor().scrollTo(null, 1);
+                mergeView.editor().scrollTo(null, 0);
+                $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75 * ($(document).height())) + 'px');
+            }, 500);
+        }
+    });
+}
+
+window.addEventListener('resize', function(event) {
+    $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75*($(document).height()))+'px');
+});
+
 window.addEventListener('keydown', function(event) {
     if (event.ctrlKey || event.metaKey) {
         switch (String.fromCharCode(event.which).toLowerCase()) {
