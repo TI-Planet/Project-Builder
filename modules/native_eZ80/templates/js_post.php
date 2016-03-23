@@ -21,7 +21,8 @@ if (!isset($pb))
     die("Ahem ahem");
 }
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
-<script type="text/javascript">
+
+<script>
     function init_post_js_1()
     {
         textarea = document.getElementById('codearea');
@@ -51,16 +52,15 @@ if (!isset($pb))
     }
     init_post_js_1();
 </script>
+
 <script src="<?= $modulePath ?>js/cm_custom.js"></script>
 
 <script>
-
     function init_post_js_2()
     {
-
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
 
-        var firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
+        firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
         firebaseRoot.authWithCustomToken(user.firebase_token, function(error, authData) {
             if (error) { // possibly expired token, etc.
                 saveFile(function() { ajax("firebase/tokenRefresh.php", "uid="+user.id, function() { window.location.reload(); }); });
@@ -102,33 +102,6 @@ if (!isset($pb))
 
         createOrResetFirepad();
 
-        var chatRef = firebaseRoot.child('chat/' + proj.pid);
-        var chat = null;
-
-        chatRef.onAuth(function(authData) {
-            if (authData)
-            {
-                chat = new FirechatUI(chatRef, document.getElementById('firechat-wrapper'));
-                chat.setUser(user.id, user.name);
-                setTimeout(function() {
-                    chat._chat.getRoomList(function(rooms) {
-                        var found = false;
-                        for (roomkey in rooms)
-                        {
-                            var room = rooms[roomkey];
-                            if (room.name == proj.pid)
-                            {
-                                found = true;
-                                chat._chat.enterRoom(room.id);
-                                break;
-                            }
-                        }
-                        if (!found) { chat._chat.createRoom(proj.pid, "public", function(roomID){}); }
-                    });
-                }, 2000);
-            }
-        });
-
         <?php } else { ?>
 
         editor.setValue(fakeContainer.textContent);
@@ -150,7 +123,46 @@ if (!isset($pb))
         }
 
     }
-
     init_post_js_2();
+
+    <?php if ($currProject->isMulti_ReadWrite()) { ?>
+
+    function init_chat()
+    {
+        var chatRef = firebaseRoot.child('chat/' + proj.pid);
+        var chat = null;
+
+        chatRef.onAuth(function (authData)
+        {
+            if (authData)
+            {
+                chat = new FirechatUI(chatRef, document.getElementById('firechat-wrapper'));
+                chat.setUser(user.id, user.name);
+                setTimeout(function ()
+                {
+                    chat._chat.getRoomList(function (rooms)
+                    {
+                        var found = false;
+                        for (var roomkey in rooms)
+                        {
+                            var room = rooms[roomkey];
+                            if (room.name == proj.pid)
+                            {
+                                found = true;
+                                chat._chat.enterRoom(room.id);
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            chat._chat.createRoom(proj.pid, "public", function (roomID) {});
+                        }
+                    });
+                }, 2000);
+            }
+        });
+    }
+    init_chat();
+    <?php } ?>
 
 </script>
