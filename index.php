@@ -50,7 +50,7 @@ if ($projectID !== null)
             \NoCSRF::check('csrf_token', $_GET, true, null, false);
         } catch ( \Exception $e ) {
             // CSRF attack detected
-            header("HTTP/1.0 400 Bad request");
+            header("HTTP/1.0 401 Unauthorized");
             die("[Error] Bad CSRF token. Please refresh.");
         }
         /******** CSRF Token stuff ********/

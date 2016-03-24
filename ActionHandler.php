@@ -40,13 +40,14 @@ if (isset($_POST['id']) && !empty($_POST['id']))
             }
             if ($badToken)
             {
-                header("HTTP/1.0 400 Bad request");
+                header("HTTP/1.0 401 Unauthorized");
                 die(json_encode("[Error] Bad CSRF token"));
-            }
-            else
-            {
+            } else {
                 header('pb-csrf-token: ' . \NoCSRF::generate('csrf_token'));
             }
+        }
+        if ($_POST['action'] === 'refreshToken') {
+            die(json_encode("OK"));
         }
         /******** CSRF Token stuff ********/
 
