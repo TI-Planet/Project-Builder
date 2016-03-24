@@ -133,3 +133,11 @@ function toggleRightSidebar()
         });
     });
 }
+
+function toggleDarkTheme()
+{
+    $(".darkThemeLink").each(function(idx, el) {
+        var darkThemeLink = $(el);
+        darkThemeLink.attr("href", darkThemeLink.attr("href") ? "" : darkThemeLink.data("href"));
+    });
+}

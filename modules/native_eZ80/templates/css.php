@@ -7,3 +7,4 @@
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/dialog.css">
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/merge.css">
 <link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.css" />
+<link rel="stylesheet" data-href="<?= $modulePath ?>css/dark.css" class="darkThemeLink">

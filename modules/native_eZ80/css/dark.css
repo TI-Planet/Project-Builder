@@ -1,0 +1,47 @@
+/*
+ * Part of TI-Planet's Project Builder
+ * (C) Adrien "Adriweb" Bertrand
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#consoletextarea {
+    background-color: #2B2B2B;
+}
+
+.CodeMirror {
+    background-color: #D4D4D4;
+}
+
+.CodeMirror-gutters {
+    background-color: #DADADA;
+}
+
+.CodeMirror.cm-s-xq-light {
+    -webkit-filter: invert(1) hue-rotate(180deg);
+    filter: invert(1) hue-rotate(180deg);
+}
+
+.CodeMirror.cm-s-xq-light .CodeMirror-activeline-background {
+    background-color: #BBC8DA !important;
+}
+
+.CodeMirror.cm-s-xq-light .CodeMirror-matchingbracket {
+    background-color: #BBB32E !important;
+}
+
+#consoletextarea, div.CodeMirror.cm-s-xq-light {
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+}

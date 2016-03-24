@@ -45,6 +45,8 @@ $templatePath = $modulePath . "templates/";
 
 <?php include $templatePath . "css.php"; ?>
 
+    <link rel="stylesheet" data-href="css/dark.css" class="darkThemeLink">
+
 
     <script src="js/utils.js"></script>
     <script src="js/pb_common.js"></script>
