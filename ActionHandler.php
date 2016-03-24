@@ -60,7 +60,7 @@ if (isset($_POST['id']) && !empty($_POST['id']))
                 die(json_encode("[Error] " . $pmLastError));
             } else {
                 $actionResult = $pb->doUserAction($_POST);
-                if (is_string($actionResult) && strpos($actionResult, "Error") !== false)
+                if (is_string($actionResult) && strpos($actionResult, "[Error]") === 0)
                 {
                     header("HTTP/1.0 400 Bad request");
                 }
