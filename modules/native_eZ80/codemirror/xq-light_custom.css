@@ -50,7 +50,9 @@ THE SOFTWARE.
         background-repeat: repeat-x;
       }
 
-.lint-error {font-family: Arial, sans-serif; background: #ffa; color: #a00; padding: 2px 5px 3px; }
+.inline-asm { background: #EAFFE6; color: #A00; margin-bottom: 5px; }
+
+.lint-error {font-family: Arial, sans-serif; background: #ffa; color: #a00; padding: 2px 5px 3px;}
 .lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
 .lint-warning-icon {color: white; background-color: orange; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
 

@@ -30,9 +30,10 @@ if (!isset($pb))
             <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) {
                 if ($currProject->getCurrentFile() !== "main.c")
                 {
-                    echo '<li class="active pull-right" style="margin-left: 5px;margin-right: -2px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
+                    echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
-                echo '<li class="active pull-right" style="margin-right: -2px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> Add file</a></li>';
+                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> Add file</a></li>';
+                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span> <span id="toggleASMLabel">View ASM</span></a></li>';
              } ?>
         </ul>
     </div>
@@ -70,15 +71,14 @@ if (!isset($pb))
     </div>
 <?php } ?>
 
-<div id="bootstrapPopup">
-    <div class="modal fade" id="modalDiffSource" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="bootstrapPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">C Source and ASM</h4>
                 </div>
-                <div class="modal-body" id="modalDiffSourceBody">
+                <div class="modal-body">
 
                 </div>
                 <div class="modal-footer">
@@ -87,4 +87,3 @@ if (!isset($pb))
             </div>
         </div>
     </div>
-</div>

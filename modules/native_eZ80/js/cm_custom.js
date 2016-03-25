@@ -17,7 +17,8 @@
 
 function do_cm_custom()
 {
-    widgets = [];
+    widgets = lineWidgetsAsm = [];
+    asmBeingShown = false;
 
     editor.addKeyMap({
         "Tab": function (cm)
@@ -39,6 +40,97 @@ function do_cm_custom()
             cm.indentSelection("subtract");
         }
     });
+
+    dispSrc = function()
+    {
+        var i;
+
+        if (asmBeingShown === true) {
+            asmBeingShown = false;
+            for (i = 0; i < lineWidgetsAsm.length; i++) {
+                editor.removeLineWidget(lineWidgetsAsm[i]);
+            }
+            lineWidgetsAsm.length = 0;
+            editor.refresh();
+            editor.focus();
+
+            $("#toggleASMLabel").text("View ASM");
+            return;
+        }
+        ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=getCurrentSrc", function(data) {
+            if (data === "null")
+            {
+                asmBeingShown = false;
+                $("#toggleASMLabel").text("View ASM");
+                alert("There is no ASM file for this C source.\nHave you built the project yet?");
+            } else {
+                asmBeingShown = true;
+                $("#toggleASMLabel").text("Hide ASM");
+
+                data = data.replace("\\r", "");
+                data = JSON.parse(data);
+                var allSrcLines = data.split("\n");
+
+                var linesForC = { '0':[] }; // format: key = C line (start). value = [ asm lines... ].
+                var currKey = '0';
+
+                for (i=0; i<allSrcLines.length; i++)
+                {
+                    var line = allSrcLines[i];
+                    var matchesNewCLine = line.match(/^;\s+(\d+)\t/);
+                    if (matchesNewCLine && matchesNewCLine.length >= 1)
+                    {
+                        // New C line found. Let's process the previous range
+                        linesForC[currKey].shift(); // Remove first line (which is the C one)
+                        if (!linesForC[currKey].length) {
+                            delete linesForC[currKey];
+                        }
+                        // Prepare for insertions
+                        currKey = matchesNewCLine[1];
+                        linesForC[currKey] = [];
+                    }
+                    // Insert
+                    if (line.trim().length > 0) {
+                        linesForC[currKey].push(line);
+                    }
+                }
+
+                for (i = 0; i < lineWidgetsAsm.length; i++) {
+                    editor.removeLineWidget(lineWidgetsAsm[i]);
+                }
+                lineWidgetsAsm.length = 0;
+
+                for (var key in linesForC)
+                {
+                    if (!linesForC.hasOwnProperty(key) || key === '0') continue;
+
+                    var lines = linesForC[key];
+
+                    var valueChunk = "<pre style='padding:4px;line-height:.65em;'><code>";
+                    for (var asmLineIdx in lines)
+                    {
+                        if (!lines.hasOwnProperty(asmLineIdx) || lines[asmLineIdx][0] === ";") continue;
+
+                        var trimmedLine = lines[asmLineIdx].trim();
+                        if (trimmedLine.indexOf("XREF") === 0 || trimmedLine.indexOf("XDEF") === 0 || trimmedLine.indexOf("END") === 0) {
+                            continue;
+                        }
+                        valueChunk += lines[asmLineIdx].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</br>";
+                    }
+                    valueChunk = valueChunk.slice(0, -1); // remove extra newline at the end
+                    valueChunk += "</code></pre>";
+                    var msg = document.createElement("div");
+                    msg.innerHTML = valueChunk;
+                    msg.className = "inline-asm";
+
+                    lineWidgetsAsm.push(editor.addLineWidget(parseInt(key)-1, msg, {coverGutter: false, noHScroll: true}));
+                }
+
+                editor.refresh();
+                editor.focus();
+            }
+        });
+    };
 
     updateHints = function(silent)
     {
