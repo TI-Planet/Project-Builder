@@ -61,7 +61,7 @@ $templatePath = $modulePath . "templates/";
 </head>
 <body>
 
-<div class="allcontainer">
+<div id="contentcontainer">
 
 <div id="leftSidebar">
     <?php require "sidebar.php"; ?>
@@ -109,6 +109,14 @@ $templatePath = $modulePath . "templates/";
 
     </div>
 
+</div>
+
+<div id="statusbar">
+    <span class="themeToggle">
+        <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Dark theme toggle</button>
+    </span>
+    <span class="copyright"> Source Code <a href="https://github.com/TI-Planet/Project-Builder" target="_blank">on GitHub</a> (GPLv3)</span>
+    <span class="copyright">"Project Builder" &copy; 2015-2016 Adrien 'Adriweb' Bertrand / TI-Planet.org &bull;</span>
 </div>
 
 <?php include $templatePath . "js_post.php"; ?>

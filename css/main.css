@@ -29,9 +29,21 @@ body {
     transition: all .3s ease-in-out;
 }
 
-.allcontainer {
+#contentcontainer {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 23px);
+}
+
+#statusbar {
+    border-top: 2px grey solid;
+    font-size: .9em;
+    background-color: rgba(0,0,0,.05);
+}
+
+#statusbar span.copyright {
+    float: right;
+    padding-right: 5px;
+    margin-top: 1px;
 }
 
 #leftSidebar {
