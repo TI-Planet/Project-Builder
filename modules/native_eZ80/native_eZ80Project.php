@@ -76,7 +76,7 @@ class native_eZ80Project extends Project
             {
                 $fileListHTML .= "<li class='active tabover'><a href='#'>{$file}</a></li>";
             } else {
-                $fileListHTML .= "<li><a href='#' onclick='saveFile(function() { window.location.replace(\"?id={$this->id}&amp;file={$file}\") });'>{$file}</a></li>";
+                $fileListHTML .= "<li><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'>{$file}</a></li>";
             }
         }
         return $fileListHTML;

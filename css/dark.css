@@ -21,3 +21,8 @@ body {
 .sidebarToggle {
     background-color: #999;
 }
+
+#projectList li.active {
+    background-color: #2E2E2E;
+    box-shadow: -3px 1px 6px 3px #2E2E2E;
+}

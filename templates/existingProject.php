@@ -88,12 +88,6 @@ $templatePath = $modulePath . "templates/";
                                   <button title='Other users will not be able to modify the project' class='btn btn-success btn-xs' onclick='enableMultiUserRO();'>Read-Only</button>
                                   <button title='Other users will be able to modify the project' class='btn btn-success btn-xs' onclick='enableMultiUserRW();'>Read-Write</button>";
                     }
-                    echo "<br/></br/>";
-                    echo "<i>Want to clone this project?</i></br>
-                              <button class='btn btn-success btn-xs' onclick='forkProject();'>Clone it</button><br/><br/>";
-                } else {
-                    echo "<i>Want to work on this project on your own?</i></br>
-                              <button class='btn btn-success btn-xs' onclick='forkProject();'>Fork it</button><br/><br/>";
                 }
                 ?>
             </div>

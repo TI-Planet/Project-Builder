@@ -53,21 +53,26 @@ function changePrgmName()
 function saveFile(callback)
 {
     var saveButton = document.getElementById('saveButton');
-    removeClass(saveButton.children[1], "hidden");
-    saveButton.disabled = true;
 
     var currSource = editor.getValue();
     if (currSource.length > 0 && currSource != lastSavedSource)
     {
+        removeClass(saveButton.children[1], "hidden");
+        saveButton.disabled = true;
+
         ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=save&source="+encodeURIComponent(currSource), function() {
             savedSinceLastChange = true;
-            addClass(saveButton.children[1], "hidden");
             lastSavedSource = currSource;
             if (typeof callback === "function") callback();
+        }, function() {
+            saveButton.disabled = false;
+        }, function() {
+            addClass(saveButton.children[1], "hidden");
         });
+
     } else {
+        saveButton.disabled = true;
         savedSinceLastChange = true;
-        addClass(saveButton.children[1], "hidden");
         if (typeof callback === "function") callback();
     }
     saveProjConfig();

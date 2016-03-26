@@ -35,9 +35,12 @@ function saveProjConfig()
     localStorage.setItem("config_" + proj.pid, JSON.stringify(proj));
 }
 
-function forkProject()
+function forkProject(doConfirm)
 {
-    if (confirm("Are you sure?"))
+    if (typeof doConfirm !== "boolean") {
+        doConfirm = true;
+    }
+    if (doConfirm && confirm("Are you sure?"))
     {
         saveFile(function() {
             ajax("ActionHandler.php", "id=" + proj.pid + "&action=fork", function(data) {

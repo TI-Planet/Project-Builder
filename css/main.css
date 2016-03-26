@@ -22,11 +22,6 @@ body {
     height: 100%;
     font-size: 15px;
     overflow: hidden;
-    -webkit-transition: all .3s ease-in-out;
-    -moz-transition: all .3s ease-in-out;
-    -ms-transition: all .3s ease-in-out;
-    -o-transition: all .3s ease-in-out;
-    transition: all .3s ease-in-out;
 }
 
 #contentcontainer {
@@ -105,4 +100,9 @@ div.wrapper {
 
 #projectList li {
     margin-bottom: 2px;
+}
+
+#projectList li.active {
+    background-color: #DFDFDF;
+    box-shadow: -3px 1px 6px 3px #DFDFDF;
 }

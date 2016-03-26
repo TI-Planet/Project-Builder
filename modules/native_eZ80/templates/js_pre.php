@@ -69,7 +69,7 @@ if ($currProject->isMultiuser())
             proj.currFile = newfile;
             init_post_js_1();
             do_cm_custom();
-            init_post_js_2();
+            init_post_js_2(true);
         });
     }
 </script>

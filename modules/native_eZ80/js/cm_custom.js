@@ -19,6 +19,7 @@ function do_cm_custom()
 {
     widgets = lineWidgetsAsm = [];
     asmBeingShown = false;
+    $("#toggleASMLabel").text("View ASM");
 
     editor.addKeyMap({
         "Tab": function (cm)

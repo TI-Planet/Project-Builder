@@ -222,7 +222,7 @@ button > span.loadingicon {
 
 #firechat-wrapper {
     position: absolute;
-    bottom: 0;
+    bottom: 25px;
     right: 0;
     margin: 10px;
     width: 225px;
