@@ -56,7 +56,7 @@ if (!isset($pb))
 <script src="<?= $modulePath ?>js/cm_custom.js"></script>
 
 <script>
-    function init_post_js_2()
+    function init_post_js_2(isChangingTab)
     {
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
 
@@ -93,8 +93,16 @@ if (!isset($pb))
                 if (firepad.isHistoryEmpty())
                 {
                     firepad.setText(fakeContainer.textContent);
+                    lastSavedSource = fakeContainer.textContent;
+                } else {
+                    lastSavedSource = editor.getValue();
                 }
-                getCheckLogAndUpdateHints();
+                if (isChangingTab) {
+                    updateHints(true);
+                } else {
+                    getBuildLogAndUpdateHints();
+                    getCheckLogAndUpdateHints();
+                }
                 savedSinceLastChange = true;
                 document.getElementById('saveButton').disabled = true;
             });
@@ -105,16 +113,20 @@ if (!isset($pb))
         <?php } else { ?>
 
         editor.setValue(fakeContainer.textContent);
+        lastSavedSource = fakeContainer.textContent;
         savedSinceLastChange = true;
 
-        getCheckLogAndUpdateHints();
+        if (isChangingTab) {
+            updateHints(true);
+        } else {
+            getBuildLogAndUpdateHints();
+            getCheckLogAndUpdateHints();
+        }
 
         var saveButton = document.getElementById('saveButton');
         if (saveButton) saveButton.disabled = true;
 
         <?php } ?>
-
-        lastSavedSource = editor.getValue();
 
         // If not Safari ("popup" issues), enable target='_blank' on the form
         if (!(navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1))

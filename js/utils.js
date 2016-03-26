@@ -41,15 +41,6 @@ function parseResponseHeaders(headerStr) {
     return headers;
 }
 
-function updateCSRFTokenFromHeaders(headers)
-{
-    var lastHeaders = parseResponseHeaders(headers);
-    if (lastHeaders['pb-csrf-token'] !== undefined) {
-        window.CSRFToken = lastHeaders['pb-csrf-token'];
-        document.getElementById('newProjLink').setAttribute('href', "/pb/?new=1&csrf_token=" + window.CSRFToken);
-    }
-}
-
 function ajax(url, params, callbackOK, callbackErr, callbackAlways)
 {
     var xhr = new XMLHttpRequest();
@@ -58,8 +49,6 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4)
         {
-            updateCSRFTokenFromHeaders(xhr.getAllResponseHeaders());
-
             if (typeof callbackAlways === "function") {
                 callbackAlways(xhr.responseText);
             }
@@ -77,7 +66,7 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
         }
     };
 
-    params += "&csrf_token=" + window.CSRFToken;
+    params += "&csrf_token=" + window['CSRFToken'];
     xhr.send(params);
 }
 

@@ -21,10 +21,6 @@ if (!isset($pb))
     die("Ahem ahem");
 }
 
-require "nocsrf.php";
-$initialCSRFToken = \NoCSRF::generate('csrf_token');
-header('pb-csrf-token: ' . $initialCSRFToken);
-
 // TODO : FireChat can be global, not per-module.
 
 // Globals usable in the templates
@@ -54,7 +50,7 @@ $templatePath = $modulePath . "templates/";
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 
-    <script>window.CSRFToken = '<?= $initialCSRFToken ?>';</script>
+    <script>window.CSRFToken = '<?= $currUser->getSID() ?>';</script>
 
 <?php include $templatePath . "js_pre.php"; ?>
 

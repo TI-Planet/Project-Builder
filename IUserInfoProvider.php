@@ -18,17 +18,22 @@ namespace ProjectBuilder;
 
 class UserInfo
 {
-    protected $id;
+    protected $id;   // Unique user id
+    protected $sid;  // Some sort of session id (will be used as a CSRF token)
     protected $name;
     protected $avatarURL;
     protected $isAnonymous;
     protected $isModeratorOrMore;
 
-    public function __construct($id, $name, $avatarURL = '', $isAnonymous = true, $isModeratorOrMore = false)
+    public function __construct($id, $sid, $name, $avatarURL = '', $isAnonymous = true, $isModeratorOrMore = false)
     {
         if (!isset($id) || !is_int($id) || $id < 0)
         {
             die("User ID must be an unsigned integer");
+        }
+        if (!isset($sid) || !is_string($sid) || empty($sid))
+        {
+            die("Session ID must be a string");
         }
         if (!isset($name) || !is_string($name))
         {
@@ -36,6 +41,7 @@ class UserInfo
         }
 
         $this->id = $id;
+        $this->sid = $sid;
         $this->name = $name;
         $this->avatarURL = (string)$avatarURL;
         $this->isAnonymous = (bool)$isAnonymous;
@@ -43,6 +49,7 @@ class UserInfo
     }
 
     public function getID() { return $this->id; }
+    public function getSID() { return $this->sid; }
     public function getName() { return $this->name; }
     public function getAvatarURL() { return $this->avatarURL; }
     public function isAnonymous() { return $this->isAnonymous; }

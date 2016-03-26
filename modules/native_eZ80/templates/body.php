@@ -44,6 +44,7 @@ if (!isset($pb))
         <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile(); ?>">
         <input type="hidden" name="prgmName" id="prgmNameInput" value="CPRGMCE">
         <input type="hidden" name="action" value="download" id="actionInput">
+        <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
     <?php } ?>
 

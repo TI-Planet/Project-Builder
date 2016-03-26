@@ -64,7 +64,6 @@ if ($currProject->isMultiuser())
             var oldConsoleContent = $("#consoletextarea").val();
             $('#editorContainer').empty().append($(data).find('#editorContainer').children());
             $("#consoletextarea").val(oldConsoleContent);
-            updateCSRFTokenFromHeaders(jqXHR.getAllResponseHeaders());
             localStorage.setItem("invalidateFirebaseContent", "true");
             $(".firepad-userlist").remove();
             proj.currFile = newfile;

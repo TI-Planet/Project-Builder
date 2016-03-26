@@ -44,14 +44,16 @@ if ($projectID !== null)
 
     if ($wantNew) {
         /******** CSRF Token stuff ********/
-        require "nocsrf.php";
-        try {
-            // Run CSRF check, on POST data, in exception mode, no expiration, in one-time mode.
-            \NoCSRF::check('csrf_token', $_GET, true, null, false);
-        } catch ( \Exception $e ) {
-            // CSRF attack detected
+        if (isset($_GET['csrf_token']) && !empty($_GET['csrf_token']))
+        {
+            if ($_GET['csrf_token'] !== $pb->getCurrentUser()->getSID())
+            {
+                header("HTTP/1.0 401 Unauthorized");
+                die(json_encode("[Error] Your session has expired - please re-login."));
+            }
+        } else {
             header("HTTP/1.0 401 Unauthorized");
-            die("[Error] Bad CSRF token. Please refresh.");
+            die(json_encode("[Error] Your session isn't recognized - please [re]login."));
         }
         /******** CSRF Token stuff ********/
 

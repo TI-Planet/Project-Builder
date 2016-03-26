@@ -18,20 +18,19 @@ namespace ProjectBuilder;
 
 function genSidebar()
 {
-    global $pb, $initialCSRFToken; // $initialCSRFToken is created in existingProject.php
+    global $pb;
 
     $currUser = $pb->getCurrentUser();
     $currProject = $pb->getCurrentProject();
 
     $currProjectID = ($currProject !== null) ? $currProject->getID() : -1;
-    $uid = $currUser->getID();
 
     $header = '<h2><a href="/forum/portal.php" title="TI-Planet" target="_blank"><img src="/forum/styles/prosilver/theme/images/tiplanet_header_logo.png" alt="TI-Planet" height="55"/></a>Project Builder<sup><small> ß</small></sup></h2>';
     $content = '';
 
     $userProjects = $pb->getUserProjectsFromDB();
 
-    $content .= '<div id="projectListHeader"><a href="/pb/?new=1&amp;csrf_token=' . $initialCSRFToken . '" id="newProjLink" class="btn btn-success btn-xs" style="float:right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project</a><b>My projects:</b></div>';
+    $content .= '<div id="projectListHeader"><a href="/pb/?new=1&amp;csrf_token=' . $currUser->getSID() . '" id="newProjLink" class="btn btn-success btn-xs" style="float:right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project</a><b>My projects:</b></div>';
 
     $content .= '<div id="projectList"><ul>';
     foreach ($userProjects as $project)

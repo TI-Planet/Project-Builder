@@ -17,7 +17,6 @@
 namespace ProjectBuilder;
 
 require_once "ProjectManager.php";
-require "nocsrf.php";
 
 header('Content-Type: application/json');
 
@@ -25,33 +24,22 @@ if (isset($_POST['id']) && !empty($_POST['id']))
 {
     if (isset($_POST['action']) && !empty($_POST['action']))
     {
+        $pb = new ProjectManager($_POST['id']);
+
         /******** CSRF Token stuff ********/
-        if ($_POST['action'] !== 'download') // This is problematic with non-AJAX stuff. Don't require CSRF for a download
+        if (isset($_POST['csrf_token']) && !empty($_POST['csrf_token']))
         {
-            $badToken = false;
-            try
-            {
-                // Run CSRF check, on POST data, in exception mode, no expiration, in one-time mode.
-                \NoCSRF::check('csrf_token', $_POST, true, null, false);
-            } catch (\Exception $e)
-            {
-                // CSRF attack detected
-                $badToken = true;
-            }
-            if ($badToken)
+            if ($_POST['csrf_token'] !== $pb->getCurrentUser()->getSID())
             {
                 header("HTTP/1.0 401 Unauthorized");
-                die(json_encode("[Error] Bad CSRF token"));
-            } else {
-                header('pb-csrf-token: ' . \NoCSRF::generate('csrf_token'));
+                die(json_encode("[Error] Your session has expired - please re-login."));
             }
-        }
-        if ($_POST['action'] === 'refreshToken') {
-            die(json_encode("OK"));
+        } else {
+            header("HTTP/1.0 401 Unauthorized");
+            die(json_encode("[Error] Your session isn't recognized - please [re]login."));
         }
         /******** CSRF Token stuff ********/
 
-        $pb = new ProjectManager($_POST['id']);
         if ($pb->hasValidCurrentProject())
         {
             $pmLastError = $pb->getLastError();
