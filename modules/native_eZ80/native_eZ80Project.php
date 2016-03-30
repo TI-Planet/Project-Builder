@@ -26,9 +26,9 @@ class native_eZ80Project extends Project
     const MODULE_NAME = 'C compiler for the TI CE calculators';
     const MODULE_DESCRIPTION = 'C compiler for the TI-84 Plus CE / TI-83 Premium CE';
 
-    public function __construct($db_id, $randKey, $authorID, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime)
+    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime)
     {
-        parent::__construct($db_id, $randKey, $authorID, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime);
+        parent::__construct($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime);
 
         $this->currentFile = 'main.c'; // default
 

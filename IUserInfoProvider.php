@@ -63,4 +63,10 @@ interface IUserInfoProvider
      * @return UserInfo
      */
     public static function getConnectedUserInfo();
+
+    /**
+     * @param int $userID
+     * @return null|UserInfo
+     */
+    public static function getUserInfoFromID($userID = 1);
 }

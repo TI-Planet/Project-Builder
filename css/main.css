@@ -89,8 +89,12 @@ div.wrapper {
 
 /**********************************/
 
-#projectListHeader {
+.sidebarListHeader {
     height: 23px;
+}
+
+#projectListHeader {
+    margin-top: 20px;
 }
 
 #projectList {
@@ -102,7 +106,8 @@ div.wrapper {
     margin-bottom: 2px;
 }
 
-#projectList li.active {
+#currentProject {
+    margin-left: 1.75em;
     background-color: #DFDFDF;
-    box-shadow: -3px 1px 6px 3px #DFDFDF;
+    box-shadow: -3px 2px 6px 3px #DFDFDF;
 }
