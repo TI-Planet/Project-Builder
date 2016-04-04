@@ -204,6 +204,14 @@ span#buildTimestamp.buildError:before {
     color: red;
 }
 
+div.filelist li {
+    margin-right: 1px;
+}
+
+div.filelist li.counterpart {
+    margin-right: -3px;
+}
+
 div.filelist li.active.pull-right > * {
     cursor: pointer !important;
     z-index: 99;

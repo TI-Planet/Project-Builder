@@ -20,11 +20,13 @@ namespace ProjectBuilder;
 
 class native_eZ80Project extends Project
 {
-    private $backend;
-    private $availableFiles;
-
     const MODULE_NAME = 'C compiler for the TI CE calculators';
     const MODULE_DESCRIPTION = 'C compiler for the TI-84 Plus CE / TI-83 Premium CE';
+
+    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|h|asm)$/i";
+
+    private $backend;
+    private $availableFiles;
 
     public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime)
     {
@@ -32,15 +34,13 @@ class native_eZ80Project extends Project
 
         $this->currentFile = 'main.c'; // default
 
-        $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . "*.*")), function($el) {
-            return preg_match("/^[a-z0-9_]+\\.(c|h|asm)$/i", $el);
-        });
+        $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . "*.*")), __CLASS__ . '::isFileNameOK');
         $this->availableFiles = array_unique(array_merge($this->availableFiles, ['main.c']));
         sort($this->availableFiles);
     }
 
-    public static function cleanPrgmName($str = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($str)); }
-    public static function isFileNameOK($fileName = '') { return preg_match("/^[a-z0-9_]+\\.(c|h|asm)$/i", $fileName); }
+    public static function cleanPrgmName($prgName = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($prgName)); }
+    public static function isFileNameOK($fileName = '') { return preg_match(self::REGEXP_GOOD_FILE_PATTERN, $fileName); }
     public static function isPrgmNameOK($fileName = '') { return preg_match("/^[A-Z][A-Z0-9]{0,7}$/", $fileName); }
 
 
@@ -70,13 +70,30 @@ class native_eZ80Project extends Project
     public function getFileListHTML()
     {
         $fileListHTML = '';
-        foreach ($this->availableFiles as $key => $file)
+        $filesCount = count($this->availableFiles);
+        for ($i=0; $i<$filesCount; $i++)
         {
+            $file = $this->availableFiles[$i];
+
+            // Group same header and implementation files together
+            // (no margin between tabs)
+            $counterpartClass = '';
+            if ($i < $filesCount-1)
+            {
+                preg_match(self::REGEXP_GOOD_FILE_PATTERN, $file, $matches);
+                list(, $nameNoExtCurr, ) = $matches;
+                preg_match(self::REGEXP_GOOD_FILE_PATTERN, $this->availableFiles[$i+1], $matches);
+                list(, $nameNoExtNext, ) = $matches;
+                if ($nameNoExtCurr == $nameNoExtNext) {
+                    $counterpartClass = 'counterpart';
+                }
+            }
+
             if ($file === $this->currentFile)
             {
-                $fileListHTML .= "<li class='active tabover'><a href='#'>{$file}</a></li>";
+                $fileListHTML .= "<li class='active tabover {$counterpartClass}'><a href='#'>{$file}</a></li>";
             } else {
-                $fileListHTML .= "<li><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'>{$file}</a></li>";
+                $fileListHTML .= "<li class='{$counterpartClass}'><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'>{$file}</a></li>";
             }
         }
         return $fileListHTML;
