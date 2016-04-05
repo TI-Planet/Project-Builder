@@ -65,8 +65,8 @@ div.firepad {
 
 div.subfirepad {
     margin-bottom: 10px;
-    height: 34px;
-    min-height: 34px;
+    height: 30px;
+    min-height: 30px;
 }
 
 div.console {
@@ -194,6 +194,10 @@ div.subfirepad > * {
     to { -webkit-transform: rotate(360deg); }
 }
 
+#buildTimestampContainer {
+    margin-left: 2px;
+}
+
 span#buildTimestamp.buildOK:before {
     content: '✔ ';
     color: green;
@@ -202,6 +206,10 @@ span#buildTimestamp.buildOK:before {
 span#buildTimestamp.buildError:before {
     content: '✘ ';
     color: red;
+}
+
+ul.dropdown-menu li {
+    cursor: pointer;
 }
 
 div.filelist li {

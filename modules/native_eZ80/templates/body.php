@@ -58,9 +58,18 @@ if (!isset($pb))
 
     <div class='subfirepad'>
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
-        <button id="saveButton" class="btn btn-primary btn-large" onclick="saveFile(); return false" title="Save source on the server" disabled><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
-        <button id="buildButton" class="btn btn-primary btn-large" onclick="buildAndGetLog(); return false" title="Compile, assemble, and link"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Build <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
-        <button id="builddlButton" class="btn btn-primary btn-large" onclick="buildAndDownload(); return false" title="Download the built file"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Build &amp; Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <div class="btn-group">
+            <button id="buildButton" class="btn btn-primary btn-sm" onclick="buildAndGetLog(); return false" title="Compile, assemble, and link"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Build <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+            <button id="cleanButton" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li title="Delete build files then build"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
+            </ul>
+        </div>
+        <button id="builddlButton" class="btn btn-primary btn-sm" onclick="buildAndDownload(); return false" title="Build and download the program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Build &amp; Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div id="buildTimestampContainer" class="hidden"><b>Latest build</b>: <span id="buildTimestamp"></span></div>
         <div id="prgmNameContainer"><b>Program name</b>: <span id="prgmNameSpan">CPRGMCE</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> (<a href="#" onclick="changePrgmName(); return false;">Change</a>)</div>
         <?php } ?>

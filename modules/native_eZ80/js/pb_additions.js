@@ -152,11 +152,35 @@ function getCheckLogAndUpdateHints()
     });
 }
 
+function cleanProj(callback)
+{
+    var cleanButton = document.getElementById('cleanButton');
+    cleanButton.disabled = true;
+
+    var params = "id="+proj.pid + "&action=clean";
+    ajax("ActionHandler.php", params, function(result) {
+        // Clear build timestamp
+        var buildTimestampElement = document.getElementById('buildTimestamp');
+        buildTimestampElement.parentNode.className = buildTimestampElement.className = "";
+        buildTimestampElement.innerText = "(none)";
+
+        // Clear console
+        document.getElementById('consoletextarea').value = "";
+
+        cleanButton.disabled = false;
+
+        if (typeof callback === "function") {
+            callback();
+        }
+    });
+}
+
 function buildAndGetLog(callback)
 {
     var buildButton = document.getElementById('buildButton');
+    var cleanButton = document.getElementById('cleanButton');
     var builddlButton = document.getElementById('builddlButton');
-    buildButton.disabled = builddlButton.disabled = true;
+    cleanButton.disabled = buildButton.disabled = builddlButton.disabled = true;
     removeClass(callback && builddlButton.children[1] || buildButton.children[1], "hidden");
 
     saveFile(function() {
@@ -195,7 +219,7 @@ function buildAndGetLog(callback)
                 build_check = parseCheckLog(JSON.parse(result));
                 updateHints(false);
                 addClass(callback && builddlButton.children[1] || buildButton.children[1], "hidden");
-                document.getElementById('buildButton').disabled = document.getElementById('builddlButton').disabled = false;
+                cleanButton.disabled = buildButton.disabled = builddlButton.disabled = false;
             });
         });
     });
