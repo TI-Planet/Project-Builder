@@ -60,6 +60,22 @@ body {
     z-index: 9;
 }
 
+.sidebarToggle:before, .sidebarToggle:after {
+    color: lightgrey;
+    font-size: 0.7em;
+    position: relative;
+}
+.sidebarToggle:before {
+    content: '<';
+    left: 1px;
+    top: 0.4em;
+}
+.sidebarToggle:after {
+    content: '>';
+    top: 1.1em;
+    left: -.5em;
+}
+
 #leftSidebarToggle {
     float: left;
     right: 5px;
