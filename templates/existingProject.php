@@ -28,12 +28,13 @@ $currUser = $pb->getCurrentUser();
 $currProject = $pb->getCurrentProject();
 $modulePath = "modules/" . $currProject->getType() . "/";
 $templatePath = $modulePath . "templates/";
+$currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES);
 
 ?><!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>TI-Planet | Project Builder - Online <?= $currProject::MODULE_NAME; ?></title>
+    <title>TI-Planet | '<?= $currProjNameInTitle ?>' | Online Project Builder</title>
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
