@@ -91,9 +91,9 @@ class native_eZ80Project extends Project
 
             if ($file === $this->currentFile)
             {
-                $fileListHTML .= "<li class='active tabover {$counterpartClass}'><a href='#'>{$file}</a></li>";
+                $fileListHTML .= "<li class='active tabover {$counterpartClass}'><a href='#'><span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
             } else {
-                $fileListHTML .= "<li class='{$counterpartClass}'><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'>{$file}</a></li>";
+                $fileListHTML .= "<li class='{$counterpartClass}'><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'><span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
             }
         }
         return $fileListHTML;

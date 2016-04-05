@@ -133,6 +133,13 @@ function do_cm_custom()
         });
     };
 
+    addIconToFileTab = function(filename, errtype)
+    {
+        $("div.filelist span.filename:contains('" + filename + "')").each(function(idx, el) {
+            $(el).next().html('<span class="glyphicon glyphicon-' + (errtype == 'error' ? 'exclamation-sign' : 'alert') + '"></span>');
+        });
+    };
+
     updateHints = function(silent)
     {
         editor.operation(function ()
@@ -146,6 +153,10 @@ function do_cm_custom()
 
             var combined_logs = build_output.concat(build_check);
 
+            if (combined_logs.length)
+            {
+                $(".fileTabIconContainer").empty();
+            }
             var linesProcessed = [];
             var errOnOtherFiles = false;
             for (i = 0; i < combined_logs.length; ++i)
@@ -153,11 +164,15 @@ function do_cm_custom()
                 var err = combined_logs[i];
                 if (!err || linesProcessed.indexOf(err.line) > -1)
                     continue;
+
+                addIconToFileTab(err.file.toLowerCase(), err.type);
+
                 if (err.file.toLowerCase() != proj.currFile.toLowerCase())
                 {
                     errOnOtherFiles = true;
                     continue;
                 }
+
                 var msg = document.createElement("div");
                 var icon = msg.appendChild(document.createElement("span"));
                 icon.innerHTML = (err.type === "error") ? "!!" : "?";

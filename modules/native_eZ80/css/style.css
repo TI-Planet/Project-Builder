@@ -208,6 +208,10 @@ div.filelist li {
     margin-right: 1px;
 }
 
+div.filelist li span.fileTabIconContainer {
+    color: orange;
+}
+
 div.filelist li.counterpart {
     margin-right: -3px;
 }
