@@ -67,6 +67,7 @@ if (!isset($pb))
             </button>
             <ul class="dropdown-menu">
                 <li title="Delete build files then build"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
+                <li title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
             </ul>
         </div>
         <button id="builddlButton" class="btn btn-primary btn-sm" onclick="buildAndDownload(); return false" title="Build and download the program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Build &amp; Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
