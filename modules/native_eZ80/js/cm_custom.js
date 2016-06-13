@@ -19,7 +19,8 @@ function do_cm_custom()
 {
     widgets = lineWidgetsAsm = [];
     asmBeingShown = false;
-    $("#toggleASMLabel").text("View ASM");
+
+    $('[data-toggle="tooltip"]').tooltip();
 
     editor.addKeyMap({
         "Tab": function (cm)
@@ -55,18 +56,18 @@ function do_cm_custom()
             editor.refresh();
             editor.focus();
 
-            $("#toggleASMLabel").text("View ASM");
+            $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
             return;
         }
         ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=getCurrentSrc", function(data) {
             if (data === "null")
             {
                 asmBeingShown = false;
-                $("#toggleASMLabel").text("View ASM");
+                $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
                 alert("There is no ASM file for this C source.\nHave you built the project yet?");
             } else {
                 asmBeingShown = true;
-                $("#toggleASMLabel").text("Hide ASM");
+                $("#asmToggleButton").css('background-color', '#CACBC7').parent().attr('title', 'Click to hide ASM').tooltip('fixTitle').tooltip('show');
 
                 data = data.replace("\\r", "");
                 data = JSON.parse(data);
