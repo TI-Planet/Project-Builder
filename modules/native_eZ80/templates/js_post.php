@@ -127,13 +127,6 @@ if (!isset($pb))
         if (saveButton) saveButton.disabled = true;
 
         <?php } ?>
-
-        // If not Safari ("popup" issues), enable target='_blank' on the form
-        if (!(navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1))
-        {
-            document.getElementById('postForm').setAttribute('target', '_blank');
-        }
-
     }
     init_post_js_2();
 

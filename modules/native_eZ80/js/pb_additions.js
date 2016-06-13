@@ -186,13 +186,18 @@ function buildAndGetLog(callback)
     saveFile(function() {
         // build output
         var params = "id="+proj.pid + "&prgmName="+proj.prgmName + "&action=build";
-        ajax("ActionHandler.php", params, function(result) {
+        ajax("ActionHandler.php", params, function(result)
+        {
             build_output_raw = JSON.parse(result);
             build_output = parseBuildLog(build_output_raw);
 
             var buildStatusClass = "buildOK";
-            if (result.indexOf("ERROR: Object file(s) deleted because of option unresolved=fatal") !== -1) {
+            if (result.indexOf("ERROR: Object file(s) deleted because of option unresolved=fatal") !== -1)
+            {
                 alert("Fatal build error (undefined/unresolved calls).\nCheck the build log");
+                buildStatusClass = "buildError"
+            } else if (result.indexOf("\tERROR") !== -1 || result.indexOf("Internal Error") !== -1) {
+                alert("Fatal build error.\nCheck the build log");
                 buildStatusClass = "buildError"
             } else {
                 if (typeof callback === "function") {
