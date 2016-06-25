@@ -39,12 +39,6 @@ function genSidebar()
         $content .= '<div id="currentProject">';
         $content .= "<b>{$currProject->getInternalName()}</b>"; // Use name, later
 
-        if ($currProject->isMultiuser())
-        {
-            $sharedStyle = 'top: 2px;text-shadow: 3px 1px ' . ($currProject->isMulti_ReadWrite() ? "#4AA14A;" : "#9A9A9A;");
-            $content .= " <span class='glyphicon glyphicon-user' style='{$sharedStyle}' aria-hidden='true' title='This project is shared (" . ($currProject->isMulti_ReadWrite() ? "Read/Write" : "Read only") . ")'></span> ";
-        }
-
         if (!$isUserAuthorOfProject) {
             $authorNameHTML = htmlentities($currProjectAuthor->getName(), ENT_QUOTES);
             $content .= "</br><u>Author</u>: <a href='https://tiplanet.org/forum/memberlist.php?mode=viewprofile&amp;u={$currProjectAuthor->getID()}' target='_blank'>$authorNameHTML</a>";
@@ -52,10 +46,24 @@ function genSidebar()
         $content .= '</br><u>Type</u>: ' . $currProject->getType();
         $content .= '</br><u>Created</u>: ' . "<script>var d = new Date({$currProject->getCreatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
         $content .= '</br><u>Updated</u>: ' . "<script>var d = new Date({$currProject->getUpdatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
+        $content .= '</br><u>Shared</u>: ' . ($currProject->isMultiuser() ? ("Yes (" . ($currProject->isMulti_ReadWrite() ? "Read/Write" : "Read only") .")") : ("No. Share: "));
+        if ($currProject->getAuthorID() === $currUser->getID())
+        {
+            if ($currProject->isMultiuser()) {
+                $content .= " <button class='btn btn-warning btn-xs' onclick='disableMultiUser();'>Disable</button>";
+            } else {
+                $content .= " <button title='Other users will not be able to modify the project' class='btn btn-success btn-xs' onclick='enableMultiUserRO();'>Read</button>
+                              <button title='Other users will be able to modify the project' class='btn btn-success btn-xs' onclick='enableMultiUserRW();'>Read+Write</button>";
+            }
+        }
+        if ($currProject->isMultiuser())
+        {
+            $content .= '</br><u>Online</u>: <div id="userlist"></div>';
+        }
 
         $content .= '<div style="height: 5px;"></div>';
         if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) {
-            $content .= '<button class="btn btn-primary btn-xs" disabled><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</button> ';
+            $content .= '<button class="btn btn-primary btn-xs" disabled><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings...</button> ';
         }
         $cloneLabel = $isUserAuthorOfProject ? 'Clone' : 'Fork';
         $content .= "<button class='btn btn-primary btn-xs' onclick='forkProject();' title='Duplicate this project'><span class='glyphicon glyphicon-duplicate' aria-hidden='true'></span> {$cloneLabel} project</button> ";
@@ -86,6 +94,17 @@ function genSidebar()
         $content .= '<span style="margin-left: 1.75em">No project yet! Go create one :)</span>';
     }
     $content .= '</div>';
+
+    if ($currProject->isMultiuser() && $currProject->isMulti_ReadWrite()) {
+        $content .= '<div id="firechat-wrapper"></div>';
+    }
+
+    $content .= '<div id="statusbar">
+                    <span class="themeToggle">
+                        <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Dark mode</button>
+                    </span>
+                    <span class="copyright">PB &copy; 2015-2016 "Adriweb"</span>
+                </div>';
 
     return $header . $content;
 }

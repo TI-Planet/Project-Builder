@@ -1,3 +1,4 @@
+<?php
 /*
  * Part of TI-Planet's Project Builder
  * (C) Adrien "Adriweb" Bertrand
@@ -13,31 +14,12 @@
  * GNU General Public License for more details.
  */
 
-#consoletextarea {
-    background-color: #2B2B2B;
+/* This content will be included and displayed.
+   This page should not be called directly. */
+if (!isset($pb))
+{
+    die("Ahem ahem");
 }
+/** @var \ProjectBuilder\native_eZ80Project $currProject */
 
-#statusbar {
-    background-color: #3b3e40;
-}
-
-.CodeMirror {
-    background-color: #D4D4D4;
-}
-
-.CodeMirror-gutters {
-    background-color: #DADADA;
-}
-
-.CodeMirror.cm-s-xq-light {
-    -webkit-filter: invert(1) hue-rotate(180deg);
-    filter: invert(1) hue-rotate(180deg);
-}
-
-.CodeMirror.cm-s-xq-light .CodeMirror-activeline-background {
-    background-color: #BBC8DA !important;
-}
-
-.CodeMirror.cm-s-xq-light .CodeMirror-matchingbracket {
-    background-color: #BBB32E !important;
-}
+<?php } ?>

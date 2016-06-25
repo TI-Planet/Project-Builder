@@ -26,13 +26,17 @@ body {
 
 #contentcontainer {
     width: 100%;
-    height: calc(100% - 23px);
+    height: 100%;
 }
 
 #statusbar {
     border-top: 2px grey solid;
     font-size: .9em;
-    background-color: rgba(0,0,0,.05);
+    position: absolute;
+    bottom: 0;
+    margin-left: -6px;
+    width: 294px;
+    background-color: #f0f0f0;
 }
 
 #statusbar span.copyright {
@@ -44,7 +48,7 @@ body {
 #leftSidebar {
     float: left;
     padding: 6px;
-    width: 290px;
+    width: 296px;
     height: 100%;
     border-right: 2px grey solid;
 }
@@ -83,14 +87,14 @@ body {
 
 #rightSidebarToggle {
     float: right;
-    right: 245px;
+    right: 345px;
 }
 
 #rightSidebarBorder {
     height: 100%;
     float: right;
     border-right: 2px grey solid;
-    right: 240px;
+    right: 340px;
     position: relative;
     z-index: 1;
 }
@@ -98,7 +102,7 @@ body {
 div.wrapper {
     height: 100%;
     margin-left: 295px;
-    padding: 6px 250px 10px 2px;
+    padding: 6px 350px 10px 2px;
     display: flex;
     flex-direction: column;
 }

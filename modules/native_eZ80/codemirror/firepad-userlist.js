@@ -55,25 +55,11 @@ var FirepadUserList = (function() {
 
   FirepadUserList.prototype.makeUserList_ = function() {
     return elt('div', [
-      this.makeHeading_(),
       elt('div', [
         this.makeUserEntryForSelf_(),
         this.makeUserEntriesForOthers_()
       ], {'class': 'firepad-userlist-users' })
     ], {'class': 'firepad-userlist' });
-  };
-
-  FirepadUserList.prototype.makeHeading_ = function() {
-    var counterSpan = elt('span', '0');
-    this.firebaseOn_(this.ref_, 'value', function(usersSnapshot) {
-      setTextContent(counterSpan, "" + usersSnapshot.numChildren());
-    });
-
-    return elt('div', [
-      elt('span', 'ONLINE ('),
-      counterSpan,
-      elt('span', ')')
-    ], { 'class': 'firepad-userlist-heading' });
   };
 
   FirepadUserList.prototype.makeUserEntryForSelf_ = function() {
@@ -126,6 +112,8 @@ var FirepadUserList = (function() {
       var avatarDiv = elt('div', null, { 'class': 'firepad-userlist-color-indicator' });
       avatarDiv.style.boxShadow = '0 0 2px 2px ' + color;
       avatarDiv.style.backgroundImage = 'url("' + avatar + '")';
+      avatarDiv.setAttribute('data-toggle', 'tooltip');
+      avatarDiv.setAttribute('data-original-title', name || 'Guest');
 
       avatarDiv.addEventListener("mousedown", function(el) {
         var target_div = el.target.parentElement;
@@ -146,12 +134,15 @@ var FirepadUserList = (function() {
       });
 
       var nameDiv = elt('div', name || 'Guest', { 'class': 'firepad-userlist-name' });
+      nameDiv.style.display = 'none';
 
       var userDiv = elt('div', [ avatarDiv, nameDiv ], { 'class': 'firepad-userlist-user', 'data-uid':userId, 'data-lastCursorPos':lastCursorPos });
       userId2Element[userId] = userDiv;
 
       var nextElement =  prevChildName ? userId2Element[prevChildName].nextSibling : userList.firstChild;
       userList.insertBefore(userDiv, nextElement);
+
+      $('[data-toggle="tooltip"]').tooltip();
     }
 
     this.firebaseOn_(this.ref_, 'child_added', updateChild);

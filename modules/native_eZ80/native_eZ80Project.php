@@ -20,8 +20,8 @@ namespace ProjectBuilder;
 
 class native_eZ80Project extends Project
 {
-    const MODULE_NAME = 'C compiler for the TI CE calculators';
-    const MODULE_DESCRIPTION = 'C compiler for the TI-84 Plus CE / TI-83 Premium CE';
+    const MODULE_NAME = 'C IDE for the TI CE calculators';
+    const MODULE_DESCRIPTION = 'C IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
     const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|h|asm)$/i";
 

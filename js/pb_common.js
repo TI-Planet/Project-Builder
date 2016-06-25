@@ -111,10 +111,15 @@ function toggleLeftSidebar()
 function toggleRightSidebar()
 {
     document.getElementById("rightSidebarToggle").onclick = null;
-    var mainWrapper = $(".wrapper"); var sideBar = $("#rightSidebar");
-    var rightSidebarBorder = $("#rightSidebarBorder"); var rightSidebarToggle = $("#rightSidebarToggle");
+
+    var mainWrapper = $(".wrapper");
+    var sideBar = $("#rightSidebar");
+
+    var rightSidebarBorder = $("#rightSidebarBorder");
+    var rightSidebarToggle = $("#rightSidebarToggle");
+
     var needToggleRightValue = parseFloat(rightSidebarToggle.css("right")) < 50;
-    var constRightValue = 250; // mainWrapper.css("padding-right")
+    var constRightValue = 350; // mainWrapper.css("padding-right")
     rightSidebarBorder.animate({right: (needToggleRightValue ? '+=' : '-=') + constRightValue}, 200, 0, function() { rightSidebarBorder.toggle(); } );
     rightSidebarToggle.animate({right: (needToggleRightValue ? '+=' : '-=') + (constRightValue+10)}, 200);
     if (needToggleRightValue) {
@@ -123,18 +128,14 @@ function toggleRightSidebar()
         rightSidebarToggle.animate({width: (needToggleRightValue ? '-=' : '+=')+(20)}, 200);
     }
     mainWrapper.animate({"padding-right": ((parseFloat(mainWrapper.css("padding-right")) >= needToggleRightValue) ? '-=' : '+=')+(constRightValue)}, 200);
-    var childrenCount = sideBar.children().length;
+
     sideBar.children().each(function(i)
     {
         sideBar.toggle();
         var child = $($(this)[0]);
-        child.animate({right: (parseFloat(child.css("right")) == 0 ? '-=' : '+=') + (child.width() + 50)}, 200, 0, function ()
-        {
-            if (i==childrenCount-1) {
-                document.getElementById("rightSidebarToggle").onclick = toggleRightSidebar;
-            }
-        });
+        child.animate({right: (parseFloat(child.css("right")) == 0 ? '-=' : '+=') + (child.width() + 50)}, 200, 0);
     });
+    document.getElementById("rightSidebarToggle").onclick = toggleRightSidebar;
 }
 
 function toggleDarkTheme()

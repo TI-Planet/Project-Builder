@@ -49,13 +49,19 @@ div.CodeMirror pre {
     padding: 0 2px !important;
 }
 
-#userlist {
+#rightSidebar {
+    width: 350px;
+    height: 100%;
+    display: block;
     position: absolute;
-    top: 26px;
+    top: 0;
     right: 0;
-    margin: 10px;
-    width: 225px;
-    height: 390px;
+}
+
+#userlist {
+    display: inline-block;
+    vertical-align: top;
+    min-height: 38px;
 }
 
 div.firepad {
@@ -78,6 +84,7 @@ div.console {
     width: 100% !important;
     height: 100%;
     font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+    font-size: 9pt;
 }
 
 #prgmNameContainer {
@@ -104,25 +111,14 @@ div.subfirepad > * {
   line-height: normal;
 }
 
-.firepad-userlist-heading {
-  height: 20px;
-  overflow: hidden;
-  font-size: 12px;
-  font-weight: bold;
-  border-bottom: 2px solid #c9c9c9;
-}
-
 .firepad-userlist-users {
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .firepad-userlist-user {
-  position: relative;
-  margin: 3px 0;
-  border-bottom: 1px solid #c9c9c9;
-  padding-bottom: 5px;
-  width:500px;
+    padding: 2px;
+    display: inline-block;
 }
 
 .firepad-userlist-color-indicator {
@@ -241,13 +237,11 @@ button > span.loadingicon {
 }
 
 #firechat-wrapper {
+    width: 270px;
+    margin: 6px;
+    padding: 8px;
     position: absolute;
-    bottom: 25px;
-    right: 0;
-    margin: 10px;
-    width: 225px;
-    height: 390px;
-    padding: 10px;
+    bottom: 12px;
     border: 1px solid #ccc;
     background-color: #fff;
     text-align: center;
@@ -259,8 +253,11 @@ button > span.loadingicon {
     box-shadow: 0 4px 20px #666;
 }
 #firechat-wrapper #firechat #firechat-tabs {
-    height: 385px;
+    height: auto;
     border-top: 1px solid #CCC;
+}
+#firechat .chat {
+    height: 150px !important;
 }
 #firechat-wrapper #firechat #firechat-header, #firechat-wrapper #firechat #firechat-header, #firechat-wrapper #firechat-tab-list, #firechat-wrapper #firechat .tab-pane-menu {
     display: none !important;

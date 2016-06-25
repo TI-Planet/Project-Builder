@@ -21,8 +21,6 @@ if (!isset($pb))
     die("Ahem ahem");
 }
 
-// TODO : FireChat can be global, not per-module.
-
 // Globals usable in the templates
 $currUser = $pb->getCurrentUser();
 $currProject = $pb->getCurrentProject();
@@ -36,6 +34,8 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
     <meta charset="utf-8">
     <title>TI-Planet | '<?= $currProjNameInTitle ?>' | Online Project Builder</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -44,11 +44,10 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 
     <link rel="stylesheet" data-href="css/dark.css" class="darkThemeLink">
 
-
     <script src="js/utils.js"></script>
     <script src="js/pb_common.js"></script>
 
-    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/jquery-2.2.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 
     <script>window.CSRFToken = '<?= $currUser->getSID() ?>';</script>
@@ -60,58 +59,26 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 
 <div id="contentcontainer">
 
-<div id="leftSidebar">
-    <?php require "sidebar.php"; ?>
-</div>
+    <div id="leftSidebar">
+        <?php require "sidebar.php"; ?>
+    </div>
 
     <div id="leftSidebarToggle" class="sidebarToggle" onclick="toggleLeftSidebar();"></div>
     <div id="rightSidebarToggle" class="sidebarToggle" onclick="toggleRightSidebar();"></div>
     <div id="rightSidebarBorder"></div>
 
-<div class="wrapper" id="editorContainer">
-    <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?></h3>
+    <div id="editorContainer" class="wrapper">
+        <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?></h3>
+        <?php require $templatePath . "body.php"; ?>
+    </div>
 
-<?php include $templatePath . "body.php"; ?>
-
-</div>
-
-    <div id="rightSidebar" style="display: block">
-
-        <div id="userlist">
-            <div id="multiuser-invite">
-                <?php
-                if ($currProject->getAuthorID() === $currUser->getID()) {
-                    if ($currProject->isMultiuser()) {
-                        echo "<i>This project is shared (" . ($currProject->isMulti_ReadWrite() ? "Read/Write" : "Read only") . ")</i></br>
-                                  <button class='btn btn-warning btn-xs' onclick='disableMultiUser();'>Disable sharing</button>";
-                    } else {
-                        echo "<i>Share your project with others...</i></br>
-                                  <button title='Other users will not be able to modify the project' class='btn btn-success btn-xs' onclick='enableMultiUserRO();'>Read-Only</button>
-                                  <button title='Other users will be able to modify the project' class='btn btn-success btn-xs' onclick='enableMultiUserRW();'>Read-Write</button>";
-                    }
-                }
-                ?>
-            </div>
-        </div>
-
-    <?php if ($currProject->isMultiuser() && $currProject->isMulti_ReadWrite()) { ?>
-        <div id="firechat-wrapper"></div>
-    <?php } ?>
-
+    <div id="rightSidebar">
+        <?php include $templatePath . "right_sidebar.php"; ?>
     </div>
 
 </div>
 
-<div id="statusbar">
-    <span class="themeToggle">
-        <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Toggle Dark theme</button>
-    </span>
-    <span class="copyright"> Source Code <a href="https://github.com/TI-Planet/Project-Builder" target="_blank">on GitHub</a> (GPLv3)</span>
-    <span class="copyright">"Project Builder" &copy; 2015-2016 Adrien 'Adriweb' Bertrand / TI-Planet.org &bull;</span>
-</div>
-
 <?php include $templatePath . "js_post.php"; ?>
-
 
     <script>
         <?php if ($currProject->getAuthorID() == $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
