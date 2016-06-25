@@ -94,14 +94,10 @@ if ($currProject->isMultiuser())
 <script src="<?= $modulePath ?>codemirror/matchesonscrollbar.js"></script>
 <script src="<?= $modulePath ?>codemirror/trailingspace.js"></script>
 <script src="<?= $modulePath ?>codemirror/jump-to-line.js"></script>
-<!--
-<script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
-<script src="<?= $modulePath ?>codemirror/merge.js"></script>
--->
 
 <?php if ($currProject->isMulti_ReadWrite()) { ?>
     <link rel='stylesheet' href='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.css' />
-    <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
     <script src='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.js'></script>
     <script src="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js"></script>
     <script src="<?= $modulePath ?>codemirror/firepad-userlist.js"></script>
