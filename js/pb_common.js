@@ -97,45 +97,51 @@ function resetAll()
     window.location.replace(window.location.href.split('?')[0]);
 }
 
-function toggleLeftSidebar()
+function toggleLeftSidebar(delay)
 {
+    delay = (typeof delay === "number") ? delay : 180;
+
     document.getElementById("leftSidebarToggle").onclick = null;
-    var sideBar = $("#leftSidebar"); var mainWrapper = $(".wrapper");
-    sideBar.animate( { "margin-left": (parseFloat(sideBar.css("margin-left")) < 0 ? '+=' : '-=') +(sideBar.width()+20) }, 200);
-    mainWrapper.animate( { "margin-left": (parseFloat(sideBar.css("margin-left")) < 0 ? '+=' : '-=') +(sideBar.width()+14) }, 200);
-    $("#leftSidebarToggle").animate( {width: (parseFloat(sideBar.css("margin-left")) < 0 ? '-=' : '+=')+(7) }, 200, 0, function() {
-        document.getElementById("leftSidebarToggle").onclick = toggleLeftSidebar;
-    });
+
+    var mainWrapper = $(".wrapper");
+    var sideBar = $("#leftSidebar");
+
+    sideBar.animate( { "margin-left": (parseFloat(sideBar.css("margin-left")) < 0 ? '+=' : '-=') +(sideBar.width()+20) }, delay);
+    mainWrapper.animate( { "margin-left": (parseFloat(sideBar.css("margin-left")) < 0 ? '+=' : '-=') +(sideBar.width()+14) }, delay);
+    $("#leftSidebarToggle").animate( {width: (parseFloat(sideBar.css("margin-left")) < 0 ? '-=' : '+=')+(7) }, delay, 0);
+
+    document.getElementById("leftSidebarToggle").onclick = toggleLeftSidebar;
 }
 
-function toggleRightSidebar()
+function toggleRightSidebar(delay)
 {
+    delay = (typeof delay === "number") ? delay : 180;
+
     document.getElementById("rightSidebarToggle").onclick = null;
 
     var mainWrapper = $(".wrapper");
-    var sideBar = $("#rightSidebar");
-
+    var rightSidebar = $("#rightSidebar");
     var rightSidebarBorder = $("#rightSidebarBorder");
     var rightSidebarToggle = $("#rightSidebarToggle");
 
     var needToggleRightValue = parseFloat(rightSidebarToggle.css("right")) < 50;
-    var constRightValue = 350; // mainWrapper.css("padding-right")
-    rightSidebarBorder.animate({right: (needToggleRightValue ? '+=' : '-=') + constRightValue}, 200, 0, function() { rightSidebarBorder.toggle(); } );
-    rightSidebarToggle.animate({right: (needToggleRightValue ? '+=' : '-=') + (constRightValue+10)}, 200);
-    if (needToggleRightValue) {
-        rightSidebarToggle.width(rightSidebarToggle.width()-20);
-    } else {
-        rightSidebarToggle.animate({width: (needToggleRightValue ? '-=' : '+=')+(20)}, 200);
-    }
-    mainWrapper.animate({"padding-right": ((parseFloat(mainWrapper.css("padding-right")) >= needToggleRightValue) ? '-=' : '+=')+(constRightValue)}, 200);
+    if (needToggleRightValue)
+        rightSidebar.toggle();
 
-    sideBar.children().each(function(i)
-    {
-        sideBar.toggle();
-        var child = $($(this)[0]);
-        child.animate({right: (parseFloat(child.css("right")) == 0 ? '-=' : '+=') + (child.width() + 50)}, 200, 0);
-    });
+    var constRightValue = 350; // mainWrapper.css("padding-right")
+    rightSidebarBorder.animate({right: (needToggleRightValue ? '+=' : '-=') + (constRightValue+10)}, delay);
+    rightSidebarToggle.animate({width: (needToggleRightValue ? '-=' : '+=')+(7)}, { duration: delay, queue: false });
+    rightSidebarToggle.animate({right: (needToggleRightValue ? '+=' : '-=') + (constRightValue)}, { duration: delay, queue: false });
+
+    mainWrapper.animate({"padding-right": ((parseFloat(mainWrapper.css("padding-right"))-10 >= needToggleRightValue) ? '-=' : '+=')+(constRightValue)}, delay);
+
+    rightSidebar.animate({right: (parseFloat(rightSidebar.css("right")) == 0 ? '-=' : '+=') + constRightValue}, 200, 0, function() { if (!needToggleRightValue) rightSidebar.toggle(); } );
+
     document.getElementById("rightSidebarToggle").onclick = toggleRightSidebar;
+
+    if (typeof rightSidebar_toggle_callback !== "undefined") {
+        rightSidebar_toggle_callback(!needToggleRightValue);
+    }
 }
 
 function toggleDarkTheme()

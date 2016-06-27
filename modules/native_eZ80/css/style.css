@@ -49,12 +49,22 @@ div.CodeMirror pre {
     padding: 0 2px !important;
 }
 
+#prgmNameSpan {
+    font-weight: bold;
+}
+
 #rightSidebar {
     width: 350px;
     height: 100%;
     display: block;
     position: absolute;
     top: 0;
+    right: 0;
+}
+
+#rightSidebarContent {
+    height: 100%;
+    position: relative;
     right: 0;
 }
 
@@ -85,20 +95,11 @@ div.console {
     height: 100%;
     font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
     font-size: 9pt;
+    resize: none;
 }
 
-#prgmNameContainer {
-    transform: translateY(25%);
-    -ms-transform: translateY(25%);
-    -moz-transform: translateY(25%);
-    -webkit-transform: translateY(25%);
-    -o-transform: translateY(25%);
-}
 div.subfirepad > * {
     display: inline-block;
-}
-#prgmNameContainer {
-    float: right;
 }
 
 .firepad-userlist {

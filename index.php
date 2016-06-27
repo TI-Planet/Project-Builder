@@ -23,6 +23,45 @@ $fileName = (isset($_GET['file']) && !empty($_GET['file'])) ? $_GET['file'] : nu
 
 $pb = new ProjectManager($projectID, ['id' => $projectID, 'file' => $fileName]);
 
+/*
+if ($pb->getCurrentUser()->getID() !== 1381) {
+    header( "HTTP/1.1 503 Service Unavailable", true, 503 );
+    header( "Retry-After: 3600" );
+    die("Maintenance in progress, please come back soon!");
+}
+*/
+
+// The PB needs a reasonable screen size, warn the mobile users
+$isMobile = preg_match("/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|bo‌​ost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+if ($isMobile === 1)
+{
+    echo "<!DOCTYPE html>
+    <head>
+<meta charset=\"utf-8\">
+    <title>TI-Planet | Online Project Builder</title>
+    <style>
+        html{height:100%;overflow:hidden;}
+        body{height:100%;margin:8px;font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;background-color:#ededed;}
+    </style>
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" />
+</head>
+<body style='height:100%;margin:8px;font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;background-color:#ededed;'>
+    <div style='display:flex;justify-content:center;align-items:center;width:100%;height:100%;text-align:center;'>
+        <span style='margin:8px;font-size:1.4em;color:#444;'>Aww, TI-Planet's Project Builder is only compatible with devices with larger displays.<br><br>Sorry :(</span>
+    </div>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-25340424-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>";
+    die();
+}
+
 // Until we decide what to do...
 if ($pb->getCurrentUser()->isAnonymous())
 {
@@ -60,7 +99,7 @@ if ($projectID !== null)
         require "templates/newOrLoadProject.php";
     } else
     {
-        $userProjects = $pb->getUserProjectsFromDB(1);
+        $userProjects = $pb->getUserProjectsDataFromDB(1);
         if (count($userProjects) > 0)
         {
             $uid = $pb->getCurrentUser()->getID();

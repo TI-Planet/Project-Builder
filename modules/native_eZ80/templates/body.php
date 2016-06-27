@@ -27,14 +27,16 @@ if (!isset($pb))
     <div class="filelist">
         <ul class="nav nav-tabs">
             <?= $currProject->getFileListHTML(); ?>
-            <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) {
+            <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite())
+            {
                 if ($currProject->getCurrentFile() !== "main.c")
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
-             } ?>
+            }
+            ?>
         </ul>
     </div>
 
@@ -70,9 +72,9 @@ if (!isset($pb))
                 <li title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
             </ul>
         </div>
-        <button id="builddlButton" class="btn btn-primary btn-sm" onclick="buildAndDownload(); return false" title="Build and download the program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Build &amp; Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="builddlButton" class="btn btn-primary btn-sm" onclick="buildAndDownload(); return false" title="Build and download the program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="buildRunButton" class="btn btn-primary btn-sm" onclick="buildAndRunInEmu(); return false" title="Build and run the program in the emulator"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Test in emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div id="buildTimestampContainer" class="hidden"><b>Latest build</b>: <span id="buildTimestamp"></span></div>
-        <div id="prgmNameContainer"><b>Program name</b>: <span id="prgmNameSpan">CPRGMCE</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> (<a href="#" onclick="changePrgmName(); return false;">Change</a>)</div>
         <?php } ?>
     </div>
 

@@ -26,6 +26,7 @@ var lastSavedSource = '';
 function applyPrgmNameChange(name)
 {
     proj.prgmName = name;
+    document.getElementById("prgmNameSpanInList").innerHTML = name;
     document.getElementById("prgmNameSpan").innerHTML = name;
     document.getElementById("prgmNameInput").value = name;
     saveProjConfig();
@@ -33,7 +34,7 @@ function applyPrgmNameChange(name)
 
 function changePrgmName()
 {
-    var name = prompt("Enter the new program name (8 letters max, A-Z 0-9, starts by a letter)", "CPRGMCE");
+    var name = prompt("Enter the new program name (8 letters max, A-Z 0-9, starts by a letter)", "");
     if (name != null)
     {
         name = name.toUpperCase();
@@ -108,7 +109,7 @@ function addFile(name)
     var err = false;
     if (!name || !isValidFileName(name))
     {
-        var name = prompt("Enter the new file name (letters, numbers, underscores, and with .c, .h, or .asm extension)");
+        name = prompt("Enter the new file name (letters, numbers, underscores, and with .c, .h, or .asm extension)");
         if (name === null || !isValidFileName(name))
         {
             err = true;
@@ -133,6 +134,35 @@ function buildAndDownload()
         document.getElementById('postForm').submit();
         document.getElementById('builddlButton').setAttribute("onclick", 'buildAndDownload(); return false;');
     });
+}
+
+function buildAndRunInEmu()
+{
+    // TODO: use a flag
+    if ($("#rightSidebarContent").css("right")[0] === "-")
+    {
+        toggleRightSidebar();
+    }
+    if (emul_is_inited)
+    {
+        buildAndGetLog(function ()
+        {
+            ajaxGetArrayBuffer("ActionHandler.php", $("form").serialize(), function (file)
+            {
+                pauseEmul(false);
+                fileLoad(new Blob([file], {type: "application/octet-stream"}), proj.prgmName + ".8xp");
+                setTimeout(function ()
+                {
+                    setTimeout(function () { sendKey(0x9CFC); }, 0); // Asm(
+                    setTimeout(function () { sendKey(0xDA); }, 250); // prgm
+                    setTimeout(function () { sendStringKeyPress(proj.prgmName); }, 500);
+                    setTimeout(function () { sendKey(0x05); }, 500 + 150 + 250 * proj.prgmName.length); // Enter
+                }, 500);
+            });
+        });
+    } else {
+        alert("The emulator isn't ready yet - Did you load a ROM?");
+    }
 }
 
 function getBuildLogAndUpdateHints()
@@ -180,8 +210,9 @@ function buildAndGetLog(callback)
     var buildButton = document.getElementById('buildButton');
     var cleanButton = document.getElementById('cleanButton');
     var builddlButton = document.getElementById('builddlButton');
-    cleanButton.disabled = buildButton.disabled = builddlButton.disabled = true;
-    removeClass(callback && builddlButton.children[1] || buildButton.children[1], "hidden");
+    var buildRunButton = document.getElementById('buildRunButton');
+    cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = true;
+    removeClass(buildButton.children[1], "hidden");
 
     saveFile(function() {
         // build output
@@ -223,8 +254,8 @@ function buildAndGetLog(callback)
             ajax("ActionHandler.php", "id="+proj.pid + "&action=getCheckLog", function(result) {
                 build_check = parseCheckLog(JSON.parse(result));
                 updateHints(false);
-                addClass(callback && builddlButton.children[1] || buildButton.children[1], "hidden");
-                cleanButton.disabled = buildButton.disabled = builddlButton.disabled = false;
+                addClass(buildButton.children[1], "hidden");
+                cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = false;
             });
         });
     });
@@ -270,6 +301,14 @@ function parseCheckLog(log)
     return arr;
 }
 
+function rightSidebar_toggle_callback(willBeHidden)
+{
+    if (typeof emul_is_inited !== "undefined" && emul_is_inited)
+    {
+        pauseEmul(willBeHidden);
+    }
+}
+
 window.addEventListener('resize', function(event) {
     $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75*($(document).height()))+'px');
 });
@@ -284,3 +323,36 @@ window.addEventListener('keydown', function(event) {
         }
     }
 });
+
+/***** Pause emulation when the page isn't visible *****/
+
+// Set the name of the hidden property and the change event for visibility
+var hidden, visibilityChange;
+if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+    hidden = "hidden";
+    visibilityChange = "visibilitychange";
+} else if (typeof document.mozHidden !== "undefined") {
+    hidden = "mozHidden";
+    visibilityChange = "mozvisibilitychange";
+} else if (typeof document.msHidden !== "undefined") {
+    hidden = "msHidden";
+    visibilityChange = "msvisibilitychange";
+} else if (typeof document.webkitHidden !== "undefined") {
+    hidden = "webkitHidden";
+    visibilityChange = "webkitvisibilitychange";
+}
+
+function handleVisibilityChange()
+{
+    if (document.hidden && typeof emul_is_inited !== "undefined" && emul_is_inited)
+    {
+        pauseEmul(true);
+    }
+}
+
+// Warn if the browser doesn't support addEventListener or the Page Visibility API
+if (typeof document.addEventListener === "undefined" || typeof document[hidden] === "undefined") {
+    console.log("Your browser is old, some things won't be working as expected :(");
+} else {
+    document.addEventListener(visibilityChange, handleVisibilityChange, false);
+}

@@ -20,8 +20,10 @@ html {
 body {
     background: #F0F0F0;
     height: 100%;
-    font-size: 15px;
+    min-width: 1024px;
+    min-height: 550px;
     overflow: hidden;
+    font-size: 15px;
 }
 
 #contentcontainer {
@@ -29,7 +31,7 @@ body {
     height: 100%;
 }
 
-#statusbar {
+#statusbar_left {
     border-top: 2px grey solid;
     font-size: .9em;
     position: absolute;
@@ -39,7 +41,7 @@ body {
     background-color: #f0f0f0;
 }
 
-#statusbar span.copyright {
+#statusbar_left span.copyright {
     float: right;
     padding-right: 5px;
     margin-top: 1px;
