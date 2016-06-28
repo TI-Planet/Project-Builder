@@ -62,18 +62,19 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
     <div id="leftSidebar">
         <?php require "sidebar.php"; ?>
     </div>
-
     <div id="leftSidebarToggle" class="sidebarToggle" onclick="toggleLeftSidebar();"></div>
+
+    <div id="rightSidebar">
+        <div id="rightSidebarContent">
+            <?php include $templatePath . "right_sidebar.php"; ?>
+        </div>
+    </div>
     <div id="rightSidebarToggle" class="sidebarToggle" onclick="toggleRightSidebar();"></div>
     <div id="rightSidebarBorder"></div>
 
     <div id="editorContainer" class="wrapper">
         <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?></h3>
         <?php require $templatePath . "body.php"; ?>
-    </div>
-
-    <div id="rightSidebar">
-        <?php include $templatePath . "right_sidebar.php"; ?>
     </div>
 
 </div>
@@ -89,7 +90,6 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
             }
         };
         <?php } ?>
-
         loadProjConfig();
     </script>
 

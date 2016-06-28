@@ -28,7 +28,7 @@ function genSidebar()
 
     $header = '<h2><a href="/forum/portal.php" title="TI-Planet" target="_blank"><img src="/forum/styles/prosilver/theme/images/tiplanet_header_logo.png" alt="TI-Planet" height="55"/></a>Project Builder<sup><small> ß</small></sup></h2>';
 
-    $userProjects = $pb->getUserProjectsFromDB();
+    $userProjects = $pb->getUserProjectsDataFromDB();
 
     $content = '';
 
@@ -37,13 +37,13 @@ function genSidebar()
     {
         $content .= '<div class="sidebarListHeader"><b>Current project:</b></div>';
         $content .= '<div id="currentProject">';
-        $content .= "<b>{$currProject->getInternalName()}</b>"; // Use name, later
+        $content .= '<div id="prgmNameContainer"><span id="prgmNameSpan">' . $currProject->getInternalName() . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> (<a href="#" onclick="changePrgmName(); return false;">rename</a>)</div>';
 
         if (!$isUserAuthorOfProject) {
             $authorNameHTML = htmlentities($currProjectAuthor->getName(), ENT_QUOTES);
-            $content .= "</br><u>Author</u>: <a href='https://tiplanet.org/forum/memberlist.php?mode=viewprofile&amp;u={$currProjectAuthor->getID()}' target='_blank'>$authorNameHTML</a>";
+            $content .= "<u>Author</u>: <a href='https://tiplanet.org/forum/memberlist.php?mode=viewprofile&amp;u={$currProjectAuthor->getID()}' target='_blank'>$authorNameHTML</a></br>";
         }
-        $content .= '</br><u>Type</u>: ' . $currProject->getType();
+        $content .= '<u>Type</u>: ' . $currProject->getType();
         $content .= '</br><u>Created</u>: ' . "<script>var d = new Date({$currProject->getCreatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
         $content .= '</br><u>Updated</u>: ' . "<script>var d = new Date({$currProject->getUpdatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
         $content .= '</br><u>Shared</u>: ' . ($currProject->isMultiuser() ? ("Yes (" . ($currProject->isMulti_ReadWrite() ? "Read/Write" : "Read only") .")") : ("No. Share: "));
@@ -77,7 +77,8 @@ function genSidebar()
     $content .= '<div id="projectListHeader" class="sidebarListHeader"><a href="/pb/?new=1&amp;csrf_token=' . $currUser->getSID() . '" id="newProjLink" class="btn btn-success btn-xs" style="float:right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project</a><b>My projects:</b></div>';
 
     $content .= '<div id="projectList">';
-    if (count($userProjects) > 0) {
+    if (count($userProjects) > 0)
+    {
         $content .= '<ul style="margin-top: 2px">';
         foreach ($userProjects as $project)
         {
@@ -86,7 +87,7 @@ function genSidebar()
             {
                 $content .= "<li><a href='/pb/?id={$currUser->getID()}_{$project->created}_{$project->randkey}'>{$project->internal_name}</a> <small><i>({$project->type})</i></small></li>";
             } else {
-                $content .= "<li>{$project->internal_name} <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><span id='prgmNameSpanInList'>{$project->internal_name}</span> <small><i>({$project->type})</i></small></li>";
             }
         }
         $content .= '</ul>';
@@ -99,7 +100,7 @@ function genSidebar()
         $content .= '<div id="firechat-wrapper"></div>';
     }
 
-    $content .= '<div id="statusbar">
+    $content .= '<div id="statusbar_left">
                     <span class="themeToggle">
                         <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Dark mode</button>
                     </span>
