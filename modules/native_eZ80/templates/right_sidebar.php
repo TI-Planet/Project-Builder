@@ -23,23 +23,21 @@ if (!isset($pb))
 /** @var \ProjectBuilder\native_eZ80Project $currProject */
 
 ?>
-    <style>
-        #emu_container{width:350px;text-align:center;margin-left:auto;margin-right:auto;}
-        #emu_container .emscripten{padding-right:0;margin-left:auto;margin-right:auto;display:block}
-        #emu_canvas{border:1px grey solid}
-        #emu_container input[type="file"]{display: inline-block !important;width: 210px;}
-        #emu_keypad_buttons button{width:52px;height:31px;margin-bottom: 7px;font-size: 14px;padding-top: 4px;}
-        #emu_keypad_buttons button.topRowButton{height:22px;padding-top: 0;}
-        #cemu_notice{border-top:2px grey solid;font-size:.9em;position:absolute;bottom:0;width:100%;background-color:#f0f0f0;height:24px;padding:1px 0 0 5px;}
-        .inputfile{width:.1px;height:.1px;opacity:0;overflow:hidden;position:absolute;z-index:-1}
-        .inputfile+label{font-size:1.1rem;cursor:pointer;margin:0;padding:.55rem 1.2rem;max-width:181px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;border-radius:4px}
-    </style>
+    <link rel="stylesheet" href="<?= $modulePath ?>css/right_sidebar.css">
 
     <script src="<?= $modulePath ?>js/emu/cemu_web_utils.js"></script>
 
     <div id="emu_container">
         <br>
-        <canvas id="emu_canvas" class="emscripten" style="display:none;" oncontextmenu="event.preventDefault()" width="320" height="240"></canvas>
+        <div id="emu_canvas_container">
+            <canvas id="emu_canvas" class="emscripten" style="display:none;" oncontextmenu="event.preventDefault()" width="320" height="240"></canvas>
+            <div id="screenshot_btn_container">
+                <a target="_blank" download="<?php echo 'screenshot_' . $currProject->getInternalName() . '.png' ?>" class="btn btn-default btn-sm" onclick="emu_screenshot(this)">
+                    <i class="glyphicon glyphicon-camera"></i> Screenshot</button>
+                </a>
+            </div>
+        </div>
+
         <br>
         <div id="emu_keypad_buttons" style="display:none;">
             <script>
@@ -73,8 +71,8 @@ if (!isset($pb))
             <br><br>
             <div id="varTransferDiv" style="display:none;">
                 Variable transfer:
-                <input type="file" id="VarInputFile" name="file" class="inputfile inputfile-1" onChange="fileLoadFromInput(event)">
-                <label for="VarInputFile" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-file"></span> <span class="fileInputLabel">TI file</span></label>
+                <input type="file" id="VarInputFile" name="file" class="inputfile inputfile-1" onChange="fileLoadFromInput(event)" multiple>
+                <label for="VarInputFile" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-file"></span> <span class="fileInputLabel">TI file(s)</span></label>
             </div>
             <div style="height:4px;"></div>
             <div id="ROMTransferDiv">
@@ -109,6 +107,15 @@ if (!isset($pb))
             var script = document.createElement('script');
             script.src = "<?= $modulePath ?>js/emu/cemu_web.js";
             document.body.appendChild(script);
+
+            document.getElementById('emu_canvas_container').addEventListener('mouseenter', function() { document.getElementById('screenshot_btn_container').style.display = 'block'; });
+            document.getElementById('emu_canvas_container').addEventListener('mouseleave', function() { document.getElementById('screenshot_btn_container').style.display = 'none'; });
+
+            function emu_screenshot(btn)
+            {
+                btn.href = document.getElementById('emu_canvas').toDataURL('image/png');
+                return true;
+            }
         </script>
 
     </div>

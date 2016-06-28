@@ -37,13 +37,16 @@ if ($currProject->isMultiuser())
         name: '<?= $currProject->getName(); ?>',
         prgmName: '<?= $currProject->getInternalName(); ?>',
         currFile: '<?= $currProject->getCurrentFile(); ?>',
-        updated: <?= $currProject->getUpdatedTstamp(); ?>
+        updated: <?= $currProject->getUpdatedTstamp(); ?>,
+        use_dark: false,
+        show_left_sidebar: true,
+        show_right_sidebar: true
     };
     user = {
         id: '<?= $currUser->getID(); ?>',
         name: '<?= $currUser->getName(); ?>',
         avatar: '<?= $currUser->getAvatarURL(); ?>',
-        firebase_token : '<?= $firebase_token ?>'
+        firebase_token: '<?= $firebase_token ?>'
     };
 </script>
 

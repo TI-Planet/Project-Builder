@@ -24,9 +24,21 @@ function loadProjConfig()
     var lsConfig = localStorage.getItem("config_" + proj.pid);
     if (lsConfig)
     {
-        proj = JSON.parse(lsConfig);
+        // Overwrite some custom properties
+        var conf = JSON.parse(lsConfig);
+        if (typeof conf.use_dark !== "undefined") { proj.use_dark = conf.use_dark; }
+        if (typeof conf.show_left_sidebar !== "undefined") { proj.show_left_sidebar = conf.show_left_sidebar; }
+        if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
     }
-    typeof(applyPrgmNameChange) === "function" && applyPrgmNameChange(proj.prgmName);
+    if (proj.use_dark === true) {
+        toggleDarkTheme();
+    }
+    if (proj.show_left_sidebar === false) {
+        toggleLeftSidebar(0);
+    }
+    if (proj.show_right_sidebar === false) {
+        toggleRightSidebar(0);
+    }
 }
 
 function saveProjConfig()
@@ -106,9 +118,14 @@ function toggleLeftSidebar(delay)
     var mainWrapper = $(".wrapper");
     var sideBar = $("#leftSidebar");
 
-    sideBar.animate( { "margin-left": (parseFloat(sideBar.css("margin-left")) < 0 ? '+=' : '-=') +(sideBar.width()+20) }, delay);
-    mainWrapper.animate( { "margin-left": (parseFloat(sideBar.css("margin-left")) < 0 ? '+=' : '-=') +(sideBar.width()+14) }, delay);
-    $("#leftSidebarToggle").animate( {width: (parseFloat(sideBar.css("margin-left")) < 0 ? '-=' : '+=')+(7) }, delay, 0);
+    var needToggleLeftValue = parseFloat(sideBar.css("margin-left")) < 0;
+
+    proj.show_left_sidebar = needToggleLeftValue;
+    saveProjConfig();
+
+    sideBar.animate( { "margin-left": (needToggleLeftValue ? '+=' : '-=') +(sideBar.width()+20) }, delay);
+    mainWrapper.animate( { "margin-left": (needToggleLeftValue ? '+=' : '-=') +(sideBar.width()+14) }, delay);
+    $("#leftSidebarToggle").animate( {width: (needToggleLeftValue ? '-=' : '+=')+(7) }, delay, 0);
 
     document.getElementById("leftSidebarToggle").onclick = toggleLeftSidebar;
 }
@@ -125,6 +142,10 @@ function toggleRightSidebar(delay)
     var rightSidebarToggle = $("#rightSidebarToggle");
 
     var needToggleRightValue = parseFloat(rightSidebarToggle.css("right")) < 50;
+
+    proj.show_right_sidebar = needToggleRightValue;
+    saveProjConfig();
+
     if (needToggleRightValue)
         rightSidebar.toggle();
 
@@ -146,6 +167,8 @@ function toggleRightSidebar(delay)
 
 function toggleDarkTheme()
 {
+    proj.use_dark = !proj.use_dark;
+    saveProjConfig();
     $(".darkThemeLink").each(function(idx, el) {
         var darkThemeLink = $(el);
         darkThemeLink.attr("href", darkThemeLink.attr("href") ? "" : darkThemeLink.data("href"));
