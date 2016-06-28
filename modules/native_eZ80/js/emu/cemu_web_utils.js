@@ -134,8 +134,25 @@ fileLoad = function(file, filename)
 
 fileLoadFromInput = function(event)
 {
-    var file = event.target.files[0];
-    fileLoad(file, file.name);
+    if (emul_is_inited && emul_is_paused) {
+        pauseEmul(false);
+    }
+
+    var files = event.target.files;
+
+    document.getElementById('emu_container').style.opacity = .5;
+    document.getElementById('emu_container').style.pointerEvents = 'none';
+    setTimeout(function() {
+        document.getElementById('emu_container').style.opacity = 1;
+        document.getElementById('emu_container').style.pointerEvents = 'initial';
+    }, files.length*900);
+
+    for (var i=0, delay=0; i<files.length; delay+=900, i++)
+    {
+        (function(file, delay) {
+            setTimeout(function() { fileLoad(file, file.name); }, delay);
+        })(files[i], delay);
+    }
 }
 
 } // preRun function
