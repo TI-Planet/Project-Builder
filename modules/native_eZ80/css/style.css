@@ -32,6 +32,11 @@ div.filelist .nav-tabs>li.active.tabover > a {
     border-bottom: 1px white solid !important;
 }
 
+div.filelist .nav-tabs>li.active.tabover.renamableFile a > span.filename:hover {
+    cursor: text;
+    border-bottom: 1px red dotted;
+}
+
 div.CodeMirror {
     font-size: 13px;
     border: 1px solid #666;

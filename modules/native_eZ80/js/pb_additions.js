@@ -51,6 +51,27 @@ function changePrgmName()
     }
 }
 
+function renameFile(oldName)
+{
+    $('.tooltip').hide();
+    var err = false;
+    var newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,h,asm)", oldName);
+    if (newName === null || !isValidFileName(newName))
+    {
+        err = true;
+        if (newName) alert("Invalid name.");
+    }
+    if (newName === oldName) {
+        return;
+    }
+    if (!err)
+    {
+        ajax("ActionHandler.php", "id=" + proj.pid + "&action=renameFile&oldName="+oldName+"&newName="+newName, function() {
+            goToFile(newName);
+        });
+    }
+}
+
 function saveFile(callback)
 {
     var saveButton = document.getElementById('saveButton');

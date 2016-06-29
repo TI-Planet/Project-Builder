@@ -34,7 +34,7 @@ if (!isset($pb))
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
-                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
+                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="bottom" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
             }
             ?>
         </ul>
@@ -89,7 +89,7 @@ if (!isset($pb))
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">C Source and ASM</h4>
+                    <h4 class="modal-title" id="myModalLabel">Project creation wizard</h4>
                 </div>
                 <div class="modal-body">
 
