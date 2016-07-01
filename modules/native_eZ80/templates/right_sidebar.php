@@ -27,7 +27,7 @@ if (!isset($pb))
 
     <script src="<?= $modulePath ?>js/emu/cemu_web_utils.js"></script>
 
-    <div id="emu_container">
+    <div id="emu_container" class="unselectable">
         <br>
         <div id="emu_canvas_container">
             <canvas id="emu_canvas" class="emscripten" style="display:none;" oncontextmenu="event.preventDefault()" width="320" height="240"></canvas>
@@ -59,7 +59,7 @@ if (!isset($pb))
                         document.write((i%5 == 0) ? '<br>' : '&nbsp;&nbsp;');
                     }
                     var specialClass = i<5 ? 'topRowButton' : '';
-                    document.write('<button class="btn btn-default btn-sm '+ specialClass + '" onmousedown="pressKey('+btn[1][1]+', '+btn[1][0]+', 1);" '
+                    document.write('<button class="btn btn-default btn-sm '+ specialClass +'" onmousedown="pressKey('+btn[1][1]+', '+btn[1][0]+', 1);" '
                                         + 'onmouseup="setTimeout(function() { pressKey('+btn[1][1]+', '+btn[1][0]+', 0); }, 100);">'+btn[0]+'</button>');
                 }
             </script>

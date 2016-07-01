@@ -5,6 +5,10 @@
     margin-right: auto;
 }
 
+#emu_container button {
+    outline: none !important;
+}
+
 #emu_container .emscripten {
     padding-right: 0;
     margin-left: auto;

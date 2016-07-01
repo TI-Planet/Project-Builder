@@ -84,7 +84,7 @@ if (!isset($pb))
     </div>
 <?php } ?>
 
-    <div class="modal fade" id="bootstrapPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="wizardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
