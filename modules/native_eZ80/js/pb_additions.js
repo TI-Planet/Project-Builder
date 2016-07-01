@@ -171,7 +171,7 @@ function buildAndRunInEmu()
             ajaxGetArrayBuffer("ActionHandler.php", $("form").serialize(), function (file)
             {
                 pauseEmul(false);
-                fileLoad(new Blob([file], {type: "application/octet-stream"}), proj.prgmName + ".8xp");
+                fileLoad(new Blob([file], {type: "application/octet-stream"}), proj.prgmName + ".8xp", false);
                 setTimeout(function ()
                 {
                     setTimeout(function () { sendKey(0x9CFC); }, 0); // Asm(

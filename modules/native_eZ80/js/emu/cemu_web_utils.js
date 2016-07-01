@@ -73,18 +73,33 @@ disableGUI = function()
     document.getElementById('emu_reset_btn').style.display = 'none';
 }
 
-fileLoaded = function(event, filename)
+fileLoaded = function(event, filename, isAutoloadedROM)
 {
     if (event.target.readyState == FileReader.DONE)
     {
-        FS.writeFile(filename, new Uint8Array(event.target.result), {encoding: 'binary'});
+        var fileAsUint8Array = new Uint8Array(event.target.result);
 
-        if (filename == "CE.rom")
+        FS.writeFile(filename, fileAsUint8Array, {encoding: 'binary'});
+
+        if (filename === "CE.rom")
         {
+            // If the ROM already came from the local browser storage, don't re-save it.
+            if (!isAutoloadedROM)
+            {
+                localforage.setItem('ce_rom', fileAsUint8Array)
+                           .then(function() { console.log("ROM saved locally"); })
+                           .catch(function(err) { console.log("Error while saving locally the ROM", err); });
+            }
+
             if (emul_is_inited) {
                 Module['ccall']('emsc_cancel_main_loop', 'void', [], []);
             }
             Module['callMain']();
+
+            if (isAutoloadedROM)
+            {
+                setTimeout(function(){ pauseEmul(true); }, 1000);
+            }
         } else {
             if (emul_is_inited) {
                 if (emul_is_paused) {
@@ -116,7 +131,7 @@ drawLCDOff = function()
     //canvasCtx.fillText("LCD Off", 120, 230);
 }
 
-fileLoad = function(file, filename)
+fileLoad = function(file, filename, isAutoloadedROM)
 {
     if (filename.match(/\.rom$/i)) {
         filename = "CE.rom";
@@ -127,7 +142,7 @@ fileLoad = function(file, filename)
 
     var reader = new FileReader();
     reader.onloadend = function(event) {
-        fileLoaded(event, filename);
+        fileLoaded(event, filename, isAutoloadedROM);
     };
     reader.readAsArrayBuffer(file);
 }
@@ -150,7 +165,7 @@ fileLoadFromInput = function(event)
     for (var i=0, delay=0; i<files.length; delay+=900, i++)
     {
         (function(file, delay) {
-            setTimeout(function() { fileLoad(file, file.name); }, delay);
+            setTimeout(function() { fileLoad(file, file.name, false); }, delay);
         })(files[i], delay);
     }
 }

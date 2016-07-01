@@ -94,7 +94,7 @@ class native_eZ80Project extends Project
                 if ($file !== 'main.c') {
                     $fileListHTML .= "<li class='active tabover renamableFile {$counterpartClass}'><a title='Click to rename' data-toggle='tooltip' data-placement='bottom' id='currentFileTab' href='#' onclick='renameFile(\"{$file}\"); return false;'>";
                 } else {
-                    $fileListHTML .= "<li class='active tabover {$counterpartClass}'><a id='currentFileTab' href='#'>";
+                    $fileListHTML .= "<li class='active tabover {$counterpartClass}'><a id='currentFileTab' href='#' onclick='return false;'>";
                 }
                 $fileListHTML .= "<span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
             } else {

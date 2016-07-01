@@ -107,6 +107,15 @@ if (!isset($pb))
             var script = document.createElement('script');
             script.src = "<?= $modulePath ?>js/emu/cemu_web.js";
             document.body.appendChild(script);
+            script.onload = function() {
+                localforage.getItem('ce_rom').then(function(ce_rom) {
+                    if (ce_rom !== null) {
+                        fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                    }
+                }).catch(function(err) {
+                    console.log("Error while getting ROM from LF", err);
+                });
+            };
 
             document.getElementById('emu_canvas_container').addEventListener('mouseenter', function() { document.getElementById('screenshot_btn_container').style.display = 'block'; });
             document.getElementById('emu_canvas_container').addEventListener('mouseleave', function() { document.getElementById('screenshot_btn_container').style.display = 'none'; });
