@@ -122,6 +122,11 @@ function isNumeric(value)
     return /^\d+$/.test(value);
 }
 
+function isHexNum(value)
+{
+    return /^0x[0-9a-f]+$/i.test(value);
+}
+
 function updateQueryStringParameter(uri, key, value) {
   var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
   var separator = uri.indexOf('?') !== -1 ? "&" : "?";

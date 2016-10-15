@@ -96,7 +96,7 @@ function genSidebar()
     }
     $content .= '</div>';
 
-    if ($currProject->isMultiuser() && $currProject->isMulti_ReadWrite()) {
+    if ($currProject->isMultiuser() && $currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) {
         $content .= '<div id="firechat-wrapper"></div>';
     }
 

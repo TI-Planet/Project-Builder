@@ -38,13 +38,14 @@ abstract class Project
     protected $internalName;
     protected $multiuser;
     protected $multi_readwrite;
+    protected $chatEnabled;
     protected $createdTstamp;
     protected $updatedTstamp;
 
     protected $projDirectory;
     protected $currentFile;
 
-    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $cTime, $uTime)
+    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $uTime, $cTime)
     {
         if (!is_int($db_id))
         {
@@ -70,6 +71,10 @@ abstract class Project
         {
             throw new \InvalidArgumentException("wantReadWrite must be a boolean");
         }
+        if (!is_bool($chatEnabled))
+        {
+            throw new \InvalidArgumentException("chatEnabled must be a boolean");
+        }
         if (!is_int($cTime) || strlen((string)$cTime) !== 10)
         {
             throw new \InvalidArgumentException("Creation timestamp must be an unix timestamp (10 digits unsigned int)");
@@ -88,6 +93,7 @@ abstract class Project
         $this->internalName = $internalName;
         $this->multiuser = $multiuser;
         $this->multi_readwrite = $wantReadWrite;
+        $this->chatEnabled = $chatEnabled;
         $this->createdTstamp = $cTime;
         $this->updatedTstamp = $uTime;
         $this->projDirectory = __DIR__ . "/projects/{$this->id}/";
@@ -175,6 +181,11 @@ abstract class Project
     public function isMulti_ReadWrite()
     {
         return $this->multi_readwrite;
+    }
+
+    public function isChatEnabled()
+    {
+        return $this->chatEnabled;
     }
 
     /**

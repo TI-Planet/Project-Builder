@@ -34,13 +34,13 @@ class ProjectFactory
      * @param          $internalName
      * @param          $multiuser
      * @param          $readonly
+     * @param          $chatEnabled
      * @param          $cTime
      * @param          $uTime
      * @return null|Project
      * @throws \Exception
-     * @internal param $authorID
      */
-    public static function create($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime)
+    public static function create($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
         if (!in_array($type, self::$projectTypes))
         {
@@ -55,7 +55,7 @@ class ProjectFactory
             // There's a custom class (server-side)
             require_once $customIncludePath;
             try {
-                return new $customFullClassName($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime);
+                return new $customFullClassName($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
             } catch (\Exception $e)
             {
                 echo $e->getMessage();

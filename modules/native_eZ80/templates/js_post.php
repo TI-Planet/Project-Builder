@@ -130,7 +130,7 @@ if (!isset($pb))
     }
     init_post_js_2();
 
-    <?php if ($currProject->isMulti_ReadWrite()) { ?>
+    <?php if ($currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) { ?>
 
     function init_chat()
     {

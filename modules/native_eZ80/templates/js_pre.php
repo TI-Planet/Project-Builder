@@ -98,10 +98,15 @@ if ($currProject->isMultiuser())
 <script src="<?= $modulePath ?>codemirror/trailingspace.js"></script>
 <script src="<?= $modulePath ?>codemirror/jump-to-line.js"></script>
 
-<?php if ($currProject->isMulti_ReadWrite()) { ?>
-    <link rel='stylesheet' href='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.css' />
-    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
-    <script src='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.js'></script>
-    <script src="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js"></script>
-    <script src="<?= $modulePath ?>codemirror/firepad-userlist.js"></script>
-<?php } ?>
+<?php
+if ($currProject->isMulti_ReadWrite())
+{
+    echo "<script src='https://cdn.firebase.com/js/client/2.4.2/firebase.js'></script>\n";
+    if ($currProject->isChatEnabled()) {
+        echo "<link rel='stylesheet' href='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.css'/>\n";
+        echo "<script src='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.js'></script>\n";
+    }
+    echo "<script src='https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js'></script>\n";
+    echo "<script src='{$modulePath}codemirror/firepad-userlist.js'></script>";
+}
+?>
