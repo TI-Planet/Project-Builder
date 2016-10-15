@@ -66,8 +66,12 @@ function renameFile(oldName)
     }
     if (!err)
     {
-        ajax("ActionHandler.php", "id=" + proj.pid + "&action=renameFile&oldName="+oldName+"&newName="+newName, function() {
-            goToFile(newName);
+        saveFile(function (){
+            ajax("ActionHandler.php", "id=" + proj.pid + "&action=renameFile&oldName="+oldName+"&newName="+newName, function() {
+                proj.currFile = newName;
+                saveProjConfig();
+                goToFile(newName);
+            });
         });
     }
 }
@@ -118,8 +122,9 @@ function deleteCurrentFile()
                     proj.files.splice(idx, 1);
                     saveProjConfig();
                 }
-                var newURL = updateQueryStringParameter(window.location.href, "file", "main.c");
-                window.history.pushState && window.history.pushState(null, null, newURL) || window.location.replace(newURL);
+                proj.currFile = "main.c";
+                saveProjConfig();
+                goToFile(proj.currFile);
             });
         }
     }
@@ -139,11 +144,13 @@ function addFile(name)
     }
     if (!err)
     {
-        ajax("ActionHandler.php", "id=" + proj.pid + "&action=addFile&fileName="+name, function() {
-            proj.files = proj.files.concat([ name ]);
-            saveProjConfig();
-            var newURL = updateQueryStringParameter(window.location.href, "file", name);
-            saveFile(function() { window.location.replace(newURL); });
+        saveFile(function() {
+            ajax("ActionHandler.php", "id=" + proj.pid + "&action=addFile&fileName="+name, function() {
+                proj.files = proj.files.concat([ name ]);
+                proj.currFile = name;
+                saveProjConfig();
+                goToFile(name);
+            });
         });
     }
 }
@@ -248,7 +255,7 @@ function buildAndGetLog(callback)
             {
                 alert("Fatal build error (undefined/unresolved calls).\nCheck the build log");
                 buildStatusClass = "buildError"
-            } else if (result.indexOf("\tERROR") !== -1 || result.indexOf("Internal Error") !== -1) {
+            } else if (result.indexOf("\\tERROR") !== -1 || result.indexOf("Internal Error") !== -1) {
                 alert("Fatal build error.\nCheck the build log");
                 buildStatusClass = "buildError"
             } else {

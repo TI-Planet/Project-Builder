@@ -216,8 +216,10 @@ function do_cm_custom()
             {
                 var hexValue = "0x" + (parseInt(word).toString(16)).toUpperCase();
                 editor.replaceRange(hexValue, wordRange.anchor, wordRange.head);
-            } else
-            {
+            } else if (isHexNum(word)) {
+                var decValue =  (parseInt(word).toString(10)).toUpperCase();
+                editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
+            } else {
                 var firstSeenIdx = editor.getValue().search(new RegExp(' ' + word + '[^\\w]'));
                 if (firstSeenIdx > 0)
                 {
@@ -259,7 +261,7 @@ function do_cm_custom()
                 if (word.length > 1)
                 {
                     var lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(' ' + word + '[^\\w]'))).line;
-                    if (lineNumOfFirstDef > 0)
+                    if (lineNumOfFirstDef > 0 && lineNumOfFirstDef != editor.getCursor().line)
                     {
                         var lineOfFirstDef = editor.getLine(lineNumOfFirstDef);
                         makeTempTooltip(lineOfFirstDef.trim(), target.getBoundingClientRect(), true);
@@ -278,6 +280,11 @@ function do_cm_custom()
                     target.style.textDecoration = "underline";
                     target.style.backgroundColor = "lightgreen";
                     makeTempTooltip(number + " == 0x" + (number.toString(16)).toUpperCase(), target.getBoundingClientRect(), true);
+                } else if (isHexNum(number)) {
+                    var decNum = parseInt(number);
+                    target.style.textDecoration = "underline";
+                    target.style.backgroundColor = "lightgreen";
+                    makeTempTooltip(number + " == " + (decNum.toString(10)).toUpperCase(), target.getBoundingClientRect(), true);
                 }
             }
         }
