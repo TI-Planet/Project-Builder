@@ -115,22 +115,20 @@ var FirepadUserList = (function() {
       avatarDiv.setAttribute('data-toggle', 'tooltip');
       avatarDiv.setAttribute('data-original-title', name || 'Guest');
 
-      avatarDiv.addEventListener("mousedown", function(el) {
-        var target_div = el.target.parentElement;
-        var target_uid = target_div.getAttribute("data-uid");
-        if (target_uid <= 0)
-          return;
-        var idx = target_div.getAttribute("data-lastCursorPos");
-        var line = editor.posFromIndex(idx).line;
-        if (line > -1)
-        {
-            editor.setCursor(line, 0);
-            var cursor_line_div = document.querySelector("div.CodeMirror-activeline");
-            if (cursor_line_div)
-            {
-                cursor_line_div.scrollIntoView();
-            }
+      $(avatarDiv).on("click", function(el) {
+        window.cmMultiTargetUID = parseInt(el.target.parentElement.getAttribute("data-uid"));
+        goToTargetUIDCursor(false, function() { window.cmMultiTargetUID = 0; });
+      });
+      $(avatarDiv).on("contextmenu", function(el)
+      {
+        var newTargetUID = parseInt(el.target.parentElement.getAttribute("data-uid"));
+        if (newTargetUID == window.cmMultiTargetUID) {
+          goToTargetUIDCursor(false, function() { window.cmMultiTargetUID = 0; });
+        } else {
+          window.cmMultiTargetUID = newTargetUID;
+          goToTargetUIDCursor(true);
         }
+        return false;
       });
 
       var nameDiv = elt('div', name || 'Guest', { 'class': 'firepad-userlist-name' });
@@ -244,3 +242,48 @@ var FirepadUserList = (function() {
 
   return FirepadUserList;
 })();
+
+/* User jumping/following */
+window.cmMultiTargetUID = 0;
+function goToTargetUIDCursor(shouldFollow, cb)
+{
+  if (window.cmMultiTargetUID <= 0)
+  {
+    window.cmMultiTargetUID = 0;
+    if (typeof cb == "function") { cb() }
+    return;
+  }
+  var target_div = $('#userlist div[data-uid="' + window.cmMultiTargetUID + '"]');
+  if (target_div && target_div.length) {
+    target_div = target_div[0];
+  } else {
+    window.cmMultiTargetUID = 0;
+    if (typeof cb == "function") { cb() }
+    return;
+  }
+
+  var idx = target_div.getAttribute("data-lastCursorPos");
+  if (idx == "null") {
+    if (typeof cb == "function") { cb() }
+    return;
+  }
+  var line = editor.posFromIndex(idx).line;
+  if (line > -1)
+  {
+    editor.setCursor(line, 0);
+    var cursor_line_div = document.querySelector("div.CodeMirror-activeline");
+    if (cursor_line_div)
+    {
+      cursor_line_div.scrollIntoView();
+    }
+  }
+  if (shouldFollow && window.cmMultiTargetUID > 0) {
+    target_div.style.boxShadow = "inset 0 0 15px 0px #" + Math.floor(Math.random()*16777215).toString(16);
+    target_div.style.borderRadius = "5px";
+    setTimeout(function () { goToTargetUIDCursor(true); }, 500);
+  } else {
+    target_div.style.boxShadow = null;
+    target_div.style.borderRadius = null;
+  }
+  if (typeof cb == "function") { cb() }
+}
