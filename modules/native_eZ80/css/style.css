@@ -44,7 +44,7 @@ div.CodeMirror {
     height: 80%;
 }
 div.CodeMirror pre {
-    font-family: Menlo,Roboto,Consolas,monospace !important;
+    font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
 }
 
 .inline-lint-msg {

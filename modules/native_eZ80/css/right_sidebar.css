@@ -16,6 +16,10 @@
     display: block;
 }
 
+#emu_canvas_container, #emu_keypad_buttons {
+    margin-top: 6px;
+}
+
 #emu_canvas {
     border: 1px grey solid;
 }
@@ -28,7 +32,7 @@
 #emu_keypad_buttons button {
     width: 52px;
     height: 31px;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
     font-size: 14px;
     padding-top: 4px;
 }
@@ -42,7 +46,7 @@
     border-top: 2px grey solid;
     font-size: .9em;
     position: absolute;
-    bottom: 0;
+    bottom: 6px;
     width: 100%;
     background-color: #f0f0f0;
     height: 24px;

@@ -41,3 +41,7 @@
 .CodeMirror.cm-s-xq-light .CodeMirror-matchingbracket {
     background-color: #BBB32E !important;
 }
+
+.CodeMirror.cm-s-xq-light .CodeMirror-selected {
+    background: #9db9b9 !important;
+}
