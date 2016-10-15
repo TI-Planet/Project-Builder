@@ -26,7 +26,7 @@ function genSidebar()
 
     $isUserAuthorOfProject = $currProject->getAuthorID() === $currUser->getID();
 
-    $header = '<h2><a href="/forum/portal.php" title="TI-Planet" target="_blank"><img src="/forum/styles/prosilver/theme/images/tiplanet_header_logo.png" alt="TI-Planet" height="55"/></a>Project Builder<sup><small> ß</small></sup></h2>';
+    $header = '<h2><a href="/forum/portal.php" title="TI-Planet" target="_blank"><img src="/forum/styles/prosilver/theme/images/tiplanet_header_logo.png" alt="TI-Planet" height="55"/></a>Project Builder<sup><small> β</small></sup></h2>';
 
     $userProjects = $pb->getUserProjectsDataFromDB();
 

@@ -61,8 +61,11 @@ enableGUI = function()
     document.getElementById('emu_divider').style.display = 'block';
     document.getElementById('emu_playpause_btn').style.display = 'inline-block';
     document.getElementById('emu_reset_btn').style.display = 'inline-block';
+    var docHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    if (docHeight < 775) {
+        document.getElementById('cemu_notice').style.display = 'none';
+    }
 }
-
 disableGUI = function()
 {
     document.getElementById('varTransferDiv').style.display = 'none';
@@ -71,6 +74,7 @@ disableGUI = function()
     document.getElementById('emu_divider').style.display = 'none';
     document.getElementById('emu_playpause_btn').style.display = 'none';
     document.getElementById('emu_reset_btn').style.display = 'none';
+    document.getElementById('cemu_notice').style.display = 'inline-block';
 }
 
 fileLoaded = function(event, filename, isAutoloadedROM)
@@ -98,7 +102,7 @@ fileLoaded = function(event, filename, isAutoloadedROM)
 
             if (isAutoloadedROM)
             {
-                setTimeout(function(){ pauseEmul(true); }, 1000);
+                setTimeout(function(){ pauseEmul(true); }, 2000);
             }
         } else {
             if (emul_is_inited) {

@@ -62,8 +62,8 @@ if ($currProject->isMultiuser())
     function goToFile(newfile)
     {
         var newURL = '?id=' + proj.pid + '&file=' + newfile;
-        $.get(newURL, function(data, textStatus, jqXHR) {
-            if (typeof history.pushState === "function") { history.pushState(null, "", newURL); }
+        $.get(newURL, function(data) {
+            if (typeof window.history.pushState === "function") window.history.pushState(null, "", newURL);
             var oldConsoleContent = $("#consoletextarea").val();
             $('#editorContainer').empty().append($(data).find('#editorContainer').children());
             $("#consoletextarea").val(oldConsoleContent);

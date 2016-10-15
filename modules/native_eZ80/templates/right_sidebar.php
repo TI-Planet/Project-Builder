@@ -28,7 +28,7 @@ if (!isset($pb))
     <script src="<?= $modulePath ?>js/emu/cemu_web_utils.js"></script>
 
     <div id="emu_container" class="unselectable">
-        <br>
+
         <div id="emu_canvas_container">
             <canvas id="emu_canvas" class="emscripten" style="display:none;" oncontextmenu="event.preventDefault()" width="320" height="240"></canvas>
             <div id="screenshot_btn_container">
@@ -38,7 +38,6 @@ if (!isset($pb))
             </div>
         </div>
 
-        <br>
         <div id="emu_keypad_buttons" style="display:none;">
             <script>
                 var keypad = [
@@ -64,7 +63,7 @@ if (!isset($pb))
                 }
             </script>
         </div>
-        <hr id="emu_divider" style="margin:12px;display:none;"/>
+        <hr id="emu_divider" style="margin:8px;display:none;"/>
         <div>
             <button id="emu_playpause_btn" class="btn btn-default btn-sm" style="display:none;" onclick="pauseEmul(!emul_is_paused)"><span id="pauseButtonIcon" class="glyphicon glyphicon-pause"></span> <span id="pauseButtonLabel">Pause</span> emulation </button>
             <button id="emu_reset_btn" class="btn btn-default btn-sm" style="display:none;" onclick="resetEmul()"><span class="glyphicon glyphicon-asterisk"></span> Reset calculator </button>

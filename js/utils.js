@@ -163,11 +163,8 @@ function removeClass(el, className) {
 /*******************/
 
 // The PB needs a reasonable screen size, warn mobile users
-
-var docWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-var docHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 var isMobile = navigator.userAgent.match(/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|bo‌​ost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i);
-if (isMobile || docWidth<1024 || docHeight < 550)
+if (isMobile || screen.width<1024 || screen.height < 550)
 {
     function dispMobile()
     {
