@@ -270,11 +270,21 @@ function goToTargetUIDCursor(shouldFollow, cb)
   var line = editor.posFromIndex(idx).line;
   if (line > -1)
   {
+    var moved = false;
+    if (line > 10)
+    {
+      moved = true;
+      line -= 10; // give some space above it.
+    }
     editor.setCursor(line, 0);
     var cursor_line_div = document.querySelector("div.CodeMirror-activeline");
     if (cursor_line_div)
     {
       cursor_line_div.scrollIntoView();
+    }
+    if (moved)
+    {
+      editor.setCursor(line+10, 0);
     }
   }
   if (shouldFollow && window.cmMultiTargetUID > 0) {
