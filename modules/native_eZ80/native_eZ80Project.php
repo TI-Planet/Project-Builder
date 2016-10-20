@@ -28,9 +28,9 @@ class native_eZ80Project extends Project
     private $backend;
     private $availableFiles;
 
-    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime)
+    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
-        parent::__construct($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $cTime, $uTime);
+        parent::__construct($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
 
         $this->currentFile = 'main.c'; // default
 

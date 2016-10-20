@@ -45,7 +45,7 @@ abstract class Project
     protected $projDirectory;
     protected $currentFile;
 
-    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $uTime, $cTime)
+    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)
     {
         if (!is_int($db_id))
         {
