@@ -181,7 +181,7 @@ function buildAndRunInEmu()
     {
         buildAndGetLog(function ()
         {
-            ajaxGetArrayBuffer("ActionHandler.php", $("form").serialize(), function (file)
+            ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), function (file)
             {
                 pauseEmul(false);
                 fileLoad(new Blob([file], {type: "application/octet-stream"}), proj.prgmName + ".8xp", false);
