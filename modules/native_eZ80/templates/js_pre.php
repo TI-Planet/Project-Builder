@@ -62,6 +62,12 @@ if ($currProject->isMultiuser())
     function goToFile(newfile)
     {
         var newURL = '?id=' + proj.pid + '&file=' + newfile;
+
+        document.onunload = null;
+        window.location.href = newURL;
+
+        /* DISABLED UNTIL MULTI-USER CLEARING BUG FIXED
+
         $.get(newURL, function(data) {
             if (typeof window.history.pushState === "function") window.history.pushState(null, "", newURL);
             var oldConsoleContent = $("#consoletextarea").val();
@@ -74,6 +80,7 @@ if ($currProject->isMultiuser())
             do_cm_custom();
             init_post_js_2(true);
         });
+        */
     }
 </script>
 
