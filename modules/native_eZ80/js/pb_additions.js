@@ -51,6 +51,12 @@ function changePrgmName()
     }
 }
 
+function downloadZipExport()
+{
+    // nothing else to do?
+    document.getElementById('zipDlForm').submit();
+}
+
 function renameFile(oldName)
 {
     $('.tooltip').hide();

@@ -49,6 +49,13 @@ if (!isset($pb))
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
     <?php } ?>
+    <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
+        <form id="zipDlForm" action="ActionHandler.php" method="POST">
+            <input type="hidden" name="id" value="<?= $projectID ?>">
+            <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
+            <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
+        </form>
+    <?php } ?>
 
     <?php if (!$currProject->isMulti_ReadWrite())
         echo '<div class="firepad">';
@@ -72,7 +79,16 @@ if (!isset($pb))
                 <li title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
             </ul>
         </div>
-        <button id="builddlButton" class="btn btn-primary btn-sm" onclick="buildAndDownload(); return false" title="Build and download the program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <div class="btn-group">
+            <button id="builddlButton" class="btn btn-primary btn-sm" onclick="buildAndDownload(); return false" title="Build and download the program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download .8xp <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+            <button id="zipDlCaretButton" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li title="Download the project's source code files in a .zip archive"><a onclick="downloadZipExport(); return false">Download project as .zip</a></li>
+            </ul>
+        </div>
         <button id="buildRunButton" class="btn btn-primary btn-sm" onclick="buildAndRunInEmu(); return false" title="Build and run the program in the emulator"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Test in emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div id="buildTimestampContainer" class="hidden"><b>Latest build</b>: <span id="buildTimestamp"></span></div>
         <?php } ?>
