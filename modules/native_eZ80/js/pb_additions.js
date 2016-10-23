@@ -284,6 +284,18 @@ function buildAndGetLog(callback)
 
             savedSinceLastChange = true;
 
+            if (asmBeingShown) {
+                var oldCursor = editor.getCursor();
+                dispSrc();
+                dispSrc(function() {
+                    editor.setCursor(oldCursor);
+                    var cursor_line_div = document.querySelector("div.CodeMirror-activeline");
+                    if (cursor_line_div) {
+                        cursor_line_div.scrollIntoView();
+                    }
+                });
+            }
+
             // Call cppcheck
             ajax("ActionHandler.php", "id="+proj.pid + "&action=getCheckLog", function(result) {
                 build_check = parseCheckLog(JSON.parse(result));

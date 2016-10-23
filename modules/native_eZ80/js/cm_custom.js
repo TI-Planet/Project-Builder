@@ -43,7 +43,7 @@ function do_cm_custom()
         }
     });
 
-    dispSrc = function()
+    dispSrc = function(callback)
     {
         var i;
 
@@ -57,6 +57,10 @@ function do_cm_custom()
             editor.focus();
 
             $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
+
+            if (typeof callback === "function") {
+                callback();
+            }
             return;
         }
         ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=getCurrentSrc", function(data) {
@@ -65,6 +69,9 @@ function do_cm_custom()
                 asmBeingShown = false;
                 $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
                 alert("There is no ASM file for this C source.\nHave you built the project yet?");
+                if (typeof callback === "function") {
+                    callback();
+                }
             } else {
                 asmBeingShown = true;
                 $("#asmToggleButton").css('background-color', '#CACBC7').parent().attr('title', 'Click to hide ASM').tooltip('fixTitle').tooltip('show');
@@ -130,6 +137,10 @@ function do_cm_custom()
 
                 editor.refresh();
                 editor.focus();
+
+                if (typeof callback === "function") {
+                    callback();
+                }
             }
         });
     };
