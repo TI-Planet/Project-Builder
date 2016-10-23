@@ -22,6 +22,20 @@ function do_cm_custom()
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    editor.removeKeyMap("Ctrl-D");
+
+    var dupLine = function (cm)
+    {
+        var doc = cm.getDoc();
+        var cursor = doc.getCursor();
+        var line = doc.getLine(cursor.line);
+        var pos = {
+            line: cursor.line,
+            ch: line.length
+        };
+        doc.replaceRange('\n' + line, pos);
+    };
+
     editor.addKeyMap({
         "Tab": function (cm)
         {
@@ -40,7 +54,9 @@ function do_cm_custom()
         "Shift-Tab": function (cm)
         {
             cm.indentSelection("subtract");
-        }
+        },
+        "Ctrl-D": dupLine, "Cmd-D": dupLine,
+        "Shift-Ctrl-D": function(cm) { cm.execCommand("deleteLine") }, "Shift-Cmd-D": function(cm) { cm.execCommand("deleteLine") }
     });
 
     dispSrc = function(callback)
