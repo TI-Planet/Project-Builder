@@ -16,7 +16,7 @@
 
 namespace ProjectBuilder;
 
-require_once "Project.php";
+require_once 'Project.php';
 
 class ProjectFactory
 {
@@ -42,9 +42,9 @@ class ProjectFactory
      */
     public static function create($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
-        if (!in_array($type, self::$projectTypes))
+        if (!in_array($type, self::$projectTypes, true))
         {
-            throw new \InvalidArgumentException("Project type must be one of " . json_encode(self::$projectTypes));
+            throw new \InvalidArgumentException('Project type must be one of ' . json_encode(self::$projectTypes));
         }
 
         $customClassName = "{$type}Project";
@@ -62,7 +62,7 @@ class ProjectFactory
                 return null;
             }
         } else {
-            throw new \Exception("Internal error: couldn't find the module class");
+            throw new \RuntimeException("Internal error: couldn't find the module class");
         }
     }
 }

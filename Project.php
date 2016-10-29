@@ -21,7 +21,7 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 // For possible types
-require_once "ProjectFactory.php";
+require_once 'ProjectFactory.php';
 
 abstract class Project
 {
@@ -53,35 +53,35 @@ abstract class Project
         }
         if (!is_string($randKey) || preg_match("/^[a-zA-Z0-9]{10}$/", $randKey) !== 1)
         {
-            throw new \InvalidArgumentException("Rand key is invalid");
+            throw new \InvalidArgumentException('Rand key is invalid');
         }
         if ($author === null)
         {
             throw new \InvalidArgumentException("Author can't be null");
         }
-        if (!in_array($type, ProjectFactory::$projectTypes))
+        if (!in_array($type, ProjectFactory::$projectTypes, true))
         {
-            throw new \InvalidArgumentException("Project type must be one of " . json_encode(ProjectFactory::$projectTypes));
+            throw new \InvalidArgumentException('Project type must be one of ' . json_encode(ProjectFactory::$projectTypes));
         }
         if (!is_bool($multiuser))
         {
-            throw new \InvalidArgumentException("multiuser must be a boolean");
+            throw new \InvalidArgumentException('multiuser must be a boolean');
         }
         if (!is_bool($wantReadWrite))
         {
-            throw new \InvalidArgumentException("wantReadWrite must be a boolean");
+            throw new \InvalidArgumentException('wantReadWrite must be a boolean');
         }
         if (!is_bool($chatEnabled))
         {
-            throw new \InvalidArgumentException("chatEnabled must be a boolean");
+            throw new \InvalidArgumentException('chatEnabled must be a boolean');
         }
         if (!is_int($cTime) || strlen((string)$cTime) !== 10)
         {
-            throw new \InvalidArgumentException("Creation timestamp must be an unix timestamp (10 digits unsigned int)");
+            throw new \InvalidArgumentException('Creation timestamp must be an unix timestamp (10 digits unsigned int)');
         }
         if (!is_int($uTime) || strlen((string)$uTime) !== 10)
         {
-            throw new \InvalidArgumentException("Update timestamp must be an unix timestamp (10 digits unsigned int)");
+            throw new \InvalidArgumentException('Update timestamp must be an unix timestamp (10 digits unsigned int)');
         }
 
         $this->db_id = $db_id;
@@ -104,7 +104,7 @@ abstract class Project
     /****************************************************/
 
     /**
-     * @return string
+     * @return int
      */
     public function getDBID()
     {
@@ -263,7 +263,7 @@ abstract class Project
 
     public function doUserAction(UserInfo $user, array $params = [])
     {
-        return "[Error] Nothing to see here...";
+        return '[Error] Nothing to see here...';
     }
 
 }

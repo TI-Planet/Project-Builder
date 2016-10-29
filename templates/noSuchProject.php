@@ -18,7 +18,7 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 ?><!DOCTYPE html>
 <html>

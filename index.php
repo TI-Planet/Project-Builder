@@ -16,7 +16,7 @@
 
 namespace ProjectBuilder;
 
-require "ProjectManager.php";
+require 'ProjectManager.php';
 
 $projectID = (isset($_GET['id']) && !empty($_GET['id'])) ? $_GET['id'] : null;
 $fileName = (isset($_GET['file']) && !empty($_GET['file'])) ? $_GET['file'] : null;
@@ -32,7 +32,7 @@ if ($pb->getCurrentUser()->getID() !== 1381) {
 */
 
 // The PB needs a reasonable screen size, warn the mobile users
-$isMobile = preg_match("/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|bo‌​ost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+$isMobile = preg_match('/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|bo‌​ost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i', $_SERVER['HTTP_USER_AGENT']);
 if ($isMobile === 1)
 {
     echo "<!DOCTYPE html>
@@ -74,12 +74,12 @@ if ($projectID !== null)
 {
     if ($pb->hasValidCurrentProject())
     {
-        require "templates/existingProject.php";
+        require 'templates/existingProject.php';
     } else {
-        require "templates/noSuchProject.php";
+        require 'templates/noSuchProject.php';
     }
 } else {
-    $wantNew = isset($_GET['new']) && $_GET['new'] == 1;
+    $wantNew = isset($_GET['new']) && (int)$_GET['new'] === 1;
 
     if ($wantNew) {
         /******** CSRF Token stuff ********/
@@ -87,16 +87,16 @@ if ($projectID !== null)
         {
             if ($_GET['csrf_token'] !== $pb->getCurrentUser()->getSID())
             {
-                header("HTTP/1.0 401 Unauthorized");
-                die(json_encode("[Error] Your session has expired - please re-login."));
+                header('HTTP/1.0 401 Unauthorized');
+                die(json_encode('[Error] Your session has expired - please re-login.'));
             }
         } else {
-            header("HTTP/1.0 401 Unauthorized");
+            header('HTTP/1.0 401 Unauthorized');
             die(json_encode("[Error] Your session isn't recognized - please [re]login."));
         }
         /******** CSRF Token stuff ********/
 
-        require "templates/newOrLoadProject.php";
+        require 'templates/newOrLoadProject.php';
     } else
     {
         $userProjects = $pb->getUserProjectsDataFromDB(1);
@@ -108,7 +108,7 @@ if ($projectID !== null)
             header('Location: ' . $url);
             die();
         } else {
-            require "templates/newOrLoadProject.php";
+            require 'templates/newOrLoadProject.php';
         }
     }
 }

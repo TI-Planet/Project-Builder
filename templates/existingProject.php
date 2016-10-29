@@ -18,14 +18,14 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 
 // Globals usable in the templates
 $currUser = $pb->getCurrentUser();
 $currProject = $pb->getCurrentProject();
-$modulePath = "modules/" . $currProject->getType() . "/";
-$templatePath = $modulePath . "templates/";
+$modulePath = 'modules/' . $currProject->getType() . '/';
+$templatePath = $modulePath . 'templates/';
 $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES);
 
 ?><!DOCTYPE html>
@@ -40,7 +40,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/main.css">
 
-<?php include $templatePath . "css.php"; ?>
+<?php include $templatePath . 'css.php'; ?>
 
     <link rel="stylesheet" data-href="css/dark.css" class="darkThemeLink">
 
@@ -54,7 +54,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 
     <script>window.CSRFToken = '<?= $currUser->getSID() ?>';</script>
 
-<?php include $templatePath . "js_pre.php"; ?>
+<?php include $templatePath . 'js_pre.php'; ?>
 
 </head>
 <body>
@@ -62,13 +62,13 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 <div id="contentcontainer">
 
     <div id="leftSidebar">
-        <?php require "sidebar.php"; ?>
+        <?php require 'sidebar.php'; ?>
     </div>
     <div id="leftSidebarToggle" class="sidebarToggle" onclick="toggleLeftSidebar();"></div>
 
     <div id="rightSidebar">
         <div id="rightSidebarContent">
-            <?php include $templatePath . "right_sidebar.php"; ?>
+            <?php include $templatePath . 'right_sidebar.php'; ?>
         </div>
     </div>
     <div id="rightSidebarToggle" class="sidebarToggle" onclick="toggleRightSidebar();"></div>
@@ -76,15 +76,15 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 
     <div id="editorContainer" class="wrapper">
         <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?></h3>
-        <?php require $templatePath . "body.php"; ?>
+        <?php require $templatePath . 'body.php'; ?>
     </div>
 
 </div>
 
-<?php include $templatePath . "js_post.php"; ?>
+<?php include $templatePath . 'js_post.php'; ?>
 
     <script>
-        <?php if ($currProject->getAuthorID() == $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
         window.onbeforeunload = function() {
             if (!savedSinceLastChange)
             {
@@ -95,7 +95,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
         loadProjConfig();
     </script>
 
-<?php include $templatePath . "js_afterConfInit.php"; ?>
+<?php include $templatePath . 'js_afterConfInit.php'; ?>
 
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

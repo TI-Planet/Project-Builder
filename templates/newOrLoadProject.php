@@ -18,7 +18,7 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 
     // TODO : create (from modules) or load (get user's projects list from DB)
@@ -30,7 +30,7 @@ if (!isset($pb))
     {
         $projID = $proj->getID();
 
-        $baseURL = "https://" . $_SERVER['SERVER_NAME'] . strtok($_SERVER["REQUEST_URI"], '?') . "?id={$projID}";
+        $baseURL = 'https://' . $_SERVER['SERVER_NAME'] . strtok($_SERVER['REQUEST_URI'], '?') . "?id={$projID}";
         header("Location: {$baseURL}&file=main.c");
         die();
     }

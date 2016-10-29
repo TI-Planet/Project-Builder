@@ -27,17 +27,17 @@ class UserInfo
 
     public function __construct($id, $sid, $name, $avatarURL = '', $isAnonymous = true, $isModeratorOrMore = false)
     {
-        if (!isset($id) || !is_int($id) || $id < 0)
+        if (!is_int($id) || $id < 0)
         {
-            die("User ID must be an unsigned integer");
+            die('User ID must be an unsigned integer');
         }
-        if (!isset($sid) || !is_string($sid) || empty($sid))
+        if (!is_string($sid) || empty($sid))
         {
-            die("Session ID must be a string");
+            die('Session ID must be a string');
         }
-        if (!isset($name) || !is_string($name))
+        if (!is_string($name))
         {
-            die("User name must be a string");
+            die('User name must be a string');
         }
 
         $this->id = $id;

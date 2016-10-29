@@ -46,7 +46,7 @@ function genSidebar()
         $content .= '<u>Type</u>: ' . $currProject->getType();
         $content .= '</br><u>Created</u>: ' . "<script>var d = new Date({$currProject->getCreatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
         $content .= '</br><u>Updated</u>: ' . "<script>var d = new Date({$currProject->getUpdatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
-        $content .= '</br><u>Shared</u>: ' . ($currProject->isMultiuser() ? ("Yes (" . ($currProject->isMulti_ReadWrite() ? "Read/Write" : "Read only") .")") : ("No. Share: "));
+        $content .= '</br><u>Shared</u>: ' . ($currProject->isMultiuser() ? ('Yes (' . ($currProject->isMulti_ReadWrite() ? 'Read/Write' : 'Read only') . ')') : 'No. Share: ');
         if ($currProject->getAuthorID() === $currUser->getID())
         {
             if ($currProject->isMultiuser()) {
@@ -83,7 +83,7 @@ function genSidebar()
         foreach ($userProjects as $project)
         {
             // TODO: Use name and icon
-            if ($project->id != $currProject->getDBID())
+            if ($currProject && (int)$project->id !== $currProject->getDBID())
             {
                 $content .= "<li><a href='/pb/?id={$currUser->getID()}_{$project->created}_{$project->randkey}'>{$project->internal_name}</a> <small><i>({$project->type})</i></small></li>";
             } else {
@@ -96,7 +96,7 @@ function genSidebar()
     }
     $content .= '</div>';
 
-    if ($currProject->isMultiuser() && $currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) {
+    if ($currProject && $currProject->isMultiuser() && $currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) {
         $content .= '<div id="firechat-wrapper"></div>';
     }
 
