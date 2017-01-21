@@ -104,7 +104,7 @@ function genSidebar()
                     <span class="themeToggle">
                         <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Dark mode</button>
                     </span>
-                    <span class="copyright">PB &copy; 2015-2016 "Adriweb"</span>
+                    <span class="copyright">PB &copy; 2015-2017 "Adriweb"</span>
                 </div>';
 
     return $header . $content;

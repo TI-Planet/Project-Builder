@@ -245,7 +245,8 @@ function buildAndGetLog(callback)
     var cleanButton = document.getElementById('cleanButton');
     var builddlButton = document.getElementById('builddlButton');
     var buildRunButton = document.getElementById('buildRunButton');
-    cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = true;
+    var zipDlCaretButton = document.getElementById('zipDlCaretButton');
+    cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = true;
     removeClass(buildButton.children[1], "hidden");
 
     saveFile(function() {
@@ -301,7 +302,7 @@ function buildAndGetLog(callback)
                 build_check = parseCheckLog(JSON.parse(result));
                 updateHints(false);
                 addClass(buildButton.children[1], "hidden");
-                cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = false;
+                cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = false;
             });
         });
     });

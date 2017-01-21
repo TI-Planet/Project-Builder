@@ -1,4 +1,10 @@
-var Module = { 'memoryInitializerPrefixURL':'modules/native_eZ80/js/emu/', 'preRun': function() {
+var Module;
+// From emscripten: in order to reference the preexisting Module var or create it if needed.
+if (!Module) Module = (typeof Module !== 'undefined' ? Module : null) || {};
+
+Module['memoryInitializerPrefixURL'] = '/pb/modules/native_eZ80/js/emu/';
+
+Module['preRun'] = function() {
 
 emul_is_inited = false;
 emul_is_paused = false;
@@ -175,4 +181,3 @@ fileLoadFromInput = function(event)
 }
 
 } // preRun function
-} // Module
