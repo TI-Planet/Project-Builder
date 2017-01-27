@@ -18,7 +18,7 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
@@ -29,7 +29,7 @@ if (!isset($pb))
             <?= $currProject->getFileListHTML(); ?>
             <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite())
             {
-                if ($currProject->getCurrentFile() !== "main.c")
+                if ($currProject->getCurrentFile() !== 'main.c')
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
@@ -57,13 +57,9 @@ if (!isset($pb))
         </form>
     <?php } ?>
 
-    <?php if (!$currProject->isMulti_ReadWrite())
-        echo '<div class="firepad">';
-    ?>
+    <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
     <textarea id="codearea"></textarea>
-    <?php if (!$currProject->isMulti_ReadWrite())
-        echo '</div>';
-    ?>
+    <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
 
     <div class='subfirepad'>
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>

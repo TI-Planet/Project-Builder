@@ -18,14 +18,14 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 /** @var \ProjectBuilder\native_eZ80Project $currProject */
 
 if ($currProject->isMultiuser())
 {
     /* TODO: Maybe put this stuff into the UserInfo class... */
-    require_once "firebase/firebase.php";
+    require_once 'firebase/firebase.php';
     $firebase_token = getOrGenerateFirebaseTokenForUID($currUser->getID());
 } else {
     $firebase_token = '';

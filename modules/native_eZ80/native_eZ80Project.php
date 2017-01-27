@@ -34,7 +34,7 @@ class native_eZ80Project extends Project
 
         $this->currentFile = 'main.c'; // default
 
-        $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . "*.*")), __CLASS__ . '::isFileNameOK');
+        $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . '*.*')), __CLASS__ . '::isFileNameOK');
         $this->availableFiles = array_unique(array_merge($this->availableFiles, ['main.c']));
         sort($this->availableFiles);
     }
@@ -84,7 +84,7 @@ class native_eZ80Project extends Project
                 list(, $nameNoExtCurr, ) = $matches;
                 preg_match(self::REGEXP_GOOD_FILE_PATTERN, $this->availableFiles[$i+1], $matches);
                 list(, $nameNoExtNext, ) = $matches;
-                if ($nameNoExtCurr == $nameNoExtNext) {
+                if ($nameNoExtCurr === $nameNoExtNext) {
                     $counterpartClass = 'counterpart';
                 }
             }
@@ -126,7 +126,7 @@ class native_eZ80Project extends Project
      */
     public function setCurrentFile($name)
     {
-        if (is_string($name) && $this->isFileNameOK($name))
+        if (is_string($name) && static::isFileNameOK($name))
         {
             if (file_exists($this->projDirectory . $name))
             {
@@ -145,7 +145,7 @@ class native_eZ80Project extends Project
      */
     public function setInternalName($prgmName)
     {
-        if (is_string($prgmName) && $this->isPrgmNameOK($prgmName))
+        if (is_string($prgmName) && static::isPrgmNameOK($prgmName))
         {
             $this->internalName = $prgmName;
             return true;
@@ -161,7 +161,7 @@ class native_eZ80Project extends Project
     public function doUserAction(UserInfo $user, array $params = [])
     {
         // handle actions that don't need calling the internal backend but aren't global.
-        require_once "internal/builder.php";
+        require_once 'internal/builder.php';
         $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
         return $this->backend->doUserAction($user, $params);
     }

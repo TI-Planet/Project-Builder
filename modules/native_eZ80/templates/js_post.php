@@ -18,7 +18,7 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 

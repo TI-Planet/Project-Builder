@@ -18,7 +18,7 @@
    This page should not be called directly. */
 if (!isset($pb))
 {
-    die("Ahem ahem");
+    die('Ahem ahem');
 }
 /** @var \ProjectBuilder\native_eZ80Project $currProject */
 
@@ -33,7 +33,7 @@ if (!isset($pb))
             <canvas id="emu_canvas" class="emscripten" style="display:none;" oncontextmenu="event.preventDefault()" width="320" height="240"></canvas>
             <div id="screenshot_btn_container">
                 <a target="_blank" download="<?php echo 'screenshot_' . $currProject->getInternalName() . '.png' ?>" class="btn btn-default btn-sm" onclick="emu_screenshot(this)">
-                    <i class="glyphicon glyphicon-camera"></i> Screenshot</button>
+                    <i class="glyphicon glyphicon-camera"></i> Screenshot
                 </a>
             </div>
         </div>
