@@ -167,10 +167,10 @@ function toggleRightSidebar(delay)
 
 function toggleDarkTheme()
 {
-    proj.use_dark = !proj.use_dark;
-    saveProjConfig();
     $(".darkThemeLink").each(function(idx, el) {
         var darkThemeLink = $(el);
         darkThemeLink.attr("href", darkThemeLink.attr("href") ? "" : darkThemeLink.data("href"));
     });
+    proj.use_dark = !!($(".darkThemeLink").attr('href'));
+    saveProjConfig();
 }
