@@ -24,26 +24,24 @@ function do_cm_custom()
 
     editor.removeKeyMap("Ctrl-D");
 
-    var dupLine = function (cm)
-    {
-        var doc = cm.getDoc();
-        var cursor = doc.getCursor();
-        var line = doc.getLine(cursor.line);
-        var pos = {
+    const dupLine = cm => {
+        const doc = cm.getDoc();
+        const cursor = doc.getCursor();
+        const line = doc.getLine(cursor.line);
+        const pos = {
             line: cursor.line,
             ch: line.length
         };
-        doc.replaceRange('\n' + line, pos);
+        doc.replaceRange(`\n${line}`, pos);
     };
 
     editor.addKeyMap({
-        "Tab": function (cm)
-        {
+        "Tab"(cm) {
             if (cm.somethingSelected())
             {
-                var sel = editor.getSelection("\n");
+                const sel = editor.getSelection("\n");
                 // Indent only if there are multiple lines selected, or if the selection spans a full line
-                if (sel.length > 0 && (sel.indexOf("\n") > -1 || sel.length === cm.getLine(cm.getCursor().line).length))
+                if (sel.length > 0 && (sel.includes("\n") || sel.length === cm.getLine(cm.getCursor().line).length))
                 {
                     cm.indentSelection("add");
                     return;
@@ -51,17 +49,15 @@ function do_cm_custom()
             }
             cm.execCommand(cm.options.indentWithTabs ? "insertTab" : "insertSoftTab");
         },
-        "Shift-Tab": function (cm)
-        {
+        "Shift-Tab"(cm) {
             cm.indentSelection("subtract");
         },
         "Ctrl-D": dupLine, "Cmd-D": dupLine,
-        "Shift-Ctrl-D": function(cm) { cm.execCommand("deleteLine") }, "Shift-Cmd-D": function(cm) { cm.execCommand("deleteLine") }
+        "Shift-Ctrl-D"(cm) { cm.execCommand("deleteLine") }, "Shift-Cmd-D"(cm) { cm.execCommand("deleteLine") }
     });
 
-    dispSrc = function(callback)
-    {
-        var i;
+    dispSrc = callback => {
+        let i;
 
         if (asmBeingShown === true) {
             asmBeingShown = false;
@@ -79,7 +75,7 @@ function do_cm_custom()
             }
             return;
         }
-        ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=getCurrentSrc", function(data) {
+        ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=getCurrentSrc`, data => {
             if (data === "null")
             {
                 asmBeingShown = false;
@@ -94,15 +90,15 @@ function do_cm_custom()
 
                 data = data.replace("\\r", "");
                 data = JSON.parse(data);
-                var allSrcLines = data.split("\n");
+                const allSrcLines = data.split("\n");
 
-                var linesForC = { '0':[] }; // format: key = C line (start). value = [ asm lines... ].
-                var currKey = '0';
+                const linesForC = { '0':[] }; // format: key = C line (start). value = [ asm lines... ].
+                let currKey = '0';
 
                 for (i=0; i<allSrcLines.length; i++)
                 {
-                    var line = allSrcLines[i];
-                    var matchesNewCLine = line.match(/^;\s+(\d+)\t/);
+                    const line = allSrcLines[i];
+                    const matchesNewCLine = line.match(/^;\s+(\d+)\t/);
                     if (matchesNewCLine && matchesNewCLine.length >= 1)
                     {
                         // New C line found. Let's process the previous range
@@ -125,26 +121,26 @@ function do_cm_custom()
                 }
                 lineWidgetsAsm.length = 0;
 
-                for (var key in linesForC)
+                for (const key in linesForC)
                 {
                     if (!linesForC.hasOwnProperty(key) || key === '0') continue;
 
-                    var lines = linesForC[key];
+                    const lines = linesForC[key];
 
-                    var valueChunk = "<pre style='padding:4px;line-height:.65em;'><code>";
-                    for (var asmLineIdx in lines)
+                    let valueChunk = "<pre style='padding:4px;line-height:.65em;'><code>";
+                    for (const asmLineIdx in lines)
                     {
                         if (!lines.hasOwnProperty(asmLineIdx) || lines[asmLineIdx][0] === ";") continue;
 
-                        var trimmedLine = lines[asmLineIdx].trim();
+                        const trimmedLine = lines[asmLineIdx].trim();
                         if (trimmedLine.indexOf("XREF") === 0 || trimmedLine.indexOf("XDEF") === 0 || trimmedLine.indexOf("END") === 0) {
                             continue;
                         }
-                        valueChunk += lines[asmLineIdx].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</br>";
+                        valueChunk += `${lines[asmLineIdx].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</br>`;
                     }
                     valueChunk = valueChunk.slice(0, -1); // remove extra newline at the end
                     valueChunk += "</code></pre>";
-                    var msg = document.createElement("div");
+                    const msg = document.createElement("div");
                     msg.innerHTML = valueChunk;
                     msg.className = "inline-asm";
 
@@ -161,36 +157,33 @@ function do_cm_custom()
         });
     };
 
-    addIconToFileTab = function(filename, errtype)
-    {
-        $("div.filelist span.filename:contains('" + filename + "')").each(function(idx, el) {
-            $(el).next().html('<span class="glyphicon glyphicon-' + (errtype == 'error' ? 'exclamation-sign' : 'alert') + '"></span>');
+    addIconToFileTab = (filename, errtype) => {
+        $(`div.filelist span.filename:contains('${filename}')`).each((idx, el) => {
+            $(el).next().html(`<span class="glyphicon glyphicon-${errtype == 'error' ? 'exclamation-sign' : 'alert'}"></span>`);
         });
     };
 
-    updateHints = function(silent)
-    {
-        editor.operation(function ()
-        {
-            var i;
+    updateHints = silent => {
+        editor.operation(() => {
+            let i;
             for (i = 0; i < widgets.length; ++i)
             {
                 editor.removeLineWidget(widgets[i]);
             }
             widgets.length = 0;
 
-            var combined_logs = build_output.concat(build_check);
+            const combined_logs = build_output.concat(build_check);
 
             if (combined_logs.length)
             {
                 $(".fileTabIconContainer").empty();
             }
-            var linesProcessed = [];
-            var errOnOtherFiles = false;
+            const linesProcessed = [];
+            let errOnOtherFiles = false;
             for (i = 0; i < combined_logs.length; ++i)
             {
-                var err = combined_logs[i];
-                if (!err || linesProcessed.indexOf(err.line) > -1)
+                const err = combined_logs[i];
+                if (!err || linesProcessed.includes(err.line))
                     continue;
 
                 addIconToFileTab(err.file.toLowerCase(), err.type);
@@ -201,13 +194,13 @@ function do_cm_custom()
                     continue;
                 }
 
-                var msg = document.createElement("div");
-                var icon = msg.appendChild(document.createElement("span"));
+                const msg = document.createElement("div");
+                const icon = msg.appendChild(document.createElement("span"));
                 icon.innerHTML = (err.type === "error") ? "!!" : "?";
                 icon.className = (err.type === "error") ? "lint-error-icon" : "lint-warning-icon";
-                var tmp = document.createElement("span");
+                const tmp = document.createElement("span");
                 tmp.style['margin-left'] = '12px';
-                tmp.innerHTML = "<pre class='inline-lint-msg'>" + (" ").repeat(Math.max(0, err.col - 2)) + "</pre>" + (err.col > 0 ? "<b>↑</b> " : "") + err.text;
+                tmp.innerHTML = `<pre class='inline-lint-msg'>${(" ").repeat(Math.max(0, err.col - 2))}</pre>${err.col > 0 ? "<b>↑</b> " : ""}${err.text}`;
                 msg.appendChild(tmp);
                 msg.className = "lint-error";
                 widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true}));
@@ -220,8 +213,8 @@ function do_cm_custom()
                 alert("Warnings/Errors have been found in other files, please check them.");
             }
         });
-        var info = editor.getScrollInfo();
-        var after = editor.charCoords({
+        const info = editor.getScrollInfo();
+        const after = editor.charCoords({
             line: editor.getCursor().line + 1,
             ch: 0
         }, "local").top;
@@ -231,26 +224,25 @@ function do_cm_custom()
         }
     };
 
-    editor.on("mousedown", function (cm, e)
-    {
+    editor.on("mousedown", (cm, e) => {
         if (e.ctrlKey || e.metaKey)
         {
             e.preventDefault(); // Don't move the cursor there
-            var clickPos = editor.coordsChar({left: e.clientX, top: e.clientY});
-            var wordRange = editor.findWordAt(clickPos);
-            var word = editor.getRange(wordRange.anchor, wordRange.head);
+            const clickPos = editor.coordsChar({left: e.clientX, top: e.clientY});
+            const wordRange = editor.findWordAt(clickPos);
+            const word = editor.getRange(wordRange.anchor, wordRange.head);
             if (isNumeric(word))
             {
-                var hexValue = "0x" + (parseInt(word).toString(16)).toUpperCase();
+                const hexValue = `0x${(parseInt(word).toString(16)).toUpperCase()}`;
                 editor.replaceRange(hexValue, wordRange.anchor, wordRange.head);
             } else if (isHexNum(word)) {
-                var decValue =  (parseInt(word).toString(10)).toUpperCase();
+                const decValue =  (parseInt(word).toString(10)).toUpperCase();
                 editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
             } else {
-                var firstSeenIdx = editor.getValue().search(new RegExp(' ' + word + '[^\\w]'));
+                const firstSeenIdx = editor.getValue().search(new RegExp(` ${word}[^\\w]`));
                 if (firstSeenIdx > 0)
                 {
-                    var firstSeenPos = editor.posFromIndex(firstSeenIdx);
+                    const firstSeenPos = editor.posFromIndex(firstSeenIdx);
                     if (firstSeenPos.line != clickPos.line)
                     {
                         editor.setCursor(firstSeenPos);
@@ -262,64 +254,61 @@ function do_cm_custom()
     });
 
 
-    highlightedWordMouseLeaveHandler = function (evt)
-    {
+    highlightedWordMouseLeaveHandler = evt => {
         editor.currentHighlightedWord.style.textDecoration = "initial";
         editor.currentHighlightedWord.style.backgroundColor = "initial";
         editor.currentHighlightedWord.style.cursor = "initial";
         clearTooltip();
     };
 
-    myMouseOverHandler = function (evt)
-    {
+    myMouseOverHandler = evt => {
         if (evt.ctrlKey || evt.metaKey)
         {
-            var target = evt.target;
-            if (target.innerText != "asm" && target.className.indexOf("cm-variable") >= 0)
+            const target = evt.target;
+            if (target.innerText != "asm" && target.className.includes("cm-variable"))
             {
                 editor.currentHighlightedWord = target;
                 target.style.textDecoration = "underline";
                 target.style.backgroundColor = "lightcyan";
                 target.style.cursor = "pointer";
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
-                var clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
-                var wordRange = editor.findWordAt(clickPos);
-                var word = editor.getRange(wordRange.anchor, wordRange.head);
+                const clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
+                const wordRange = editor.findWordAt(clickPos);
+                const word = editor.getRange(wordRange.anchor, wordRange.head);
                 if (word.length > 1)
                 {
-                    var lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(' ' + word + '[^\\w]'))).line;
+                    const lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(` ${word}[^\\w]`))).line;
                     if (lineNumOfFirstDef > 0 && lineNumOfFirstDef != editor.getCursor().line)
                     {
-                        var lineOfFirstDef = editor.getLine(lineNumOfFirstDef);
+                        const lineOfFirstDef = editor.getLine(lineNumOfFirstDef);
                         makeTempTooltip(lineOfFirstDef.trim(), target.getBoundingClientRect(), true);
                     }
                 }
-            } else if (target.className.indexOf("cm-number") >= 0)
+            } else if (target.className.includes("cm-number"))
             {
                 editor.currentHighlightedWord = target;
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
-                var clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
-                var wordRange = editor.findWordAt(clickPos);
-                var number = editor.getRange(wordRange.anchor, wordRange.head);
+                const clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
+                const wordRange = editor.findWordAt(clickPos);
+                let number = editor.getRange(wordRange.anchor, wordRange.head);
                 if (isNumeric(number))
                 {
                     number = parseInt(number);
                     target.style.textDecoration = "underline";
                     target.style.backgroundColor = "lightgreen";
-                    makeTempTooltip(number + " == 0x" + (number.toString(16)).toUpperCase(), target.getBoundingClientRect(), true);
+                    makeTempTooltip(`${number} == 0x${(number.toString(16)).toUpperCase()}`, target.getBoundingClientRect(), true);
                 } else if (isHexNum(number)) {
-                    var decNum = parseInt(number);
+                    const decNum = parseInt(number);
                     target.style.textDecoration = "underline";
                     target.style.backgroundColor = "lightgreen";
-                    makeTempTooltip(number + " == " + (decNum.toString(10)).toUpperCase(), target.getBoundingClientRect(), true);
+                    makeTempTooltip(`${number} == ${(decNum.toString(10)).toUpperCase()}`, target.getBoundingClientRect(), true);
                 }
             }
         }
     };
     editor.getWrapperElement().addEventListener("mouseover", myMouseOverHandler);
 
-    document.addEventListener("keydown", function (evt)
-    {
+    document.addEventListener("keydown", evt => {
         evt = evt || window.event;
         if (evt.keyCode == 27)
         { // Esc.
@@ -328,17 +317,15 @@ function do_cm_custom()
     });
 
 
-    editor.on("change", function (c)
-    {
+    editor.on("change", c => {
         savedSinceLastChange = false;
-        var saveButton = document.getElementById('saveButton');
+        const saveButton = document.getElementById('saveButton');
         if (saveButton) saveButton.disabled = false;
     });
 
     // Tooltips (inspired from Tern)
 
-    clearTooltip = function()
-    {
+    clearTooltip = () => {
         if (!editor.state.currentTooltip || !editor.state.currentTooltip.parentNode)
             return;
         editor.off('blur', clearTooltip);
@@ -347,8 +334,7 @@ function do_cm_custom()
         editor.state.currentTooltip = null;
     }
 
-    makeTempTooltip = function(content, where, highlight)
-    {
+    makeTempTooltip = (content, where, highlight) => {
         if (editor.state.currentTooltip)
             remove(editor.state.currentTooltip);
         editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - 8, content);

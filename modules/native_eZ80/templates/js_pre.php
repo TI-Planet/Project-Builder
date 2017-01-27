@@ -61,7 +61,7 @@ if ($currProject->isMultiuser())
 
     function goToFile(newfile)
     {
-        var newURL = '?id=' + proj.pid + '&file=' + newfile;
+        const newURL = `?id=${proj.pid}&file=${newfile}`;
 
         document.onunload = null;
         window.location.href = newURL;

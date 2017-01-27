@@ -15,17 +15,18 @@
 
 /* Project builder-related functions etc. */
 
+// Todo: check if that needs to be here too (it shouldn't...)
 var build_output = [];
 var build_check  = [];
 var lastSavedSource = '';
 
 function loadProjConfig()
 {
-    var lsConfig = localStorage.getItem("config_" + proj.pid);
+    const lsConfig = localStorage.getItem(`config_${proj.pid}`);
     if (lsConfig)
     {
         // Overwrite some custom properties
-        var conf = JSON.parse(lsConfig);
+        const conf = JSON.parse(lsConfig);
         if (typeof conf.use_dark !== "undefined") { proj.use_dark = conf.use_dark; }
         if (typeof conf.show_left_sidebar !== "undefined") { proj.show_left_sidebar = conf.show_left_sidebar; }
         if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
@@ -44,7 +45,7 @@ function loadProjConfig()
 function saveProjConfig()
 {
     proj.updated = new Date().getTime();
-    localStorage.setItem("config_" + proj.pid, JSON.stringify(proj));
+    localStorage.setItem(`config_${proj.pid}`, JSON.stringify(proj));
 }
 
 function forkProject(doConfirm)
@@ -54,11 +55,11 @@ function forkProject(doConfirm)
     }
     if (doConfirm && confirm("Are you sure?"))
     {
-        saveFile(function() {
-            ajax("ActionHandler.php", "id=" + proj.pid + "&action=fork", function(data) {
+        saveFile(() => {
+            ajax("ActionHandler.php", `id=${proj.pid}&action=fork`, data => {
                 alert("Forked succesfully - You will now be redirected to your new project");
                 window.onbeforeunload = null;
-                window.location.replace(window.location.href.split('?')[0] + '?id=' + JSON.parse(data));
+                window.location.replace(`${window.location.href.split('?')[0]}?id=${JSON.parse(data)}`);
             });
         });
     }
@@ -67,16 +68,16 @@ function forkProject(doConfirm)
 function enableMultiUserRW()
 {
     localStorage.setItem("invalidateFirebaseContent", "true");
-    saveFile(function() {
-        ajax("ActionHandler.php", "id=" + proj.pid + "&action=enableMultiRW", function() { window.location.reload(); } );
+    saveFile(() => {
+        ajax("ActionHandler.php", `id=${proj.pid}&action=enableMultiRW`, () => { window.location.reload(); } );
     });
 }
 
 function enableMultiUserRO()
 {
     localStorage.setItem("invalidateFirebaseContent", "true");
-    saveFile(function() {
-        ajax("ActionHandler.php", "id=" + proj.pid + "&action=enableMultiRO", function() { window.location.reload(); } );
+    saveFile(() => {
+        ajax("ActionHandler.php", `id=${proj.pid}&action=enableMultiRO`, () => { window.location.reload(); } );
     });
 }
 
@@ -84,8 +85,8 @@ function disableMultiUser()
 {
     if (confirm("Are you sure?"))
     {
-        saveFile(function() {
-            ajax("ActionHandler.php", "id=" + proj.pid + "&action=disableMulti", function() { window.location.reload(); } );
+        saveFile(() => {
+            ajax("ActionHandler.php", `id=${proj.pid}&action=disableMulti`, () => { window.location.reload(); } );
         });
     }
 }
@@ -94,9 +95,8 @@ function deleteProject()
 {
     if (confirm("Are you sure you want to delete this project?"))
     {
-        ajax("ActionHandler.php", "id=" + proj.pid + "&action=deleteProj", function ()
-        {
-            alert('Project succesfully deleted from the server');
+        ajax("ActionHandler.php", `id=${proj.pid}&action=deleteProj`, () => {
+            alert('Project successfully deleted from the server');
             window.location.replace("https://tiplanet.org/pb/");
         });
     }
@@ -115,10 +115,10 @@ function toggleLeftSidebar(delay)
 
     document.getElementById("leftSidebarToggle").onclick = null;
 
-    var mainWrapper = $(".wrapper");
-    var sideBar = $("#leftSidebar");
+    const mainWrapper = $(".wrapper");
+    const sideBar = $("#leftSidebar");
 
-    var needToggleLeftValue = parseFloat(sideBar.css("margin-left")) < 0;
+    const needToggleLeftValue = parseFloat(sideBar.css("margin-left")) < 0;
 
     proj.show_left_sidebar = needToggleLeftValue;
     saveProjConfig();
@@ -136,12 +136,12 @@ function toggleRightSidebar(delay)
 
     document.getElementById("rightSidebarToggle").onclick = null;
 
-    var mainWrapper = $(".wrapper");
-    var rightSidebar = $("#rightSidebar");
-    var rightSidebarBorder = $("#rightSidebarBorder");
-    var rightSidebarToggle = $("#rightSidebarToggle");
+    const mainWrapper = $(".wrapper");
+    const rightSidebar = $("#rightSidebar");
+    const rightSidebarBorder = $("#rightSidebarBorder");
+    const rightSidebarToggle = $("#rightSidebarToggle");
 
-    var needToggleRightValue = parseFloat(rightSidebarToggle.css("right")) < 50;
+    const needToggleRightValue = parseFloat(rightSidebarToggle.css("right")) < 50;
 
     proj.show_right_sidebar = needToggleRightValue;
     saveProjConfig();
@@ -149,14 +149,14 @@ function toggleRightSidebar(delay)
     if (needToggleRightValue)
         rightSidebar.toggle();
 
-    var constRightValue = 350; // mainWrapper.css("padding-right")
-    rightSidebarBorder.animate({right: (needToggleRightValue ? '+=' : '-=') + (constRightValue+10)}, delay);
+    const rightValue = 350; // mainWrapper.css("padding-right")
+    rightSidebarBorder.animate({right: (needToggleRightValue ? '+=' : '-=') + (rightValue+10)}, delay);
     rightSidebarToggle.animate({width: (needToggleRightValue ? '-=' : '+=')+(7)}, { duration: delay, queue: false });
-    rightSidebarToggle.animate({right: (needToggleRightValue ? '+=' : '-=') + (constRightValue)}, { duration: delay, queue: false });
+    rightSidebarToggle.animate({right: (needToggleRightValue ? '+=' : '-=') + (rightValue)}, { duration: delay, queue: false });
 
-    mainWrapper.animate({"padding-right": ((parseFloat(mainWrapper.css("padding-right"))-10 >= needToggleRightValue) ? '-=' : '+=')+(constRightValue)}, delay);
+    mainWrapper.animate({"padding-right": ((parseFloat(mainWrapper.css("padding-right"))-10 >= needToggleRightValue) ? '-=' : '+=')+(rightValue)}, delay);
 
-    rightSidebar.animate({right: (parseFloat(rightSidebar.css("right")) == 0 ? '-=' : '+=') + constRightValue}, 200, 0, function() { if (!needToggleRightValue) rightSidebar.toggle(); } );
+    rightSidebar.animate({right: (parseFloat(rightSidebar.css("right")) == 0 ? '-=' : '+=') + rightValue}, 200, 0, () => { if (!needToggleRightValue) rightSidebar.toggle(); } );
 
     document.getElementById("rightSidebarToggle").onclick = toggleRightSidebar;
 
@@ -167,8 +167,8 @@ function toggleRightSidebar(delay)
 
 function toggleDarkTheme()
 {
-    $(".darkThemeLink").each(function(idx, el) {
-        var darkThemeLink = $(el);
+    $(".darkThemeLink").each((idx, el) => {
+        const darkThemeLink = $(el);
         darkThemeLink.attr("href", darkThemeLink.attr("href") ? "" : darkThemeLink.data("href"));
     });
     proj.use_dark = !!($(".darkThemeLink").attr('href'));

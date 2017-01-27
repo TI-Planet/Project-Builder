@@ -21,32 +21,12 @@ if (!String.prototype.trim) {
     };
 }
 
-function parseResponseHeaders(headerStr) {
-    var headers = {};
-    if (!headerStr) {
-        return headers;
-    }
-    var headerPairs = headerStr.split('\u000d\u000a');
-    for (var i = 0; i < headerPairs.length; i++) {
-        var headerPair = headerPairs[i];
-        // Can't use split() here because it does the wrong thing
-        // if the header value has the string ": " in it.
-        var index = headerPair.indexOf('\u003a\u0020');
-        if (index > 0) {
-            var key = headerPair.substring(0, index);
-            var val = headerPair.substring(index + 2);
-            headers[key] = val;
-        }
-    }
-    return headers;
-}
-
 function ajax(url, params, callbackOK, callbackErr, callbackAlways)
 {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = () => {
         if (xhr.readyState == 4)
         {
             if (typeof callbackAlways === "function") {
@@ -66,13 +46,13 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
         }
     };
 
-    params += "&csrf_token=" + window['CSRFToken'];
+    params += `&csrf_token=${window['CSRFToken']}`;
     xhr.send(params);
 }
 
 function ajaxGetArrayBuffer(url, params, callbackOK)
 {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.responseType = 'arraybuffer';
@@ -88,16 +68,16 @@ function ajaxGetArrayBuffer(url, params, callbackOK)
         }
     };
 
-    params += "&csrf_token=" + window['CSRFToken'];
+    params += `&csrf_token=${window['CSRFToken']}`;
     xhr.send(params);
 }
 
 function elt(tagname, cls /*, ... elts*/)
 {
-    var e = document.createElement(tagname);
+    const e = document.createElement(tagname);
     if (cls) e.className = cls;
-    for (var i = 2; i < arguments.length; ++i) {
-        var elt = arguments[i];
+    for (let i = 2; i < arguments.length; ++i) {
+        let elt = arguments[i];
         if (typeof elt == "string")
             elt = document.createTextNode(elt);
         e.appendChild(elt);
@@ -110,9 +90,9 @@ function remove(node) {
 }
 
 function makeTooltip(x, y, content) {
-    var node = elt("div", "inlineTooltip", content);
-    node.style.left = x + "px";
-    node.style.top = y + "px";
+    const node = elt("div", "inlineTooltip", content);
+    node.style.left = `${x}px`;
+    node.style.top = `${y}px`;
     document.body.appendChild(node);
     return node;
 }
@@ -127,43 +107,32 @@ function isHexNum(value)
     return /^0x[0-9a-f]+$/i.test(value);
 }
 
-function updateQueryStringParameter(uri, key, value) {
-  var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-  var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-  if (uri.match(re)) {
-    return uri.replace(re, '$1' + key + "=" + value + '$2');
-  }
-  else {
-    return uri + separator + key + "=" + value;
-  }
-}
-
 function hasClass(el, className) {
-  if (el.classList)
-    return el.classList.contains(className)
-  else
-    return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))
+    if (el.classList)
+        return el.classList.contains(className);
+    else
+        return !!el.className.match(new RegExp(`(\\s|^)${className}(\\s|$)`))
 }
 
 function addClass(el, className) {
-  if (el.classList)
-    el.classList.add(className)
-  else if (!hasClass(el, className)) el.className += " " + className
+    if (el.classList)
+        el.classList.add(className);
+    else if (!hasClass(el, className)) el.className += ` ${className}`
 }
 
 function removeClass(el, className) {
-  if (el.classList)
-    el.classList.remove(className)
-  else if (hasClass(el, className)) {
-    var reg = new RegExp('(\\s|^)' + className + '(\\s|$)')
-    el.className=el.className.replace(reg, ' ')
-  }
+    if (el.classList)
+        el.classList.remove(className);
+    else if (hasClass(el, className)) {
+        const reg = new RegExp(`(\\s|^)${className}(\\s|$)`);
+        el.className=el.className.replace(reg, ' ')
+    }
 }
 
 /*******************/
 
 // The PB needs a reasonable screen size, warn mobile users
-var isMobile = navigator.userAgent.match(/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|bo‌​ost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i);
+const isMobile = navigator.userAgent.match(/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i);
 if (isMobile || screen.width<1024 || screen.height < 550)
 {
     function dispMobile()

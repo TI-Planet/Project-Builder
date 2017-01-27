@@ -61,16 +61,16 @@ if (!isset($pb))
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
 
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
-        firebaseRoot.authWithCustomToken(user.firebase_token, function(error, authData) {
+        firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
             if (error) { // possibly expired token, etc.
-                saveFile(function() { ajax("firebase/tokenRefresh.php", "uid="+user.id, function() { window.location.reload(); }); });
+                saveFile(() => { ajax("firebase/tokenRefresh.php", `uid=${user.id}`, () => { window.location.reload(); }); });
             }
         });
 
-        var firepadRef = firebaseRoot.child('codes/' + proj.pid + '/' + proj.currFile.replace('.', '~'));
+        const firepadRef = firebaseRoot.child(`codes/${proj.pid}/${proj.currFile.replace('.', '~')}`);
 
-        var firepad = null;
-        var firepadUserList = null;
+        let firepad = null;
+        let firepadUserList = null;
         function createOrResetFirepad()
         {
             if (firepad !== null)
@@ -78,10 +78,10 @@ if (!isset($pb))
                 firepad.dispose(); firepad = null;
                 firepadUserList.dispose(); firepadUserList = null;
             }
-            firepad = Firepad.fromCodeMirror(firepadRef, editor, { userId: user.id, userColor: '#'+Math.floor(Math.random()*0xFFFFFF).toString(16) });
+            firepad = Firepad.fromCodeMirror(firepadRef, editor, { userId: user.id, userColor: `#${Math.floor(Math.random()*0xFFFFFF).toString(16)}` });
             firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), user.id, user.name, user.avatar);
 
-            firepad.on('ready', function() {
+            firepad.on('ready', () => {
                 if (localStorage.getItem("invalidateFirebaseContent") === "true")
                 {
                     editor.setValue("");
@@ -123,7 +123,7 @@ if (!isset($pb))
             getCheckLogAndUpdateHints();
         }
 
-        var saveButton = document.getElementById('saveButton');
+        const saveButton = document.getElementById('saveButton');
         if (saveButton) saveButton.disabled = true;
 
         <?php } ?>
@@ -134,23 +134,23 @@ if (!isset($pb))
 
     function init_chat()
     {
-        var chatRef = firebaseRoot.child('chat/' + proj.pid);
-        var chat = null;
+        const chatRef = firebaseRoot.child(`chat/${proj.pid}`);
+        let chat = null;
 
-        chatRef.onAuth(function (authData)
-        {
+        chatRef.onAuth(authData => {
             if (authData)
             {
                 chat = new FirechatUI(chatRef, document.getElementById('firechat-wrapper'));
                 chat.setUser(user.id, user.name);
-                setTimeout(function ()
-                {
-                    chat._chat.getRoomList(function (rooms)
-                    {
-                        var found = false;
-                        for (var roomkey in rooms)
+                setTimeout(() => {
+                    chat._chat.getRoomList(rooms => {
+                        let found = false;
+                        for (const roomkey in rooms)
                         {
-                            var room = rooms[roomkey];
+                            if (!rooms.hasOwnProperty(roomkey)) {
+                                continue;
+                            }
+                            const room = rooms[roomkey];
                             if (room.name == proj.pid)
                             {
                                 found = true;
@@ -160,7 +160,7 @@ if (!isset($pb))
                         }
                         if (!found)
                         {
-                            chat._chat.createRoom(proj.pid, "public", function (roomID) {});
+                            chat._chat.createRoom(proj.pid, "public", roomID => {});
                         }
                     });
                 }, 2000);

@@ -18,7 +18,7 @@
  * Common things (not much) can go directly into js_pre.php
  */
 
-var build_output_raw = [];
+let build_output_raw = [];
 var build_output = [];
 var build_check  = [];
 var lastSavedSource = '';
@@ -34,7 +34,7 @@ function applyPrgmNameChange(name)
 
 function changePrgmName()
 {
-    var name = prompt("Enter the new program name (8 letters max, A-Z 0-9, starts by a letter)", "");
+    let name = prompt("Enter the new program name (8 letters max, A-Z 0-9, starts by a letter)", "");
     if (name != null)
     {
         name = name.toUpperCase();
@@ -43,7 +43,7 @@ function changePrgmName()
             alert("Invalid name.");
         } else {
             removeClass(document.querySelector("#prgmNameContainer span.loadingicon"), "hidden");
-            ajax("ActionHandler.php", "id=" + proj.pid + "&action=setInternalName&internalName="+name, function() {
+            ajax("ActionHandler.php", `id=${proj.pid}&action=setInternalName&internalName=${name}`, () => {
                 addClass(document.querySelector("#prgmNameContainer span.loadingicon"), "hidden");
                 applyPrgmNameChange(name);
             });
@@ -60,8 +60,8 @@ function downloadZipExport()
 function renameFile(oldName)
 {
     $('.tooltip').hide();
-    var err = false;
-    var newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,h,asm)", oldName);
+    let err = false;
+    const newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,h,asm)", oldName);
     if (newName === null || !isValidFileName(newName))
     {
         err = true;
@@ -72,8 +72,8 @@ function renameFile(oldName)
     }
     if (!err)
     {
-        saveFile(function (){
-            ajax("ActionHandler.php", "id=" + proj.pid + "&action=renameFile&oldName="+oldName+"&newName="+newName, function() {
+        saveFile(() => {
+            ajax("ActionHandler.php", `id=${proj.pid}&action=renameFile&oldName=${oldName}&newName=${newName}`, () => {
                 proj.currFile = newName;
                 saveProjConfig();
                 goToFile(newName);
@@ -84,21 +84,21 @@ function renameFile(oldName)
 
 function saveFile(callback)
 {
-    var saveButton = document.getElementById('saveButton');
+    const saveButton = document.getElementById('saveButton');
 
-    var currSource = editor.getValue();
+    const currSource = editor.getValue();
     if (currSource.length > 0 && currSource != lastSavedSource)
     {
         removeClass(saveButton.children[1], "hidden");
         saveButton.disabled = true;
 
-        ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=save&source="+encodeURIComponent(currSource), function() {
+        ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=save&source=${encodeURIComponent(currSource)}`, () => {
             savedSinceLastChange = true;
             lastSavedSource = currSource;
             if (typeof callback === "function") callback();
-        }, function() {
+        }, () => {
             saveButton.disabled = false;
-        }, function() {
+        }, () => {
             addClass(saveButton.children[1], "hidden");
         });
 
@@ -121,8 +121,8 @@ function deleteCurrentFile()
     {
         if (proj.currFile && isValidFileName(proj.currFile))
         {
-            ajax("ActionHandler.php", "id=" + proj.pid + "&file="+proj.currFile + "&action=deleteCurrentFile", function() {
-                var idx = proj.files.indexOf(proj.currFile);
+            ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=deleteCurrentFile`, () => {
+                const idx = proj.files.indexOf(proj.currFile);
                 if (idx > -1)
                 {
                     proj.files.splice(idx, 1);
@@ -138,7 +138,7 @@ function deleteCurrentFile()
 
 function addFile(name)
 {
-    var err = false;
+    let err = false;
     if (!name || !isValidFileName(name))
     {
         name = prompt("Enter the new file name (letters, numbers, underscores, and with .c, .h, or .asm extension)");
@@ -150,8 +150,8 @@ function addFile(name)
     }
     if (!err)
     {
-        saveFile(function() {
-            ajax("ActionHandler.php", "id=" + proj.pid + "&action=addFile&fileName="+name, function() {
+        saveFile(() => {
+            ajax("ActionHandler.php", `id=${proj.pid}&action=addFile&fileName=${name}`, () => {
                 proj.files = proj.files.concat([ name ]);
                 proj.currFile = name;
                 saveProjConfig();
@@ -163,7 +163,7 @@ function addFile(name)
 
 function buildAndDownload()
 {
-    buildAndGetLog(function() {
+    buildAndGetLog(() => {
         document.getElementById('builddlButton').removeAttribute("onclick");
         document.getElementById('postForm').submit();
         document.getElementById('builddlButton').setAttribute("onclick", 'buildAndDownload(); return false;');
@@ -179,18 +179,15 @@ function buildAndRunInEmu()
     }
     if (emul_is_inited)
     {
-        buildAndGetLog(function ()
-        {
-            ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), function (file)
-            {
+        buildAndGetLog(() => {
+            ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), file => {
                 pauseEmul(false);
-                fileLoad(new Blob([file], {type: "application/octet-stream"}), proj.prgmName + ".8xp", false);
-                setTimeout(function ()
-                {
-                    setTimeout(function () { sendKey(0x9CFC); }, 0); // Asm(
-                    setTimeout(function () { sendKey(0xDA); }, 250); // prgm
-                    setTimeout(function () { sendStringKeyPress(proj.prgmName); }, 500);
-                    setTimeout(function () { sendKey(0x05); }, 500 + 150 + 250 * proj.prgmName.length); // Enter
+                fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
+                setTimeout(() => {
+                    setTimeout(() => { sendKey(0x9CFC); }, 0); // Asm(
+                    setTimeout(() => { sendKey(0xDA); }, 250); // prgm
+                    setTimeout(() => { sendStringKeyPress(proj.prgmName); }, 500);
+                    setTimeout(() => { sendKey(0x05); }, 500 + 150 + 250 * proj.prgmName.length); // Enter
                 }, 500);
             });
         });
@@ -201,7 +198,7 @@ function buildAndRunInEmu()
 
 function getBuildLogAndUpdateHints()
 {
-    ajax("ActionHandler.php", "id=" + proj.pid + "&action=getBuildLog", function(result) {
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getBuildLog`, result => {
         build_output_raw = JSON.parse(result);
         build_output = parseBuildLog(build_output_raw);
         updateHints(true);
@@ -210,7 +207,7 @@ function getBuildLogAndUpdateHints()
 
 function getCheckLogAndUpdateHints()
 {
-    ajax("ActionHandler.php", "id=" + proj.pid + "&action=getCheckLog", function(result) {
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, result => {
         build_check = parseCheckLog(JSON.parse(result));
         updateHints(true);
     });
@@ -218,13 +215,13 @@ function getCheckLogAndUpdateHints()
 
 function cleanProj(callback)
 {
-    var cleanButton = document.getElementById('cleanButton');
+    const cleanButton = document.getElementById('cleanButton');
     cleanButton.disabled = true;
 
-    var params = "id="+proj.pid + "&action=clean";
-    ajax("ActionHandler.php", params, function(result) {
+    const params = `id=${proj.pid}&action=clean`;
+    ajax("ActionHandler.php", params, result => {
         // Clear build timestamp
-        var buildTimestampElement = document.getElementById('buildTimestamp');
+        const buildTimestampElement = document.getElementById('buildTimestamp');
         buildTimestampElement.parentNode.className = buildTimestampElement.className = "";
         buildTimestampElement.innerText = "(none)";
 
@@ -241,28 +238,27 @@ function cleanProj(callback)
 
 function buildAndGetLog(callback)
 {
-    var buildButton = document.getElementById('buildButton');
-    var cleanButton = document.getElementById('cleanButton');
-    var builddlButton = document.getElementById('builddlButton');
-    var buildRunButton = document.getElementById('buildRunButton');
-    var zipDlCaretButton = document.getElementById('zipDlCaretButton');
+    const buildButton = document.getElementById('buildButton');
+    const cleanButton = document.getElementById('cleanButton');
+    const builddlButton = document.getElementById('builddlButton');
+    const buildRunButton = document.getElementById('buildRunButton');
+    const zipDlCaretButton = document.getElementById('zipDlCaretButton');
     cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = true;
     removeClass(buildButton.children[1], "hidden");
 
-    saveFile(function() {
+    saveFile(() => {
         // build output
-        var params = "id="+proj.pid + "&prgmName="+proj.prgmName + "&action=build";
-        ajax("ActionHandler.php", params, function(result)
-        {
+        const params = `id=${proj.pid}&prgmName=${proj.prgmName}&action=build`;
+        ajax("ActionHandler.php", params, result => {
             build_output_raw = JSON.parse(result);
             build_output = parseBuildLog(build_output_raw);
 
-            var buildStatusClass = "buildOK";
-            if (result.indexOf("ERROR: Object file(s) deleted because of option unresolved=fatal") !== -1)
+            let buildStatusClass = "buildOK";
+            if (result.includes("ERROR: Object file(s) deleted because of option unresolved=fatal"))
             {
                 alert("Fatal build error (undefined/unresolved calls).\nCheck the build log");
                 buildStatusClass = "buildError"
-            } else if (result.indexOf("\\tERROR") !== -1 || result.indexOf("Internal Error") !== -1) {
+            } else if (result.includes("\\tERROR") || result.includes("Internal Error")) {
                 alert("Fatal build error.\nCheck the build log");
                 buildStatusClass = "buildError"
             } else {
@@ -272,25 +268,25 @@ function buildAndGetLog(callback)
             }
 
             // Update build timestamp
-            var buildTimestamp = build_output_raw.shift(); // Remove the timestamp
-            var buildTimestampElement = document.getElementById('buildTimestamp');
+            const buildTimestamp = build_output_raw.shift(); // Remove the timestamp
+            const buildTimestampElement = document.getElementById('buildTimestamp');
             buildTimestampElement.parentNode.className = "";
             buildTimestampElement.className = buildStatusClass;
-            buildTimestampElement.innerText = (build_output_raw === null) ? '(Error)' : (new Date(+(buildTimestamp+"000")).toLocaleTimeString());
+            buildTimestampElement.innerText = (build_output_raw === null) ? '(Error)' : (new Date(+(`${buildTimestamp}000`)).toLocaleTimeString());
 
             // Update console
-            var consoletextarea = document.getElementById('consoletextarea');
+            const consoletextarea = document.getElementById('consoletextarea');
             consoletextarea.value = build_output_raw.join("\n");
             consoletextarea.scrollTop = consoletextarea.scrollHeight;
 
             savedSinceLastChange = true;
 
             if (asmBeingShown) {
-                var oldCursor = editor.getCursor();
+                const oldCursor = editor.getCursor();
                 dispSrc();
-                dispSrc(function() {
+                dispSrc(() => {
                     editor.setCursor(oldCursor);
-                    var cursor_line_div = document.querySelector("div.CodeMirror-activeline");
+                    const cursor_line_div = document.querySelector("div.CodeMirror-activeline");
                     if (cursor_line_div) {
                         cursor_line_div.scrollIntoView();
                     }
@@ -298,7 +294,7 @@ function buildAndGetLog(callback)
             }
 
             // Call cppcheck
-            ajax("ActionHandler.php", "id="+proj.pid + "&action=getCheckLog", function(result) {
+            ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, result => {
                 build_check = parseCheckLog(JSON.parse(result));
                 updateHints(false);
                 addClass(buildButton.children[1], "hidden");
@@ -310,13 +306,13 @@ function buildAndGetLog(callback)
 
 function parseBuildLog(log)
 {
-    var arr = [];
+    const arr = [];
     if (log !== null && log.constructor === Array)
     {
-        for (var i = 0; i < log.length; i++)
+        for (let i = 0; i < log.length; i++)
         {
-            var regex = /(\w+\.(?:c|h|asm))\s+\((\d+),(\d+)\)\s+:\s+(.*?)\s+\((\d+)\)\s(.*?)$/gmi;
-            var matches = regex.exec(log[i]);
+            const regex = /(\w+\.(?:c|h|asm))\s+\((\d+),(\d+)\)\s+:\s+(.*?)\s+\((\d+)\)\s(.*?)$/gmi;
+            const matches = regex.exec(log[i]);
             if (matches !== null)
             {
                 arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4].toLowerCase(), code: matches[5], text: matches[6]})
@@ -330,13 +326,13 @@ function parseBuildLog(log)
 
 function parseCheckLog(log)
 {
-    var arr = [];
+    const arr = [];
     if (log !== null && log.constructor === Array)
     {
-        for (var i = 0; i < log.length; i++)
+        for (let i = 0; i < log.length; i++)
         {
-            var regex = /^\[(\w+\.[ch]):(\d+)\]: \((.*?)\) (.*)$/gmi;
-            var matches = regex.exec(log[i]);
+            const regex = /^\[(\w+\.[ch]):(\d+)\]: \((.*?)\) (.*)$/gmi;
+            const matches = regex.exec(log[i]);
             if (matches !== null)
             {
                 arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], code: "", text: matches[4]})
@@ -356,11 +352,11 @@ function rightSidebar_toggle_callback(willBeHidden)
     }
 }
 
-window.addEventListener('resize', function(event) {
-    $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75*($(document).height()))+'px');
+window.addEventListener('resize', event => {
+    $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", `${.75*($(document).height())}px`);
 });
 
-window.addEventListener('keydown', function(event) {
+window.addEventListener('keydown', event => {
     if (event.ctrlKey || event.metaKey) {
         switch (String.fromCharCode(event.which).toLowerCase()) {
             case 's':
@@ -373,8 +369,10 @@ window.addEventListener('keydown', function(event) {
 
 /***** Pause emulation when the page isn't visible *****/
 
-// Set the name of the hidden property and the change event for visibility
-var hidden, visibilityChange;
+    // Set the name of the hidden property and the change event for visibility
+let hidden;
+
+let visibilityChange;
 if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
     hidden = "hidden";
     visibilityChange = "visibilitychange";
