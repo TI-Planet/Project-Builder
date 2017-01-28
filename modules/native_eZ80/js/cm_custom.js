@@ -277,7 +277,7 @@ function do_cm_custom()
                 const word = editor.getRange(wordRange.anchor, wordRange.head);
                 if (word.length > 1)
                 {
-                    const lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(` ${word}[^\\w]`))).line;
+                    const lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(' ' + word + '[^\\w]'))).line;
                     if (lineNumOfFirstDef > 0 && lineNumOfFirstDef != editor.getCursor().line)
                     {
                         const lineOfFirstDef = editor.getLine(lineNumOfFirstDef);
