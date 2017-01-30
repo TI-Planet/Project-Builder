@@ -84,7 +84,7 @@ if ($currProject->isMultiuser())
     }
 </script>
 
-<script src="<?= $modulePath ?>codemirror/codemirror.js"></script>
+<script src="<?= $modulePath ?>codemirror/codemirror.min.js"></script>
 <script src="<?= $modulePath ?>codemirror/active-line.js"></script>
 <script src="<?= $modulePath ?>codemirror/clike.js"></script>
 <script src="<?= $modulePath ?>codemirror/z80.js"></script>
