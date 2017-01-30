@@ -148,14 +148,16 @@ function do_cm_custom()
                 }
                 lineWidgetsAsm.length = 0;
 
-                for (const key in linesForC)
+                let key;
+                for (key in linesForC)
                 {
                     if (!linesForC.hasOwnProperty(key) || key === '0') continue;
 
                     const lines = linesForC[key];
 
                     let valueChunk = "<pre style='padding:4px;line-height:.65em;'><code>";
-                    for (const asmLineIdx in lines)
+                    let asmLineIdx;
+                    for (asmLineIdx in lines)
                     {
                         if (!lines.hasOwnProperty(asmLineIdx) || lines[asmLineIdx][0] === ";") continue;
 
