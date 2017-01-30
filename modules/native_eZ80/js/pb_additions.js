@@ -82,7 +82,7 @@ function renameFile(oldName)
     }
 }
 
-function saveFile(callback)
+const _saveFile_impl = (callback) =>
 {
     const saveButton = document.getElementById('saveButton');
 
@@ -93,7 +93,7 @@ function saveFile(callback)
         saveButton.disabled = true;
 
         ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=save&source=${encodeURIComponent(currSource)}`, () => {
-            savedSinceLastChange = true;
+            savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
             if (typeof callback === "function") callback();
         }, () => {
@@ -104,10 +104,36 @@ function saveFile(callback)
 
     } else {
         saveButton.disabled = true;
-        savedSinceLastChange = true;
+        savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
         if (typeof callback === "function") callback();
     }
     saveProjConfig();
+};
+
+globalSaveFileRetryCount = 0;
+function saveFile(callback)
+{
+    if (proj.is_multi)
+    {
+        if (!globalSyncOK || globalSaveFileRetryCount >= 3)
+        {
+            alert("Syncing failed, saving now may overwrite changes and data may be lost. Please try again later (and make a local backup)");
+            globalSaveFileRetryCount = 0;
+            return;
+        }
+        if ((new Date).getTime() - lastChangeTS > 30000)
+        {
+            firepad.client_.updateCursor();
+            firepad.client_.sendCursor(firepad.client_.cursor);
+            lastChangeTS = (new Date).getTime();
+            console.log("Current session is old, trying to sync with Firepad... Retry count == " + globalSaveFileRetryCount);
+            globalSaveFileRetryCount++;
+            setTimeout(function(){ saveFile(callback); }, 200);
+            return;
+        }
+    }
+    globalSaveFileRetryCount = 0;
+    _saveFile_impl(callback);
 }
 
 function isValidFileName(name)
@@ -279,7 +305,7 @@ function buildAndGetLog(callback)
             consoletextarea.value = build_output_raw.join("\n");
             consoletextarea.scrollTop = consoletextarea.scrollHeight;
 
-            savedSinceLastChange = true;
+            savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
 
             if (asmBeingShown) {
                 const oldCursor = editor.getCursor();

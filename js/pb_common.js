@@ -67,7 +67,6 @@ function forkProject(doConfirm)
 
 function enableMultiUserRW()
 {
-    localStorage.setItem("invalidateFirebaseContent", "true");
     saveFile(() => {
         ajax("ActionHandler.php", `id=${proj.pid}&action=enableMultiRW`, () => { window.location.reload(); } );
     });
@@ -75,7 +74,6 @@ function enableMultiUserRW()
 
 function enableMultiUserRO()
 {
-    localStorage.setItem("invalidateFirebaseContent", "true");
     saveFile(() => {
         ajax("ActionHandler.php", `id=${proj.pid}&action=enableMultiRO`, () => { window.location.reload(); } );
     });

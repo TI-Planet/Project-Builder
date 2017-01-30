@@ -46,9 +46,10 @@ if (!isset($pb))
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Ctrl-Space": "autocomplete"},
             highlightSelectionMatches: {showToken: /\w/},
-            theme: 'xq-light'
+            theme: 'xq-light',
+            readOnly: <?= ($currProject->isMultiuser() && !$currProject->isMulti_ReadWrite()) ? 'true' : 'false' ?>
         });
-        savedSinceLastChange = true;
+        savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
     }
     init_post_js_1();
 </script>
@@ -56,6 +57,8 @@ if (!isset($pb))
 <script src="<?= $modulePath ?>js/cm_custom.js"></script>
 
 <script>
+    globalSyncOK = true;
+
     function init_post_js_2(isChangingTab)
     {
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
@@ -63,7 +66,10 @@ if (!isset($pb))
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
         firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
             if (error) { // possibly expired token, etc.
-                saveFile(() => { ajax("firebase/tokenRefresh.php", `uid=${user.id}`, () => { window.location.reload(); }); });
+                alert('Your shared-project session was expired or invalid, it will be regenerated now. You might want to backup any unsaved changes and refresh the page...');
+                window.onunload = window.onbeforeunload = null;
+                ajax("firebase/tokenRefresh.php", `uid=${user.id}`);
+                // before: we were doing that in the saveFile callback (+ auto page reload).
             }
         });
 
@@ -71,25 +77,27 @@ if (!isset($pb))
 
         let firepad = null;
         let firepadUserList = null;
+
+        window.removeMyselfFromFirepad = function()
+        {
+            if (proj.is_multi && typeof(firepad) !== "undefined") {
+                firepad.firebaseAdapter_.userRef_.remove();
+            }
+        };
+
         function createOrResetFirepad()
         {
             if (firepad !== null)
             {
                 firepad.dispose(); firepad = null;
+            }
+            if (firepadUserList !== null) {
                 firepadUserList.dispose(); firepadUserList = null;
             }
             firepad = Firepad.fromCodeMirror(firepadRef, editor, { userId: user.id, userColor: `#${Math.floor(Math.random()*0xFFFFFF).toString(16)}` });
             firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), user.id, user.name, user.avatar);
 
             firepad.on('ready', () => {
-                if (localStorage.getItem("invalidateFirebaseContent") === "true")
-                {
-                    editor.setValue("");
-                    firepadRef.parent().remove();
-                    localStorage.removeItem("invalidateFirebaseContent");
-                    createOrResetFirepad();
-                    return;
-                }
                 if (firepad.isHistoryEmpty())
                 {
                     firepad.setText(fakeContainer.textContent);
@@ -104,7 +112,23 @@ if (!isset($pb))
                     getCheckLogAndUpdateHints();
                 }
                 savedSinceLastChange = true;
+                lastChangeTS = (new Date).getTime();
                 document.getElementById('saveButton').disabled = true;
+            });
+
+            let syncStatusTimeoutID = null;
+            firepad.on('synced', (isSynced) =>
+            {
+                clearTimeout(syncStatusTimeoutID); // some basic debouncing...
+                if (isSynced === false)
+                {
+                    syncStatusTimeoutID = window.setTimeout(() => {
+                        globalSyncOK = false;
+                        alert("The latest changes couldn't be synced to other users, data may get lost. Check your internet connectivity and make a local backup...");
+                    }, 5000);
+                } else {
+                    globalSyncOK = true;
+                }
             });
         }
 
@@ -115,13 +139,16 @@ if (!isset($pb))
         editor.setValue(fakeContainer.textContent);
         lastSavedSource = fakeContainer.textContent;
         savedSinceLastChange = true;
+        lastChangeTS = (new Date).getTime();
 
-        if (isChangingTab) {
-            updateHints(true);
-        } else {
-            getBuildLogAndUpdateHints();
-            getCheckLogAndUpdateHints();
-        }
+        <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
+            if (isChangingTab) {
+                updateHints(true);
+            } else {
+                getBuildLogAndUpdateHints();
+                getCheckLogAndUpdateHints();
+            }
+        <?php } ?>
 
         const saveButton = document.getElementById('saveButton');
         if (saveButton) saveButton.disabled = true;
@@ -145,7 +172,8 @@ if (!isset($pb))
                 setTimeout(() => {
                     chat._chat.getRoomList(rooms => {
                         let found = false;
-                        for (const roomkey in rooms)
+                        let roomkey;
+                        for (roomkey in rooms)
                         {
                             if (!rooms.hasOwnProperty(roomkey)) {
                                 continue;

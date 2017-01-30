@@ -346,6 +346,7 @@ function do_cm_custom()
 
     editor.on("change", c => {
         savedSinceLastChange = false;
+        lastChangeTS = (new Date).getTime();
         const saveButton = document.getElementById('saveButton');
         if (saveButton) saveButton.disabled = false;
     });

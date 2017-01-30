@@ -38,6 +38,7 @@ if ($currProject->isMultiuser())
         prgmName: '<?= $currProject->getInternalName(); ?>',
         currFile: '<?= $currProject->getCurrentFile(); ?>',
         updated: <?= $currProject->getUpdatedTstamp(); ?>,
+        is_multi: <?= $currProject->isMultiuser() ? 'true' : 'false' ?>,
         use_dark: false,
         show_left_sidebar: true,
         show_right_sidebar: true
@@ -62,25 +63,19 @@ if ($currProject->isMultiuser())
     function goToFile(newfile)
     {
         const newURL = `?id=${proj.pid}&file=${newfile}`;
-
-        document.onunload = null;
-        window.location.href = newURL;
-
-        /* DISABLED UNTIL MULTI-USER CLEARING BUG FIXED
-
-        $.get(newURL, function(data) {
-            if (typeof window.history.pushState === "function") window.history.pushState(null, "", newURL);
-            var oldConsoleContent = $("#consoletextarea").val();
+        $.get(newURL, (data) =>
+        {
+            window.history.pushState(null, "", newURL);
+            const oldConsoleContent = $("#consoletextarea").val();
+            typeof(removeMyselfFromFirepad) === "function" && removeMyselfFromFirepad();
             $('#editorContainer').empty().append($(data).find('#editorContainer').children());
             $("#consoletextarea").val(oldConsoleContent);
-            localStorage.setItem("invalidateFirebaseContent", "true");
             $(".firepad-userlist").remove();
             proj.currFile = newfile;
             init_post_js_1();
             do_cm_custom();
             init_post_js_2(true);
         });
-        */
     }
 </script>
 
