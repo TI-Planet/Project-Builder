@@ -101,9 +101,10 @@ function genSidebar()
     }
 
     $content .= '<div id="statusbar_left">
-                    <span class="themeToggle">
+                    <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Dark mode</button>
-                    </span>
+                        <button id="customExtraSBButton" type="button" class="btn btn-primary btn-xs" style="display:none; border-radius:0"></button>
+                    </div>
                     <span class="copyright">PB &copy; 2015-2017 "Adriweb"</span>
                 </div>';
 
