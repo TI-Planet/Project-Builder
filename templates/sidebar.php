@@ -41,12 +41,12 @@ function genSidebar()
 
         if (!$isUserAuthorOfProject) {
             $authorNameHTML = htmlentities($currProjectAuthor->getName(), ENT_QUOTES);
-            $content .= "<u>Author</u>: <a href='https://tiplanet.org/forum/memberlist.php?mode=viewprofile&amp;u={$currProjectAuthor->getID()}' target='_blank'>$authorNameHTML</a></br>";
+            $content .= "<u>Author</u>: <a href='https://tiplanet.org/forum/memberlist.php?mode=viewprofile&amp;u={$currProjectAuthor->getID()}' target='_blank'>$authorNameHTML</a><br/>";
         }
         $content .= '<u>Type</u>: ' . $currProject->getType();
-        $content .= '</br><u>Created</u>: ' . "<script>var d = new Date({$currProject->getCreatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
-        $content .= '</br><u>Updated</u>: ' . "<script>var d = new Date({$currProject->getUpdatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
-        $content .= '</br><u>Shared</u>: ' . ($currProject->isMultiuser() ? ('Yes (' . ($currProject->isMulti_ReadWrite() ? 'Read/Write' : 'Read only') . ')') : 'No. Share: ');
+        $content .= '<br/><u>Created</u>: ' . "<script>var d = new Date({$currProject->getCreatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
+        $content .= '<br/><u>Updated</u>: ' . "<script>var d = new Date({$currProject->getUpdatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
+        $content .= '<br/><u>Shared</u>: ' . ($currProject->isMultiuser() ? ('Yes (' . ($currProject->isMulti_ReadWrite() ? 'Read/Write' : 'Read only') . ')') : 'No. Share: ');
         if ($currProject->getAuthorID() === $currUser->getID())
         {
             if ($currProject->isMultiuser()) {
@@ -58,7 +58,7 @@ function genSidebar()
         }
         if ($currProject->isMultiuser())
         {
-            $content .= '</br><u>Online</u>: <div id="userlist"></div>';
+            $content .= '<br/><u>Online</u>: <div id="userlist"></div>';
         }
 
         $content .= '<div style="height: 5px;"></div>';

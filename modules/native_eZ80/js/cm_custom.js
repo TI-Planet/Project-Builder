@@ -163,7 +163,7 @@ function do_cm_custom()
                         if (trimmedLine.indexOf("XREF") === 0 || trimmedLine.indexOf("XDEF") === 0 || trimmedLine.indexOf("END") === 0) {
                             continue;
                         }
-                        valueChunk += `${lines[asmLineIdx].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</br>`;
+                        valueChunk += `${lines[asmLineIdx].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}<br/>`;
                     }
                     valueChunk = valueChunk.slice(0, -1); // remove extra newline at the end
                     valueChunk += "</code></pre>";
