@@ -87,6 +87,12 @@ if (!isset($pb))
             }
         };
 
+        window.tryFirepadSync = function()
+        {
+            firepad.client_.updateCursor();
+            firepad.client_.sendCursor(firepad.client_.cursor);
+        };
+
         function createOrResetFirepad()
         {
             if (firepad !== null)
@@ -113,6 +119,18 @@ if (!isset($pb))
                     getBuildLogAndUpdateHints();
                     getCheckLogAndUpdateHints();
                 }
+
+                proj.cursors[proj.currFile] && editor.setCursor(JSON.parse(proj.cursors[proj.currFile]));
+
+                const hashMatches = window.location.hash.match(/#L(\d+)/);
+                if (hashMatches && hashMatches.length > 1)
+                {
+                    const lineFromHash = hashMatches.pop();
+                    if (lineFromHash) {
+                        editor.setCursor((+lineFromHash)-1, 0);
+                    }
+                }
+
                 savedSinceLastChange = true;
                 lastChangeTS = (new Date).getTime();
                 document.getElementById('saveButton').disabled = true;

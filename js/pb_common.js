@@ -30,6 +30,7 @@ function loadProjConfig()
         if (typeof conf.use_dark !== "undefined") { proj.use_dark = conf.use_dark; }
         if (typeof conf.show_left_sidebar !== "undefined") { proj.show_left_sidebar = conf.show_left_sidebar; }
         if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
+        if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
     }
     if (proj.use_dark === true) {
         toggleDarkTheme();
@@ -40,6 +41,7 @@ function loadProjConfig()
     if (proj.show_right_sidebar === false) {
         toggleRightSidebar(0);
     }
+    if (!proj.cursors) { proj.cursors = {}; }
 }
 
 function saveProjConfig()

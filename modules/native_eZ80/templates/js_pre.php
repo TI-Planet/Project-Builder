@@ -65,6 +65,10 @@ if ($currProject->isMultiuser())
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         $.get(newURL, (data) =>
         {
+            const wasReadOnly = editor.isReadOnly();
+            editor.setOption("readOnly", true);
+            proj.cursors[proj.currFile] = JSON.stringify(editor.getCursor());
+            saveProjConfig();
             window.history.pushState(null, "", newURL);
             const oldConsoleContent = $("#consoletextarea").val();
             typeof(removeMyselfFromFirepad) === "function" && removeMyselfFromFirepad();
@@ -75,6 +79,8 @@ if ($currProject->isMultiuser())
             init_post_js_1();
             do_cm_custom();
             init_post_js_2(true);
+            editor.setOption("readOnly", wasReadOnly);
+            editorPostSetup();
         });
     }
 </script>
@@ -111,4 +117,4 @@ if ($currProject->isMulti_ReadWrite())
     echo "<script src='https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js'></script>\n";
     echo "<script src='{$modulePath}codemirror/firepad-userlist.js'></script>";
 }
-?>
+

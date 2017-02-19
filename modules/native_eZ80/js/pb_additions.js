@@ -125,8 +125,7 @@ function saveFile(callback)
         }
         if ((new Date).getTime() - lastChangeTS > 30000)
         {
-            firepad.client_.updateCursor();
-            firepad.client_.sendCursor(firepad.client_.cursor);
+            typeof(tryFirepadSync) !== "undefined" && tryFirepadSync();
             lastChangeTS = (new Date).getTime();
             console.log("Current session is old, trying to sync with Firepad... Retry count == " + globalSaveFileRetryCount);
             globalSaveFileRetryCount++;
