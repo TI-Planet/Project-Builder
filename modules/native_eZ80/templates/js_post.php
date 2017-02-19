@@ -47,7 +47,7 @@ if (!isset($pb))
             extraKeys: {"Ctrl-Space": "autocomplete"},
             highlightSelectionMatches: {showToken: /\w/},
             theme: 'xq-light',
-            readOnly: <?= ($currProject->isMultiuser() && !$currProject->isMulti_ReadWrite()) ? 'true' : 'false' ?>
+            readOnly: <?= ($currProject->getAuthorID() !== $currUser->getID() && $currProject->isMultiuser() && !$currProject->isMulti_ReadWrite()) ? 'true' : 'false' ?>
         });
         savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
     }
