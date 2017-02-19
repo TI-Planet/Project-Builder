@@ -230,8 +230,8 @@ function buildAndRunInEmu()
 
 function getBuildLogAndUpdateHints()
 {
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getBuildLog`, result => {
-        build_output_raw = JSON.parse(result);
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getBuildLog`, text => {
+        build_output_raw = text;
         build_output = parseBuildLog(build_output_raw);
         updateHints(true);
     });
@@ -239,8 +239,8 @@ function getBuildLogAndUpdateHints()
 
 function getCheckLogAndUpdateHints()
 {
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, result => {
-        build_check = parseCheckLog(JSON.parse(result));
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, text => {
+        build_check = parseCheckLog(text);
         updateHints(true);
     });
 }
@@ -251,7 +251,7 @@ function cleanProj(callback)
     cleanButton.disabled = true;
 
     const params = `id=${proj.pid}&action=clean`;
-    ajax("ActionHandler.php", params, result => {
+    ajax("ActionHandler.php", params, () => {
         // Clear build timestamp
         const buildTimestampElement = document.getElementById('buildTimestamp');
         buildTimestampElement.parentNode.className = buildTimestampElement.className = "";
@@ -282,7 +282,7 @@ function buildAndGetLog(callback)
         // build output
         const params = `id=${proj.pid}&prgmName=${proj.prgmName}&action=build`;
         ajax("ActionHandler.php", params, result => {
-            build_output_raw = JSON.parse(result);
+            build_output_raw = result;
             build_output = parseBuildLog(build_output_raw);
 
             let buildStatusClass = "buildOK";
@@ -326,8 +326,8 @@ function buildAndGetLog(callback)
             }
 
             // Call cppcheck
-            ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, result => {
-                build_check = parseCheckLog(JSON.parse(result));
+            ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, text => {
+                build_check = parseCheckLog(text);
                 updateHints(false);
                 addClass(buildButton.children[1], "hidden");
                 cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = false;

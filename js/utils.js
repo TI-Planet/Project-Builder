@@ -29,11 +29,15 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
     xhr.onreadystatechange = () => {
         if (xhr.readyState == 4)
         {
+            let respText = xhr.responseText;
+            try { respText = JSON.parse(respText); } catch(e) {}
             if (typeof callbackAlways === "function") {
-                callbackAlways(xhr.responseText);
+                callbackAlways(respText);
             }
-            if (xhr.status == 200 && typeof callbackOK === "function") {
-                callbackOK(xhr.responseText);
+            if (xhr.status == 200) {
+                if (typeof callbackOK === "function") {
+                    callbackOK(respText);
+                }
             } else {
                 showNotification("danger", "Oops... :(", respText.length ? respText : "Internet issue?");
                 if (typeof callbackErr === "function") {

@@ -103,7 +103,7 @@ function do_cm_custom()
             return;
         }
         ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=getCurrentSrc`, data => {
-            if (data === "null")
+            if (data === null)
             {
                 asmBeingShown = false;
                 $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
@@ -115,9 +115,7 @@ function do_cm_custom()
                 asmBeingShown = true;
                 $("#asmToggleButton").css('background-color', '#CACBC7').parent().attr('title', 'Click to hide ASM').tooltip('fixTitle').tooltip('show');
 
-                data = data.replace("\\r", "");
-                data = JSON.parse(data);
-                const allSrcLines = data.split("\n");
+                const allSrcLines = data.replace("\\r", "").split("\n");
 
                 const linesForC = { '0':[] }; // format: key = C line (start). value = [ asm lines... ].
                 let currKey = '0';
