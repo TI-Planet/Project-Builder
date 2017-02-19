@@ -53,6 +53,9 @@ body {
     width: 296px;
     height: 100%;
     border-right: 2px grey solid;
+    position: relative;
+    z-index: 8;
+    background-color: #f0f0f0;
 }
 
 .sidebarToggle {
@@ -104,7 +107,7 @@ body {
 div.wrapper {
     height: 100%;
     margin-left: 295px;
-    padding: 6px 350px 10px 2px;
+    padding: 6px 350px 4px 2px;
     display: flex;
     flex-direction: column;
 }

@@ -41,7 +41,8 @@ if ($currProject->isMultiuser())
         is_multi: <?= $currProject->isMultiuser() ? 'true' : 'false' ?>,
         use_dark: false,
         show_left_sidebar: true,
-        show_right_sidebar: true
+        show_right_sidebar: true,
+        show_bottom_tools: true,
     };
     user = {
         id: '<?= $currUser->getID(); ?>',

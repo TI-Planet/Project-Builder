@@ -30,6 +30,7 @@ function loadProjConfig()
         if (typeof conf.use_dark !== "undefined") { proj.use_dark = conf.use_dark; }
         if (typeof conf.show_left_sidebar !== "undefined") { proj.show_left_sidebar = conf.show_left_sidebar; }
         if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
+        if (typeof conf.show_bottom_tools !== "undefined") { proj.show_bottom_tools = conf.show_bottom_tools; }
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
     }
     if (proj.use_dark === true) {
@@ -40,6 +41,9 @@ function loadProjConfig()
     }
     if (proj.show_right_sidebar === false) {
         toggleRightSidebar(0);
+    }
+    if (proj.show_bottom_tools === false) {
+        toggleBottomTools(0);
     }
     if (!proj.cursors) { proj.cursors = {}; }
 }
@@ -174,6 +178,36 @@ function toggleRightSidebar(delay)
     if (typeof rightSidebar_toggle_callback !== "undefined") {
         rightSidebar_toggle_callback(!needToggleRightValue);
     }
+}
+
+function toggleBottomTools(delay)
+{
+    delay = (typeof delay === "number") ? delay : 140;
+
+    document.getElementById("bottomToolsToggle").onclick = null;
+
+    const codeOutline = $("#codeOutline");
+    const bottomTools = $("#bottomTools");
+
+    const needOutlineToggle = delay > 0 && codeOutline.is(":visible");
+    if (needOutlineToggle && !bottomTools.is(":visible")) {
+        codeOutline.hide();
+    }
+
+    bottomTools.slideToggle(delay, "swing", () => {
+        proj.show_bottom_tools = bottomTools.is(":visible");
+        saveProjConfig();
+        if (proj.show_bottom_tools) {
+            $("#bottomTools").siblings().find(".dropdown-menu").parent().removeClass("dropup");
+        } else {
+            $("#bottomTools").siblings().find(".dropdown-menu").parent().addClass("dropup");
+        }
+        document.getElementById("bottomToolsToggle").onclick = toggleBottomTools;
+        if (needOutlineToggle) {
+            recalcOutlineSize();
+            codeOutline.show();
+        }
+    });
 }
 
 function toggleDarkTheme()

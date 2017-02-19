@@ -90,10 +90,40 @@ div.subfirepad {
     min-height: 30px;
 }
 
-div.console {
+#bottomTools {
     height: 22%;
-    min-height: 22%;
+    margin-bottom: 6px;
 }
+
+#bottomToolsToggle {
+    width: 40px;
+    height: 10px;
+    background: #555;
+    position: relative;
+    left: 48%;
+    top: -5px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 9;
+    margin-bottom: -10px;
+}
+
+#bottomToolsToggle:before, #bottomToolsToggle:after {
+    color: lightgrey;
+    font-size: 0.7em;
+    position: relative;
+}
+#bottomToolsToggle:before {
+    content: 'V';
+    left: 13px;
+    top: -7px;
+}
+#bottomToolsToggle:after {
+    content: 'Λ';
+    top: -7px;
+    left: 16px;
+}
+
 
 #consoletextarea {
     width: 100% !important;

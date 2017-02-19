@@ -91,7 +91,8 @@ if (!isset($pb))
     </div>
 
 <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
-    <div class="console">
+    <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>
+    <div id="bottomTools">
         <textarea id="consoletextarea" disabled></textarea>
     </div>
 <?php } ?>

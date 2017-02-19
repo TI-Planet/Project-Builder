@@ -18,7 +18,7 @@ body {
     color: #C9C9C9;
 }
 
-.sidebarToggle {
+.sidebarToggle, #bottomToolsToggle {
     background-color: #999;
 }
 
