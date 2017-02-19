@@ -23,6 +23,9 @@ if (!isset($pb))
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
 <script>
+    /** @return {boolean} **/
+    $.expr[':'].Contains = (a,i,m) => { return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; };
+
     function init_post_js_1()
     {
         textarea = document.getElementById('codearea');

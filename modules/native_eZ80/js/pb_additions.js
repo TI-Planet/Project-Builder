@@ -21,6 +21,7 @@
 let build_output_raw = [];
 var build_output = [];
 var build_check  = [];
+var ctags = [];
 var lastSavedSource = '';
 
 function applyPrgmNameChange(name)
@@ -244,6 +245,15 @@ function getCheckLogAndUpdateHints()
     });
 }
 
+function getCtags(scope)
+{
+    if (scope === undefined) { scope = ''; }
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getCtags&scope=${scope}`, (list) => {
+        ctags = list;
+        dispCodeOutline(list);
+    });
+}
+
 function cleanProj(callback)
 {
     const cleanButton = document.getElementById('cleanButton');
@@ -383,9 +393,8 @@ function rightSidebar_toggle_callback(willBeHidden)
     }
 }
 
-window.addEventListener('resize', event => {
-    $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", `${.75*($(document).height())}px`);
-});
+/*  :/  */
+window.addEventListener('resize', () => { refreshOutlineSize(); });
 
 window.addEventListener('keydown', event => {
     if (event.ctrlKey || event.metaKey) {

@@ -31,6 +31,7 @@ function loadProjConfig()
         if (typeof conf.show_left_sidebar !== "undefined") { proj.show_left_sidebar = conf.show_left_sidebar; }
         if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
         if (typeof conf.show_bottom_tools !== "undefined") { proj.show_bottom_tools = conf.show_bottom_tools; }
+        if (typeof conf.show_code_outline !== "undefined") { proj.show_code_outline = conf.show_code_outline; }
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
     }
     if (proj.use_dark === true) {
@@ -45,7 +46,13 @@ function loadProjConfig()
     if (proj.show_bottom_tools === false) {
         toggleBottomTools(0);
     }
+    toggleOutline(proj.show_code_outline, true);
     if (!proj.cursors) { proj.cursors = {}; }
+}
+
+function editorPostSetup()
+{
+    toggleOutline(proj.show_code_outline, true);
 }
 
 function saveProjConfig()

@@ -24,7 +24,7 @@ function do_cm_custom()
 
     editor.removeKeyMap("Ctrl-D");
 
-    const dupLine = cm => {
+    const dupLine = (cm) => {
         const doc = cm.getDoc();
         const cursor = doc.getCursor();
         const line = doc.getLine(cursor.line);
@@ -82,6 +82,104 @@ function do_cm_custom()
         "Shift-Ctrl-D":deleteLine, "Shift-Cmd-D":deleteLine,
         "Ctrl-H": showKeybindings,
     });
+
+    smartGoToLine = (line) => {
+        const lineNow = editor.getCursor().line;
+        if (lineNow === line) { return; }
+        editor.setCursor(line + (lineNow < line ? 10 : -10));
+        editor.setCursor(line);
+        editor.focus();
+    };
+
+    $("#codeOutlineList").empty();
+    dispCodeOutline = (list) => {
+        let html = "";
+        list.forEach( (val) =>
+        {
+            let lblClass;
+            switch (val.kind)
+            {
+                case 'function':
+                    lblClass = 'primary';
+                    break;
+                case 'prototype':
+                    lblClass = 'warning';
+                    break;
+                case 'enumerator':
+                case 'member':
+                    lblClass = 'danger';
+                    break;
+                case 'variable':
+                    lblClass = 'info';
+                    break;
+                case 'macro':
+                case 'typedef':
+                case 'enum':
+                case 'struct':
+                    lblClass = 'success';
+                    break;
+                default:
+                    lblClass = 'default';
+            }
+            html += `<li><span title="${val.kind}" class="label label-${lblClass}">${val.kind.charAt(0).toUpperCase()}</span>`;
+            html += `<span class="taglink" onclick="smartGoToLine(${val.line}-1)">${val.name}`;
+            html += `</span></li>`;
+        });
+        $("#codeOutlineList").html(html);
+    };
+
+    filterOutline = (name) =>
+    {
+        if (name === undefined) { name = ""; }
+        $("#codeOutlineList").find("li").show().filter(`:not(:Contains('${String(name)}'))`).hide();
+    };
+
+    recalcOutlineSize = () => {
+        const codeOutline = document.getElementById("codeOutline");
+        const finalHeight = document.querySelector("div.firepad").offsetHeight;
+        codeOutline.style.minHeight = codeOutline.style.maxHeight = finalHeight + "px";
+        document.getElementById("codeOutlineList").style.height = (finalHeight-50) + "px";
+    };
+
+    refreshOutlineSize = () => {
+        const codeOutline = document.getElementById("codeOutline");
+        codeOutline.style.display = "none";
+        recalcOutlineSize();
+        codeOutline.style.display = "block";
+    };
+
+    toggleOutline = (show, auto) =>
+    {
+        if (auto === undefined) { auto = false; }
+        if (typeof(getCtags) !== "function") {
+            return;
+        }
+        if (!document.getElementById('codeOutline')) {
+            $("div.firepad").eq(0).prepend('<div id="codeOutline" style="display:none">' +
+                '<input id="codeOutlineFilter" type="text" placeholder="Quick filter...">' +
+                '<div id="codeOutlineListWrapper"><ul id="codeOutlineList"></ul></div>' +
+                '</div>');
+            $("#codeOutlineFilter").keyup(debounce(() => { filterOutline($("#codeOutlineFilter").val()); }, 50));
+        }
+        recalcOutlineSize();
+
+        const outline = $("#codeOutline");
+        if (outline.is(":visible"))
+        {
+            if (typeof(show) === "boolean" && show) { return; }
+            $("#codeOutlineToggleButton").css('background-color', 'white');
+        } else {
+            if (typeof(show) === "boolean" && !show) { return; }
+            $("#codeOutlineToggleButton").css('background-color', '#CACBC7');
+        }
+        if ($("#codeOutlineList").is(":empty")) {
+            getCtags(proj.currFile);
+        }
+        outline.toggle();
+        $("div.CodeMirror").toggleClass("hasOutline");
+        proj.show_code_outline = outline.is(":visible");
+        if (!auto) { saveProjConfig(); }
+    };
 
     dispSrc = callback => {
         let i;

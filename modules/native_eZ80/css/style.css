@@ -43,6 +43,15 @@ div.CodeMirror {
     border-radius: 0 0 5px 5px;
     height: 80%;
 }
+div.CodeMirror div.CodeMirror-lines {
+    line-height: 15px;
+}
+div.CodeMirror.hasOutline {
+    border-bottom-right-radius: 0;
+}
+div.CodeMirror.hasOutline, div.CodeMirror.hasOutline ~ a.powered-by-firepad {
+    margin-right: 200px;
+}
 div.CodeMirror pre {
     font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
 }
@@ -82,6 +91,52 @@ div.CodeMirror pre {
 div.firepad {
     flex-grow: 1;
     margin-bottom: 10px;
+    height: initial;
+}
+
+#codeOutline {
+    width: 201px;
+    background: #f0f0f0;
+    border: 1px solid grey;
+    z-index: 9;
+    float: right;
+    overflow: hidden;
+    border-bottom-right-radius: 5px;
+}
+#codeOutlineFilter {
+    display: inline-block;
+    width: 199px;
+    height: 24px;
+    position: fixed;
+    z-index: 10;
+}
+#codeOutlineListWrapper
+{
+    overflow: auto;
+    margin-top: 24px;
+}
+#codeOutlineList {
+    padding: 3px 5px;
+    list-style-type: none;
+}
+#codeOutlineFilter, #codeOutlineList {
+    line-height: 15px;
+    font-size: 9pt;
+    font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
+}
+#codeOutlineList li {
+    display: block;
+    width: 2000px;
+}
+#codeOutlineList li span.taglink {
+    cursor: pointer;
+}
+#codeOutlineList li span.label {
+    padding: 1px 3px;
+    font-weight: normal;
+    bottom: 1px;
+    position: relative;
+    margin-right: 5px;
 }
 
 div.subfirepad {

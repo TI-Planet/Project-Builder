@@ -43,6 +43,7 @@ if ($currProject->isMultiuser())
         show_left_sidebar: true,
         show_right_sidebar: true,
         show_bottom_tools: true,
+        show_code_outline: true
     };
     user = {
         id: '<?= $currUser->getID(); ?>',
