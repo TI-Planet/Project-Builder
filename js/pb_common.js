@@ -56,10 +56,12 @@ function forkProject(doConfirm)
     if (doConfirm && confirm("Are you sure?"))
     {
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=fork`, data => {
-                alert("Forked succesfully - You will now be redirected to your new project");
-                window.onbeforeunload = null;
-                window.location.replace(`${window.location.href.split('?')[0]}?id=${JSON.parse(data)}`);
+            ajax("ActionHandler.php", `id=${proj.pid}&action=fork`, newID => {
+                showNotification("success", "Forked succesfully", "You will now be redirected to your new project", () =>
+                {
+                    window.onbeforeunload = null;
+                    window.location.replace(`${window.location.href.split('?')[0]}?id=${newID}`);
+                });
             });
         });
     }
@@ -84,8 +86,12 @@ function disableMultiUser()
     if (confirm("Are you sure?"))
     {
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=disableMulti`, () => { window.location.reload(); } );
+            ajax("ActionHandler.php", `id=${proj.pid}&action=disableMulti`, () => {
+                showNotification("info", "OK, Project unshared", "", () => { window.location.reload(); }, 1);
+            });
         });
+    } else {
+        showNotification("info", "OK, Project is still shared", "", null, 1);
     }
 }
 
@@ -94,9 +100,14 @@ function deleteProject()
     if (confirm("Are you sure you want to delete this project?"))
     {
         ajax("ActionHandler.php", `id=${proj.pid}&action=deleteProj`, () => {
-            alert('Project successfully deleted from the server');
-            window.location.replace("https://tiplanet.org/pb/");
+            showNotification("success", "Project successfully deleted from the server", "You will now be redirected", () =>
+            {
+                window.onbeforeunload = null;
+                window.location.replace("https://tiplanet.org/pb/");
+            });
         });
+    } else {
+        showNotification("info", "Project not deleted", "", null, 1);
     }
 }
 

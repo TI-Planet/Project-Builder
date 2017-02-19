@@ -35,12 +35,9 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
             if (xhr.status == 200 && typeof callbackOK === "function") {
                 callbackOK(xhr.responseText);
             } else {
-                if (typeof callbackErr === "function")
-                {
-                    callbackErr(xhr.responseText);
-                } else {
-                    console.log(xhr.responseText);
-                    alert(xhr.responseText);
+                showNotification("danger", "Oops... :(", respText.length ? respText : "Internet issue?");
+                if (typeof callbackErr === "function") {
+                    callbackErr(respText);
                 }
             }
         }
@@ -64,7 +61,7 @@ function ajaxGetArrayBuffer(url, params, callbackOK)
             }
         } else {
             console.log("Error XHR arraybuffer: ", this);
-            alert("Error XHR arraybuffer :(");
+            showNotification("danger", "Oops... :(", "Error trying to load the file in the emulator...");
         }
     };
 
@@ -127,6 +124,21 @@ function removeClass(el, className) {
         const reg = new RegExp(`(\\s|^)${className}(\\s|$)`);
         el.className=el.className.replace(reg, ' ')
     }
+}
+
+function showNotification(notifType, title, message, endCallback, delay)
+{
+    if (endCallback === undefined) { endCallback = null; }
+    if (delay === undefined) { delay = 2500; }
+    $.notify({
+        title: title,
+        message: message
+    },{
+        type: notifType,
+        delay: Math.max(1, delay - 1000),
+        placement: { from: "top", align: "center" },
+        onClose: endCallback,
+    });
 }
 
 /*******************/

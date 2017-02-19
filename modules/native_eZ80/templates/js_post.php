@@ -66,10 +66,12 @@ if (!isset($pb))
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
         firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
             if (error) { // possibly expired token, etc.
-                alert('Your shared-project session was expired or invalid, it will be regenerated now. You might want to backup any unsaved changes and refresh the page...');
                 window.onunload = window.onbeforeunload = null;
-                ajax("firebase/tokenRefresh.php", `uid=${user.id}`);
-                // before: we were doing that in the saveFile callback (+ auto page reload).
+                ajax("firebase/tokenRefresh.php", `uid=${user.id}`, () => {
+                    showNotification("success", "Collaborative edition token refreshed", "You can save and reload the page");
+                });
+                showNotification("danger", "Shared-project session expired or invalid - it will be regenerated now",
+                    "You might want to backup any unsaved changes and refresh the page...", null, 999999);
             }
         });
 
@@ -124,7 +126,8 @@ if (!isset($pb))
                 {
                     syncStatusTimeoutID = window.setTimeout(() => {
                         globalSyncOK = false;
-                        alert("The latest changes couldn't be synced to other users, data may get lost. Check your internet connectivity and make a local backup...");
+                        showNotification("danger", "The latest changes couldn't be synced to other users, data may get lost",
+                            "Check your internet connectivity and make a local backup...", null, 999999);
                     }, 5000);
                 } else {
                     globalSyncOK = true;

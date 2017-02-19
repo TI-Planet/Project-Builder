@@ -40,7 +40,7 @@ function changePrgmName()
         name = name.toUpperCase();
         if (!name.match(/^[A-Z][A-Z0-9]{0,7}$/))
         {
-            alert("Invalid name.");
+            showNotification("danger", "Invalid name", "8 letters max, A-Z 0-9, starts by a letter");
         } else {
             removeClass(document.querySelector("#prgmNameContainer span.loadingicon"), "hidden");
             ajax("ActionHandler.php", `id=${proj.pid}&action=setInternalName&internalName=${name}`, () => {
@@ -65,7 +65,9 @@ function renameFile(oldName)
     if (newName === null || !isValidFileName(newName))
     {
         err = true;
-        if (newName) alert("Invalid name.");
+        if (newName) {
+            showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: c,h,asm");
+        }
     }
     if (newName === oldName) {
         return;
@@ -117,7 +119,7 @@ function saveFile(callback)
     {
         if (!globalSyncOK || globalSaveFileRetryCount >= 3)
         {
-            alert("Syncing failed, saving now may overwrite changes and data may be lost. Please try again later (and make a local backup)");
+            showNotification("warning", "Syncing failed", "Saving now may overwrite changes and data may be lost. Please try again later (and make a local backup)", null, 999999);
             globalSaveFileRetryCount = 0;
             return;
         }
@@ -159,6 +161,8 @@ function deleteCurrentFile()
                 goToFile(proj.currFile);
             });
         }
+    } else {
+        showNotification("info", "File not deleted", "", null, 1);
     }
 }
 
@@ -167,11 +171,13 @@ function addFile(name)
     let err = false;
     if (!name || !isValidFileName(name))
     {
-        name = prompt("Enter the new file name (letters, numbers, underscores, and with .c, .h, or .asm extension)");
+        name = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,h,asm)");
         if (name === null || !isValidFileName(name))
         {
             err = true;
-            if (name) alert("Invalid name.");
+            if (name) {
+                showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: c,h,asm");
+            }
         }
     }
     if (!err)
@@ -218,7 +224,7 @@ function buildAndRunInEmu()
             });
         });
     } else {
-        alert("The emulator isn't ready yet - Did you load a ROM?");
+        showNotification("danger", "The emulator isn't ready yet", "Did you load a ROM?", null, 10000);
     }
 }
 
@@ -282,10 +288,10 @@ function buildAndGetLog(callback)
             let buildStatusClass = "buildOK";
             if (result.includes("ERROR: Object file(s) deleted because of option unresolved=fatal"))
             {
-                alert("Fatal build error (undefined/unresolved calls).\nCheck the build log");
+                showNotification("warning", "Fatal build error (undefined/unresolved calls)", "Check the build log", null, 10000);
                 buildStatusClass = "buildError"
             } else if (result.includes("\\tERROR") || result.includes("Internal Error")) {
-                alert("Fatal build error.\nCheck the build log");
+                showNotification("warning", "Fatal build error", "Check the build log", null, 10000);
                 buildStatusClass = "buildError"
             } else {
                 if (typeof callback === "function") {

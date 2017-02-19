@@ -107,7 +107,7 @@ function do_cm_custom()
             {
                 asmBeingShown = false;
                 $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
-                alert("There is no ASM file for this C source.\nHave you built the project yet?");
+                showNotification("warning", "There is no ASM file for this C source", "Have you built the project yet?", null, 10000);
                 if (typeof callback === "function") {
                     callback();
                 }
@@ -239,7 +239,7 @@ function do_cm_custom()
             editor.focus();
             if (errOnOtherFiles && silent === false)
             {
-                alert("Warnings/Errors have been found in other files, please check them.");
+                showNotification("warning", "Hmm...", "Warnings/Errors have been found in other files, check them too.", null, 3500);
             }
         });
         const info = editor.getScrollInfo();
@@ -362,7 +362,7 @@ function do_cm_custom()
         editor.off('scroll', clearTooltip);
         remove(editor.state.currentTooltip);
         editor.state.currentTooltip = null;
-    }
+    };
 
     makeTempTooltip = (content, where, highlight) => {
         if (editor.state.currentTooltip)

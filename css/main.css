@@ -136,6 +136,24 @@ div.wrapper {
 
 /**********************************/
 
+div.alert[data-notify="container"] > span[data-notify="title"] {
+    display: block;
+    font-weight: bold;
+}
+
+div.alert[data-notify="container"] {
+    padding: 8px 12px;
+    max-width: 550px !important;
+    min-width: 470px !important;
+}
+
+.animated{
+    -webkit-animation-duration:.75s !important;
+    animation-duration:.75s !important;
+}
+
+/**********************************/
+
 .unselectable {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
