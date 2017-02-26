@@ -107,27 +107,19 @@ div.firepad {
     display: inline-block;
     width: 199px;
     height: 24px;
-    position: fixed;
     z-index: 10;
-}
-#codeOutlineListWrapper
-{
-    overflow: auto;
-    margin-top: 24px;
 }
 #codeOutlineList {
     padding: 3px 5px;
     list-style-type: none;
+    overflow: auto;
 }
 #codeOutlineFilter, #codeOutlineList {
     line-height: 15px;
     font-size: 9pt;
     font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
 }
-#codeOutlineList li {
-    display: block;
-    width: 2000px;
-}
+
 #codeOutlineList li span.taglink {
     cursor: pointer;
 }
@@ -261,9 +253,11 @@ div.subfirepad > * {
 
 .powered-by-firepad {
     opacity: .15 !important;
+    transform: scale(.6) !important;
+    right: 0 !important;
 }
 .powered-by-firepad:hover {
-    opacity: .25 !important;
+    opacity: .5 !important;
 }
 
 .glyphicon.spinning {
