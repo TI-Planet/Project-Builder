@@ -121,11 +121,21 @@ function do_cm_custom()
                 default:
                     lblClass = 'default';
             }
-            html += `<li><span title="${val.kind}" class="label label-${lblClass}">${val.kind.charAt(0).toUpperCase()}</span>`;
-            html += `<span class="taglink" onclick="smartGoToLine(${val.line}-1)">${val.name}`;
-            html += `</span></li>`;
+            const retType = val.rettype ? `data-rettype="${val.rettype}"` : "";
+            const args    = val.args    ? `data-args="${val.args}"`       : "";
+            const name    = val.name.startsWith("__anon") ? '<i class="text-muted">(anon)</i>' : val.name;
+            const indent  = val.scope   ? (12 * (1 + (val.scope.match(/::/g) || []).length)) : 0;
+            const offset  = indent > 0  ? ` style='margin-left:${indent}px'` : "";
+            html += `<li${offset}>`;
+
+            html += `<span title="${val.kind}" class="label label-${lblClass}">${val.kind.charAt(0).toUpperCase()}</span>`;
+            html += `<span class="taglink" ${retType} ${args} onclick="smartGoToLine(${val.line}-1)">${name}`;
+            html += `</span>`;
+
+            html += `</li>`;
         });
         $("#codeOutlineList").html(html);
+        recalcOutlineSize();
     };
 
     filterOutline = (name) =>
@@ -135,10 +145,10 @@ function do_cm_custom()
     };
 
     recalcOutlineSize = () => {
-        const codeOutline = document.getElementById("codeOutline");
         const finalHeight = document.querySelector("div.firepad").offsetHeight;
-        codeOutline.style.minHeight = codeOutline.style.maxHeight = finalHeight + "px";
-        document.getElementById("codeOutlineList").style.height = (finalHeight-50) + "px";
+        document.getElementById("codeOutline").style.height = finalHeight + "px";
+        const finalListHeight = finalHeight - document.getElementById("codeOutlineFilter").offsetHeight - 2;
+        document.getElementById("codeOutlineList").style.height = finalListHeight + "px";
     };
 
     refreshOutlineSize = () => {
@@ -146,6 +156,7 @@ function do_cm_custom()
         codeOutline.style.display = "none";
         recalcOutlineSize();
         codeOutline.style.display = "block";
+        recalcOutlineSize(); // because of the rendered height being first incorrect...
     };
 
     toggleOutline = (show, auto) =>
@@ -157,8 +168,7 @@ function do_cm_custom()
         if (!document.getElementById('codeOutline')) {
             $("div.firepad").eq(0).prepend('<div id="codeOutline" style="display:none">' +
                 '<input id="codeOutlineFilter" type="text" placeholder="Quick filter...">' +
-                '<div id="codeOutlineListWrapper"><ul id="codeOutlineList"></ul></div>' +
-                '</div>');
+                '<ul id="codeOutlineList"></ul></div>');
             $("#codeOutlineFilter").keyup(debounce(() => { filterOutline($("#codeOutlineFilter").val()); }, 50));
         }
         recalcOutlineSize();
