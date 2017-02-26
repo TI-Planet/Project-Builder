@@ -34,6 +34,11 @@ function loadProjConfig()
         if (typeof conf.show_code_outline !== "undefined") { proj.show_code_outline = conf.show_code_outline; }
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
     }
+    editorPostSetup();
+}
+
+function editorPostSetup()
+{
     if (proj.use_dark === true) {
         toggleDarkTheme();
     }
@@ -46,12 +51,7 @@ function loadProjConfig()
     if (proj.show_bottom_tools === false) {
         toggleBottomTools(0);
     }
-    toggleOutline(proj.show_code_outline, true);
     if (!proj.cursors) { proj.cursors = {}; }
-}
-
-function editorPostSetup()
-{
     toggleOutline(proj.show_code_outline, true);
 }
 

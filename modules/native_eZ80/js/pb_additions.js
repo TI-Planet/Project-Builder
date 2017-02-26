@@ -98,6 +98,7 @@ const _saveFile_impl = (callback) =>
         ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=save&source=${encodeURIComponent(currSource)}`, () => {
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
+            getCtags('', () => { filterOutline($("#codeOutlineFilter").val()); });
             if (typeof callback === "function") callback();
         }, () => {
             saveButton.disabled = false;
@@ -116,6 +117,8 @@ const _saveFile_impl = (callback) =>
 globalSaveFileRetryCount = 0;
 function saveFile(callback)
 {
+    proj.cursors[proj.currFile] = JSON.stringify(editor.getCursor());
+    saveProjConfig();
     if (proj.is_multi)
     {
         if (!globalSyncOK || globalSaveFileRetryCount >= 3)
@@ -245,12 +248,15 @@ function getCheckLogAndUpdateHints()
     });
 }
 
-function getCtags(scope)
+function getCtags(scope, cb)
 {
     if (scope === undefined) { scope = ''; }
     ajax("ActionHandler.php", `id=${proj.pid}&action=getCtags&scope=${scope}`, (list) => {
         ctags = list;
         dispCodeOutline(list);
+        if (typeof(cb) === "function") {
+            cb();
+        }
     });
 }
 
