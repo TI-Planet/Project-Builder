@@ -45,7 +45,7 @@ if (!isset($pb))
             indentUnit: 4,
             foldGutter: true,
             showTrailingSpace: true,
-            mode: "text/x-csrc",
+            mode: proj.currFile.endsWith(".asm") ? "text/x-ez80" : "text/x-csrc",
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Ctrl-Space": "autocomplete"},
             highlightSelectionMatches: {showToken: /\w/},

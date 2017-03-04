@@ -41,7 +41,7 @@ class native_eZ80Project extends Project
 
     public static function cleanPrgmName($prgName = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($prgName)); }
     public static function isFileNameOK($fileName = '') { return preg_match(self::REGEXP_GOOD_FILE_PATTERN, $fileName); }
-    public static function isPrgmNameOK($fileName = '') { return preg_match("/^[A-Z][A-Z0-9]{0,7}$/", $fileName); }
+    public static function isPrgmNameOK($fileName = '') { return preg_match('/^[A-Z][A-Z0-9]{0,7}$/', $fileName); }
 
 
     /****************************************************/
