@@ -34,7 +34,10 @@ if (!isset($pb))
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
-                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
+                if (substr($currProject->getCurrentFile(), -4) !== '.asm')
+                {
+                    echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
+                }
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to toggle the code outline"><a id="codeOutlineToggleButton" style="color: #337ab7;" href="#" onclick="toggleOutline(); return false;"><span class="glyphicon glyphicon-align-left"></span></a></li>';
             }
             ?>
