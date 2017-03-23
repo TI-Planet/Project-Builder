@@ -93,6 +93,7 @@ function do_cm_custom()
 
     $("#codeOutlineList").empty();
     dispCodeOutline = (list) => {
+        if (!list || !list.forEach) { return; }
         let html = "";
         list.forEach( (val) =>
         {
