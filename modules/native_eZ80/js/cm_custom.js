@@ -99,6 +99,7 @@ function do_cm_custom()
             let lblClass;
             switch (val.kind)
             {
+                case 'label':
                 case 'function':
                     lblClass = 'primary';
                     break;
@@ -112,6 +113,7 @@ function do_cm_custom()
                 case 'variable':
                     lblClass = 'info';
                     break;
+                case 'define':
                 case 'macro':
                 case 'typedef':
                 case 'enum':
