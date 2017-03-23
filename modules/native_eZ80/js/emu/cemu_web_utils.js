@@ -45,13 +45,20 @@ initLCD = function()
     var bufPtr = Module['_malloc'](bufSize);
     var buf = new Uint8Array(Module['HEAPU8']['buffer'], bufPtr, bufSize);
 
+    var wrappedPaint = Module['cwrap']('paint_LCD_to_JS', 'void', ['number']);
+
     Module['ccall']('set_lcd_js_ptr', 'void', ['number'], [ buf.byteOffset ]);
 
     repaint = function()
     {
+        if (emul_is_paused) { return; }
+        /* For some reason, this + requestAnimationFrame is faster than the buffer update triggered from the core... */
+        wrappedPaint();
         imageData.data.set(buf);
         canvasCtx.putImageData(imageData, 0, 0);
+        window.requestAnimationFrame(repaint);
     };
+    repaint();
 }
 
 enableGUI = function()
