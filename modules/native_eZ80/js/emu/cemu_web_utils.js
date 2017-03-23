@@ -45,18 +45,13 @@ initLCD = function()
     var bufPtr = Module['_malloc'](bufSize);
     var buf = new Uint8Array(Module['HEAPU8']['buffer'], bufPtr, bufSize);
 
-    var wrappedPaint = Module['cwrap']('paintLCD', 'void', ['number']);
+    Module['ccall']('set_lcd_js_ptr', 'void', ['number'], [ buf.byteOffset ]);
+
     repaint = function()
     {
-        if (!emul_is_paused)
-        {
-            wrappedPaint(buf.byteOffset);
-            imageData.data.set(buf);
-            canvasCtx.putImageData(imageData, 0, 0);
-            window.requestAnimationFrame(repaint);
-        }
+        imageData.data.set(buf);
+        canvasCtx.putImageData(imageData, 0, 0);
     };
-    repaint();
 }
 
 enableGUI = function()
