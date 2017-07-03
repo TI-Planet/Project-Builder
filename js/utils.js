@@ -154,7 +154,7 @@ function isNumeric(value)
 
 function isHexNum(value)
 {
-    return /^0x[0-9a-f]+$/i.test(value);
+    return /^0x[0-9a-f]+$/i.test(value) || /^0[0-9a-f]*h$/i.test(value) || /^\$[0-9a-f]*/i.test(value);
 }
 
 function hasClass(el, className) {

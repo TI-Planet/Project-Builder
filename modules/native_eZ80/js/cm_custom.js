@@ -20,8 +20,6 @@ function do_cm_custom()
     widgets = lineWidgetsAsm = [];
     asmBeingShown = false;
 
-    $('[data-toggle="tooltip"]').tooltip();
-
     editor.removeKeyMap("Ctrl-D");
 
     const dupLine = (cm) => {
@@ -156,10 +154,13 @@ function do_cm_custom()
 
     refreshOutlineSize = () => {
         const codeOutline = document.getElementById("codeOutline");
-        codeOutline.style.display = "none";
-        recalcOutlineSize();
-        codeOutline.style.display = "block";
-        recalcOutlineSize(); // because of the rendered height being first incorrect...
+        if (codeOutline)
+        {
+            codeOutline.style.display = "none";
+            recalcOutlineSize();
+            codeOutline.style.display = "block";
+            recalcOutlineSize(); // because of the rendered height being first incorrect...
+        }
     };
 
     toggleOutline = (show, auto) =>
@@ -194,17 +195,21 @@ function do_cm_custom()
         if (!auto) { saveProjConfig(); }
     };
 
-    dispSrc = callback => {
+    dispSrc = (targetEditor, callback) => {
         let i;
+
+        if (typeof(targetEditor) === "undefined") {
+            targetEditor = editor;
+        }
 
         if (asmBeingShown === true) {
             asmBeingShown = false;
             for (i = 0; i < lineWidgetsAsm.length; i++) {
-                editor.removeLineWidget(lineWidgetsAsm[i]);
+                targetEditor.removeLineWidget(lineWidgetsAsm[i]);
             }
             lineWidgetsAsm.length = 0;
-            editor.refresh();
-            editor.focus();
+            targetEditor.refresh();
+            targetEditor.focus();
 
             $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
 
@@ -218,7 +223,7 @@ function do_cm_custom()
             {
                 asmBeingShown = false;
                 $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
-                showNotification("warning", "There is no ASM file for this C source", "Have you built the project yet?", null, 10000);
+                showNotification("warning", "There is no ASM file for this source file", "Have you built the project yet?", null, 10000);
                 if (typeof callback === "function") {
                     callback();
                 }
@@ -253,7 +258,7 @@ function do_cm_custom()
                 }
 
                 for (i = 0; i < lineWidgetsAsm.length; i++) {
-                    editor.removeLineWidget(lineWidgetsAsm[i]);
+                    targetEditor.removeLineWidget(lineWidgetsAsm[i]);
                 }
                 lineWidgetsAsm.length = 0;
 
@@ -282,11 +287,11 @@ function do_cm_custom()
                     msg.innerHTML = valueChunk;
                     msg.className = "inline-asm";
 
-                    lineWidgetsAsm.push(editor.addLineWidget(parseInt(key)-1, msg, {coverGutter: false, noHScroll: true}));
+                    lineWidgetsAsm.push(targetEditor.addLineWidget(parseInt(key)-1, msg, {coverGutter: false, noHScroll: true}));
                 }
 
-                editor.refresh();
-                editor.focus();
+                targetEditor.refresh();
+                targetEditor.focus();
 
                 if (typeof callback === "function") {
                     callback();

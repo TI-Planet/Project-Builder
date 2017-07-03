@@ -36,9 +36,9 @@ if (!isset($pb))
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
                 if (substr($currProject->getCurrentFile(), -4) !== '.asm')
                 {
-                    echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
+                    echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
                 }
-                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;" data-toggle="tooltip" data-placement="top" title="Click to toggle the code outline"><a id="codeOutlineToggleButton" style="color: #337ab7;" href="#" onclick="toggleOutline(); return false;"><span class="glyphicon glyphicon-align-left"></span></a></li>';
+                echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to toggle the code outline"><a id="codeOutlineToggleButton" style="color: #337ab7;" href="#" onclick="toggleOutline(); return false;"><span class="glyphicon glyphicon-align-left"></span></a></li>';
             }
             ?>
         </ul>
@@ -53,13 +53,12 @@ if (!isset($pb))
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
     <?php } ?>
-    <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
-        <form id="zipDlForm" action="ActionHandler.php" method="POST">
-            <input type="hidden" name="id" value="<?= $projectID ?>">
-            <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
-            <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
-        </form>
-    <?php } ?>
+
+    <form id="zipDlForm" action="ActionHandler.php" method="POST">
+        <input type="hidden" name="id" value="<?= $projectID ?>">
+        <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
+        <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
+    </form>
 
     <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
     <textarea id="codearea"></textarea>
@@ -75,8 +74,12 @@ if (!isset($pb))
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li title="Delete build files then build"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
-                <li title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
+                <li class="hasTooltip" data-placement="right" title="Delete build files then build with ZDS"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
+                <li class="hasTooltip" data-placement="right" title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-ez80 (<?= $llvmGitSHA ?>)"><a onclick="llvmCompile(); return false">Show ASM from LLVM <sup class="text-muted">alpha</sup></a></li>
+                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-ez80 and diff with the ZDS one"><a onclick="llvmCompileAndDiff(); return false">Diff ASM from LLVM &amp; ZDS <sup class="text-muted">alpha</sup></a></li>
+                <li class="hasTooltip" data-placement="right" title="Compile with LLVM-ez80, and assemble+link with ZDS"><a onclick="buildAndGetLog(true); return false">Build from LLVM ASM <sup class="text-muted pull">alpha</sup></a></li>
             </ul>
         </div>
         <div class="btn-group">
@@ -86,12 +89,14 @@ if (!isset($pb))
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li title="Download the project's source code files in a .zip archive"><a onclick="downloadZipExport(); return false">Download project as .zip</a></li>
+                <li title="Download the project's source code files in a .zip archive"><a onclick="$('#zipDlForm').submit(); return false">Download project as .zip</a></li>
             </ul>
         </div>
         <button id="buildRunButton" class="btn btn-primary btn-sm" onclick="buildAndRunInEmu(); return false" title="Build and run the program in the emulator"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Test in emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div id="buildTimestampContainer" class="hidden"><b>Latest build</b>: <span id="buildTimestamp"></span></div>
-        <?php } ?>
+        <?php } else { ?>
+        <a id="zipDlCaretButton" href="#" class="btn btn-primary btn-sm" title="Download the project's source code files in a .zip archive" onclick="$('#zipDlForm').submit(); return false">Download project as .zip</a>
+        <?php }?>
     </div>
 
 <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
@@ -109,6 +114,23 @@ if (!isset($pb))
                     <h4 class="modal-title" id="myWizardModalLabel">Project creation wizard</h4>
                 </div>
                 <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="diffModal" tabindex="-1" role="dialog" aria-labelledby="myDiffModalLabel">
+        <div class="modal-dialog" role="document" style="max-width: 1200px !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myDiffModalLabel">Diff ZDS - LLVM</h4>
+                </div>
+                <div class="modal-body" id="modalDiffSourceBody">
 
                 </div>
                 <div class="modal-footer">
