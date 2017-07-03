@@ -374,19 +374,36 @@ function do_cm_custom()
             const clickPos = editor.coordsChar({left: e.clientX, top: e.clientY});
             const wordRange = editor.findWordAt(clickPos);
             const word = editor.getRange(wordRange.anchor, wordRange.head);
-            if (isNumeric(word))
+            let wholeWord = word;
+            if (editor.getMode().name === 'z80')
             {
-                const hexValue = `0x${(parseInt(word).toString(16)).toUpperCase()}`;
+                const anchorPrevLetterFrom = {ch: wordRange.anchor.ch - 1, line: wordRange.anchor.line, sticky: null};
+                const anchorPrevLetterTo   = {ch: wordRange.anchor.ch,     line: wordRange.anchor.line, sticky: null};
+                const prevLetter = editor.getRange(anchorPrevLetterFrom, anchorPrevLetterTo);
+                if (prevLetter === '$') {
+                    wholeWord = '$' + word;
+                    wordRange.anchor = anchorPrevLetterFrom;
+                }
+            }
+            if (isNumeric(wholeWord))
+            {
+                const number = parseInt(word, 10);
+                const rawHexValue = (number.toString(16)).toUpperCase();
+                const hexValue = (editor.getMode().name === 'z80') ? ((number === 0 ? '' : '0') + rawHexValue + 'h')
+                                                                   : ('0x' + rawHexValue);
                 editor.replaceRange(hexValue, wordRange.anchor, wordRange.head);
-            } else if (isHexNum(word)) {
-                const decValue =  (parseInt(word).toString(10)).toUpperCase();
-                editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
+            } else if (isHexNum(wholeWord)) {
+                const decValue = (parseInt(word, 16).toString(10)).toUpperCase();
+                if (decValue !== 'NAN')
+                {
+                    editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
+                }
             } else {
-                const firstSeenIdx = editor.getValue().search(new RegExp(` ${word}[^\\w]`));
+                const firstSeenIdx = editor.getValue().search(new RegExp(`\\b${wholeWord}\\b`));
                 if (firstSeenIdx > 0)
                 {
                     const firstSeenPos = editor.posFromIndex(firstSeenIdx);
-                    if (firstSeenPos.line != clickPos.line)
+                    if (firstSeenPos.line !== clickPos.line)
                     {
                         editor.setCursor(firstSeenPos);
                         clearTooltip();
@@ -408,7 +425,7 @@ function do_cm_custom()
         if (evt.ctrlKey || evt.metaKey)
         {
             const target = evt.target;
-            if (target.innerText != "asm" && target.className.includes("cm-variable"))
+            if (target.innerText !== "asm" && (target.className.includes("variable")))
             {
                 editor.currentHighlightedWord = target;
                 target.style.textDecoration = "underline";
@@ -420,31 +437,49 @@ function do_cm_custom()
                 const word = editor.getRange(wordRange.anchor, wordRange.head);
                 if (word.length > 1)
                 {
-                    const lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(' ' + word + '[^\\w]'))).line;
-                    if (lineNumOfFirstDef > 0 && lineNumOfFirstDef != editor.getCursor().line)
+                    const lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${word}\\b`)));
+                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
                     {
-                        const lineOfFirstDef = editor.getLine(lineNumOfFirstDef);
+                        const lineOfFirstDef = editor.getLine(lineNumOfFirstDef.line);
                         makeTempTooltip(lineOfFirstDef.trim(), target.getBoundingClientRect(), true);
                     }
                 }
-            } else if (target.className.includes("cm-number"))
+            } else if (target.className.includes("number"))
             {
                 editor.currentHighlightedWord = target;
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
                 const clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
                 const wordRange = editor.findWordAt(clickPos);
-                let number = editor.getRange(wordRange.anchor, wordRange.head);
-                if (isNumeric(number))
+                const number = editor.getRange(wordRange.anchor, wordRange.head);
+                let wholeWord = number;
+                if (editor.getMode().name === 'z80')
                 {
-                    number = parseInt(number);
+                    const anchorPrevLetterFrom = {ch: wordRange.anchor.ch - 1, line: wordRange.anchor.line, sticky: null};
+                    const anchorPrevLetterTo   = {ch: wordRange.anchor.ch,     line: wordRange.anchor.line, sticky: null};
+                    const prevLetter = editor.getRange(anchorPrevLetterFrom, anchorPrevLetterTo);
+                    if (prevLetter === '$') {
+                        wholeWord = '$' + number;
+                        wordRange.anchor = anchorPrevLetterFrom;
+                    }
+                }
+                if (isNumeric(wholeWord))
+                {
+                    wholeWord = parseInt(number, 10);
                     target.style.textDecoration = "underline";
                     target.style.backgroundColor = "lightgreen";
-                    makeTempTooltip(`${number} == 0x${(number.toString(16)).toUpperCase()}`, target.getBoundingClientRect(), true);
-                } else if (isHexNum(number)) {
-                    const decNum = parseInt(number);
+                    const rawHexValue = (wholeWord.toString(16).toUpperCase());
+                    const hexValue = (editor.getMode().name === 'z80') ? ((wholeWord === 0 ? '' : '0') + rawHexValue + 'h')
+                                                                       : ('0x' + rawHexValue);
+                    makeTempTooltip(`${wholeWord} == ${hexValue}`, target.getBoundingClientRect(), true);
+                } else if (isHexNum(wholeWord)) {
+                    const decNum = parseInt(number, 16);
                     target.style.textDecoration = "underline";
                     target.style.backgroundColor = "lightgreen";
-                    makeTempTooltip(`${number} == ${(decNum.toString(10)).toUpperCase()}`, target.getBoundingClientRect(), true);
+                    const numStr = (decNum.toString(10)).toUpperCase();
+                    if (numStr !== 'NAN')
+                    {
+                        makeTempTooltip(`${wholeWord} == ${numStr}`, target.getBoundingClientRect(), true);
+                    }
                 }
             }
         }

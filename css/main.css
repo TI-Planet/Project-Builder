@@ -165,3 +165,12 @@ div.alert[data-notify="container"] {
     -ms-user-select: none;
     user-select: none;
 }
+
+/*** override ***/
+
+.form-horizontal .checkbox, .form-horizontal .checkbox-inline, .form-horizontal .radio, .form-horizontal .radio-inline {
+    padding-top: 5px;
+    padding-bottom: 1px;
+    margin-top: 0;
+    margin-bottom: 0;
+}

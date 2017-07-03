@@ -38,15 +38,17 @@ if (!isset($pb))
             cm.showHint({hint: CodeMirror.hint.anyword});
         };
 
+        const isAsmFile = proj.currFile.endsWith(".asm");
         editor = CodeMirror.fromTextArea(textarea, {
             lineNumbers: true,
             styleActiveLine: true,
             matchBrackets: true,
-            indentUnit: proj.currFile.endsWith(".asm") ? 8 : 4,
-            tabSize: proj.currFile.endsWith(".asm") ? 8 : 4,
+            indentWithTabs: isAsmFile,
+            indentUnit: isAsmFile ? 8 : 4,
+            tabSize: isAsmFile ? 8 : 4,
             foldGutter: true,
             showTrailingSpace: true,
-            mode: proj.currFile.endsWith(".asm") ? "text/x-ez80" : "text/x-csrc",
+            mode: isAsmFile ? "text/x-ez80" : (proj.currFile.match(/\.[ch]pp$/i) ? "text/x-c++src" : "text/x-csrc"),
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Ctrl-Space": "autocomplete"},
             highlightSelectionMatches: {showToken: /\w/},
