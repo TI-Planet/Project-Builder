@@ -25,7 +25,6 @@ pauseEmul = function(paused)
     document.getElementById('emu_playpause_btn').className = paused ? 'btn btn-success btn-sm' : 'btn btn-default btn-sm';
     document.getElementById('pauseButtonIcon').className = paused ? 'glyphicon glyphicon-play' : 'glyphicon glyphicon-pause';
     document.getElementById('pauseButtonLabel').innerHTML = paused ? 'Resume' : 'Pause';
-    Module['ccall']('emu_set_emulation_paused', 'void', ['number'], [paused]);
     Module['ccall'](paused ? 'emsc_pause_main_loop' : 'emsc_resume_main_loop', 'void', [], []);
     repaint();
 }
@@ -45,7 +44,7 @@ initLCD = function()
     var bufPtr = Module['_malloc'](bufSize);
     var buf = new Uint8Array(Module['HEAPU8']['buffer'], bufPtr, bufSize);
 
-    var wrappedPaint = Module['cwrap']('paint_LCD_to_JS', 'void', ['number']);
+    var wrappedPaint = Module['cwrap']('paint_LCD_to_JS', 'void');
 
     Module['ccall']('set_lcd_js_ptr', 'void', ['number'], [ buf.byteOffset ]);
 

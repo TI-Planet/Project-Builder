@@ -91,7 +91,7 @@ if (!isset($pb))
                 print: function() { },
                 printErr: function(text) {
                     if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                    alert(text);
+                    console.log("[Error] " + text);
                 },
                 canvas: (function() { return document.getElementById('emu_canvas'); })(),
                 setStatus: function(text) { console.log(text); },
