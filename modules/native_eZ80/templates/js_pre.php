@@ -107,6 +107,8 @@ if ($currProject->isMultiuser())
 <script src="<?= $modulePath ?>codemirror/matchesonscrollbar.js"></script>
 <script src="<?= $modulePath ?>codemirror/trailingspace.js"></script>
 <script src="<?= $modulePath ?>codemirror/jump-to-line.js"></script>
+<script src="<?= $modulePath ?>codemirror/diff_match_patch.js"></script>
+<script src="<?= $modulePath ?>codemirror/merge.js"></script>
 
 <?php
 if ($currProject->isMulti_ReadWrite())

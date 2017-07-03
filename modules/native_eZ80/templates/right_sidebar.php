@@ -109,7 +109,9 @@ if (!isset($pb))
             script.onload = function() {
                 localforage.getItem('ce_rom').then(function(ce_rom) {
                     if (ce_rom !== null) {
-                        fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                        setTimeout(function() {
+                            fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                        }, 1000);
                     }
                 }).catch(function(err) {
                     console.log("Error while getting ROM from LF", err);
