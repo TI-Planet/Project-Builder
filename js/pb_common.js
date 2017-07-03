@@ -37,6 +37,18 @@ function loadProjConfig()
     editorPostSetup();
 }
 
+function editorPostSetupAlways()
+{
+    if (proj.show_bottom_tools === false) {
+        toggleBottomTools(0);
+    }
+    if (!proj.cursors) {
+        proj.cursors = {};
+    }
+    $(".hasTooltip, [data-toggle='tooltip']").tooltip({container: 'body'});
+    toggleOutline(proj.show_code_outline, true);
+}
+
 function editorPostSetup()
 {
     if (proj.use_dark === true) {
@@ -48,11 +60,7 @@ function editorPostSetup()
     if (proj.show_right_sidebar === false) {
         toggleRightSidebar(0);
     }
-    if (proj.show_bottom_tools === false) {
-        toggleBottomTools(0);
-    }
-    if (!proj.cursors) { proj.cursors = {}; }
-    toggleOutline(proj.show_code_outline, true);
+    editorPostSetupAlways();
 }
 
 function saveProjConfig()

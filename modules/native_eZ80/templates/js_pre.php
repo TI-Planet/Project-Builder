@@ -82,7 +82,7 @@ if ($currProject->isMultiuser())
             do_cm_custom();
             init_post_js_2(true);
             editor.setOption("readOnly", wasReadOnly);
-            editorPostSetup();
+            editorPostSetupAlways();
         });
     }
 </script>
