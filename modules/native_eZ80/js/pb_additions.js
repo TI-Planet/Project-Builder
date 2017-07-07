@@ -57,12 +57,12 @@ function renameFile(oldName)
 {
     $('.tooltip').hide();
     let err = false;
-    const newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,h,asm)", oldName);
+    const newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)", oldName);
     if (newName === null || !isValidFileName(newName))
     {
         err = true;
         if (newName) {
-            showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: c,h,asm");
+            showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc");
         }
     }
     if (newName === oldName) {
@@ -138,7 +138,7 @@ function saveFile(callback)
 
 function isValidFileName(name)
 {
-    return /^[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm)$/i.test(name);
+    return /^[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm|inc)$/i.test(name);
 }
 
 function deleteCurrentFile()
@@ -169,12 +169,12 @@ function addFile(name)
     let err = false;
     if (!name || !isValidFileName(name))
     {
-        name = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,h,asm)");
+        name = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)");
         if (name === null || !isValidFileName(name))
         {
             err = true;
             if (name) {
-                showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: c,h,asm");
+                showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc");
             }
         }
     }
@@ -356,7 +356,7 @@ function parseBuildLog(log)
     {
         for (let i = 0; i < log.length; i++)
         {
-            const regex = /(\w+\.(?:c|h|asm))\s+\((\d+),(\d+)\)\s+:\s+(.*?)\s+\((\d+)\)\s(.*?)$/gmi;
+            const regex = /(\w+\.(?:c|h|asm|inc))\s+\((\d+),(\d+)\)\s+:\s+(.*?)\s+\((\d+)\)\s(.*?)$/gmi;
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {

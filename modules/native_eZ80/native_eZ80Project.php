@@ -23,7 +23,7 @@ class native_eZ80Project extends Project
     const MODULE_NAME = 'C/C++ IDE for the TI CE calculators';
     const MODULE_DESCRIPTION = 'C/C++ IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
-    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|cpp|h|hpp|asm)$/i";
+    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|cpp|h|hpp|asm|inc)$/i";
 
     private $backend;
     private $availableFiles;

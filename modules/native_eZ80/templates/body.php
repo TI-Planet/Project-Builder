@@ -37,7 +37,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
-                if (substr($currProject->getCurrentFile(), -4) !== '.asm')
+                if (preg_match('/\.(asm|inc)$/', $currProject->getCurrentFile()) === 1)
                 {
                     echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
                 }

@@ -38,7 +38,7 @@ if (!isset($pb))
             cm.showHint({hint: CodeMirror.hint.anyword});
         };
 
-        const isAsmFile = proj.currFile.endsWith(".asm");
+        const isAsmFile = /\.(asm|inc)$/.test(proj.currFile);
         editor = CodeMirror.fromTextArea(textarea, {
             lineNumbers: true,
             styleActiveLine: true,
