@@ -103,6 +103,40 @@ if (!isset($pb))
                 Module.setStatus = function(text) { if (text) alert('[post-exception status] ' + text); };
             };
 
+            if (false) /* FIXME */
+            {
+                var load_cemu_js = function ()
+                {
+                    var script = document.createElement('script');
+                    script.src = "<?= $modulePath ?>js/emu/cemu_web.js";
+                    document.body.appendChild(script);
+
+                    localforage.getItem('ce_rom').then(function (ce_rom)
+                    {
+                        if (ce_rom !== null)
+                        {
+                            fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                        }
+                    }).catch(function (err)
+                    {
+                        console.log("Error while getting ROM from LF", err);
+                    });
+
+                };
+                if (typeof WebAssembly !== "undefined")
+                {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', "<?= $modulePath ?>js/emu/cemu_web.wasm", true);
+                    xhr.responseType = 'arraybuffer';
+                    xhr.onload = function () { Module.wasmBinary = xhr.response; };
+                    xhr.onloadend = load_cemu_js; // hm, wat
+                    xhr.send(null);
+                } else
+                {
+                    load_cemu_js();
+                }
+            }
+
             var script = document.createElement('script');
             script.src = "<?= $modulePath ?>js/emu/cemu_web.js";
             document.body.appendChild(script);

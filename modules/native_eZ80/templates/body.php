@@ -20,6 +20,9 @@ if (!isset($pb))
 {
     die('Ahem ahem');
 }
+
+$llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && git rev-parse --short HEAD)'), ENT_QUOTES);
+
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
     <textarea id="fakeContainer" style="display:none" title=""><?= $currProject->getCurrentFileSourceHTML(); ?></textarea>

@@ -15,18 +15,18 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
   var ez80 = parserConfig.ez80;
   var keywords1, keywords2;
   if (ez80) {
-    keywords1 = /^(exx?|(ld|cp)([di]r?)?|[lp]ea|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|mlt|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|[de]i|halt|im|in([di]mr?|ir?|irx|2r?)|ot(dmr?|[id]rx|imr?)|out(0?|[di]r?|[di]2r?)|tst(io)?|slp)(\.([sl]?i)?[sl])?\b/i;
-    keywords2 = /^(((call|j[pr]|rst|ret[in]?)(\.([sl]?i)?[sl])?)|(rs|st)mix)\b/i;
+    keywords1 = /^(exx?|(ld|cp)([di]r?)?|[lp]ea|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|mlt|and|bit|[cs]cf|x?or|res|ret[in]|rst|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|[de]i|halt|im|in([di]mr?|ir?|irx|2r?)|ot(dmr?|[id]rx|imr?)|out(0?|[di]r?|[di]2r?)|tst(io)?|slp|(rs|st)mix)(\.([sl]|[sl]?i[sl]))?\b/i;
+    keywords2 = /^(call|j[pr]|ret)(\.([sl]|[sl]?i[sl]))?\b/i;
   } else {
     keywords1 = /^(exx?|(ld|cp|in)([di]r?)?|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|rst|[de]i|halt|im|ot[di]r|out[di]?)\b/i;
     keywords2 = /^(call|j[pr]|ret[in]?|b_?(call|jump))\b/i;
   }
 
-  var variables1 = /^(af?|bc?|c|de?|e|hl?|l|i[xy]?|r|sp)\b/i;
+  var variables1 = /^(af?|bc?|c|de?|e|hl?|l|i[xy][hl]|i|r|sp)\b/i;
   var variables2 = /^(n?[zc]|p[oe]?|m)\b/i;
-  var errors = /^([hl][xy]|i[xy][hl]|slia|sll)\b/i;
-  var numbers = /^([\da-f]+h|(?:\$|%)[\da-f]+|\d+d?)\b/i;
-  var preproc = /^\s*(#define|(#|\.)(include|assume|function)|(#|\.)macro)\b/i;
+  var errors = /^sl(ia|l|1)\b/i;
+  var numbers = /^(\d[\da-f]*h|(?:\$|%)[\da-f]+|\d+d?)\b/i;
+  var preproc = /^\s*[#.]\w+/i;
 
   return {
     startState: function() {

@@ -20,10 +20,10 @@ namespace ProjectBuilder;
 
 class native_eZ80Project extends Project
 {
-    const MODULE_NAME = 'C IDE for the TI CE calculators';
-    const MODULE_DESCRIPTION = 'C IDE for the TI-84 Plus CE / TI-83 Premium CE';
+    const MODULE_NAME = 'C/C++ IDE for the TI CE calculators';
+    const MODULE_DESCRIPTION = 'C/C++ IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
-    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|h|asm)$/i";
+    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|cpp|h|hpp|asm)$/i";
 
     private $backend;
     private $availableFiles;
@@ -110,7 +110,7 @@ class native_eZ80Project extends Project
     public function getCurrentFileSourceHTML()
     {
         $sourceFile = $this->projDirectory . $this->currentFile;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . '/internal/toolchain/projecttemplate/main.c');
+        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . '/../../projects/template/main.c');
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
