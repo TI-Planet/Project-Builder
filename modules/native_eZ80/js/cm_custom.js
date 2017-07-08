@@ -504,7 +504,7 @@ function do_cm_custom()
 
     // Tooltips (inspired from Tern)
 
-    clearTooltip = () => {
+    const clearTooltip = () => {
         if (!editor.state.currentTooltip || !editor.state.currentTooltip.parentNode)
             return;
         editor.off('blur', clearTooltip);
@@ -513,7 +513,7 @@ function do_cm_custom()
         editor.state.currentTooltip = null;
     };
 
-    makeTempTooltip = (content, where, highlight) => {
+    const makeTempTooltip = (content, where, highlight) => {
         if (editor.state.currentTooltip)
             remove(editor.state.currentTooltip);
         editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - 8, content);

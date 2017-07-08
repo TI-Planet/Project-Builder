@@ -93,7 +93,7 @@ if ($currProject->isMultiuser())
 <script src="<?= $modulePath ?>codemirror/z80.js"></script>
 <script src="<?= $modulePath ?>codemirror/dialog.js"></script>
 <script src="<?= $modulePath ?>codemirror/show-hint.js"></script>
-<script src="<?= $modulePath ?>codemirror/anyword-hint.js"></script>
+<script src="<?= $modulePath ?>codemirror/anyword-ctags-hint.js"></script>
 <script src="<?= $modulePath ?>codemirror/brace-fold.js"></script>
 <script src="<?= $modulePath ?>codemirror/closebrackets.js"></script>
 <script src="<?= $modulePath ?>codemirror/comment-fold.js"></script>

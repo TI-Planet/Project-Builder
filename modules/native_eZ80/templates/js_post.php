@@ -33,10 +33,7 @@ if (!isset($pb))
 
         /* CodeMirror init */
 
-        CodeMirror.commands.autocomplete = function (cm)
-        {
-            cm.showHint({hint: CodeMirror.hint.anyword});
-        };
+        CodeMirror.commands.autocomplete = function(cm) { cm.showHint({ hint: CodeMirror.hint.any_and_ctags }); };
 
         const isAsmFile = /\.(asm|inc)$/.test(proj.currFile);
         editor = CodeMirror.fromTextArea(textarea, {
