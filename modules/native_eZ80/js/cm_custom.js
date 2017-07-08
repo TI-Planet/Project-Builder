@@ -89,6 +89,21 @@ function do_cm_custom()
         editor.focus();
     };
 
+    getCommentsAboveLine = (lineNum) => {
+        const doc = editor.getDoc();
+        let lines = [];
+        while (lineNum--) {
+            const line = doc.getLine(lineNum);
+            if (/^\s*(;|\/\/|\/\*)/.test(line))
+            {
+                lines.unshift(line);
+            } else {
+                break;
+            }
+        }
+        return lines;
+    };
+
     $("#codeOutlineList").empty();
     dispCodeOutline = (list) => {
         if (!list || !list.forEach) { return; }
@@ -399,13 +414,18 @@ function do_cm_custom()
                     editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
                 }
             } else {
-                const firstSeenIdx = editor.getValue().search(new RegExp(`\\b${wholeWord}\\b`));
-                if (firstSeenIdx > 0)
+                if (wholeWord.length > 1)
                 {
-                    const firstSeenPos = editor.posFromIndex(firstSeenIdx);
-                    if (firstSeenPos.line !== clickPos.line)
+                    let lineNumOfFirstDef;
+                    let lineDefFromCtags = window.ctags.filter( (val) => val.name === wholeWord ).map( (val) => val.line );
+                    if (lineDefFromCtags.length) {
+                        lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
+                    } else {
+                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${wholeWord}\\b`)));
+                    }
+                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
                     {
-                        editor.setCursor(firstSeenPos);
+                        smartGoToLine(lineNumOfFirstDef.line);
                         clearTooltip();
                     }
                 }
@@ -437,11 +457,21 @@ function do_cm_custom()
                 const word = editor.getRange(wordRange.anchor, wordRange.head);
                 if (word.length > 1)
                 {
-                    const lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${word}\\b`)));
+                    let lineNumOfFirstDef;
+                    let lineDefFromCtags = window.ctags.filter( (val) => val.name === word ).map( (val) => val.line );
+                    if (lineDefFromCtags.length) {
+                        lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
+                    } else {
+                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${word}\\b`)));
+                    }
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
                     {
-                        const lineOfFirstDef = editor.getLine(lineNumOfFirstDef.line);
-                        makeTempTooltip(lineOfFirstDef.trim(), target.getBoundingClientRect(), true);
+                        const commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
+                        let whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
+                        if (commentsAbove.length) {
+                            whatToShow = commentsAbove.join("\n") + "\n" + whatToShow;
+                        }
+                        makeTempTooltip(whatToShow, target.getBoundingClientRect(), true);
                     }
                 }
             } else if (target.className.includes("number"))
@@ -514,15 +544,18 @@ function do_cm_custom()
     };
 
     const makeTempTooltip = (content, where, highlight) => {
-        if (editor.state.currentTooltip)
+        if (editor.state.currentTooltip)  {
             remove(editor.state.currentTooltip);
-        editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - 8, content);
+        }
+        const lines = content.split(/\r\n|\r|\n/).length;
+        const deltaY = (lines > 1) ? 14*lines : 8;
+        editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - deltaY, content);
         if (highlight)
         {
             editor.state.currentTooltip.innerHTML = '';
             CodeMirror(editor.state.currentTooltip, {
                 value: content,
-                mode: 'text/x-csrc',
+                mode: (editor.getMode().name === 'z80') ? 'text/x-ez80' : 'text/x-csrc',
                 lineNumbers: false,
                 readOnly: true,
                 theme: 'xq-light'

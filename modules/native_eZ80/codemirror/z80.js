@@ -74,6 +74,8 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
           if (errors.test(w))
             return 'error';
 
+          return 'asm-variable';
+
         } else if (stream.match(numbers)) {
           return 'asm-number';
 
@@ -109,10 +111,10 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
                 } else if (numbers.test(w))
                 {
                     return 'asm-number';
+                } else {
+                    return 'asm-variable';
                 }
             }
-
-            return null;
         }
 
 
