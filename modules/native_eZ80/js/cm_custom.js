@@ -420,7 +420,7 @@ function do_cm_custom()
                     let lineDefFromCtags = window.ctags.filter( (val) => val.name === wholeWord ).map( (val) => val.line );
                     if (lineDefFromCtags.length) {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
-                    } else {
+                    } else if (editor.getMode().name !== 'z80') {
                         lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${wholeWord}\\b`)));
                     }
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
@@ -461,7 +461,7 @@ function do_cm_custom()
                     let lineDefFromCtags = window.ctags.filter( (val) => val.name === word ).map( (val) => val.line );
                     if (lineDefFromCtags.length) {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
-                    } else {
+                    } else if (editor.getMode().name !== 'z80') {
                         lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${word}\\b`)));
                     }
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
