@@ -22,7 +22,7 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
     keywords2 = /^(call|j[pr]|ret[in]?|b_?(call|jump))\b/i;
   }
 
-  var variables1 = /^(af?|bc?|c|de?|e|hl?|l|i[xy][hl]|i|r|sp)\b/i;
+  var variables1 = /^(af?|bc?|c|de?|e|hl?|l|i[xy][hl]?|i|r|sp)\b/i;
   var variables2 = /^(n?[zc]|p[oe]?|m)\b/i;
   var errors = /^sl(ia|l|1)\b/i;
   var numbers = /^(\d[\da-f]*h|(?:\$|%)[\da-f]+|\d+d?)\b/i;
