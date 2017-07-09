@@ -255,6 +255,22 @@ function getCtags(scope, cb)
     });
 }
 
+function downloadCurrentFile(name)
+{
+    name = (typeof(name) === 'undefined') ? (prompt('Name of the file') || proj.currFile) : proj.currFile;
+    const dlLink = document.createElement('a');
+    dlLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(editor.getValue()));
+    dlLink.setAttribute('download', name);
+
+    if (document.createEvent) {
+        const event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        dlLink.dispatchEvent(event);
+    } else {
+        dlLink.click();
+    }
+}
+
 function cleanProj(callback)
 {
     const cleanButton = document.getElementById('cleanButton');

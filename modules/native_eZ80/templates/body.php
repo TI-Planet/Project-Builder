@@ -92,7 +92,10 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li title="Download the project's source code files in a .zip archive"><a onclick="$('#zipDlForm').submit(); return false">Download project as .zip</a></li>
+                <li class="hasTooltip" data-placement="right" title="Download this file only"><a onclick="downloadCurrentFile(proj.currFile); return false">Download current file</a></li>
+                <li class="hasTooltip" data-placement="right" title="Download this file only as..."><a onclick="downloadCurrentFile(); return false">Download current file as...</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="hasTooltip" data-placement="right" title="Download all the project's files in a .zip archive"><a onclick="$('#zipDlForm').submit(); return false">Download project as .zip</a></li>
             </ul>
         </div>
         <button id="buildRunButton" class="btn btn-primary btn-sm" onclick="buildAndRunInEmu(); return false" title="Build and run the program in the emulator"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Test in emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
