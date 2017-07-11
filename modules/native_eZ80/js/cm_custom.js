@@ -94,7 +94,7 @@ function do_cm_custom()
         let lines = [];
         while (lineNum--) {
             const line = doc.getLine(lineNum);
-            if (/^\s*(;|\/\/|\/\*)/.test(line))
+            if (/^(;|\/\/|\/\*)/.test(line))
             {
                 lines.unshift(line);
             } else {
@@ -150,7 +150,7 @@ function do_cm_custom()
 
             html += `</li>`;
         });
-        $("#codeOutlineList").html(html);
+        $("#codeOutlineList").html(html).find(".hasTooltip").tooltip({container: 'body', placement: 'left'});
         recalcOutlineSize();
     };
 
