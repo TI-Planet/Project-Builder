@@ -413,7 +413,7 @@ function do_cm_custom()
                 {
                     editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
                 }
-            } else {
+            } else if (e.target.classList.contains("cm-variable")) {
                 if (wholeWord.length > 1)
                 {
                     let lineNumOfFirstDef;
@@ -421,9 +421,9 @@ function do_cm_custom()
                     if (lineDefFromCtags.length) {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
                     } else if (editor.getMode().name !== 'z80') {
-                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${wholeWord}\\b`)));
+                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
                     }
-                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
+                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                     {
                         smartGoToLine(lineNumOfFirstDef.line);
                         clearTooltip();
@@ -444,8 +444,9 @@ function do_cm_custom()
     myMouseOverHandler = evt => {
         if (evt.ctrlKey || evt.metaKey)
         {
+            const isEditorASM = editor.getMode().name === 'z80';
             const target = evt.target;
-            if (target.innerText !== "asm" && (target.className.includes("variable")))
+            if (target.innerText !== "asm" && target.classList.contains("cm-variable"))
             {
                 editor.currentHighlightedWord = target;
                 target.style.textDecoration = "underline";
@@ -457,20 +458,35 @@ function do_cm_custom()
                 const word = editor.getRange(wordRange.anchor, wordRange.head);
                 if (word.length > 1)
                 {
+                    const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
+                    let whatToShow;
                     let lineNumOfFirstDef;
                     let lineDefFromCtags = window.ctags.filter( (val) => val.n === word ).map( (val) => val.l );
                     if (lineDefFromCtags.length) {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags[0])-1 }; // cm format
                     } else if (editor.getMode().name !== 'z80') {
-                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${word}\\b`)));
+                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(wordRegexp));
                     }
-                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== editor.getCursor().line)
+                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                     {
                         const commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
-                        let whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
+                        whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
                         if (commentsAbove.length) {
                             whatToShow = commentsAbove.join("\n") + "\n" + whatToShow;
                         }
+                    }
+                    if (!whatToShow)
+                    {
+                        const defFromSDK = window.sdk_ctags.filter( (tag) => wordRegexp.test(tag.n) ).map( (val) => {
+                            const comment = (isEditorASM ? "; " : "// ") + `${val.k} from ${val.file}, line ${val.l}`;
+                            return comment + "\n" + (val.r ? (val.r + ' ') : '') + val.n + val.a;
+                        });
+                        if (defFromSDK.length) {
+                            whatToShow = defFromSDK[0];
+                        }
+                    }
+                    if (whatToShow)
+                    {
                         makeTempTooltip(whatToShow, target.getBoundingClientRect(), true);
                     }
                 }
@@ -482,7 +498,7 @@ function do_cm_custom()
                 const wordRange = editor.findWordAt(clickPos);
                 const number = editor.getRange(wordRange.anchor, wordRange.head);
                 let wholeWord = number;
-                if (editor.getMode().name === 'z80')
+                if (isEditorASM)
                 {
                     const anchorPrevLetterFrom = {ch: wordRange.anchor.ch - 1, line: wordRange.anchor.line, sticky: null};
                     const anchorPrevLetterTo   = {ch: wordRange.anchor.ch,     line: wordRange.anchor.line, sticky: null};

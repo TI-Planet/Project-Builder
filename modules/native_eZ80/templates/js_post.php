@@ -52,6 +52,8 @@ if (!isset($pb))
             theme: 'xq-light',
             readOnly: <?= (!$currUser->isModeratorOrMore() && $currProject->getAuthorID() !== $currUser->getID() && $currProject->isMultiuser() && !$currProject->isMulti_ReadWrite()) ? 'true' : 'false' ?>
         });
+        enable_sdk_ctags = !isAsmFile;
+        enable_ti84pceInc_ctags = isAsmFile;
         savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
     }
     init_post_js_1();
@@ -178,6 +180,12 @@ if (!isset($pb))
         if (saveButton) saveButton.disabled = true;
 
         <?php } ?>
+
+        if (window.sdk_ctags.length === 0)
+        {
+            getSDKCtags();
+            getInc84PCECtags();
+        }
     }
     init_post_js_2();
 

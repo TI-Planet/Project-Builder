@@ -48,9 +48,16 @@
 
           const fuzzyRegex = new RegExp(curWord.split("").reduce((a, b) => a + '[^' + b + ']*' + b), 'gi');
           // from ctags, fuzzy
-          if (typeof(window.ctags) === 'object')
-          {
+          if (typeof(window.ctags) === 'object') {
               Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
+          }
+          // from sdk_ctags, fuzzy
+          if (typeof(window.sdk_ctags) === 'object' && window.enable_sdk_ctags) {
+              Array.prototype.push.apply(list, window.sdk_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
+          }
+          // from ti84pceInc_ctags, fuzzy
+          if (typeof(window.ti84pceInc_ctags) === 'object' && !window.enable_ti84pceInc_ctags) {
+              Array.prototype.push.apply(list, window.ti84pceInc_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
           }
       }
 

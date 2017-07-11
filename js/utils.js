@@ -70,6 +70,11 @@ function debounce(func, wait, immediate)
     }
 }
 
+function escapeRegExp(str)
+{
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 function ajax(url, params, callbackOK, callbackErr, callbackAlways)
 {
     const xhr = new XMLHttpRequest();

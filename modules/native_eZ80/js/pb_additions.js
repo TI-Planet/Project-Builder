@@ -22,6 +22,10 @@ let build_output_raw = [];
 var build_output = [];
 var build_check  = [];
 var ctags = [];
+var sdk_ctags = [];
+var enable_sdk_ctags = true; // true when not asm
+var ti84pceInc_ctags = [];
+var enable_ti84pceInc_ctags = false; // true when asm
 var lastSavedSource = '';
 var isLastBuildLLVM = false;
 
@@ -262,6 +266,27 @@ function getCtags(scope, cb)
             cb();
         }
     });
+}
+
+function getSDKCtags()
+{
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getSDKCtags`, (allCtags) => {
+        const list = [];
+        Object.keys(allCtags).map( (tagFile) =>
+        {
+            allCtags[tagFile].forEach( (tag) =>
+            {
+                tag.file = tagFile;
+                list.push(tag);
+            });
+        });
+        sdk_ctags = list;
+    });
+}
+
+function getInc84PCECtags()
+{
+    // todo later
 }
 
 function downloadCurrentFile(name)
