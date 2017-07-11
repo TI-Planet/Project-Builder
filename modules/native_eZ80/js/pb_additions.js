@@ -246,7 +246,16 @@ function getCheckLogAndUpdateHints()
 function getCtags(scope, cb)
 {
     if (scope === undefined) { scope = proj.currFile; }
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getCtags&scope=${scope}`, (list) => {
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getCtags&scope=${scope}`, (allCtags) => {
+        const list = [];
+        Object.keys(allCtags).map( (tagFile) =>
+        {
+            allCtags[tagFile].forEach( (tag) =>
+            {
+                tag.file = tagFile;
+                list.push(tag);
+            });
+        });
         ctags = list;
         dispCodeOutline(list);
         if (typeof(cb) === "function") {

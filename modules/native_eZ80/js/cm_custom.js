@@ -108,10 +108,10 @@ function do_cm_custom()
     dispCodeOutline = (list) => {
         if (!list || !list.forEach) { return; }
         let html = "";
-        list.forEach( (val) =>
+        list.forEach( (tag) =>
         {
             let lblClass;
-            switch (val.kind)
+            switch (tag.k)
             {
                 case 'label':
                 case 'function':
@@ -137,15 +137,15 @@ function do_cm_custom()
                 default:
                     lblClass = 'default';
             }
-            const retType = val.rettype ? `data-rettype="${val.rettype}"` : "";
-            const args    = val.args    ? `data-args="${val.args}"`       : "";
-            const name    = val.name.startsWith("__anon") ? '<i class="text-muted">(anon)</i>' : val.name;
-            const indent  = val.scope   ? (12 * (1 + (val.scope.match(/::/g) || []).length)) : 0;
+            const retType = tag.r ? `data-rettype="${tag.r}"` : "";
+            const args    = tag.a    ? `data-args="${tag.a}"`       : "";
+            const name    = tag.n.startsWith("__anon") ? '<i class="text-muted">(anon)</i>' : tag.n;
+            const indent  = tag.s   ? (12 * (1 + (tag.s.match(/::/g) || []).length)) : 0;
             const offset  = indent > 0  ? ` style='margin-left:${indent}px'` : "";
             html += `<li${offset}>`;
 
-            html += `<span title="${val.kind}" class="label label-${lblClass}">${val.kind.charAt(0).toUpperCase()}</span>`;
-            html += `<span class="taglink" ${retType} ${args} onclick="smartGoToLine(${val.line}-1)">${name}`;
+            html += `<span title="${tag.k}" class="hasTooltip label label-${lblClass}">${tag.k.charAt(0).toUpperCase()}</span>`;
+            html += `<span class="taglink" ${retType} ${args} onclick="smartGoToLine(${tag.l - 1})">${name}`;
             html += `</span>`;
 
             html += `</li>`;
@@ -417,7 +417,7 @@ function do_cm_custom()
                 if (wholeWord.length > 1)
                 {
                     let lineNumOfFirstDef;
-                    let lineDefFromCtags = window.ctags.filter( (val) => val.name === wholeWord ).map( (val) => val.line );
+                    let lineDefFromCtags = window.ctags.filter( (val) => val.n === wholeWord ).map( (val) => val.l );
                     if (lineDefFromCtags.length) {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
                     } else if (editor.getMode().name !== 'z80') {
@@ -458,9 +458,9 @@ function do_cm_custom()
                 if (word.length > 1)
                 {
                     let lineNumOfFirstDef;
-                    let lineDefFromCtags = window.ctags.filter( (val) => val.name === word ).map( (val) => val.line );
+                    let lineDefFromCtags = window.ctags.filter( (val) => val.n === word ).map( (val) => val.l );
                     if (lineDefFromCtags.length) {
-                        lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
+                        lineNumOfFirstDef = { line: parseInt(lineDefFromCtags[0])-1 }; // cm format
                     } else if (editor.getMode().name !== 'z80') {
                         lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${word}\\b`)));
                     }

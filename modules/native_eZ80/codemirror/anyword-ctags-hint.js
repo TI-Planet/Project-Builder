@@ -45,13 +45,12 @@
           }
           list = list.sort();
 
+
+          const fuzzyRegex = new RegExp(curWord.split("").reduce((a, b) => a + '[^' + b + ']*' + b), 'gi');
           // from ctags, fuzzy
           if (typeof(window.ctags) === 'object')
           {
-              const fuzzyRegex = new RegExp(curWord.split("").reduce((a, b) => a + '[^' + b + ']*' + b), 'gi');
-              const list2 = window.ctags.filter((val) => val.name.match(fuzzyRegex)).map((val) => val.name).sort();
-              // append to the list
-              Array.prototype.push.apply(list, list2);
+              Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
           }
       }
 
