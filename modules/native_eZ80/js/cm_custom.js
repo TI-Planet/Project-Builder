@@ -413,7 +413,7 @@ function do_cm_custom()
                 {
                     editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
                 }
-            } else if (e.target.classList.contains("cm-variable")) {
+            } else if (e.target.classList.contains("cm-variable") || e.target.classList.contains("cm-asm-variable")) {
                 if (wholeWord.length > 1)
                 {
                     let lineNumOfFirstDef;
@@ -446,7 +446,7 @@ function do_cm_custom()
         {
             const isEditorASM = editor.getMode().name === 'z80';
             const target = evt.target;
-            if (target.innerText !== "asm" && target.classList.contains("cm-variable"))
+            if (target.innerText !== "asm" && (target.classList.contains("cm-variable") || target.classList.contains("cm-asm-variable")))
             {
                 editor.currentHighlightedWord = target;
                 target.style.textDecoration = "underline";
