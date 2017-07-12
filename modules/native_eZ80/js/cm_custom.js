@@ -382,6 +382,15 @@ function do_cm_custom()
         }
     };
 
+    editor.on("keyup", debounce(function (cm, event) {
+        const toFilter = [ 13, 27, 37, 38, 39, 40 ]; // disable esc, enter, and arrows
+        if (!cm.state.completionActive &&     /* Enables keyboard navigation in autocomplete list */
+            toFilter.indexOf(event.keyCode) < 0)
+        {
+            CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+        }
+    }, 500));
+
     editor.on("mousedown", (cm, e) => {
         if (e.ctrlKey || e.metaKey)
         {
