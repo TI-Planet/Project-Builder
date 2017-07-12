@@ -395,7 +395,8 @@ function do_cm_custom()
         if (e.ctrlKey || e.metaKey)
         {
             e.preventDefault(); // Don't move the cursor there
-            const clickPos = editor.coordsChar({left: e.clientX, top: e.clientY});
+            const clickElementRect = e.target.getBoundingClientRect();
+            const clickPos = editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top});
             const wordRange = editor.findWordAt(clickPos);
             const word = editor.getRange(wordRange.anchor, wordRange.head).trim();
             let wholeWord = word;
@@ -462,9 +463,10 @@ function do_cm_custom()
                 target.style.backgroundColor = "lightcyan";
                 target.style.cursor = "pointer";
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
-                const clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
-                const wordRange = editor.findWordAt(clickPos);
                 const word = editor.getRange(wordRange.anchor, wordRange.head);
+                const hoverElementRect = target.getBoundingClientRect();
+                const hoverPos = editor.coordsChar({left: hoverElementRect.left, top: hoverElementRect.top});
+                const wordRange = editor.findWordAt(hoverPos);
                 if (word.length > 0)
                 {
                     const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
