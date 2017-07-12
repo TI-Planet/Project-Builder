@@ -394,13 +394,16 @@ function do_cm_custom()
     editor.on("mousedown", (cm, e) => {
         if (e.ctrlKey || e.metaKey)
         {
+            const isEditorASM = editor.getMode().name === 'z80';
+
             e.preventDefault(); // Don't move the cursor there
             const clickElementRect = e.target.getBoundingClientRect();
             const clickPos = editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top});
             const wordRange = editor.findWordAt(clickPos);
             const word = editor.getRange(wordRange.anchor, wordRange.head).trim();
             let wholeWord = word;
-            if (editor.getMode().name === 'z80')
+
+            if (isEditorASM)
             {
                 const anchorPrevLetterFrom = {ch: wordRange.anchor.ch - 1, line: wordRange.anchor.line, sticky: null};
                 const anchorPrevLetterTo   = {ch: wordRange.anchor.ch,     line: wordRange.anchor.line, sticky: null};
@@ -410,6 +413,7 @@ function do_cm_custom()
                     wordRange.anchor = anchorPrevLetterFrom;
                 }
             }
+
             if (isNumeric(wholeWord))
             {
                 const number = parseInt(word, 10);
@@ -426,13 +430,31 @@ function do_cm_custom()
             } else if (e.target.classList.contains("cm-variable") || e.target.classList.contains("cm-asm-variable")) {
                 if (wholeWord.length > 0)
                 {
+                    // Try from file ctags first
                     let lineNumOfFirstDef;
                     let lineDefFromCtags = window.ctags.filter( (val) => val.n === wholeWord ).map( (val) => val.l );
-                    if (lineDefFromCtags.length) {
+                    if (lineDefFromCtags.length)
+                    {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags)-1 }; // cm format
-                    } else if (editor.getMode().name !== 'z80') {
-                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
                     }
+                    else
+                    {
+                        // Only file ctags makes sense for asm, so if nothing was found, abort.
+                        if (isEditorASM) {
+                            // Todo: handle ti84pce.inc ctags here, and for asm only
+                            return;
+                        }
+
+                        // Then try from sdk ctags
+                        let ctag_from_sdk = window.sdk_ctags.filter( (val) => val.n === wholeWord );
+                        if (ctag_from_sdk.length)
+                        {
+                        } else {
+                            // Otherwise try from any word in the file
+                            lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
+                        }
+                    }
+
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                     {
                         smartGoToLine(lineNumOfFirstDef.line);
@@ -463,42 +485,62 @@ function do_cm_custom()
                 target.style.backgroundColor = "lightcyan";
                 target.style.cursor = "pointer";
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
-                const word = editor.getRange(wordRange.anchor, wordRange.head);
                 const hoverElementRect = target.getBoundingClientRect();
                 const hoverPos = editor.coordsChar({left: hoverElementRect.left, top: hoverElementRect.top});
                 const wordRange = editor.findWordAt(hoverPos);
+                const word = editor.getRange(wordRange.anchor, wordRange.head).trim();
                 if (word.length > 0)
                 {
                     const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
-                    let whatToShow;
                     let lineNumOfFirstDef;
+
+                    // Try from file ctags first
                     let lineDefFromCtags = window.ctags.filter( (val) => val.n === word ).map( (val) => val.l );
                     if (lineDefFromCtags.length) {
                         lineNumOfFirstDef = { line: parseInt(lineDefFromCtags[0])-1 }; // cm format
-                    } else if (editor.getMode().name !== 'z80') {
+                    }
+                    else
+                    {
+                        // Only file ctags makes sense for asm, so if nothing was found, abort.
+                        if (isEditorASM) {
+                            // Todo: handle ti84pce.inc ctags here, and for asm only
+                            return;
+                        }
+
+                        // Then try from sdk ctags
+                        if (word.length >= 4)
+                        {
+                            const defFromSDK = window.sdk_ctags.filter( (tag) => wordRegexp.test(tag.n) ).map( (val) => {
+                                const retType = (val.r && !val.r.startsWith("__anon")) ? (val.r + ' ') : '';
+                                const name    = val.n ? val.n : '';
+                                const args    = val.a ? val.a : '';
+                                const kind    =   (val.k === 'enumerator') ? 'enum value'
+                                                : (val.k === 'prototype')  ? 'function'
+                                                :  val.k;
+                                const comment = (isEditorASM ? "; " : "// ") + `${kind} from ${val.file}, line ${val.l}`;
+                                return comment + `\n${retType}${name}${args}`;
+                            });
+
+                            if (defFromSDK.length) {
+                                makeTempTooltip(defFromSDK[0], target.getBoundingClientRect(), true);
+                                return;
+                            }
+                        }
+
+                        // Otherwise try from any word in the file
                         lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(wordRegexp));
                     }
+
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                     {
-                        const commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
-                        whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
+                        let whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
+                        let commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
                         if (commentsAbove.length) {
                             whatToShow = commentsAbove.join("\n") + "\n" + whatToShow;
                         }
-                    }
-                    if (!whatToShow)
-                    {
-                        const defFromSDK = window.sdk_ctags.filter( (tag) => wordRegexp.test(tag.n) ).map( (val) => {
-                            const comment = (isEditorASM ? "; " : "// ") + `${val.k} from ${val.file}, line ${val.l}`;
-                            return comment + "\n" + (val.r ? (val.r + ' ') : '') + val.n + val.a;
-                        });
-                        if (defFromSDK.length) {
-                            whatToShow = defFromSDK[0];
+                        if (whatToShow.length) {
+                            makeTempTooltip(whatToShow, target.getBoundingClientRect(), true);
                         }
-                    }
-                    if (whatToShow)
-                    {
-                        makeTempTooltip(whatToShow, target.getBoundingClientRect(), true);
                     }
                 }
             } else if (target.className.includes("number"))
