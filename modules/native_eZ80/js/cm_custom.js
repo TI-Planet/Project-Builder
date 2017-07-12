@@ -397,13 +397,13 @@ function do_cm_custom()
             e.preventDefault(); // Don't move the cursor there
             const clickPos = editor.coordsChar({left: e.clientX, top: e.clientY});
             const wordRange = editor.findWordAt(clickPos);
-            const word = editor.getRange(wordRange.anchor, wordRange.head);
+            const word = editor.getRange(wordRange.anchor, wordRange.head).trim();
             let wholeWord = word;
             if (editor.getMode().name === 'z80')
             {
                 const anchorPrevLetterFrom = {ch: wordRange.anchor.ch - 1, line: wordRange.anchor.line, sticky: null};
                 const anchorPrevLetterTo   = {ch: wordRange.anchor.ch,     line: wordRange.anchor.line, sticky: null};
-                const prevLetter = editor.getRange(anchorPrevLetterFrom, anchorPrevLetterTo);
+                const prevLetter = editor.getRange(anchorPrevLetterFrom, anchorPrevLetterTo).trim();
                 if (prevLetter === '$') {
                     wholeWord = '$' + word;
                     wordRange.anchor = anchorPrevLetterFrom;
@@ -423,7 +423,7 @@ function do_cm_custom()
                     editor.replaceRange(decValue, wordRange.anchor, wordRange.head);
                 }
             } else if (e.target.classList.contains("cm-variable") || e.target.classList.contains("cm-asm-variable")) {
-                if (wholeWord.length > 1)
+                if (wholeWord.length > 0)
                 {
                     let lineNumOfFirstDef;
                     let lineDefFromCtags = window.ctags.filter( (val) => val.n === wholeWord ).map( (val) => val.l );
@@ -432,7 +432,7 @@ function do_cm_custom()
                     } else if (editor.getMode().name !== 'z80') {
                         lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
                     }
-                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== wordRange.head.line)
+                    if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                     {
                         smartGoToLine(lineNumOfFirstDef.line);
                         clearTooltip();
@@ -465,7 +465,7 @@ function do_cm_custom()
                 const clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
                 const wordRange = editor.findWordAt(clickPos);
                 const word = editor.getRange(wordRange.anchor, wordRange.head);
-                if (word.length > 1)
+                if (word.length > 0)
                 {
                     const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
                     let whatToShow;
@@ -476,7 +476,7 @@ function do_cm_custom()
                     } else if (editor.getMode().name !== 'z80') {
                         lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(wordRegexp));
                     }
-                    if (lineNumOfFirstDef && lineNumOfFirstDef.line > 0 && lineNumOfFirstDef.line !== wordRange.head.line)
+                    if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                     {
                         const commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
                         whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
@@ -505,13 +505,13 @@ function do_cm_custom()
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
                 const clickPos = editor.coordsChar({left: evt.clientX, top: evt.clientY});
                 const wordRange = editor.findWordAt(clickPos);
-                const number = editor.getRange(wordRange.anchor, wordRange.head);
+                const number = editor.getRange(wordRange.anchor, wordRange.head).trim();
                 let wholeWord = number;
                 if (isEditorASM)
                 {
                     const anchorPrevLetterFrom = {ch: wordRange.anchor.ch - 1, line: wordRange.anchor.line, sticky: null};
                     const anchorPrevLetterTo   = {ch: wordRange.anchor.ch,     line: wordRange.anchor.line, sticky: null};
-                    const prevLetter = editor.getRange(anchorPrevLetterFrom, anchorPrevLetterTo);
+                    const prevLetter = editor.getRange(anchorPrevLetterFrom, anchorPrevLetterTo).trim();
                     if (prevLetter === '$') {
                         wholeWord = '$' + number;
                         wordRange.anchor = anchorPrevLetterFrom;
