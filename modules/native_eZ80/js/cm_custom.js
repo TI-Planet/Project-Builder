@@ -464,26 +464,29 @@ function do_cm_custom()
                         }
 
                         // Then try from sdk ctags
-                        let ctag_from_sdk = window.sdk_ctags.filter( (val) => val.n === wholeWord );
-                        if (ctag_from_sdk.length)
+                        if (word.length >= 4)
                         {
-                            ctag_from_sdk = ctag_from_sdk[0];
-                            const line = parseInt(ctag_from_sdk.l);
-                            const isFromLibs = [ 'graphx.h', 'fileioc.h', 'keypadc.h', 'graphx.h' ].indexOf(ctag_from_sdk.file) > -1;
-                            const isFromCE   = [ 'debug.h', 'decompress.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
-                            if (isFromLibs) {
-                                window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
-                            } else if (isFromCE) {
-                                window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/ce/${ctag_from_sdk.file}#L${line}`, '_blank');
-                            } else {
-                                window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/std/${ctag_from_sdk.file}#L${line}`, '_blank');
+                            let ctag_from_sdk = window.sdk_ctags.filter( (val) => val.n === wholeWord );
+                            if (ctag_from_sdk.length)
+                            {
+                                ctag_from_sdk = ctag_from_sdk[0];
+                                const line = parseInt(ctag_from_sdk.l);
+                                const isFromLibs = [ 'graphx.h', 'fileioc.h', 'keypadc.h', 'graphx.h' ].indexOf(ctag_from_sdk.file) > -1;
+                                const isFromCE   = [ 'debug.h', 'decompress.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
+                                if (isFromLibs) {
+                                    window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                } else if (isFromCE) {
+                                    window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/ce/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                } else {
+                                    window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/std/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                }
+                                clearTooltip();
+                                return;
                             }
-                            clearTooltip();
-                            return;
-                        } else {
-                            // Otherwise try from any word in the file
-                            lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
                         }
+
+                        // Otherwise try from any word in the file
+                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
                     }
 
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
