@@ -399,10 +399,26 @@ function do_cm_custom()
             const isEditorASM = editor.getMode().name === 'z80';
 
             e.preventDefault(); // Don't move the cursor there
-            const clickElementRect = e.target.getBoundingClientRect();
-            const clickPos = editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top});
-            const wordRange = editor.findWordAt(clickPos);
-            const word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+
+            const target = e.target;
+            const targetText = target.innerText.trim();
+
+            let wordRange = editor.findWordAt(editor.coordsChar({left: e.pageX, top: e.pageY}));
+            let word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+            if (word !== targetText)
+            {
+                const clickElementRect = e.target.getBoundingClientRect();
+                wordRange = editor.findWordAt(editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top}));
+                word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+                if (word !== targetText)
+                {
+                    return;
+                }
+            }
+            if (!word.length) {
+                return;
+            }
+
             let wholeWord = word;
 
             if (isEditorASM)
@@ -493,6 +509,7 @@ function do_cm_custom()
         {
             const isEditorASM = editor.getMode().name === 'z80';
             const target = evt.target;
+            const targetText = target.innerText.trim();
             if (target.innerText !== "asm" && (target.classList.contains("cm-variable") || target.classList.contains("cm-asm-variable")))
             {
                 editor.currentHighlightedWord = target;
@@ -500,10 +517,20 @@ function do_cm_custom()
                 target.style.backgroundColor = "lightcyan";
                 target.style.cursor = "pointer";
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
-                const hoverElementRect = target.getBoundingClientRect();
-                const hoverPos = editor.coordsChar({left: hoverElementRect.left, top: hoverElementRect.top});
+                const hoverPos = editor.coordsChar({left: evt.pageX, top: evt.pageY});
                 const wordRange = editor.findWordAt(hoverPos);
-                const word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+                let word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+                if (word !== targetText)
+                {
+                    const clickElementRect = target.getBoundingClientRect();
+                    const hoverPos = editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top});
+                    const wordRange = editor.findWordAt(hoverPos);
+                    word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+                    if (word !== targetText)
+                    {
+                        return;
+                    }
+                }
                 if (word.length > 0)
                 {
                     const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
@@ -598,7 +625,7 @@ function do_cm_custom()
             }
         }
     };
-    editor.getWrapperElement().addEventListener("mouseover", myMouseOverHandler);
+    editor.getWrapperElement().addEventListener("mousemove", myMouseOverHandler);
 
     document.addEventListener("keydown", evt => {
         evt = evt || window.event;
