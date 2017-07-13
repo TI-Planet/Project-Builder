@@ -382,8 +382,10 @@ function do_cm_custom()
         }
     };
 
-    editor.on("keyup", debounce(function (cm, event) {
-        const toFilter = [ 13, 27, 37, 38, 39, 40 ]; // disable esc, enter, and arrows
+    editor.on("keyup", debounce(function (cm, event)
+    {
+        // disable esc, enter, shift, ctrl, alt, windows/cmd, select/cmd, and arrows
+        const toFilter = [ 13, 27, 16, 17, 18, 91, 93, 37, 38, 39, 40 ];
         if (!cm.state.completionActive &&     /* Enables keyboard navigation in autocomplete list */
             toFilter.indexOf(event.keyCode) < 0)
         {
