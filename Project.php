@@ -92,7 +92,7 @@ abstract class Project
         $this->name = $name;
         $this->internalName = $internalName;
         $this->multiuser = $multiuser;
-        $this->multi_readwrite = $wantReadWrite;
+        $this->multi_readwrite = $multiuser && $wantReadWrite;
         $this->chatEnabled = $chatEnabled;
         $this->createdTstamp = $cTime;
         $this->updatedTstamp = $uTime;
@@ -236,7 +236,7 @@ abstract class Project
         if (is_bool($multiuser) && is_bool($wantReadWrite))
         {
             $this->multiuser = $multiuser;
-            $this->multi_readwrite = $wantReadWrite;
+            $this->multi_readwrite = $multiuser && $wantReadWrite;
             return true;
         }
         return false;
