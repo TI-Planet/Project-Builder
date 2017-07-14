@@ -20,7 +20,7 @@ namespace ProjectBuilder;
 error_reporting(0);
 ini_set('display_errors', 0);
 
-// For possible types
+require_once 'PBStatus.php';
 require_once 'ProjectFactory.php';
 
 abstract class Project
@@ -263,7 +263,7 @@ abstract class Project
 
     public function doUserAction(UserInfo $user, array $params = [])
     {
-        return '[Error] Nothing to see here...';
+        return PBStatus::Error('Nothing to see here...');
     }
 
 }

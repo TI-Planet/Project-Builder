@@ -16,7 +16,8 @@
 
 namespace ProjectBuilder;
 
-require 'ProjectManager.php';
+require_once 'PBStatus.php';
+require_once 'ProjectManager.php';
 
 $projectID = (isset($_GET['id']) && !empty($_GET['id'])) ? $_GET['id'] : null;
 $fileName = (isset($_GET['file']) && !empty($_GET['file'])) ? $_GET['file'] : null;
@@ -114,11 +115,11 @@ if ($projectID !== null)
             if ($_GET['csrf_token'] !== $pb->getCurrentUser()->getSID())
             {
                 header('HTTP/1.0 401 Unauthorized');
-                die(json_encode('[Error] Your session has expired - please re-login.'));
+                die(json_encode(PBStatus::Error('Your session has expired - please re-login.')));
             }
         } else {
             header('HTTP/1.0 401 Unauthorized');
-            die(json_encode("[Error] Your session isn't recognized - please [re]login."));
+            die(json_encode(PBStatus::Error("Your session isn't recognized - please [re]login.")));
         }
         /******** CSRF Token stuff ********/
 

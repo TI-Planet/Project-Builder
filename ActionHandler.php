@@ -16,6 +16,7 @@
 
 namespace ProjectBuilder;
 
+require_once 'PBStatus.php';
 require_once 'ProjectManager.php';
 
 header('Content-Type: application/json');
@@ -32,11 +33,11 @@ if (isset($_POST['id']) && !empty($_POST['id']))
             if ($_POST['csrf_token'] !== $pb->getCurrentUser()->getSID())
             {
                 header('HTTP/1.0 401 Unauthorized');
-                die(json_encode('[Error] Your session has expired - please re-login.'));
+                die(json_encode(PBStatus::Error('Your session has expired - please re-login.')));
             }
         } else {
             header('HTTP/1.0 401 Unauthorized');
-            die(json_encode("[Error] Your session isn't recognized - please [re]login."));
+            die(json_encode(PBStatus::Error("Your session isn't recognized - please [re]login.")));
         }
         /******** CSRF Token stuff ********/
 
@@ -46,10 +47,10 @@ if (isset($_POST['id']) && !empty($_POST['id']))
             if ($pmLastError !== null)
             {
                 header('HTTP/1.0 400 Bad request');
-                die(json_encode('[Error] ' . $pmLastError));
+                die(json_encode(PBStatus::Error($pmLastError)));
             } else {
                 $actionResult = $pb->doUserAction($_POST);
-                if (is_string($actionResult) && strpos($actionResult, '[Error]') === 0)
+                if (PBStatus::isError($actionResult))
                 {
                     header('HTTP/1.0 400 Bad request');
                 }
@@ -57,13 +58,13 @@ if (isset($_POST['id']) && !empty($_POST['id']))
             }
         } else {
             header('HTTP/1.0 400 Bad request');
-            die(json_encode('[Error] This project does not exist or you do not have access to it'));
+            die(json_encode(PBStatus::Error('This project does not exist or you do not have access to it')));
         }
     } else {
         header('HTTP/1.0 400 Bad request');
-        die(json_encode('[Error] No action given'));
+        die(json_encode(PBStatus::Error('No action given')));
     }
 } else {
     header('HTTP/1.0 400 Bad request');
-    die(json_encode('[Error] No project ID given'));
+    die(json_encode(PBStatus::Error('No project ID given')));
 }
