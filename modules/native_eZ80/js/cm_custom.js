@@ -473,12 +473,13 @@ function do_cm_custom()
                                 const line = parseInt(ctag_from_sdk.l);
                                 const isFromLibs = [ 'graphx.h', 'fileioc.h', 'keypadc.h', 'graphx.h' ].indexOf(ctag_from_sdk.file) > -1;
                                 const isFromCE   = [ 'debug.h', 'decompress.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
+                                const baseURL = 'https://github.com/CE-Programming/toolchain/blob/a3f0cb7/';
                                 if (isFromLibs) {
-                                    window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                    window.open(`${baseURL}/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 } else if (isFromCE) {
-                                    window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/ce/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                    window.open(`${baseURL}/src/ce/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 } else {
-                                    window.open(`https://github.com/CE-Programming/toolchain/blob/v7.2/src/std/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                    window.open(`${baseURL}/src/std/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 }
                                 clearTooltip();
                                 return;
