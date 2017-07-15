@@ -22,10 +22,10 @@ require_once 'ProjectManager.php';
 $projectID = (isset($_GET['id']) && !empty($_GET['id'])) ? $_GET['id'] : null;
 $fileName = (isset($_GET['file']) && !empty($_GET['file'])) ? $_GET['file'] : null;
 
-$pb = new ProjectManager($projectID, ['id' => $projectID, 'file' => $fileName]);
+$pm = new ProjectManager($projectID, ['id' => $projectID, 'file' => $fileName]);
 
 /*
-if ($pb->getCurrentUser()->getID() !== 1381) {
+if ($pm->getCurrentUser()->getID() !== 1381) {
     header( "HTTP/1.1 503 Service Unavailable", true, 503 );
     header( "Retry-After: 3600" );
     die("Maintenance in progress, please come back soon!");
@@ -64,7 +64,7 @@ if ($isMobile === 1)
 }
 
 // Don't do much with bots for now...
-if ($pb->getCurrentUser()->isBot())
+if ($pm->getCurrentUser()->isBot())
 {
     $content = "<!DOCTYPE html>
     <head>
@@ -90,7 +90,7 @@ More info: <a href='https://tiplanet.org/forum/viewtopic.php?f=41&amp;t=18118'>h
 }
 
 // Until we decide what to do...
-if ($pb->getCurrentUser()->isAnonymous())
+if ($pm->getCurrentUser()->isAnonymous())
 {
     $url = 'https://tiplanet.org/forum/ucp.php?mode=login&redirect=' . urlencode($_SERVER['REQUEST_URI']);
     header('Location: ' . $url);
@@ -99,7 +99,7 @@ if ($pb->getCurrentUser()->isAnonymous())
 
 if ($projectID !== null)
 {
-    if ($pb->hasValidCurrentProject())
+    if ($pm->hasValidCurrentProject())
     {
         require 'templates/existingProject.php';
     } else {
@@ -112,7 +112,7 @@ if ($projectID !== null)
         /******** CSRF Token stuff ********/
         if (isset($_GET['csrf_token']) && !empty($_GET['csrf_token']))
         {
-            if ($_GET['csrf_token'] !== $pb->getCurrentUser()->getSID())
+            if ($_GET['csrf_token'] !== $pm->getCurrentUser()->getSID())
             {
                 header('HTTP/1.0 401 Unauthorized');
                 die(json_encode(PBStatus::Error('Your session has expired - please re-login.')));
@@ -126,10 +126,10 @@ if ($projectID !== null)
         require 'templates/newOrLoadProject.php';
     } else
     {
-        $userProjects = $pb->getUserProjectsDataFromDB(1);
+        $userProjects = $pm->getUserProjectsDataFromDB(1);
         if (count($userProjects) > 0)
         {
-            $uid = $pb->getCurrentUser()->getID();
+            $uid = $pm->getCurrentUser()->getID();
             $projKey = "{$uid}_{$userProjects[0]->created}_{$userProjects[0]->randkey}";
             $url = 'https://tiplanet.org/pb/?id=' . $projKey;
             header('Location: ' . $url);

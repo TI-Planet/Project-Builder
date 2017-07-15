@@ -16,7 +16,7 @@
 
 /* This content will be included and displayed.
    This page should not be called directly. */
-if (!isset($pb))
+if (!isset($pm))
 {
     die('Ahem ahem');
 }
@@ -53,7 +53,7 @@ if ($currProject->isMultiuser())
     };
 </script>
 
-<?php if ($pb->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+<?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
     <script src="<?= $modulePath ?>js/pb_additions.js"></script>
 <?php } else { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>

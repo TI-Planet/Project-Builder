@@ -25,12 +25,12 @@ if (isset($_POST['id']) && !empty($_POST['id']))
 {
     if (isset($_POST['action']) && !empty($_POST['action']))
     {
-        $pb = new ProjectManager($_POST['id']);
+        $pm = new ProjectManager($_POST['id']);
 
         /******** CSRF Token stuff ********/
         if (isset($_POST['csrf_token']) && !empty($_POST['csrf_token']))
         {
-            if ($_POST['csrf_token'] !== $pb->getCurrentUser()->getSID())
+            if ($_POST['csrf_token'] !== $pm->getCurrentUser()->getSID())
             {
                 header('HTTP/1.0 401 Unauthorized');
                 die(json_encode(PBStatus::Error('Your session has expired - please re-login.')));
@@ -41,15 +41,15 @@ if (isset($_POST['id']) && !empty($_POST['id']))
         }
         /******** CSRF Token stuff ********/
 
-        if ($pb->hasValidCurrentProject())
+        if ($pm->hasValidCurrentProject())
         {
-            $pmLastError = $pb->getLastError();
+            $pmLastError = $pm->getLastError();
             if ($pmLastError !== null)
             {
                 header('HTTP/1.0 400 Bad request');
                 die(json_encode(PBStatus::Error($pmLastError)));
             } else {
-                $actionResult = $pb->doUserAction($_POST);
+                $actionResult = $pm->doUserAction($_POST);
                 if (PBStatus::isError($actionResult))
                 {
                     header('HTTP/1.0 400 Bad request');

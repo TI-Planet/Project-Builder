@@ -18,17 +18,17 @@ namespace ProjectBuilder;
 
 function genSidebar()
 {
-    global $pb;
+    global $pm;
 
-    $currUser = $pb->getCurrentUser();
-    $currProject = $pb->getCurrentProject();
-    $currProjectAuthor = $pb->getCurrentProject()->getAuthor();
+    $currUser = $pm->getCurrentUser();
+    $currProject = $pm->getCurrentProject();
+    $currProjectAuthor = $pm->getCurrentProject()->getAuthor();
 
     $isUserAuthorOfProject = $currProject->getAuthorID() === $currUser->getID();
 
     $header = '<h2><a href="/forum/portal.php" title="TI-Planet" target="_blank"><img src="/forum/styles/prosilver/theme/images/tiplanet_header_logo.png" alt="TI-Planet" height="55"/></a>Project Builder<sup><small> β</small></sup></h2>';
 
-    $userProjects = $pb->getUserProjectsDataFromDB();
+    $userProjects = $pm->getUserProjectsDataFromDB();
 
     $content = '';
 

@@ -16,7 +16,7 @@
 
 /* This content will be included and displayed.
    This page should not be called directly. */
-if (!isset($pb))
+if (!isset($pm))
 {
     die('Ahem ahem');
 }
@@ -25,7 +25,7 @@ if (!isset($pb))
     // echo "new or load page";
 
     // For now, hardcode the native_eZ80 project type
-    $proj = $pb->createNewProject('native_eZ80', 'My awesome C Project', 'CPRGMCE');
+    $proj = $pm->createNewProject('native_eZ80', 'My awesome C Project', 'CPRGMCE');
     if ($proj !== null)
     {
         $projID = $proj->getID();

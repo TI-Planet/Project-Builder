@@ -16,7 +16,7 @@
 
 /* This content will be included and displayed.
    This page should not be called directly. */
-if (!isset($pb))
+if (!isset($pm))
 {
     die('Ahem ahem');
 }

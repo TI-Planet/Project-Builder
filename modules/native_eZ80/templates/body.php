@@ -16,7 +16,7 @@
 
 /* This content will be included and displayed.
    This page should not be called directly. */
-if (!isset($pb))
+if (!isset($pm))
 {
     die('Ahem ahem');
 }
@@ -30,7 +30,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
     <div class="filelist">
         <ul class="nav nav-tabs">
             <?= $currProject->getFileListHTML(); ?>
-            <?php if ($pb->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
+            <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
             {
                 if ($currProject->getCurrentFile() !== 'main.c')
                 {
@@ -47,7 +47,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
         </ul>
     </div>
 
-    <?php if ($pb->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+    <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
     <form id="postForm" action="ActionHandler.php" method="POST">
         <input type="hidden" name="id" value="<?= $projectID ?>">
         <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile(); ?>">
@@ -68,7 +68,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
     <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
 
     <div class='subfirepad'>
-        <?php if ($pb->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div class="btn-group">
             <button id="buildButton" class="btn btn-primary btn-sm" onclick="buildAndGetLog(); return false" title="Compile, assemble, and link"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Build <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
@@ -105,7 +105,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
         <?php }?>
     </div>
 
-<?php if ($pb->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+<?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
     <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>
     <div id="bottomTools">
         <textarea id="consoletextarea" disabled></textarea>
