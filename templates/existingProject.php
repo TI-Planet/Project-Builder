@@ -86,7 +86,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 <?php include $templatePath . 'js_post.php'; ?>
 
     <script>
-        <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
         window.onbeforeunload = function() {
             if (!savedSinceLastChange)
             {

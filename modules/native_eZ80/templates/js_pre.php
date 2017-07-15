@@ -53,7 +53,7 @@ if ($currProject->isMultiuser())
     };
 </script>
 
-<?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore() || $currProject->isMulti_ReadWrite()) { ?>
+<?php if ($pb->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
     <script src="<?= $modulePath ?>js/pb_additions.js"></script>
 <?php } else { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
