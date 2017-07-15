@@ -16,11 +16,16 @@
 
 namespace ProjectBuilder;
 
-interface IPDOProvider
-{
-    /**
-     * @return \PDO
-     */
-    public static function getPDO(); // PDO only for now
-}
+require_once 'IDBHelper.php';
+
+// Customize these lines to your setup.
+require_once '/the/path/to/your/own/pdo_connection_maker.php';
+global $PB_CONFIG, $pdo;
+// You have to fill those two config values with your things.
+$PB_CONFIG['DB_TYPE'] = DBHelper_Type::PDO;
+$PB_CONFIG['DB_OBJ']  = $pdo;
+$PB_CONFIG['USER_INFO_PROVIDER_CLASS'] = 'my_UserInfoProvider';
+
+// Require your custom UserInfoProvider here
+require_once '/the/path/to/your/own/my_UserInfoProvider.php';
 
