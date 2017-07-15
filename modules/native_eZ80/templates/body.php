@@ -25,7 +25,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
 
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
-    <textarea id="fakeContainer" style="display:none" title=""><?= $currProject->getCurrentFileSourceHTML(); ?></textarea>
+    <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime(); ?>"><?= $currProject->getCurrentFileSourceHTML(); ?></textarea>
 
     <div class="filelist">
         <ul class="nav nav-tabs">

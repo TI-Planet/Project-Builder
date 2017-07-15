@@ -114,6 +114,16 @@ class native_eZ80Project extends Project
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
+    /**
+     * @return int
+     */
+    public function getCurrentFileMtime()
+    {
+        $sourceFile = $this->projDirectory . $this->currentFile;
+        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . '/../../projects/template/main.c');
+        return (int)filemtime($whichSource);
+    }
+
 
     /****************************************************/
     // Setters

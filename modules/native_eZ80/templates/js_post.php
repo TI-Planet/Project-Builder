@@ -111,7 +111,14 @@ if (!isset($pb))
             firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), user.id, user.name, user.avatar);
 
             firepad.on('ready', () => {
-                if (firepad.isHistoryEmpty())
+              firepadRef.child("history").orderByKey().limitToLast(1).once('value', (s) => {
+                const revSnaps = s.val() || { foo: { t: -1 } };
+                const lastRev = revSnaps[Object.keys(revSnaps)[0]]; // first (and only)
+                const fileMTime_firepad  = (lastRev.t/1000)|0;
+                const fileMTime_tiplanet = fakeContainer.dataset.mtime|0;
+                const firepadIsOld = fileMTime_tiplanet > fileMTime_firepad;
+
+                if (firepadIsOld || firepad.isHistoryEmpty())
                 {
                     firepad.setText(fakeContainer.textContent);
                     lastSavedSource = fakeContainer.textContent;
@@ -139,6 +146,7 @@ if (!isset($pb))
                 savedSinceLastChange = true;
                 lastChangeTS = (new Date).getTime();
                 document.getElementById('saveButton').disabled = true;
+              });
             });
 
             let syncStatusTimeoutID = null;
