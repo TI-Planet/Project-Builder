@@ -139,6 +139,7 @@ function saveFile(callback)
         }
     }
     globalSaveFileRetryCount = 0;
+    stripTrailingSpaces();
     _saveFile_impl(callback);
 }
 

@@ -383,6 +383,18 @@ function do_cm_custom()
         }
     };
 
+    stripTrailingSpaces = () => {
+        let i = 0;
+        const editorLine = editor.getCursor().line;
+        editor.eachLine( (line) => {
+            if (i !== editorLine && /\s+$/.test(line.text))
+            {
+                editor.replaceRange(line.text.replace(/\s+$/, ""), {line: i, ch: 0}, {line: i});
+            }
+            i++;
+        });
+    };
+
     editor.on("keyup", debounce(function (cm, event)
     {
         // disable esc, enter, shift, ctrl, alt, windows/cmd, select/cmd, and arrows
