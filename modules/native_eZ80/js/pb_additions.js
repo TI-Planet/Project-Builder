@@ -21,6 +21,7 @@
 let build_output_raw = [];
 var build_output = [];
 var build_check  = [];
+var code_analysis = [];
 var ctags = [];
 var sdk_ctags = [];
 var enable_sdk_ctags = true; // true when not asm
@@ -97,6 +98,7 @@ const _saveFile_impl = (callback) =>
         ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=save&source=${encodeURIComponent(currSource)}`, () => {
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
+            if (editor.getMode().name === "clike") { getAnalysisLogAndUpdateHintsMaybe(true); }
             getCtags(proj.currFile, () => { filterOutline($("#codeOutlineFilter").val()); });
             if (typeof callback === "function") callback();
         }, () => {
@@ -230,20 +232,29 @@ function buildAndRunInEmu()
     }
 }
 
-function getBuildLogAndUpdateHints()
+function getBuildLogAndUpdateHintsMaybe(doUpdateHints)
 {
     ajax("ActionHandler.php", `id=${proj.pid}&action=getBuildLog`, text => {
         build_output_raw = text;
         build_output = parseBuildLog(build_output_raw);
-        updateHints(true);
+        doUpdateHints && updateHints(true);
     });
 }
 
-function getCheckLogAndUpdateHints()
+function getCheckLogAndUpdateHints(doUpdateHints)
 {
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, text => {
-        build_check = parseCheckLog(text);
-        updateHints(true);
+    ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, lines => {
+        build_check = parseCheckLog(lines);
+        doUpdateHints && updateHints(true);
+    });
+}
+
+function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
+{
+    // Call llvm syntax only
+    ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=analysis`, lines => {
+        code_analysis = parseAnalysisLog(lines);
+        doUpdateHints && updateHints(true);
     });
 }
 
@@ -410,7 +421,8 @@ function parseBuildLog(log)
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4].toLowerCase(), code: matches[5], text: matches[6]})
+                // not doing anything with matches[5] ? (code)
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4].toLowerCase(), category: "", text: matches[6]})
             }
         }
     } else {
@@ -430,11 +442,32 @@ function parseCheckLog(log)
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], code: "", text: matches[4]})
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], category: "", text: matches[4]})
             }
         }
     } else {
         console.log("Error parseCheck: log wasn't an array... ?");
+    }
+    return arr;
+}
+
+function parseAnalysisLog(log)
+{
+    const arr = [];
+    if (log !== null && log.constructor === Array)
+    {
+        for (let i = 0; i < log.length; i++)
+        {
+            const regex = /^\/tmp\/\w+\/(\w+.(?:[chp]+)):(\d+):(\d+): (\w+)(.*?)(?: \[(.*?)\])?$/gmi;
+            const matches = regex.exec(log[i]);
+            if (matches !== null)
+            {
+                const category = (matches.length >= 7 && matches[6]) ? matches[6] : "";
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: category, text: matches[5]});
+            }
+        }
+    } else {
+        console.log("Error parseAnalysisLog: log wasn't an array... ?");
     }
     return arr;
 }

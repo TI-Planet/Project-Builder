@@ -321,7 +321,7 @@ function do_cm_custom()
         });
     };
 
-    updateHints = silent => {
+    updateHints = (silent) => {
         editor.operation(() => {
             let i;
             for (i = 0; i < widgets.length; ++i)
@@ -330,7 +330,7 @@ function do_cm_custom()
             }
             widgets.length = 0;
 
-            const combined_logs = build_output.concat(build_check);
+            const combined_logs = build_output.concat(build_check).concat(code_analysis);
 
             if (combined_logs.length)
             {
@@ -357,6 +357,7 @@ function do_cm_custom()
                 icon.innerHTML = (err.type === "error") ? "!!" : "?";
                 icon.className = (err.type === "error") ? "lint-error-icon" : "lint-warning-icon";
                 const tmp = document.createElement("span");
+                tmp.title = err.category;
                 tmp.style['margin-left'] = '12px';
                 tmp.innerHTML = `<pre class='inline-lint-msg'>${(" ").repeat(Math.max(0, err.col - 2))}</pre>${err.col > 0 ? "<b>↑</b> " : ""}${err.text}`;
                 msg.appendChild(tmp);

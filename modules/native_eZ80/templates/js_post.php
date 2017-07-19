@@ -128,8 +128,9 @@ if (!isset($pm))
                 if (isChangingTab) {
                     updateHints(true);
                 } else {
-                    getBuildLogAndUpdateHints();
-                    getCheckLogAndUpdateHints();
+                    getBuildLogAndUpdateHintsMaybe(false);
+                    getCheckLogAndUpdateHints(false);
+                    getAnalysisLogAndUpdateHintsMaybe(true);
                 }
 
                 proj.cursors[proj.currFile] && editor.setCursor(JSON.parse(proj.cursors[proj.currFile]));
@@ -179,8 +180,9 @@ if (!isset($pm))
             if (isChangingTab) {
                 updateHints(true);
             } else {
-                getBuildLogAndUpdateHints();
-                getCheckLogAndUpdateHints();
+                getBuildLogAndUpdateHintsMaybe(false);
+                getCheckLogAndUpdateHints(false);
+                getAnalysisLogAndUpdateHintsMaybe(true);
             }
         <?php } ?>
 

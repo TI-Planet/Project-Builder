@@ -18,6 +18,7 @@
 // Todo: check if that needs to be here too (it shouldn't...)
 var build_output = [];
 var build_check  = [];
+var code_analysis = [];
 var lastSavedSource = '';
 
 function loadProjConfig()
