@@ -126,7 +126,7 @@ if (!isset($pm))
                     lastSavedSource = editor.getValue();
                 }
                 if (isChangingTab) {
-                    updateHints(true);
+                    getAnalysisLogAndUpdateHintsMaybe(true);
                 } else {
                     getBuildLogAndUpdateHintsMaybe(false);
                     getCheckLogAndUpdateHints(false);
@@ -178,7 +178,7 @@ if (!isset($pm))
 
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
             if (isChangingTab) {
-                updateHints(true);
+                getAnalysisLogAndUpdateHintsMaybe(true);
             } else {
                 getBuildLogAndUpdateHintsMaybe(false);
                 getCheckLogAndUpdateHints(false);
