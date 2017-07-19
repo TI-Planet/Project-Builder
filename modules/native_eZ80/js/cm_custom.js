@@ -523,6 +523,18 @@ function do_cm_custom()
                 target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
                 const hoverPos = editor.coordsChar({left: evt.pageX, top: evt.pageY});
                 const wordRange = editor.findWordAt(hoverPos);
+                {
+                    const LH = editor.getLineHandle(wordRange.head.line);
+                    const LH_cb = function(cm, changeObj) {
+                        const charPos = changeObj.from.ch;
+                        if (charPos >= wordRange.anchor.ch && charPos <= wordRange.head.ch)
+                        {
+                            LH.off("change", LH_cb);
+                            highlightedWordMouseLeaveHandler();
+                        }
+                    };
+                    LH.on("change", LH_cb);
+                }
                 let word = editor.getRange(wordRange.anchor, wordRange.head).trim();
                 if (word !== targetText)
                 {
