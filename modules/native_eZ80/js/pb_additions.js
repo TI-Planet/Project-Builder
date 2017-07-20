@@ -423,7 +423,8 @@ function parseBuildLog(log)
             if (matches !== null)
             {
                 // not doing anything with matches[5] ? (code)
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4].toLowerCase(), category: "", text: matches[6]})
+                const text = matches[6] + '<span style="float:right;margin-right:12px">(ZDS)</span>';
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4].toLowerCase(), category: "", text: text})
             }
         }
     } else {
@@ -443,7 +444,8 @@ function parseCheckLog(log)
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], category: "", text: matches[4]})
+                const text = matches[4] + '<span style="float:right;margin-right:12px">(cppcheck)</span>';
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], category: "", text: text})
             }
         }
     } else {
@@ -459,12 +461,13 @@ function parseAnalysisLog(log)
     {
         for (let i = 0; i < log.length; i++)
         {
-            const regex = /^\/tmp\/\w+\/(\w+.(?:[chp]+)):(\d+):(\d+): (\w+)(.*?)(?: \[(.*?)\])?$/gmi;
+            const regex = /^\/tmp\/\w+\/(\w+.(?:[chp]+)):(\d+):(\d+): (\w+)(.*?)(?: \[(-.*?)\])?$/gmi;
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
                 const category = (matches.length >= 7 && matches[6]) ? matches[6] : "";
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: category, text: matches[5]});
+                const text = matches[4] + " " + matches[5] + '<span style="float:right;margin-right:12px">(clang)</span>';
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: category, text: text});
             }
         }
     } else {
