@@ -395,6 +395,40 @@ function do_cm_custom()
         });
     };
 
+    reindent = () => {
+        if (!/\.[chp]+$/i.test(proj.currFile))
+        {
+            showNotification("danger", "Did not re-indent", "Re-indenting only works on C/C++ code.");
+            return;
+        }
+        const reindentButton = document.getElementById('reindentButton');
+        reindentButton.onclick = (e) => { e.preventDefault(); return false };
+        saveFile(() => {
+            ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=reindent`, txt => {
+                if (txt)
+                {
+                    let i = 0;
+                    const lines = txt.split(/\r\n|\r|\n/);
+                    const newCount = lines.length, oldCount = editor.lineCount();
+                    if (newCount > oldCount)
+                    {
+                        const lastLineNum = editor.lastLine();
+                        const lastWithBreaks = editor.getLine(lastLineNum) + ("\n").repeat(newCount-oldCount);
+                        editor.replaceRange(lastWithBreaks, {line: lastLineNum, ch: 0}, {line: lastLineNum});
+                    }
+                    lines.forEach( (newLine) => {
+                        if (newLine !== editor.getLine(i))
+                        {
+                            editor.replaceRange(newLine, {line: i, ch: 0}, {line: i});
+                        }
+                        i++;
+                    });
+                }
+                reindentButton.onclick = (e) => { reindent(); return false };
+            });
+        });
+    };
+
     editor.on("keyup", debounce(function (cm, event)
     {
         // disable esc, enter, shift, ctrl, alt, windows/cmd, select/cmd, and arrows
