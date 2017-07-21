@@ -424,7 +424,7 @@ function do_cm_custom()
                         i++;
                     });
                 }
-                reindentButton.onclick = (e) => { reindent(); return false };
+                saveFile( () => { reindentButton.onclick = (e) => { reindent(); return false }; } );
             });
         });
     };

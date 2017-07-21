@@ -36,7 +36,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
-                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
+                echo '<li class="active pull-right" style="margin-right:-2px;margin-left:5px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
                 if (substr($currProject->getCurrentFile(), -2) === '.c')
                 {
                     echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
@@ -84,9 +84,9 @@ $llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && gi
                 <li class="hasTooltip" data-placement="right" title="Delete build files then build with ZDS"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
                 <li class="hasTooltip" data-placement="right" title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
                 <li role="separator" class="divider"></li>
-                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-ez80 (<?= $llvmGitSHA ?>)"><a onclick="llvmCompile(); return false">Show ASM from LLVM <sup class="text-muted">alpha</sup></a></li>
-                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-ez80 and diff with the ZDS one"><a onclick="llvmCompileAndDiff(); return false">Diff ASM from LLVM &amp; ZDS <sup class="text-muted">alpha</sup></a></li>
-                <li class="hasTooltip" data-placement="right" title="Compile with LLVM-ez80, and assemble+link with ZDS"><a onclick="buildAndGetLog(true); return false">Build from LLVM ASM <sup class="text-muted pull">alpha</sup></a></li>
+                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-eZ80 (<?= $llvmGitSHA ?>)"><a onclick="llvmCompile(); return false">Show ASM from LLVM <sup class="text-muted">alpha</sup></a></li>
+                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-eZ80 and diff with the ZDS one"><a onclick="llvmCompileAndDiff(); return false">Diff ASM from LLVM &amp; ZDS <sup class="text-muted">alpha</sup></a></li>
+                <li class="hasTooltip" data-placement="right" title="Compile with LLVM-eZ80, and assemble+link with ZDS"><a onclick="buildAndGetLog(true); return false">Build from LLVM ASM <sup class="text-muted pull">alpha</sup></a></li>
             </ul>
         </div>
         <div class="btn-group">
