@@ -210,7 +210,7 @@ function buildAndDownload()
 function buildAndRunInEmu()
 {
     // TODO: use a flag
-    if ($("#rightSidebarContent").css("right")[0] === "-")
+    if ($("#rightSidebar").css("right")[0] === "-")
     {
         toggleRightSidebar();
     }
