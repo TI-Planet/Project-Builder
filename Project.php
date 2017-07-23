@@ -17,7 +17,7 @@
 namespace ProjectBuilder;
 
 // For prod. TODO: Enable for admins
-error_reporting(0);
+error_reporting(-1);
 ini_set('display_errors', 0);
 
 require_once 'PBStatus.php';
