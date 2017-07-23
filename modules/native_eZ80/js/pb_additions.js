@@ -526,7 +526,7 @@ function llvmCompileAndDiff()
         ajax("ActionHandler.php", params, result =>
         {
             if (!result) {
-                result = [ "Hmm, something probably went wrong :(" ];
+                result = [ "Hmm, empty output, or something went wrong." ];
             }
 
             let llvmASM = result.join("\n").replace(/^;.*/gm, "").replace(/^\s*$/gm, "").toLowerCase();
@@ -570,7 +570,7 @@ function llvmCompile()
         ajax("ActionHandler.php", params, (result) =>
         {
             if (!result) {
-                result = [ "Hmm, something probably went wrong :(" ];
+                result = [ "Hmm, empty output, or something went wrong." ];
             }
 
             $('#modalDiffSourceBody').html("<textarea id='llvmModalTextarea'></textarea>");
