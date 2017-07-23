@@ -21,7 +21,7 @@ if (!isset($pm))
     die('Ahem ahem');
 }
 
-$llvmGitSHA = htmlentities(exec('echo $(cd /home/pbbot/debchroot/opt/llvm/ && git rev-parse --short HEAD)'), ENT_QUOTES);
+$llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/ && git rev-parse --short HEAD)'), ENT_QUOTES);
 
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
