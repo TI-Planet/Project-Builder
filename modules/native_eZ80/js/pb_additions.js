@@ -379,7 +379,7 @@ function buildAndGetLog(llvm, callback)
             const buildTimestampElement = document.getElementById('buildTimestamp');
             buildTimestampElement.parentNode.className = "";
             buildTimestampElement.className = buildStatusClass;
-            buildTimestampElement.innerText = (build_output_raw === null) ? '(Error)' : (new Date(+(`${buildTimestamp}000`)).toLocaleTimeString());
+            buildTimestampElement.innerText = (build_output_raw === null) ? '(Error)' : (new Date(buildTimestamp * 1000).toLocaleTimeString());
 
             // Update console
             const consoletextarea = document.getElementById('consoletextarea');

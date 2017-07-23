@@ -122,6 +122,6 @@ if ($currProject->isMulti_ReadWrite())
         echo "<script src='https://cdn.firebase.com/libs/firechat/2.0.1/firechat.min.js'></script>\n";
     }
     echo "<script src='https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js'></script>\n";
-    echo "<script src='{$modulePath}codemirror/firepad-userlist.js'></script>";
+    echo "<script src='/pb/js/codemirror/firepad-userlist.js'></script>";
 }
 
