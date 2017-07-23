@@ -100,6 +100,7 @@ function do_cm_custom()
                 case 'member':
                     lblClass = 'danger';
                     break;
+                case 'externvar':
                 case 'variable':
                     lblClass = 'info';
                     break;

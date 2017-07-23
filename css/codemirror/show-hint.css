@@ -35,3 +35,58 @@ li.CodeMirror-hint-active {
   background: #08f;
   color: white;
 }
+
+/*** for completions ***/
+.CodeMirror-hint {
+  margin: 0;
+  padding: 0 4px;
+  padding-left: 22px;
+  border-radius: 2px;
+  white-space: pre;
+  color: black;
+  cursor: pointer;
+  position: relative;
+  line-height: 1.5;
+}
+
+.CodeMirror-hint:before {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  border-radius: 4px;
+  font-size: 12px;
+  height: 15px;
+  width: 14px;
+  line-height: 15px;
+  text-align: center;
+  color: white;
+  background-color: #777;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.label.CodeMirror-hint:before, .function.CodeMirror-hint:before, .prototype.CodeMirror-hint:before {
+  background: #337ab7;
+}
+.enumerator.CodeMirror-hint:before, .member.CodeMirror-hint:before {
+  background: #d9534f;
+}
+.externvar.CodeMirror-hint:before, .variable.CodeMirror-hint:before {
+  background: #5bc0de;
+}
+.define.CodeMirror-hint:before, .macro.CodeMirror-hint:before, .typedef.CodeMirror-hint:before, .enum.CodeMirror-hint:before, .struct.CodeMirror-hint:before {
+  background: #5cb85c;
+}
+
+.label.CodeMirror-hint:before { content: 'L' }
+.function.CodeMirror-hint:before { content: 'F' }
+.prototype.CodeMirror-hint:before { content: 'F' } /* as func */
+.enumerator.CodeMirror-hint:before { content: 'E' }
+.externvar.CodeMirror-hint:before { content: 'V' }
+.variable.CodeMirror-hint:before { content: 'V' }
+.define.CodeMirror-hint:before { content: 'D' }
+.macro.CodeMirror-hint:before { content: 'M' }
+.typedef.CodeMirror-hint:before { content: 'T' }
+.enum.CodeMirror-hint:before { content: 'E' }
+.struct.CodeMirror-hint:before { content: 'S' }
+.member.CodeMirror-hint:before { content: 'M' }

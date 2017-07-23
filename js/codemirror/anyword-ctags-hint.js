@@ -44,7 +44,7 @@
                           if (line == cur.line && m[0] === curWord) continue;
                           if ((!curWord || m[0].lastIndexOf(curWord, 0) == 0) && !Object.prototype.hasOwnProperty.call(seen, m[0])) {
                               seen[m[0]] = true;
-                              list.push(m[0]);
+                              list.push( { text: m[0] } );
                           }
                       }
                   }
@@ -55,26 +55,26 @@
 
           // from ctags, fuzzy
           if (typeof(window.ctags) === 'object') {
-              Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
+              Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => ({ className: val.k, text: val.n }) ));
           }
           if (!isEditorASM)
           {
               // from sdk_ctags, fuzzy
               if (typeof(window.sdk_ctags) === 'object' && window.enable_sdk_ctags) {
-                  Array.prototype.push.apply(list, window.sdk_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
+                  Array.prototype.push.apply(list, window.sdk_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => ({ className: val.k, text: val.n }) ));
               }
           }
           if (isEditorASM)
           {
               // from ti84pceInc_ctags, fuzzy
-              if (typeof(window.ti84pceInc_ctags) === 'object' && !window.enable_ti84pceInc_ctags) {
-                  Array.prototype.push.apply(list, window.ti84pceInc_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => val.n).sort());
+              if (typeof(window.ti84pceInc_ctags) === 'object' && window.enable_ti84pceInc_ctags) {
+                  Array.prototype.push.apply(list, window.ti84pceInc_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => ({ className: val.k, text: val.n }) ));
               }
           }
 
-          list = list.sort( (str1, str2) => {
-              str1 = str1.toUpperCase();
-              str2 = str2.toUpperCase();
+          list = list.sort( (val1, val2) => {
+              const str1 = val1.text.toUpperCase();
+              const str2 = val2.text.toUpperCase();
               const isPrefix1 = str1.startsWith(upperCaseCurWord);
               const isPrefix2 = str2.startsWith(upperCaseCurWord);
               if (isPrefix1 && !isPrefix2) {
@@ -87,10 +87,13 @@
           });
       }
 
-      // remove duplicates
-      list = list.filter((v, i, a) => a.indexOf(v) === i);
+      // remove unwanted stuff
+      list = list.filter((thing) => !thing.text.startsWith('__anon'));
 
-        return {
+      // remove duplicates
+      list = list.filter((thing, index, self) => self.findIndex((t) => { return typeof(t.className) !== 'undefined' && t.text === thing.text; }) === index);
+
+      return {
           list: list,
           from: CodeMirror.Pos(cur.line, start),
           to: CodeMirror.Pos(cur.line, end)
