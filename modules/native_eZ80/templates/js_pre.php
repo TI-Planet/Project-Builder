@@ -20,6 +20,9 @@ if (!isset($pm))
 {
     die('Ahem ahem');
 }
+
+require_once 'utils.php';
+
 /** @var \ProjectBuilder\native_eZ80Project $currProject */
 
 if ($currProject->isMultiuser())
@@ -54,7 +57,7 @@ if ($currProject->isMultiuser())
 </script>
 
 <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
-    <script src="<?= $modulePath ?>js/pb_additions.js"></script>
+    <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
 <?php } else { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
 <?php } ?>

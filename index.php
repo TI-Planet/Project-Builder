@@ -16,6 +16,7 @@
 
 namespace ProjectBuilder;
 
+require_once 'utils.php';
 require_once 'PBStatus.php';
 require_once 'ProjectManager.php';
 

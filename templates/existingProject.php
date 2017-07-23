@@ -21,6 +21,8 @@ if (!isset($pm))
     die('Ahem ahem');
 }
 
+require_once 'utils.php';
+
 // Globals usable in the templates
 $currUser = $pm->getCurrentUser();
 $currProject = $pm->getCurrentProject();
@@ -39,16 +41,16 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
     <link rel="stylesheet" href="css/animate.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="<?= cacheBusterPath('css/main.css') ?>">
 
 <?php include $templatePath . 'css.php'; ?>
 
     <link rel="stylesheet" data-href="css/dark.css" class="darkThemeLink">
 
-    <script src="js/utils.js"></script>
+    <script src="<?= cacheBusterPath('js/utils.js') ?>"></script>
     <script src="js/localforage.min.js"></script>
 
-    <script src="js/pb_common.js"></script>
+    <script src="<?= cacheBusterPath('js/pb_common.js') ?>"></script>
 
     <script src="js/jquery-2.2.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>

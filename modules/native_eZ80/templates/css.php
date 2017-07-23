@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= $modulePath ?>css/style.css">
+<link rel="stylesheet" href="<?= cacheBusterPath("{$modulePath}css/style.css") ?>">
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/codemirror.min.css">
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/xq-light_custom.css">
 <link rel="stylesheet" href="<?= $modulePath ?>codemirror/matchesonscrollbar.css">

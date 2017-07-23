@@ -20,6 +20,9 @@ if (!isset($pm))
 {
     die('Ahem ahem');
 }
+
+require_once 'utils.php';
+
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
 <script>
@@ -59,7 +62,7 @@ if (!isset($pm))
     init_post_js_1();
 </script>
 
-<script src="<?= $modulePath ?>js/cm_custom.js"></script>
+<script src="<?= cacheBusterPath("{$modulePath}js/cm_custom.js") ?>"></script>
 
 <script>
     globalSyncOK = true;
