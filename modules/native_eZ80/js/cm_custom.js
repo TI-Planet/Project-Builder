@@ -33,30 +33,6 @@ function do_cm_custom()
         doc.replaceRange(`\n${line}`, pos);
     };
 
-    /* Adapted from https://gist.github.com/anaran/9198993 */
-    const showKeybindings = () =>
-    {
-        let i;
-        let keymap = window.CodeMirror.keyMap[window.CodeMirror.defaults.keyMap];
-
-        const newBindingsKeys = Object.keys(editor.state.keyMaps[0]);
-        for (i=0; i<newBindingsKeys.length; i++) {
-            keymap[newBindingsKeys[i]] = editor.state.keyMaps[0][newBindingsKeys[i]].name;
-        }
-        delete keymap.fallthrough;
-
-        const orderedKM = {};
-        Object.keys(keymap).sort().forEach( (key) => { orderedKM[key] = keymap[key]; });
-
-        const modal = $("#keybindingsModal");
-        modal.find("div.modal-body").html("<pre style='max-height:300px'>" + JSON.stringify(orderedKM, null, 2) + "</pre>");
-        modal.modal();
-    };
-    $("#customExtraSBButton").html('<span class="glyphicon glyphicon-question-sign"></span>')
-                             .attr("title", "Editor key bindings")
-                             .on("click", showKeybindings)
-                             .show();
-
     const deleteLine  = (cm) => { cm.execCommand("deleteLine"); };
     const UnIndent    = (cm) => { cm.indentSelection("subtract"); };
     const TabOrIndent = (cm) => {

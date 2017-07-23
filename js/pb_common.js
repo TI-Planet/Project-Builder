@@ -36,6 +36,14 @@ function loadProjConfig()
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
     }
     editorPostSetup();
+
+    if (typeof editor === "object")
+    {
+        $("#customExtraSBButton").html('<span class="glyphicon glyphicon-question-sign"></span>')
+            .attr("title", "Editor key bindings")
+            .on("click", showKeybindings)
+            .show();
+    }
 }
 
 function editorPostSetupAlways()
@@ -234,4 +242,30 @@ function toggleDarkTheme()
     });
     proj.use_dark = !!($(".darkThemeLink").attr('href'));
     saveProjConfig();
+}
+
+/* Adapted from https://gist.github.com/anaran/9198993 */
+function showKeybindings()
+{
+    if (typeof editor !== "object") { return; }
+
+    let i;
+    let keymap = window.CodeMirror.keyMap[window.CodeMirror.defaults.keyMap];
+
+    const newBindingsKeys = Object.keys(editor.state.keyMaps[0]);
+    for (i=0; i<newBindingsKeys.length; i++) {
+        keymap[newBindingsKeys[i]] = editor.state.keyMaps[0][newBindingsKeys[i]].name;
+    }
+    delete keymap.fallthrough;
+
+    const orderedKM = {};
+    Object.keys(keymap).sort().forEach( (key) => { orderedKM[key] = keymap[key]; });
+
+    const modal = $("#keybindingsModal");
+    let keymapHTML = '';
+    Object.keys(orderedKM).forEach( (key) => {
+        keymapHTML += key.split("-").map( (txt) => `<span class="calcButton"><tt>${txt}</tt></span>` ).join("") + ` : ${orderedKM[key]}<br/>`;
+    });
+    modal.find("div.modal-body").html(`<div style='max-height:300px;overflow:scroll;'>${keymapHTML}</div>`);
+    modal.appendTo("body").modal();
 }
