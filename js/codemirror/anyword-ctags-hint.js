@@ -15,6 +15,21 @@
 
     var WORD = /[\w$]+/, RANGE = 500;
 
+    const makeCompletion = (tag) => {
+        const retType = (tag.r && !tag.r.startsWith("__anon")) ? (` -> ${tag.r}`) : '';
+        return {
+            text: tag.n,
+            html: tag.a ? `${tag.n}<i class="text-muted">${tag.a.replace(/,/g, ', ')}${retType}</i>` : tag.n,
+            className: tag.k,
+            hint: (ed, data, comp) => { ed.replaceRange(comp.text, comp.from || data.from, comp.to || data.to, "complete"); },
+            render: (elt, data, cur) => {
+                const newEl = document.createElement("span");
+                newEl.innerHTML = cur.html;
+                elt.appendChild(newEl);
+            },
+        }
+    };
+
     CodeMirror.registerHelper("hint", "any_and_ctags", function(editor, options)
     {
       var word = options && options.word || WORD;
@@ -35,14 +50,14 @@
           if (!isEditorASM)
           {
               // from anywhere, non fuzzy
-              var re = new RegExp(word.source, "gi");
+              const re = new RegExp(word.source, "gi");
               for (var dir = -1; dir <= 1; dir += 2) {
-                  var line = cur.line, endLine = Math.min(Math.max(line + dir * range, editor.firstLine()), editor.lastLine()) + dir;
-                  for (; line != endLine; line += dir) {
-                      var text = editor.getLine(line), m;
+                  let line = cur.line, endLine = Math.min(Math.max(line + dir * range, editor.firstLine()), editor.lastLine()) + dir;
+                  for (; line !== endLine; line += dir) {
+                      let text = editor.getLine(line), m;
                       while (m = re.exec(text)) {
-                          if (line == cur.line && m[0] === curWord) continue;
-                          if ((!curWord || m[0].lastIndexOf(curWord, 0) == 0) && !Object.prototype.hasOwnProperty.call(seen, m[0])) {
+                          if (line === cur.line && m[0] === curWord) continue;
+                          if ((!curWord || m[0].lastIndexOf(curWord, 0) === 0) && !Object.prototype.hasOwnProperty.call(seen, m[0])) {
                               seen[m[0]] = true;
                               list.push( { text: m[0] } );
                           }
@@ -55,20 +70,20 @@
 
           // from ctags, fuzzy
           if (typeof(window.ctags) === 'object') {
-              Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => ({ className: val.k, text: val.n }) ));
+              Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => makeCompletion(val) ));
           }
           if (!isEditorASM)
           {
               // from sdk_ctags, fuzzy
               if (typeof(window.sdk_ctags) === 'object' && window.enable_sdk_ctags) {
-                  Array.prototype.push.apply(list, window.sdk_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => ({ className: val.k, text: val.n }) ));
+                  Array.prototype.push.apply(list, window.sdk_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => makeCompletion(val) ));
               }
           }
           if (isEditorASM)
           {
               // from ti84pceInc_ctags, fuzzy
               if (typeof(window.ti84pceInc_ctags) === 'object' && window.enable_ti84pceInc_ctags) {
-                  Array.prototype.push.apply(list, window.ti84pceInc_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => ({ className: val.k, text: val.n }) ));
+                  Array.prototype.push.apply(list, window.ti84pceInc_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => makeCompletion(val) ));
               }
           }
 

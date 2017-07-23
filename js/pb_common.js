@@ -266,6 +266,6 @@ function showKeybindings()
     Object.keys(orderedKM).forEach( (key) => {
         keymapHTML += key.split("-").map( (txt) => `<span class="calcButton"><tt>${txt}</tt></span>` ).join("") + ` : ${orderedKM[key]}<br/>`;
     });
-    modal.find("div.modal-body").html(`<div style='max-height:300px;overflow:scroll;'>${keymapHTML}</div>`);
+    modal.find("div.modal-body").html(`<div style='max-height:300px;overflow-y:scroll;'>${keymapHTML}</div>`);
     modal.appendTo("body").modal();
 }

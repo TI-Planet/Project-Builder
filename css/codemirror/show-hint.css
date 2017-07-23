@@ -16,7 +16,6 @@
   background: white;
   font-size: 90%;
   font-family: monospace;
-  max-width: 19em;
 
   max-height: 20em;
   overflow-y: auto;
@@ -35,6 +34,10 @@ li.CodeMirror-hint-active {
   background: #08f;
   color: white;
 }
+li.CodeMirror-hint-active .text-muted {
+  color: #cecece;
+}
+
 
 /*** for completions ***/
 .CodeMirror-hint {
