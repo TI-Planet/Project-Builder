@@ -13,35 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#consoletextarea {
-    background-color: #2B2B2B !important;
-}
-
 #statusbar_left, #cemu_notice {
     background-color: #3b3e40 !important;
 }
 
-.CodeMirror {
-    background-color: #D4D4D4 !important;
-}
-
-.CodeMirror-gutters {
-    background-color: #DADADA !important;
-}
-
-.CodeMirror.cm-s-xq-light {
-    -webkit-filter: invert(1) hue-rotate(180deg) !important;
-    filter: invert(1) hue-rotate(180deg) !important;
-}
-
-.CodeMirror.cm-s-xq-light .CodeMirror-activeline-background {
-    background-color: #BBC8DA !important;
-}
-
-.CodeMirror.cm-s-xq-light .CodeMirror-matchingbracket {
-    background-color: #BBB32E !important;
-}
-
-.CodeMirror.cm-s-xq-light .CodeMirror-selected {
-    background: #9db9b9 !important;
+#codeOutline {
+    background-color: #3c3f41;
 }
