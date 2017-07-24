@@ -40,7 +40,7 @@ if (!isset($pm))
 
         <div id="emu_keypad_buttons" style="display:none;">
             <script>
-                var keypad = [
+                const keypad = [
                     ["y=", [4,1]], ["wind", [3,1]], ["zoom", [2,1]], ["trace", [1,1]], ["graph", [0,1]],
                     ["2nd", [5,1]], ["mode", [6,1]], ["del", [7,1]], ["◀", [1,7]], ["<big>▲</big>", [3,7]],
                     ["alpha", [7,2]], ["XTθ<i>n</i>", [7,3]], ["stat", [7,4]], ["<big>▼</big>", [0,7]], ["▶", [2,7]],
@@ -58,9 +58,14 @@ if (!isset($pm))
                         document.write((i%5 == 0) ? '<br>' : '&nbsp;&nbsp;');
                     }
                     var specialClass = i<5 ? 'topRowButton' : '';
-                    document.write('<button class="btn btn-default btn-sm '+ specialClass +'" onmousedown="pressKey('+btn[1][1]+', '+btn[1][0]+', 1);" '
-                                        + 'onmouseup="setTimeout(function() { pressKey('+btn[1][1]+', '+btn[1][0]+', 0); }, 100);">'+btn[0]+'</button>');
+                    document.write(`<button id="cemu_btn_${i}" class="btn btn-default btn-sm ${specialClass}" onmousedown="pressKey(${btn[1][1]}, ${btn[1][0]}, 1);"
+                                           onmouseup="setTimeout(function() \{ pressKey(${btn[1][1]}, ${btn[1][0]}, 0); }, 50);">${btn[0]}</button>`);
                 }
+                // Move arrows where they should be (left, up, down, right)
+                document.getElementById("cemu_btn_8" ).style.cssText = "position: relative; width: 30px; top: 20px;";
+                document.getElementById("cemu_btn_9" ).style.cssText = "position: relative; height: 23px; line-height: 14px; right: 19px; bottom: 8px; width: 45px; margin: 0 15px;";
+                document.getElementById("cemu_btn_13").style.cssText = "position: relative; height: 23px; line-height: 14px; left: 19px; top: 5px; width: 45px; margin: 0 15px;";
+                document.getElementById("cemu_btn_14").style.cssText = "position: relative; width: 30px; bottom: 17px; padding-left: 7px;";
             </script>
         </div>
         <hr id="emu_divider" style="margin:8px;display:none;"/>
