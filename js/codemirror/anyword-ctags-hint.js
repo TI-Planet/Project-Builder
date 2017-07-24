@@ -87,15 +87,26 @@
               }
           }
 
+          // Credits to Runer112 for suggesting this sort function
           list = list.sort( (val1, val2) => {
               const str1 = val1.text.toUpperCase();
               const str2 = val2.text.toUpperCase();
-              const isPrefix1 = str1.startsWith(upperCaseCurWord);
-              const isPrefix2 = str2.startsWith(upperCaseCurWord);
+              const index1 = str1.indexOf(upperCaseCurWord);
+              const index2 = str2.indexOf(upperCaseCurWord);
+              const isPrefix1 = index1 === 0;
+              const isPrefix2 = index2 === 0;
               if (isPrefix1 && !isPrefix2) {
                   return -1;
               }
               if (isPrefix2 && !isPrefix1) {
+                  return 1;
+              }
+              const isSubstr1 = index1 >= 0;
+              const isSubstr2 = index2 >= 0;
+              if (isSubstr1 && !isSubstr2) {
+                  return -1;
+              }
+              if (isSubstr2 && !isSubstr1) {
                   return 1;
               }
               return str1 < str2 ? -1 : str1 > str2 ? 1 : 0;
@@ -105,8 +116,20 @@
       // remove unwanted stuff
       list = list.filter((thing) => !thing.text.startsWith('__anon'));
 
-      // remove duplicates
-      list = list.filter((thing, index, self) => self.findIndex((t) => { return typeof(t.className) !== 'undefined' && t.text === thing.text; }) === index);
+      // remove duplicates (keeping the best one if dup)
+      let namesSeen = {};
+      list = list.filter( (thing, i) => {
+          if (namesSeen[thing.text]) {
+              return false; // already seen
+          }
+          const otherIdx = list.findIndex((t, num) => { return num !== i && t.text === thing.text; });
+          if (otherIdx === -1 || thing.className) // no dup found, or current is better
+          {
+              namesSeen[thing.text] = true;
+              return true;
+          }
+          return false; // don't take this one, take the dup
+      });
 
       return {
           list: list,
