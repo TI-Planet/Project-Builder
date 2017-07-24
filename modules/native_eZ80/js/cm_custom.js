@@ -89,6 +89,8 @@ function do_cm_custom()
             let lblClass;
             switch (tag.k)
             {
+                case 'local':
+                    return; // don't show them in the outline.
                 case 'label':
                 case 'function':
                     lblClass = 'primary';
