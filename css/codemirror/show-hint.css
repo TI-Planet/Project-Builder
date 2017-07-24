@@ -68,28 +68,37 @@ li.CodeMirror-hint-active .text-muted {
   box-sizing: border-box;
 }
 
-.label.CodeMirror-hint:before, .function.CodeMirror-hint:before, .prototype.CodeMirror-hint:before {
+.CodeMirror-hint>span>b {
+  color: darkred;
+}
+
+.label.CodeMirror-hint:before, .prototype.CodeMirror-hint:before, .function.CodeMirror-hint:before {
   background: #337ab7;
+}
+.macro.CodeMirror-hint:before {
+  background: #c09853;
 }
 .enumerator.CodeMirror-hint:before, .member.CodeMirror-hint:before {
   background: #d9534f;
 }
-.externvar.CodeMirror-hint:before, .variable.CodeMirror-hint:before {
+.externvar.CodeMirror-hint:before, .variable.CodeMirror-hint:before, .typedef.CodeMirror-hint:before {
   background: #5bc0de;
 }
-.define.CodeMirror-hint:before, .macro.CodeMirror-hint:before, .typedef.CodeMirror-hint:before, .enum.CodeMirror-hint:before, .struct.CodeMirror-hint:before {
+.define.CodeMirror-hint:before, .enum.CodeMirror-hint:before, .struct.CodeMirror-hint:before, .class.CodeMirror-hint:before {
   background: #5cb85c;
 }
 
+.class.CodeMirror-hint:before { content: 'C' }
+.local.CodeMirror-hint:before { content: 'loc'; font-family: sans-serif; font-size: 68%; }
 .label.CodeMirror-hint:before { content: 'L' }
 .function.CodeMirror-hint:before { content: 'F' }
-.prototype.CodeMirror-hint:before { content: 'F' } /* as func */
+.prototype.CodeMirror-hint:before { content: 'f'; font-family: cursive; font-size: 69%; font-weight: bold; } /* as func */
 .enumerator.CodeMirror-hint:before { content: 'E' }
-.externvar.CodeMirror-hint:before { content: 'V' }
+.enum.CodeMirror-hint:before { content: 'E' }
+.externvar.CodeMirror-hint:before { content: 'v' }
 .variable.CodeMirror-hint:before { content: 'V' }
 .define.CodeMirror-hint:before { content: 'D' }
-.macro.CodeMirror-hint:before { content: 'M' }
+.macro.CodeMirror-hint:before { content: 'm' }
 .typedef.CodeMirror-hint:before { content: 'T' }
-.enum.CodeMirror-hint:before { content: 'E' }
 .struct.CodeMirror-hint:before { content: 'S' }
 .member.CodeMirror-hint:before { content: 'M' }

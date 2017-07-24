@@ -94,6 +94,7 @@ function do_cm_custom()
                     lblClass = 'primary';
                     break;
                 case 'prototype':
+                case 'macro':
                     lblClass = 'warning';
                     break;
                 case 'enumerator':
@@ -102,13 +103,13 @@ function do_cm_custom()
                     break;
                 case 'externvar':
                 case 'variable':
+                case 'typedef':
                     lblClass = 'info';
                     break;
                 case 'define':
-                case 'macro':
-                case 'typedef':
                 case 'enum':
                 case 'struct':
+                case 'class':
                     lblClass = 'success';
                     break;
                 default:
