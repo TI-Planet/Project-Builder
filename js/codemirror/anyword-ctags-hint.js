@@ -19,12 +19,12 @@
         const retType = (tag.r && !tag.r.startsWith("__anon")) ? (` -> ${tag.r}`) : '';
         return {
             text: tag.n,
-            html: tag.a ? `${tag.n}<i class="text-muted">${tag.a.replace(/,/g, ', ')}${retType}</i>` : tag.n,
+            rest: tag.a ? `<i class="text-muted">${tag.a.replace(/,/g, ', ')}${retType}</i>` : '',
             className: tag.k,
             hint: (ed, data, comp) => { ed.replaceRange(comp.text, comp.from || data.from, comp.to || data.to, "complete"); },
             render: (elt, data, cur) => {
                 const newEl = document.createElement("span");
-                newEl.innerHTML = cur.html;
+                newEl.innerHTML = (cur.htmlName || cur.text) + cur.rest;
                 elt.appendChild(newEl);
             },
         }
@@ -110,6 +110,21 @@
                   return 1;
               }
               return str1 < str2 ? -1 : str1 > str2 ? 1 : 0;
+          });
+
+          // Make matches bold
+          list = list.map( (tag) => {
+              let i, tagCurFrom = 0;
+              tag.htmlName = tag.text;
+              for (i=0; i<curWord.length; i++)
+              {
+                  const tagCurIdx = tag.htmlName.toLowerCase().indexOf(curWord[i].toLowerCase(), tagCurFrom);
+                  if (tagCurIdx < 0) { return tag; } // shouldn't happen
+                  const replacement = `<b>${tag.htmlName[tagCurIdx]}</b>`;
+                  tag.htmlName = tag.htmlName.substr(0, tagCurIdx) + replacement + tag.htmlName.substr(tagCurIdx+1);
+                  tagCurFrom = tagCurIdx+replacement.length;
+              }
+              return tag;
           });
       }
 
