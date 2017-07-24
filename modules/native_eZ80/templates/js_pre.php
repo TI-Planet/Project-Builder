@@ -92,8 +92,8 @@ if ($currProject->isMultiuser())
 
 <script src="/pb/js/codemirror/codemirror.min.js"></script>
 <script src="/pb/js/codemirror/active-line.js"></script>
-<script src="/pb/js/codemirror/clike.js"></script>
-<script src="/pb/js/codemirror/z80.js"></script>
+<script src="/pb/js/codemirror/clike.js?v=2"></script>
+<script src="/pb/js/codemirror/z80.js?v=2"></script>
 <script src="/pb/js/codemirror/dialog.js"></script>
 <script src="/pb/js/codemirror/show-hint.js?v=3"></script>
 <script src="/pb/js/codemirror/anyword-ctags-hint.js?v=3"></script>

@@ -363,16 +363,23 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       CodeMirror.defineMIME(mimes[i], mode);
   }
 
+  const CE_additions_types = "int24_t uint24_t u8 u16 u24 u32 s8 s16 s24 s32";
+  const CE_additions_atoms = "true false TRUE FALSE _at _At";
+
+  const all_c_atoms = "NULL null " + CE_additions_atoms;
+
+  const all_c_types = cTypes + " bool _Complex _Bool float_t double_t intptr_t intmax_t " +
+      "int8_t int16_t int32_t int64_t uintptr_t uintmax_t uint8_t uint16_t " +
+      "uint32_t uint64_t " + CE_additions_types;
+
   def(["text/x-csrc", "text/x-c", "text/x-chdr"], {
     name: "clike",
     keywords: words(cKeywords),
-    types: words(cTypes + " bool _Complex _Bool float_t double_t intptr_t intmax_t " +
-                 "int8_t int16_t int32_t int64_t uintptr_t uintmax_t uint8_t uint16_t " +
-                 "int24_t uint24_t uint32_t uint64_t u8 u16 u24 u32 s8 s16 s24 s32"),
+    types: words(all_c_types),
     blockKeywords: words("case do else for if switch while struct"),
     defKeywords: words("struct"),
     typeFirstDefinitions: true,
-    atoms: words("NULL null true false TRUE FALSE _at _At"),
+    atoms: words(all_c_atoms),
     hooks: {"#": cppHook, "*": pointerHook},
     modeProps: {fold: ["brace", "include"]}
   });
@@ -384,11 +391,11 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
                     "this using const_cast inline public throw virtual delete mutable protected " +
                     "alignas alignof constexpr decltype nullptr noexcept thread_local final " +
                     "static_assert override"),
-    types: words(cTypes + " bool wchar_t"),
+    types: words(all_c_types + " wchar_t"),
     blockKeywords: words("catch class do else finally for if struct switch try while"),
     defKeywords: words("class namespace struct enum union"),
     typeFirstDefinitions: true,
-    atoms: words("true false null"),
+    atoms: words(all_c_atoms),
     dontIndentStatements: /^template$/,
     hooks: {
       "#": cppHook,
