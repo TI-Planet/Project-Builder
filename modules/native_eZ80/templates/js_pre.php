@@ -90,7 +90,7 @@ if ($currProject->isMultiuser())
     }
 </script>
 
-<script src="/pb/js/codemirror/codemirror.min.js"></script>
+<script src="/pb/js/codemirror/codemirror.min.js?v=2"></script>
 <script src="/pb/js/codemirror/active-line.js"></script>
 <script src="/pb/js/codemirror/clike.js?v=2"></script>
 <script src="/pb/js/codemirror/z80.js?v=2"></script>
@@ -103,8 +103,8 @@ if ($currProject->isMultiuser())
 <script src="/pb/js/codemirror/foldcode.js"></script>
 <script src="/pb/js/codemirror/foldgutter.js"></script>
 <script src="/pb/js/codemirror/matchbrackets.js"></script>
-<script src="/pb/js/codemirror/search.js"></script>
-<script src="/pb/js/codemirror/searchcursor.js"></script>
+<script src="/pb/js/codemirror/search.min.js"></script>
+<script src="/pb/js/codemirror/searchcursor.min.js"></script>
 <script src="/pb/js/codemirror/match-highlighter.js"></script>
 <script src="/pb/js/codemirror/annotatescrollbar.js"></script>
 <script src="/pb/js/codemirror/matchesonscrollbar.js"></script>

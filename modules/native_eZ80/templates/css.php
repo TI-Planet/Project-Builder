@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="<?= cacheBusterPath("{$modulePath}css/style.css") ?>">
-<link rel="stylesheet" href="/pb/css/codemirror/codemirror.min.css">
+<link rel="stylesheet" href="/pb/css/codemirror/codemirror.min.css?v=2">
 <link rel="stylesheet" href="/pb/css/codemirror/xq-light_custom.css?v=2">
 <link rel="stylesheet" href="/pb/css/codemirror/matchesonscrollbar.css">
 <link rel="stylesheet" href="/pb/css/codemirror/show-hint.css?v=2">
