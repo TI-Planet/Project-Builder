@@ -20,7 +20,7 @@
 /* Other available headers: stdarg.h, setjmp.h, assert.h, ctype.h, float.h, iso646.h, limits.h, errno.h */
 
 /* Put function prototypes here */
-void printText(const char *text, uint8_t x, uint8_t y);
+void printText(const char *text, uint8_t xpos, uint8_t ypos);
 void printTextSmall(const char *text, uint8_t xpos, uint8_t ypos);
 
 /* Put all your code here */
@@ -32,7 +32,7 @@ void main(void)
 
     /* Initialize some strings */
     const char* HelloWorld = "Hello World!";
-    const char* Welcome = "Welcome to C!";
+    const char* Welcome    = "Welcome to C!";
 
     /* Clear the homescreen */
     os_ClrHome();
