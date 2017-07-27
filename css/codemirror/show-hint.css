@@ -72,33 +72,33 @@ li.CodeMirror-hint-active .text-muted {
   color: darkred;
 }
 
-.label.CodeMirror-hint:before, .prototype.CodeMirror-hint:before, .function.CodeMirror-hint:before {
+.ctag-type-label.CodeMirror-hint:before, .ctag-type-prototype.CodeMirror-hint:before, .ctag-type-function.CodeMirror-hint:before {
   background: #337ab7;
 }
-.macro.CodeMirror-hint:before {
+.ctag-type-macro.CodeMirror-hint:before {
   background: #c09853;
 }
-.enumerator.CodeMirror-hint:before, .member.CodeMirror-hint:before {
+.ctag-type-enumerator.CodeMirror-hint:before, .ctag-type-member.CodeMirror-hint:before {
   background: #d9534f;
 }
-.externvar.CodeMirror-hint:before, .variable.CodeMirror-hint:before, .typedef.CodeMirror-hint:before {
+.ctag-type-externvar.CodeMirror-hint:before, .ctag-type-variable.CodeMirror-hint:before, .ctag-type-typedef.CodeMirror-hint:before {
   background: #5bc0de;
 }
-.define.CodeMirror-hint:before, .enum.CodeMirror-hint:before, .struct.CodeMirror-hint:before, .class.CodeMirror-hint:before {
+.ctag-type-define.CodeMirror-hint:before, .ctag-type-enum.CodeMirror-hint:before, .ctag-type-struct.CodeMirror-hint:before, .ctag-type-class.CodeMirror-hint:before {
   background: #5cb85c;
 }
 
-.class.CodeMirror-hint:before { content: 'C' }
-.local.CodeMirror-hint:before { content: 'loc'; font-family: sans-serif; font-size: 68%; }
-.label.CodeMirror-hint:before { content: 'L' }
-.function.CodeMirror-hint:before { content: 'F' }
-.prototype.CodeMirror-hint:before { content: 'f'; font-family: cursive; font-size: 69%; font-weight: bold; } /* as func */
-.enumerator.CodeMirror-hint:before { content: 'E' }
-.enum.CodeMirror-hint:before { content: 'E' }
-.externvar.CodeMirror-hint:before { content: 'v' }
-.variable.CodeMirror-hint:before { content: 'V' }
-.define.CodeMirror-hint:before { content: 'D' }
-.macro.CodeMirror-hint:before { content: 'm' }
-.typedef.CodeMirror-hint:before { content: 'T' }
-.struct.CodeMirror-hint:before { content: 'S' }
-.member.CodeMirror-hint:before { content: 'M' }
+.ctag-type-class.CodeMirror-hint:before { content: 'C' }
+.ctag-type-local.CodeMirror-hint:before { content: 'loc'; font-family: sans-serif; font-size: 68%; }
+.ctag-type-label.CodeMirror-hint:before { content: 'L' }
+.ctag-type-function.CodeMirror-hint:before { content: 'F' }
+.ctag-type-prototype.CodeMirror-hint:before { content: 'f'; font-family: cursive; font-size: 69%; font-weight: bold; } /* as func */
+.ctag-type-enumerator.CodeMirror-hint:before { content: 'E' }
+.ctag-type-enum.CodeMirror-hint:before { content: 'E' }
+.ctag-type-externvar.CodeMirror-hint:before { content: 'v' }
+.ctag-type-variable.CodeMirror-hint:before { content: 'V' }
+.ctag-type-define.CodeMirror-hint:before { content: 'D' }
+.ctag-type-macro.CodeMirror-hint:before { content: 'm' }
+.ctag-type-typedef.CodeMirror-hint:before { content: 'T' }
+.ctag-type-struct.CodeMirror-hint:before { content: 'S' }
+.ctag-type-member.CodeMirror-hint:before { content: 'M' }

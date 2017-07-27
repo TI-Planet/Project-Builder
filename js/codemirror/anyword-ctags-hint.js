@@ -20,7 +20,7 @@
         return {
             text: tag.n,
             rest: tag.a ? `<i class="text-muted">${tag.a.replace(/,/g, ', ')}${retType}</i>` : '',
-            className: tag.k,
+            className: `ctag-type-${tag.k}`,
             hint: (ed, data, comp) => { ed.replaceRange(comp.text, comp.from || data.from, comp.to || data.to, "complete"); },
             render: (elt, data, cur) => {
                 const newEl = document.createElement("span");
