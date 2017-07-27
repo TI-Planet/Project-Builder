@@ -93,6 +93,7 @@ if ($currProject->isMultiuser())
 <script src="js/codemirror/codemirror.min.js?v=2"></script>
 <script src="js/codemirror/active-line.js"></script>
 <script src="js/codemirror/dialog.js"></script>
+<script src="<?= cacheBusterPath('js/codemirror/z80.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/clike.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
