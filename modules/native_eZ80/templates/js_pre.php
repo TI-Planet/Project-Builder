@@ -90,28 +90,28 @@ if ($currProject->isMultiuser())
     }
 </script>
 
-<script src="/pb/js/codemirror/codemirror.min.js?v=2"></script>
-<script src="/pb/js/codemirror/active-line.js"></script>
-<script src="/pb/js/codemirror/clike.js?v=2"></script>
-<script src="/pb/js/codemirror/z80.js?v=2"></script>
-<script src="/pb/js/codemirror/dialog.js"></script>
-<script src="/pb/js/codemirror/show-hint.js?v=3"></script>
-<script src="/pb/js/codemirror/anyword-ctags-hint.js?v=3"></script>
-<script src="/pb/js/codemirror/brace-fold.js"></script>
-<script src="/pb/js/codemirror/closebrackets.js"></script>
-<script src="/pb/js/codemirror/comment-fold.js"></script>
-<script src="/pb/js/codemirror/foldcode.js"></script>
-<script src="/pb/js/codemirror/foldgutter.js"></script>
-<script src="/pb/js/codemirror/matchbrackets.js"></script>
-<script src="/pb/js/codemirror/search.min.js"></script>
-<script src="/pb/js/codemirror/searchcursor.min.js"></script>
-<script src="/pb/js/codemirror/match-highlighter.js"></script>
-<script src="/pb/js/codemirror/annotatescrollbar.js"></script>
-<script src="/pb/js/codemirror/matchesonscrollbar.js"></script>
-<script src="/pb/js/codemirror/trailingspace.js"></script>
-<script src="/pb/js/codemirror/jump-to-line.js"></script>
-<script src="/pb/js/codemirror/diff_match_patch.js"></script>
-<script src="/pb/js/codemirror/merge.js"></script>
+<script src="js/codemirror/codemirror.min.js?v=2"></script>
+<script src="js/codemirror/active-line.js"></script>
+<script src="js/codemirror/dialog.js"></script>
+<script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/clike.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/anyword-ctags-hint.js') ?>"></script>
+<script src="js/codemirror/brace-fold.js"></script>
+<script src="js/codemirror/closebrackets.js"></script>
+<script src="js/codemirror/comment-fold.js"></script>
+<script src="js/codemirror/foldcode.js"></script>
+<script src="js/codemirror/foldgutter.js"></script>
+<script src="js/codemirror/matchbrackets.js"></script>
+<script src="js/codemirror/search.min.js"></script>
+<script src="js/codemirror/searchcursor.min.js"></script>
+<script src="js/codemirror/match-highlighter.js"></script>
+<script src="js/codemirror/annotatescrollbar.js"></script>
+<script src="js/codemirror/matchesonscrollbar.js"></script>
+<script src="js/codemirror/trailingspace.js"></script>
+<script src="js/codemirror/jump-to-line.js"></script>
+<script src="js/codemirror/diff_match_patch.js"></script>
+<script src="js/codemirror/merge.js"></script>
 
 <?php
 if ($currProject->isMulti_ReadWrite())
