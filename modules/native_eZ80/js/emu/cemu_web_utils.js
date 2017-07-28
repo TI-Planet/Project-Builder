@@ -15,7 +15,8 @@ initFuncs = function()
     pressKey = Module['cwrap']('keypad_key_event', 'void', ['number', 'number', 'number']);
     sendKey = Module['cwrap']('sendKey', 'void', ['number']);
     slkp = Module['cwrap']('sendLetterKeyPress', 'void', ['number']);
-    sendVariable = Module['cwrap']('sendVariableLink', 'number', ['string']);
+    //sendVariable = Module['cwrap']('sendVariableLink', 'number', ['string']);
+    set_file_to_send = Module['cwrap']('set_file_to_send', 'void', ['string']);
     resetEmul = Module['cwrap']('emu_reset', 'void', []);
 }
 
@@ -26,7 +27,7 @@ pauseEmul = function(paused)
     document.getElementById('pauseButtonIcon').className = paused ? 'glyphicon glyphicon-play' : 'glyphicon glyphicon-pause';
     document.getElementById('pauseButtonLabel').innerHTML = paused ? 'Resume' : 'Pause';
     Module['ccall'](paused ? 'emsc_pause_main_loop' : 'emsc_resume_main_loop', 'void', [], []);
-    repaint();
+    //repaint();
 }
 
 initLCD = function()
@@ -50,9 +51,7 @@ initLCD = function()
 
     repaint = function()
     {
-        if (emul_is_paused) { return; }
-        /* For some reason, this + requestAnimationFrame is faster than the buffer update triggered from the core... */
-        wrappedPaint();
+        if (emul_is_paused) { window.requestAnimationFrame(repaint); return; }
         imageData.data.set(buf);
         canvasCtx.putImageData(imageData, 0, 0);
         window.requestAnimationFrame(repaint);
@@ -116,7 +115,7 @@ fileLoaded = function(event, filename, isAutoloadedROM)
                 if (emul_is_paused) {
                     pauseEmul(false);
                 }
-                sendVariable(filename);
+                set_file_to_send(filename);
             } else {
                 alert('Please start the emulation with a ROM first!');
             }
