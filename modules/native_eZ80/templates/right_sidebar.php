@@ -89,81 +89,54 @@ if (!isset($pm))
         <script src="<?= $modulePath ?>js/emu/jquery.custom-file-input.js"></script>
 
         <script type='text/javascript'>
-            var Module = {
-                memoryInitializerPrefixURL:'<?= $modulePath ?>js/emu/',
-                preRun: [],
-                postRun: [],
-                print: function() { },
-                printErr: function(text) {
-                    if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                    console.log("[Error] " + text);
-                },
-                canvas: (function() { return document.getElementById('emu_canvas'); })(),
-                setStatus: function(text) { console.log(text); },
-                totalDependencies: 0,
-                monitorRunDependencies: function(left) { }
-            };
-
-            window.onerror = function(event) {
-                Module.setStatus = function(text) { if (text) alert('[post-exception status] ' + text); };
-            };
-
-            if (false) /* FIXME */
+            if (typeof(Atomics) !== "undefined" && typeof(SharedArrayBuffer) !== "undefined")
             {
-                var load_cemu_js = function ()
-                {
-                    var script = document.createElement('script');
-                    script.src = "<?= $modulePath ?>js/emu/cemu_web.js";
-                    document.body.appendChild(script);
+                var Module = {
+                    memoryInitializerPrefixURL:'<?= $modulePath ?>js/emu/',
+                    preRun: [],
+                    postRun: [],
+                    print: function() { },
+                    printErr: function(text) {
+                        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                        console.log("[Error] " + text);
+                    },
+                    canvas: (function() { return document.getElementById('emu_canvas'); })(),
+                    setStatus: function(text) { console.log(text); },
+                    totalDependencies: 0,
+                    monitorRunDependencies: function(left) { }
+                };
 
-                    localforage.getItem('ce_rom').then(function (ce_rom)
-                    {
-                        if (ce_rom !== null)
-                        {
-                            fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                window.onerror = function(event) {
+                    Module.setStatus = function(text) { if (text) alert('[post-exception status] ' + text); };
+                };
+
+                var script = document.createElement('script');
+                script.src = "<?= $modulePath ?>js/emu/cemu_web.js?v=2";
+                document.body.appendChild(script);
+                script.onload = function() {
+                    localforage.getItem('ce_rom').then(function(ce_rom) {
+                        if (ce_rom !== null) {
+                            setTimeout(function() {
+                                fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                            }, 1000);
                         }
-                    }).catch(function (err)
-                    {
+                    }).catch(function(err) {
                         console.log("Error while getting ROM from LF", err);
                     });
-
                 };
-                if (typeof WebAssembly !== "undefined")
+
+                document.getElementById('emu_canvas_container').addEventListener('mouseenter', function() { document.getElementById('screenshot_btn_container').style.display = 'block'; });
+                document.getElementById('emu_canvas_container').addEventListener('mouseleave', function() { document.getElementById('screenshot_btn_container').style.display = 'none'; });
+
+                function emu_screenshot(btn)
                 {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', "<?= $modulePath ?>js/emu/cemu_web.wasm", true);
-                    xhr.responseType = 'arraybuffer';
-                    xhr.onload = function () { Module.wasmBinary = xhr.response; };
-                    xhr.onloadend = load_cemu_js; // hm, wat
-                    xhr.send(null);
-                } else
-                {
-                    load_cemu_js();
+                    btn.href = document.getElementById('emu_canvas').toDataURL('image/png');
+                    return true;
                 }
-            }
-
-            var script = document.createElement('script');
-            script.src = "<?= $modulePath ?>js/emu/cemu_web.js";
-            document.body.appendChild(script);
-            script.onload = function() {
-                localforage.getItem('ce_rom').then(function(ce_rom) {
-                    if (ce_rom !== null) {
-                        setTimeout(function() {
-                            fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
-                        }, 1000);
-                    }
-                }).catch(function(err) {
-                    console.log("Error while getting ROM from LF", err);
-                });
-            };
-
-            document.getElementById('emu_canvas_container').addEventListener('mouseenter', function() { document.getElementById('screenshot_btn_container').style.display = 'block'; });
-            document.getElementById('emu_canvas_container').addEventListener('mouseleave', function() { document.getElementById('screenshot_btn_container').style.display = 'none'; });
-
-            function emu_screenshot(btn)
-            {
-                btn.href = document.getElementById('emu_canvas').toDataURL('image/png');
-                return true;
+            } else {
+                var old_warn = "WebCEmu needs a very recent browser, please upgrade!\n(Chrome 60 / Opera 47, Firefox 55, Safari 10.1, Edge 16)";
+                console.log("Error! " + old_warn);
+                document.getElementById('ROMTransferDiv').innerText = old_warn;
             }
         </script>
 
