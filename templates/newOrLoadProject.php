@@ -31,7 +31,7 @@ if (!isset($pm))
         $projID = $proj->getID();
 
         $baseURL = 'https://' . $_SERVER['SERVER_NAME'] . strtok($_SERVER['REQUEST_URI'], '?') . "?id={$projID}";
-        header("Location: {$baseURL}&file=main.c");
+        header("Location: {$baseURL}");
         die();
     }
 

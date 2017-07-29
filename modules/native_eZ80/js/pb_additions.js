@@ -159,9 +159,8 @@ function deleteCurrentFile()
                 if (idx > -1)
                 {
                     proj.files.splice(idx, 1);
-                    saveProjConfig();
                 }
-                proj.currFile = "main.c";
+                proj.currFile = proj.files[0];
                 saveProjConfig();
                 goToFile(proj.currFile);
             });

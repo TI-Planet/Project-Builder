@@ -24,6 +24,8 @@ class native_eZ80Project extends Project
     const MODULE_DESCRIPTION = 'C/C++ IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
     const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|cpp|h|hpp|asm|inc)$/i";
+    const TEMPLATE_FILE            = 'main.c';
+    const TEMPLATE_FILE_PATH       = '/../../projects/template/main.c';
 
     private $backend;
     private $availableFiles;
@@ -32,11 +34,15 @@ class native_eZ80Project extends Project
     {
         parent::__construct($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
 
-        $this->currentFile = 'main.c'; // default
-
         $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . '*.*')), __CLASS__ . '::isFileNameOK');
-        $this->availableFiles = array_unique(array_merge($this->availableFiles, ['main.c']));
         sort($this->availableFiles);
+        if (count($this->availableFiles) === 0)
+        {
+            // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
+            $this->availableFiles = [ self::TEMPLATE_FILE ];
+        }
+
+        $this->currentFile = $this->availableFiles[0];
     }
 
     public static function cleanPrgmName($prgName = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($prgName)); }
@@ -91,11 +97,7 @@ class native_eZ80Project extends Project
 
             if ($file === $this->currentFile)
             {
-                if ($file !== 'main.c') {
-                    $fileListHTML .= "<li class='active tabover renamableFile {$counterpartClass}'><a title='Click to rename' data-toggle='tooltip' data-placement='bottom' id='currentFileTab' href='#' onclick='renameFile(\"{$file}\"); return false;'>";
-                } else {
-                    $fileListHTML .= "<li class='active tabover {$counterpartClass}'><a id='currentFileTab' href='#' onclick='return false;'>";
-                }
+                $fileListHTML .= "<li class='active tabover renamableFile {$counterpartClass}'><a title='Click to rename' data-toggle='tooltip' data-placement='bottom' id='currentFileTab' href='#' onclick='renameFile(\"{$file}\"); return false;'>";
                 $fileListHTML .= "<span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
             } else {
                 $fileListHTML .= "<li class='{$counterpartClass}'><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'><span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
@@ -110,7 +112,7 @@ class native_eZ80Project extends Project
     public function getCurrentFileSourceHTML()
     {
         $sourceFile = $this->projDirectory . $this->currentFile;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . '/../../projects/template/main.c');
+        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . self::TEMPLATE_FILE_PATH);
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
@@ -120,7 +122,7 @@ class native_eZ80Project extends Project
     public function getCurrentFileMtime()
     {
         $sourceFile = $this->projDirectory . $this->currentFile;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . '/../../projects/template/main.c');
+        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . self::TEMPLATE_FILE_PATH);
         return (int)filemtime($whichSource);
     }
 
@@ -138,7 +140,7 @@ class native_eZ80Project extends Project
     {
         if (is_string($name) && static::isFileNameOK($name))
         {
-            if (file_exists($this->projDirectory . $name))
+            if ($name === self::TEMPLATE_FILE || file_exists($this->projDirectory . $name))
             {
                 $this->currentFile = $name;
                 return true;
@@ -176,5 +178,11 @@ class native_eZ80Project extends Project
         return $this->backend->doUserAction($user, $params);
     }
 
+    public function removeFromAvailableFilesList($file)
+    {
+        if (($key = array_search($file, $this->availableFiles, true)) !== false) {
+            unset($this->availableFiles[$key]);
+        }
+    }
 
 }
