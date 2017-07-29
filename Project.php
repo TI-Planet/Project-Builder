@@ -18,7 +18,7 @@ namespace ProjectBuilder;
 
 // For prod. TODO: Enable for admins
 error_reporting(-1);
-ini_set('display_errors', 0);
+ini_set('display_errors', 'Off');
 
 require_once 'PBStatus.php';
 require_once 'ProjectFactory.php';
@@ -106,7 +106,7 @@ abstract class Project
     /**
      * @return int
      */
-    public function getDBID()
+    final public function getDBID()
     {
         return $this->db_id;
     }
@@ -114,7 +114,7 @@ abstract class Project
     /**
      * @return string
      */
-    public function getID()
+    final public function getID()
     {
         return $this->id;
     }
@@ -122,7 +122,7 @@ abstract class Project
     /**
      * @return string
      */
-    public function getRandKey()
+    final public function getRandKey()
     {
         return $this->randKey;
     }
@@ -130,7 +130,7 @@ abstract class Project
     /**
      * @return int
      */
-    public function getAuthorID()
+    final public function getAuthorID()
     {
         return $this->author->getID();
     }
@@ -138,7 +138,7 @@ abstract class Project
     /**
      * @return UserInfo
      */
-    public function getAuthor()
+    final public function getAuthor()
     {
         return $this->author;
     }
@@ -146,7 +146,7 @@ abstract class Project
     /**
      * @return string
      */
-    public function getType()
+    final public function getType()
     {
         return $this->type;
     }
@@ -154,7 +154,7 @@ abstract class Project
     /**
      * @return string
      */
-    public function getName()
+    final public function getName()
     {
         return $this->name;
     }
@@ -162,7 +162,7 @@ abstract class Project
     /**
      * @return string
      */
-    public function getInternalName()
+    final public function getInternalName()
     {
         return $this->internalName;
     }
@@ -170,7 +170,7 @@ abstract class Project
     /**
      * @return boolean
      */
-    public function isMultiuser()
+    final public function isMultiuser()
     {
         return $this->multiuser;
     }
@@ -178,12 +178,12 @@ abstract class Project
     /**
      * @return boolean
      */
-    public function isMulti_ReadWrite()
+    final public function isMulti_ReadWrite()
     {
         return $this->multi_readwrite;
     }
 
-    public function isChatEnabled()
+    final public function isChatEnabled()
     {
         return $this->chatEnabled;
     }
@@ -191,7 +191,7 @@ abstract class Project
     /**
      * @return int
      */
-    public function getCreatedTstamp()
+    final public function getCreatedTstamp()
     {
         return $this->createdTstamp;
     }
@@ -199,7 +199,7 @@ abstract class Project
     /**
      * @return int
      */
-    public function getUpdatedTstamp()
+    final public function getUpdatedTstamp()
     {
         return $this->updatedTstamp;
     }
@@ -213,7 +213,7 @@ abstract class Project
      * @param mixed $name
      * @return bool
      */
-    public function setName($name)
+    final public function setName($name)
     {
         if (is_string($name))
         {
@@ -231,7 +231,7 @@ abstract class Project
      * @param boolean $wantReadWrite
      * @return bool
      */
-    public function setMultiuser($multiuser, $wantReadWrite)
+    final public function setMultiuser($multiuser, $wantReadWrite)
     {
         if (is_bool($multiuser) && is_bool($wantReadWrite))
         {
@@ -246,7 +246,7 @@ abstract class Project
      * @param int $updatedTstamp
      * @return bool
      */
-    public function setUpdatedTstamp($updatedTstamp)
+    final public function setUpdatedTstamp($updatedTstamp)
     {
         if (is_int($updatedTstamp) && strlen((string)$updatedTstamp) === 10)
         {
