@@ -336,13 +336,18 @@ function do_cm_custom()
                 const icon = msg.appendChild(document.createElement("span"));
                 icon.innerHTML = (err.type === "error") ? "!!" : "?";
                 icon.className = (err.type === "error") ? "lint-error-icon" : "lint-warning-icon";
+                icon.style.position = (err.from === 'cppcheck') ? 'initial' : 'absolute';
+                icon.title = err.from;
                 const tmp = document.createElement("span");
-                tmp.title = err.category;
-                tmp.style['margin-left'] = '12px';
-                tmp.innerHTML = `<pre class='inline-lint-msg'>${(" ").repeat(Math.max(0, err.col - 2))}</pre>${err.col > 0 ? "<b>↑</b> " : ""}${err.text}`;
+                tmp.className = 'lint-content-wrapper';
+                tmp.innerHTML = `<pre class='inline-lint-msg' title="${err.from}">${(" ").repeat(Math.max(0, err.col - 2))}</pre>${err.col > 0 ? "<b>↑</b> " : ""}`;
+                const actualText = document.createElement("span");
+                actualText.innerText = err.text;
+                actualText.title = err.category;
+                tmp.appendChild(actualText);
                 msg.appendChild(tmp);
                 msg.className = "lint-error";
-                widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: true, noHScroll: true}));
+                widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: false}));
                 linesProcessed.push(err.line);
             }
             editor.refresh();
