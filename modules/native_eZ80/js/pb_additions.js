@@ -150,16 +150,23 @@ function isValidFileName(name)
 
 function createFileWithContent(name, content, cb)
 {
+    const escapedName = $('<div/>').text(name).html();
     if (isValidFileName(name))
     {
-        ajax("ActionHandler.php", `id=${proj.pid}&action=addFile&fileName=${name}`, () =>
+        if (proj.files.indexOf(name) === -1)
         {
-            proj.files = proj.files.concat([name]);
-            saveProjConfig();
-            ajax("ActionHandler.php", `id=${proj.pid}&file=${name}&action=save&source=${encodeURIComponent(content)}`, null, null, () => { cb(name) });
-        }, () => { cb(name) });
+            ajax("ActionHandler.php", `id=${proj.pid}&action=addFile&fileName=${name}`, () =>
+            {
+                proj.files = proj.files.concat([name]);
+                saveProjConfig();
+                ajax("ActionHandler.php", `id=${proj.pid}&file=${name}&action=save&source=${encodeURIComponent(content)}`, null, null, () => { cb(name) });
+            }, () => { cb(name) });
+        } else {
+            showNotification("warning", "A file was not created", `'${escapedName}' already exists in the project`, null, 10000);
+            if (typeof(cb) === "function") { cb(name); }
+        }
     } else {
-        showNotification("warning", "A file was not created", `'${name}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)`, null, 10000);
+        showNotification("warning", "A file was not created", `'${escapedName}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)`, null, 10000);
         if (typeof(cb) === "function") { cb(name); }
     }
 }

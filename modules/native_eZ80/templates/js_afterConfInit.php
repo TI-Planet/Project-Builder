@@ -30,27 +30,37 @@ if (!isset($pm))
 <script src="<?= cacheBusterPath('js/jquery.filedrop.js') ?>"></script>
 <script>
     $(function(){
+        let lastOKName = proj.currFile;
         let inviteNotif;
         let progressNotif;
         let progressNotifMsg = '';
+        const editorContainer = $("#editorContainer");
         const progressCallback = (name) => {
             inviteNotif && inviteNotif.close();
-            progressNotifMsg += `${name}, `;
-            if (!progressNotif) {
-                progressNotif = showNotification("info", "File import in progress...", progressNotifMsg, null, 999999);
-            } else {
-                progressNotif.update('message', progressNotifMsg);
+            if (isValidFileName(name))
+            {
+                lastOKName = name;
+                progressNotifMsg += `${name}, `;
+                if (!progressNotif) {
+                    progressNotif = showNotification("info", "File import in progress...", progressNotifMsg, null, 999999);
+                } else {
+                    progressNotif.update('message', progressNotifMsg);
+                }
             }
         };
-        const endCallback = (name) => { progressCallback(name); window.location.reload(); };
-        $("#editorContainer").filedrop({
-            filterFunc: isValidFileName,
+        const endCallback = (name) => {
+            progressCallback(name);
+            setTimeout( () => { goToFile(lastOKName);  }, 500);
+            setTimeout( () => { progressNotif.close(); }, 1500);
+        };
+        editorContainer.filedrop({
             onDrop: (file, str, isLast) => {
                 if (file.size < 1024*1024)
                 {
                     createFileWithContent(file.name, str, isLast ? endCallback : progressCallback);
                 } else {
-                    showNotification("warning", "A file was not created", `The file ${file.name} looks a bit too big... Max = 1 MB`, isLast ? endCallback : null, 5000);
+                    const escapedName = $('<div/>').text(file.name).html();
+                    showNotification("warning", "A file was not imported", `The file ${escapedName} looks a bit too big... Max = 1 MB`, isLast ? endCallback : null, 5000);
                 }
             },
             onEnter: (event) => {

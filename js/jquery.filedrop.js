@@ -13,7 +13,13 @@ $.fn.extend({
                 return false;
             });
 
-            $this.bind('dragover dragleave', function (event) {
+            $this.bind('dragover', function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
+            });
+
+            $this.bind('dragleave', function (event) {
                 event.stopPropagation();
                 event.preventDefault();
                 options.onLeave && options.onLeave(event);
@@ -36,7 +42,7 @@ $.fn.extend({
                     });
                 }
                 return false;
-            })
+            });
         })
     }
 });
