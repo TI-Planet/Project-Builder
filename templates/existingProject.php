@@ -79,7 +79,9 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
     <div id="rightSidebarBorder"></div>
 
     <div id="editorContainer" class="wrapper">
-        <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?></h3>
+        <h3 style="margin-top: 0; margin-bottom: 6px;">Online <?= $currProject::MODULE_DESCRIPTION; ?>
+            <img id="xhrActivityIndicator" src="css/spinningIndicator.gif" title="There is some background activity happening right now..." class="hasTooltip" data-placement="bottom" />
+        </h3>
         <?php require $templatePath . 'body.php'; ?>
     </div>
 

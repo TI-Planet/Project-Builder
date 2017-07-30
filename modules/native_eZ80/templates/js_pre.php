@@ -67,12 +67,14 @@ if ($currProject->isMultiuser())
 
     function goToFile(newfile)
     {
+        incrementActivityIndicatorCounterAndShow();
         const wasReadOnly = editor.isReadOnly();
         const editorContainer = $('#editorContainer');
         editorContainer.css('pointer-events', 'none');
         const cbEnd = () => {
             editorContainer.css('pointer-events', 'auto');
             editor.setOption("readOnly", wasReadOnly);
+            decrementActivityIndicatorCounterAndHide();
         };
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         $.get(newURL, (data) =>

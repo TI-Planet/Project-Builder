@@ -69,20 +69,37 @@ function escapeRegExp(str)
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
+// AJAX related stuff
+{
+    let activityIndicatorCounter = 0;
+    window.incrementActivityIndicatorCounterAndShow = function() {
+        activityIndicatorCounter++;
+        document.getElementById('xhrActivityIndicator').style.display = 'inline-block';
+    };
+    window.decrementActivityIndicatorCounterAndHide = function() {
+        activityIndicatorCounter--;
+        setTimeout( () => { if (activityIndicatorCounter === 0) { document.getElementById('xhrActivityIndicator').style.display = 'none'; } }, 500);
+    }
+}
+
 function ajax(url, params, callbackOK, callbackErr, callbackAlways)
 {
+    incrementActivityIndicatorCounterAndShow();
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
+    xhr.timeout = 10000;
+    xhr.ontimeout = decrementActivityIndicatorCounterAndHide;
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = () => {
-        if (xhr.readyState == 4)
+        if (xhr.readyState === XMLHttpRequest.DONE)
         {
             let respText = xhr.responseText;
-            try { respText = JSON.parse(respText); } catch(e) {}
+            try { respText = JSON.parse(respText); } catch(e) { console.log('XHR Error: could not parse the reponse as JSON'); }
+            decrementActivityIndicatorCounterAndHide();
             if (typeof callbackAlways === "function") {
                 callbackAlways(respText);
             }
-            if (xhr.status == 200) {
+            if (xhr.status === 200) {
                 if (typeof callbackOK === "function") {
                     callbackOK(respText);
                 }
