@@ -50,7 +50,7 @@ function changePrgmName()
             showNotification("danger", "Invalid name", "8 letters max, A-Z 0-9, starts by a letter");
         } else {
             removeClass(document.querySelector("#prgmNameContainer span.loadingicon"), "hidden");
-            ajax("ActionHandler.php", `id=${proj.pid}&action=setInternalName&internalName=${name}`, () => {
+            ajaxAction("setInternalName", `internalName=${name}`, () => {
                 addClass(document.querySelector("#prgmNameContainer span.loadingicon"), "hidden");
                 applyPrgmNameChange(name);
             });
@@ -76,7 +76,7 @@ function renameFile(oldName)
     if (!err)
     {
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=renameFile&oldName=${oldName}&newName=${newName}`, () => {
+            ajaxAction("renameFile", `oldName=${oldName}&newName=${newName}`, () => {
                 proj.currFile = newName;
                 saveProjConfig();
                 goToFile(newName);
@@ -95,7 +95,7 @@ const _saveFile_impl = (callback) =>
         removeClass(saveButton.children[1], "hidden");
         saveButton.disabled = true;
 
-        ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=save&source=${encodeURIComponent(currSource)}`, () => {
+        ajaxAction("save", `file=${proj.currFile}&source=${encodeURIComponent(currSource)}`, () => {
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
             if (editor.getMode().name === "clike") { getAnalysisLogAndUpdateHintsMaybe(true); }
@@ -155,11 +155,11 @@ function createFileWithContent(name, content, cb)
     {
         if (proj.files.indexOf(name) === -1)
         {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=addFile&fileName=${name}`, () =>
+            ajaxAction("addFile", `fileName=${name}`, () =>
             {
                 proj.files = proj.files.concat([name]);
                 saveProjConfig();
-                ajax("ActionHandler.php", `id=${proj.pid}&file=${name}&action=save&source=${encodeURIComponent(content)}`, null, null, () => { cb(name) });
+                ajaxAction("save", `file=${name}&source=${encodeURIComponent(content)}`, null, null, () => { cb(name) });
             }, () => { cb(name) });
         } else {
             showNotification("warning", "A file was not created", `'${escapedName}' already exists in the project`, null, 10000);
@@ -177,7 +177,7 @@ function deleteCurrentFile()
     {
         if (proj.currFile && isValidFileName(proj.currFile))
         {
-            ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=deleteCurrentFile`, () => {
+            ajaxAction("deleteCurrentFile", `file=${proj.currFile}`, () => {
                 const idx = proj.files.indexOf(proj.currFile);
                 if (idx > -1)
                 {
@@ -210,7 +210,7 @@ function addFile(name)
     if (!err)
     {
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=addFile&fileName=${name}`, () => {
+            ajaxAction("addFile", `fileName=${name}`, () => {
                 proj.files = proj.files.concat([ name ]);
                 proj.currFile = name;
                 saveProjConfig();
@@ -239,7 +239,7 @@ function buildAndRunInEmu()
     if (emul_is_inited)
     {
         buildAndGetLog(isLastBuildLLVM, () => {
-            ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), file => {
+            ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), (file) => {
                 pauseEmul(false);
                 fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
                 setTimeout(() => {
@@ -257,7 +257,7 @@ function buildAndRunInEmu()
 
 function getBuildLogAndUpdateHintsMaybe(doUpdateHints)
 {
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getBuildLog`, text => {
+    ajaxAction("getBuildLog", "", (text) => {
         build_output_raw = text;
         build_output = parseBuildLog(build_output_raw);
         doUpdateHints && updateHints(true);
@@ -266,7 +266,7 @@ function getBuildLogAndUpdateHintsMaybe(doUpdateHints)
 
 function getCheckLogAndUpdateHints(doUpdateHints)
 {
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, lines => {
+    ajaxAction("getCheckLog", "", (lines) => {
         build_check = parseCheckLog(lines);
         doUpdateHints && updateHints(true);
     });
@@ -275,7 +275,7 @@ function getCheckLogAndUpdateHints(doUpdateHints)
 function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 {
     // Call llvm syntax only
-    ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=analysis`, lines => {
+    ajaxAction("analysis", `file=${proj.currFile}`, (lines) => {
         code_analysis = parseAnalysisLog(lines);
         doUpdateHints && updateHints(true);
     });
@@ -284,7 +284,7 @@ function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 function getCtags(scope, cb)
 {
     if (scope === undefined) { scope = proj.currFile; }
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getCtags&scope=${scope}`, (allCtags) => {
+    ajaxAction("getCtags", `scope=${scope}`, (allCtags) => {
         const list = [];
         Object.keys(allCtags).map( (tagFile) =>
         {
@@ -304,7 +304,7 @@ function getCtags(scope, cb)
 
 function getSDKCtags()
 {
-    ajax("ActionHandler.php", `id=${proj.pid}&action=getSDKCtags`, (allCtags) => {
+    ajaxAction("getSDKCtags", "", (allCtags) => {
         const list = [];
         Object.keys(allCtags).map( (tagFile) =>
         {
@@ -344,8 +344,7 @@ function cleanProj(callback)
     const cleanButton = document.getElementById('cleanButton');
     cleanButton.disabled = true;
 
-    const params = `id=${proj.pid}&action=clean`;
-    ajax("ActionHandler.php", params, () => {
+    ajaxAction("clean", "", () => {
         // Clear build timestamp
         const buildTimestampElement = document.getElementById('buildTimestamp');
         buildTimestampElement.parentNode.className = buildTimestampElement.className = "";
@@ -376,8 +375,7 @@ function buildAndGetLog(llvm, callback)
         // build output
         isLastBuildLLVM = (typeof llvm === 'boolean' && llvm);
         const buildName = isLastBuildLLVM ? 'llvmbuild' : 'build';
-        const params = `id=${proj.pid}&prgmName=${proj.prgmName}&action=${buildName}`;
-        ajax("ActionHandler.php", params, result => {
+        ajaxAction(buildName, `prgmName=${proj.prgmName}`, (result) => {
             build_output_raw = result;
 
             build_output = parseBuildLog(build_output_raw);
@@ -423,7 +421,7 @@ function buildAndGetLog(llvm, callback)
             }
 
             // Call cppcheck
-            ajax("ActionHandler.php", `id=${proj.pid}&action=getCheckLog`, text => {
+            ajaxAction("getCheckLog", "", (text) => {
                 build_check = parseCheckLog(text);
                 updateHints(false);
                 addClass(buildButton.children[1], "hidden");
@@ -542,8 +540,7 @@ function llvmCompileAndDiff()
     {
         $("#myDiffModalLabel").text('Diff ZDS - LLVM');
         showOnDiff("(loading ZDS ASM...)", "(loading LLVM ASM...)");
-        const params = `id=${proj.pid}&file=${proj.currFile}&action=llvm`;
-        ajax("ActionHandler.php", params, result =>
+        ajaxAction("llvm", `file=${proj.currFile}`, (result) =>
         {
             if (!result) {
                 result = [ "Hmm, empty output, or something went wrong." ];
@@ -553,7 +550,7 @@ function llvmCompileAndDiff()
             llvmASM = llvmASM.replace(/ \+ /gm, "+").replace(/\s*.global.*/gm, "");
             showOnDiff("(loading ZDS...)", llvmASM);
 
-            ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=getCurrentSrc`, zdsASM =>
+            ajaxAction("getCurrentSrc", `file=${proj.currFile}`, (zdsASM) =>
             {
                 const showFinalDiff = (asm) =>
                 {
@@ -566,9 +563,9 @@ function llvmCompileAndDiff()
                 };
                 if (zdsASM === null)
                 {
-                    ajax("ActionHandler.php", `id=${proj.pid}&prgmName=${proj.prgmName}&action=build`, () =>
+                    ajaxAction("build", `prgmName=${proj.prgmName}`, () =>
                     {
-                        ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=getCurrentSrc`, finalZDSASM =>
+                        ajaxAction("getCurrentSrc", `file=${proj.currFile}`, (finalZDSASM) =>
                         {
                             showFinalDiff(finalZDSASM);
                         });
@@ -586,8 +583,7 @@ function llvmCompile()
     saveFile(() =>
     {
         $("#myDiffModalLabel").text('Output of LLVM compilation (-O3)');
-        const params = `id=${proj.pid}&file=${proj.currFile}&action=llvm`;
-        ajax("ActionHandler.php", params, (result) =>
+        ajaxAction("llvm", `file=${proj.currFile}`, (result) =>
         {
             if (!result) {
                 result = [ "Hmm, empty output, or something went wrong." ];
@@ -627,7 +623,7 @@ window.addEventListener('resize', () => {
     refreshOutlineSize();
 });
 
-window.addEventListener('keydown', event => {
+window.addEventListener('keydown', (event) => {
     if (event.ctrlKey || event.metaKey) {
         switch (String.fromCharCode(event.which).toLowerCase()) {
             case 's':

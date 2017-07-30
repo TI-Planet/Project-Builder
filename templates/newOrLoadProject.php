@@ -43,7 +43,7 @@ if (!isset($pm))
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="<?= cacheBusterPath('css/main.css') ?>">
 
     <script src="js/jquery-2.2.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>

@@ -234,7 +234,7 @@ require_once 'utils.php';
                         }
                         if (!found)
                         {
-                            chat._chat.createRoom(proj.pid, "public", roomID => {});
+                            chat._chat.createRoom(proj.pid, "public", (roomID) => {});
                         }
                     });
                 }, 2000);

@@ -86,7 +86,7 @@ function forkProject(doConfirm)
     if (doConfirm && confirm("Are you sure?"))
     {
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=fork`, newID => {
+            ajaxAction("fork", "", (newID) => {
                 showNotification("success", "Forked succesfully", "You will now be redirected to your new project", () =>
                 {
                     window.onbeforeunload = null;
@@ -100,14 +100,14 @@ function forkProject(doConfirm)
 function enableMultiUserRW()
 {
     saveFile(() => {
-        ajax("ActionHandler.php", `id=${proj.pid}&action=enableMultiRW`, () => { window.location.reload(); } );
+        ajaxAction("enableMultiRW", "", () => { window.location.reload(); } );
     });
 }
 
 function enableMultiUserRO()
 {
     saveFile(() => {
-        ajax("ActionHandler.php", `id=${proj.pid}&action=enableMultiRO`, () => { window.location.reload(); } );
+        ajaxAction("enableMultiRO", "", () => { window.location.reload(); } );
     });
 }
 
@@ -116,7 +116,7 @@ function disableMultiUser()
     if (confirm("Are you sure?"))
     {
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&action=disableMulti`, () => {
+            ajaxAction("disableMulti", "", () => {
                 showNotification("info", "OK, Project unshared", "", () => { window.location.reload(); }, 1);
             });
         });
@@ -129,7 +129,7 @@ function deleteProject()
 {
     if (confirm("Are you sure you want to delete this project?"))
     {
-        ajax("ActionHandler.php", `id=${proj.pid}&action=deleteProj`, () => {
+        ajaxAction("deleteProj", "", () => {
             showNotification("success", "Project successfully deleted from the server", "You will now be redirected", () =>
             {
                 window.onbeforeunload = null;

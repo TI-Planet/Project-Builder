@@ -15,12 +15,6 @@
 
 /* General utilities */
 
-if (!String.prototype.trim) {
-    String.prototype.trim = function () {
-        return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-    };
-}
-
 // https://tc39.github.io/ecma262/#sec-array.prototype.includes
 if (!Array.prototype.includes)
 {
@@ -103,6 +97,11 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
 
     params += `&csrf_token=${window['CSRFToken']}`;
     xhr.send(params);
+}
+
+function ajaxAction(action, extraParams, callbackOK, callbackErr, callbackAlways)
+{
+    ajax("ActionHandler.php", `id=${proj.pid}&action=${action}&${extraParams}`, callbackOK, callbackErr, callbackAlways);
 }
 
 function ajaxGetArrayBuffer(url, params, callbackOK)

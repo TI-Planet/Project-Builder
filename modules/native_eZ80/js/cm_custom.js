@@ -213,7 +213,7 @@ function do_cm_custom()
             }
             return;
         }
-        ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=getCurrentSrc`, data => {
+        ajaxAction("getCurrentSrc", `file=${proj.currFile}`, (data) => {
             if (data === null)
             {
                 asmBeingShown = false;
@@ -389,7 +389,7 @@ function do_cm_custom()
         const reindentButton = document.getElementById('reindentButton');
         reindentButton.onclick = (e) => { e.preventDefault(); return false };
         saveFile(() => {
-            ajax("ActionHandler.php", `id=${proj.pid}&file=${proj.currFile}&action=reindent`, txt => {
+            ajaxAction("reindent", `file=${proj.currFile}`, (txt) => {
                 if (txt)
                 {
                     let i = 0;
@@ -675,7 +675,7 @@ function do_cm_custom()
     };
     editor.getWrapperElement().addEventListener("mousemove", myMouseOverHandler);
 
-    document.addEventListener("keydown", evt => {
+    document.addEventListener("keydown", (evt) => {
         evt = evt || window.event;
         if (evt.keyCode == 27)
         { // Esc.
@@ -684,7 +684,7 @@ function do_cm_custom()
     });
 
 
-    editor.on("change", c => {
+    editor.on("change", (c) => {
         savedSinceLastChange = false;
         lastChangeTS = (new Date).getTime();
         const saveButton = document.getElementById('saveButton');
