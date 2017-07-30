@@ -68,7 +68,7 @@ require_once 'utils.php';
 <script>
     globalSyncOK = true;
 
-    function init_post_js_2(isChangingTab)
+    function init_post_js_2(isChangingTab, cbDone)
     {
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
 
@@ -129,6 +129,9 @@ require_once 'utils.php';
                 } else {
                     lastSavedSource = editor.getValue();
                 }
+
+                if (typeof(cbDone) === "function") { cbDone(); }
+
                 if (isChangingTab) {
                     getAnalysisLogAndUpdateHintsMaybe(true);
                 } else {
@@ -180,6 +183,8 @@ require_once 'utils.php';
         savedSinceLastChange = true;
         lastChangeTS = (new Date).getTime();
 
+        if (typeof(cbDone) === "function") { cbDone(); }
+
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
             if (isChangingTab) {
                 getAnalysisLogAndUpdateHintsMaybe(true);
@@ -201,7 +206,7 @@ require_once 'utils.php';
             getInc84PCECtags();
         }
     }
-    init_post_js_2();
+    init_post_js_2(false);
 
     <?php if ($currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) { ?>
 

@@ -67,26 +67,31 @@ if ($currProject->isMultiuser())
 
     function goToFile(newfile)
     {
+        const wasReadOnly = editor.isReadOnly();
+        const editorContainer = $('#editorContainer');
+        editorContainer.css('pointer-events', 'none');
+        const cbEnd = () => {
+            editorContainer.css('pointer-events', 'auto');
+            editor.setOption("readOnly", wasReadOnly);
+        };
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         $.get(newURL, (data) =>
         {
-            const wasReadOnly = editor.isReadOnly();
             editor.setOption("readOnly", true);
             proj.cursors[proj.currFile] = JSON.stringify(editor.getCursor());
             saveProjConfig();
             window.history.pushState(null, "", newURL);
             const oldConsoleContent = $("#consoletextarea").val();
             typeof(removeMyselfFromFirepad) === "function" && removeMyselfFromFirepad();
-            $('#editorContainer').empty().append($(data).find('#editorContainer').children());
+            editorContainer.empty().append($(data).find('#editorContainer').children());
             $("#consoletextarea").val(oldConsoleContent);
             $(".firepad-userlist").remove();
             proj.currFile = newfile;
             init_post_js_1();
             do_cm_custom();
-            init_post_js_2(true);
-            editor.setOption("readOnly", wasReadOnly);
+            init_post_js_2(true, cbEnd);
             editorPostSetupAlways();
-        });
+        }).fail( cbEnd );
     }
 </script>
 
