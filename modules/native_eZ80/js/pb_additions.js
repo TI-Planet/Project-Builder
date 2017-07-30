@@ -148,6 +148,22 @@ function isValidFileName(name)
     return /^[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm|inc)$/i.test(name);
 }
 
+function createFileWithContent(name, content, cb)
+{
+    if (isValidFileName(name))
+    {
+        ajax("ActionHandler.php", `id=${proj.pid}&action=addFile&fileName=${name}`, () =>
+        {
+            proj.files = proj.files.concat([name]);
+            saveProjConfig();
+            ajax("ActionHandler.php", `id=${proj.pid}&file=${name}&action=save&source=${encodeURIComponent(content)}`, null, null, () => { cb(name) });
+        }, () => { cb(name) });
+    } else {
+        showNotification("warning", "A file was not created", `'${name}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)`, null, 10000);
+        if (typeof(cb) === "function") { cb(name); }
+    }
+}
+
 function deleteCurrentFile()
 {
     if (window.confirm("Do you really want to delete this file?"))

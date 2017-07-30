@@ -25,3 +25,47 @@ if (!isset($pm))
     proj.currFile = '<?= $currProject->getCurrentFile(); ?>';
     proj.files = <?php echo json_encode($currProject->getAvailableFiles()); ?>;
 </script>
+
+<?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+<script src="<?= cacheBusterPath('js/jquery.filedrop.js') ?>"></script>
+<script>
+    $(function(){
+        let inviteNotif;
+        let progressNotif;
+        let progressNotifMsg = '';
+        const progressCallback = (name) => {
+            inviteNotif && inviteNotif.close();
+            progressNotifMsg += `${name}, `;
+            if (!progressNotif) {
+                progressNotif = showNotification("info", "File import in progress...", progressNotifMsg, null, 999999);
+            } else {
+                progressNotif.update('message', progressNotifMsg);
+            }
+        };
+        const endCallback = (name) => { progressCallback(name); window.location.reload(); };
+        $("#editorContainer").filedrop({
+            filterFunc: isValidFileName,
+            onDrop: (file, str, isLast) => {
+                if (file.size < 1024*1024)
+                {
+                    createFileWithContent(file.name, str, isLast ? endCallback : progressCallback);
+                } else {
+                    showNotification("warning", "A file was not created", `The file ${file.name} looks a bit too big... Max = 1 MB`, isLast ? endCallback : null, 5000);
+                }
+            },
+            onEnter: (event) => {
+                if (!inviteNotif)
+                {
+                    inviteNotif = showNotification("info", "File import", "Drop source code files on the editor to import them into the project");
+                    inviteNotif.$ele[0].addEventListener("dragenter", () => { inviteNotif.$ele.hide(); inviteNotif.close() }, false);
+                }
+            }
+        });
+    });
+</script>
+<?php } else { ?>
+<script>
+    window.addEventListener("dragover", function(e){ e = e || event; e.preventDefault(); },false);
+    window.addEventListener("drop",     function(e){ e = e || event; e.preventDefault(); },false);
+</script>
+<?php }?>

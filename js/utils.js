@@ -188,7 +188,7 @@ function showNotification(notifType, title, message, endCallback, delay)
 {
     if (endCallback === undefined) { endCallback = null; }
     if (delay === undefined) { delay = 2500; }
-    $.notify({
+    return $.notify({
         title: title,
         message: message
     },{

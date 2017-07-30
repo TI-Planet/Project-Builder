@@ -48,6 +48,7 @@ require_once 'utils.php';
             tabSize: isAsmFile ? 8 : 4,
             foldGutter: true,
             showTrailingSpace: true,
+            dragDrop: false,
             mode: isAsmFile ? "text/x-ez80" : (proj.currFile.match(/\.[ch]pp$/i) ? "text/x-c++src" : "text/x-csrc"),
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Ctrl-Space": "autocomplete"},
