@@ -43,6 +43,10 @@ h2 {
     height: 100%;
 }
 
+#editorContainer {
+    pointer-events: none; /* will be set to 'auto' once the content etc. is ready */
+}
+
 #statusbar_left {
     border-top: 2px grey solid;
     font-size: .9em;

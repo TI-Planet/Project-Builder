@@ -34,7 +34,6 @@ if (!isset($pm))
         let inviteNotif;
         let progressNotif;
         let progressNotifMsg = '';
-        const editorContainer = $("#editorContainer");
         const progressCallback = (name) => {
             inviteNotif && inviteNotif.close();
             if (isValidFileName(name))
@@ -53,7 +52,7 @@ if (!isset($pm))
             setTimeout( () => { goToFile(lastOKName);  }, 500);
             setTimeout( () => { progressNotif.close(); }, 1500);
         };
-        editorContainer.filedrop({
+        $("#editorContainer").filedrop({
             onDrop: (file, str, isLast) => {
                 if (file.size < 1024*1024)
                 {

@@ -70,6 +70,8 @@ require_once 'utils.php';
 
     function init_post_js_2(isChangingTab, cbDone)
     {
+        const editorContainer = $('#editorContainer');
+
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
 
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
@@ -131,6 +133,7 @@ require_once 'utils.php';
                 }
 
                 if (typeof(cbDone) === "function") { cbDone(); }
+                editorContainer.css('pointer-events', 'auto');
 
                 if (isChangingTab) {
                     getAnalysisLogAndUpdateHintsMaybe(true);
@@ -184,6 +187,7 @@ require_once 'utils.php';
         lastChangeTS = (new Date).getTime();
 
         if (typeof(cbDone) === "function") { cbDone(); }
+        editorContainer.css('pointer-events', 'auto');
 
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
             if (isChangingTab) {
