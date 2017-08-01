@@ -27,6 +27,7 @@ if (isset($_POST['id']) && !empty($_POST['id']))
     {
         $pm = new ProjectManager($_POST['id']);
 
+
         /******** CSRF Token stuff ********/
         if (isset($_POST['csrf_token']) && !empty($_POST['csrf_token']))
         {
@@ -41,22 +42,54 @@ if (isset($_POST['id']) && !empty($_POST['id']))
         }
         /******** CSRF Token stuff ********/
 
+
+        /************* Logging ************/
+        $log_action = function($ok) use ($pm)
+        {
+            // We don't want to log all actions like fetching data. Only modifying actions are worth logging.
+            $act = $_POST['action'];
+            if (strpos($act, 'get') === 0) { return; }
+            try
+            {
+                // Remove useless stuff to log...
+                $paramsCopy = $_POST;
+                unset($paramsCopy['action'], $paramsCopy['id'], $paramsCopy['csrf_token'], $paramsCopy['prgmName']);
+                // Just log the length of the saved content
+                if (isset($paramsCopy['source']))
+                {
+                    $paramsCopy['_len_'] = mb_strlen($paramsCopy['source']);
+                    unset($paramsCopy['source']);
+                }
+                $paramsStr = count($paramsCopy) > 0 ? substr(json_encode($paramsCopy), 0, 49) : '';
+
+                $pm->getDBHelper()->execQuery('INSERT INTO `pb_logs` (`user_id`, `proj_id`, `action`, `params`, `ok`, `tstamp`) VALUES ( ? , ? , ? , ? , ? , ? )',
+                                              [ @$pm->getCurrentUser()->getID(), @$pm->getCurrentProject()->getDBID(), $act, $paramsStr, $ok === true, time() ]);
+            } catch (\Exception $e)
+            {}
+        };
+        /************* Logging ************/
+
+
         if ($pm->hasValidCurrentProject())
         {
             $pmLastError = $pm->getLastError();
             if ($pmLastError !== null)
             {
+                $log_action(false);
                 header('HTTP/1.0 400 Bad request');
                 die(json_encode(PBStatus::Error($pmLastError)));
             } else {
                 $actionResult = $pm->doUserAction($_POST);
-                if (PBStatus::isError($actionResult))
+                $isError = PBStatus::isError($actionResult);
+                $log_action($isError === false);
+                if ($isError)
                 {
                     header('HTTP/1.0 400 Bad request');
                 }
                 die(json_encode($actionResult));
             }
         } else {
+            $log_action(false);
             header('HTTP/1.0 400 Bad request');
             die(json_encode(PBStatus::Error('This project does not exist or you do not have access to it')));
         }
