@@ -60,6 +60,20 @@ if (!isset($pm))
                                         <b>Custom...</b> - Choose exactly who can read/write or not
                                     </label>
                                 </div>
+
+                                Chat enabled (when shared):
+                                <div class="radio-inline">
+                                    <label>
+                                        <input type="radio" name="chatEnabled" value="0" checked>
+                                        <b>No</b>
+                                    </label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input type="radio" name="chatEnabled" value="1">
+                                        <b>Yes</b>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -152,6 +166,8 @@ if (!isset($pm))
                     </form>
                 </div>
                 <div class="modal-footer">
+                    <span class="pull-left" id="configModalStatus"></span>
+
                     <button type="button" class="btn btn-primary">Save and close</button>
                 </div>
             </div>
