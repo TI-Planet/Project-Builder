@@ -270,6 +270,11 @@ ul.dropdown-menu li {
     cursor: pointer;
 }
 
+input:invalid {
+    border-color: #a94442 !important;
+    box-shadow: 0 0 3px #a94442 !important;
+}
+
 /*** CM common stuff ***/
 
 div.CodeMirror {

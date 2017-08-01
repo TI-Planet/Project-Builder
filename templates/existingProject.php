@@ -84,6 +84,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
         </h3>
         <?php require $templatePath . 'body.php'; ?>
     </div>
+    <?php require $templatePath . 'config_modal.php'; ?>
 
 </div>
 
