@@ -275,7 +275,7 @@ function getCheckLogAndUpdateHints(doUpdateHints)
 function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 {
     // Call llvm syntax only
-    ajaxAction("analysis", `file=${proj.currFile}`, (lines) => {
+    ajaxAction("getAnalysis", `file=${proj.currFile}`, (lines) => {
         code_analysis = parseAnalysisLog(lines);
         doUpdateHints && updateHints(true);
     });
