@@ -483,9 +483,18 @@ function parseAnalysisLog(log)
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
+                // check if there is a fix-it available
+                let fixit = null;
+                if (i<log.length-1 && log[i+1].startsWith('fix-it'))
+                {
+                    const regex_fixit   = /^fix-it:"\/tmp\/\w+\/(\w+.(?:[chp]+))":\{(\d+):(\d+)-(\d+):(\d+)\}:"(.*?)"$/gmi;
+                    const m_fixit = regex_fixit.exec(log[i+1]);
+                    fixit = { src_l: m_fixit[2], src_c: m_fixit[3], dest_l: m_fixit[4], dest_c: m_fixit[5], repl: m_fixit[6] };
+                    i++;
+                }
                 const category = (matches.length >= 7 && matches[6]) ? matches[6] : "";
                 const text = matches[4] + " " + matches[5];
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: category, text: text, from: 'clang'});
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: category, text: text, from: 'clang', fixit: fixit});
             }
         }
     } else {

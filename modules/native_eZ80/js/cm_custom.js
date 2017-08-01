@@ -301,6 +301,14 @@ function do_cm_custom()
         });
     };
 
+    const applyFixIt = function(fixit)
+    {
+        editor.replaceRange(fixit.repl, { line: fixit.src_l-1, ch: fixit.src_c-1 }, { line: fixit.dest_l-1, ch: fixit.dest_c-1 });
+        $('.tooltip').hide();
+        editor.focus();
+        saveFile( () => { getAnalysisLogAndUpdateHintsMaybe(true); } );
+    };
+
     updateHints = (silent) => {
         editor.operation(() => {
             let i;
@@ -321,7 +329,7 @@ function do_cm_custom()
             for (i = 0; i < combined_logs.length; ++i)
             {
                 const err = combined_logs[i];
-                if (!err || linesProcessed.includes(err.line))
+                if (!err /*|| linesProcessed.includes(err.line)*/)
                     continue;
 
                 addIconToFileTab(err.file.toLowerCase(), err.type);
@@ -344,10 +352,22 @@ function do_cm_custom()
                 const actualText = document.createElement("span");
                 actualText.innerText = err.text;
                 actualText.title = err.category;
-                tmp.appendChild(actualText);
                 msg.appendChild(tmp);
+                if (err.fixit)
+                {
+                    const fixItInvite = document.createElement("span");
+                    fixItInvite.style.float = "right";
+                    fixItInvite.innerHTML = "<a href='#' onclick='return false'><span class='glyphicon glyphicon-flash' aria-hidden='true'></span></a>";
+                    const currWidgetIdx = widgets.length;
+                    fixItInvite.onclick = () => { applyFixIt(err.fixit); for (i = 0; i < widgets.length; ++i) { editor.removeLineWidget(widgets[i]); } };
+                    fixItInvite.className = 'hasTooltip';
+                    fixItInvite.title = `Fix-it: replace by '${err.fixit.repl}'`;
+                    tmp.appendChild(fixItInvite);
+                }
+                tmp.appendChild(actualText);
                 msg.className = "lint-error";
                 widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: false}));
+                $(tmp).find(".hasTooltip").tooltip({container: 'body', placement: 'left'});
                 linesProcessed.push(err.line);
             }
             editor.refresh();
