@@ -17,6 +17,7 @@ initFuncs = function()
     slkp = Module['cwrap']('sendLetterKeyPress', 'void', ['number']);
     //sendVariable = Module['cwrap']('sendVariableLink', 'number', ['string']);
     set_file_to_send = Module['cwrap']('set_file_to_send', 'void', ['string']);
+    set_sleep_amount_us = Module['cwrap']('set_sleep_amount_us', 'void', ['number']);
     resetEmul = Module['cwrap']('emu_reset', 'void', []);
 }
 
