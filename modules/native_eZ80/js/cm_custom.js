@@ -17,8 +17,25 @@
 
 function do_cm_custom()
 {
-    widgets = lineWidgetsAsm = [];
+    let widgets = [];
+    let lineWidgetsAsm = [];
+
     asmBeingShown = false;
+
+    const clearWidgets = function()
+    {
+        widgets.forEach((widget) => {
+            editor.removeLineWidget(widget);
+        });
+        widgets = [];
+    };
+    const clearWidgetsAsm = function()
+    {
+        lineWidgetsAsm.forEach((widget) => {
+            editor.removeLineWidget(widget);
+        });
+        lineWidgetsAsm = [];
+    };
 
     editor.removeKeyMap("Ctrl-D");
 
@@ -199,10 +216,7 @@ function do_cm_custom()
 
         if (asmBeingShown === true) {
             asmBeingShown = false;
-            for (i = 0; i < lineWidgetsAsm.length; i++) {
-                targetEditor.removeLineWidget(lineWidgetsAsm[i]);
-            }
-            lineWidgetsAsm.length = 0;
+            clearWidgetsAsm();
             targetEditor.refresh();
             targetEditor.focus();
 
@@ -252,10 +266,7 @@ function do_cm_custom()
                     }
                 }
 
-                for (i = 0; i < lineWidgetsAsm.length; i++) {
-                    targetEditor.removeLineWidget(lineWidgetsAsm[i]);
-                }
-                lineWidgetsAsm.length = 0;
+                clearWidgetsAsm();
 
                 let key;
                 for (key in linesForC)
@@ -312,11 +323,7 @@ function do_cm_custom()
     updateHints = (silent) => {
         editor.operation(() => {
             let i;
-            for (i = 0; i < widgets.length; ++i)
-            {
-                editor.removeLineWidget(widgets[i]);
-            }
-            widgets.length = 0;
+            clearWidgets();
 
             const combined_logs = build_output.concat(build_check).concat(code_analysis);
 
@@ -358,8 +365,7 @@ function do_cm_custom()
                     const fixItInvite = document.createElement("span");
                     fixItInvite.style.float = "right";
                     fixItInvite.innerHTML = "<a href='#' onclick='return false'><span class='glyphicon glyphicon-flash' aria-hidden='true'></span></a>";
-                    const currWidgetIdx = widgets.length;
-                    fixItInvite.onclick = () => { applyFixIt(err.fixit); for (i = 0; i < widgets.length; ++i) { editor.removeLineWidget(widgets[i]); } };
+                    fixItInvite.onclick = () => { applyFixIt(err.fixit); clearWidgets(); };
                     fixItInvite.className = 'hasTooltip';
                     fixItInvite.title = `Fix-it: replace by '${err.fixit.repl}'`;
                     tmp.appendChild(fixItInvite);
