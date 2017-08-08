@@ -87,7 +87,7 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
     incrementActivityIndicatorCounterAndShow();
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
-    xhr.timeout = 10000;
+    xhr.timeout = params && params.includes("build") ? 60000 : 10000;
     xhr.ontimeout = decrementActivityIndicatorCounterAndHide;
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = () => {
