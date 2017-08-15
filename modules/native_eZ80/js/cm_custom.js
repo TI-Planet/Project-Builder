@@ -74,6 +74,26 @@ function do_cm_custom()
         "Ctrl-H": showKeybindings,
     });
 
+    const smartReplaceEditorContent = function(txt)
+    {
+        let i = 0;
+        const lines = txt.split(/\r\n|\r|\n/);
+        const newCount = lines.length, oldCount = editor.lineCount();
+        if (newCount > oldCount)
+        {
+            const lastLineNum = editor.lastLine();
+            const lastWithBreaks = editor.getLine(lastLineNum) + ("\n").repeat(newCount-oldCount);
+            editor.replaceRange(lastWithBreaks, {line: lastLineNum, ch: 0}, {line: lastLineNum});
+        }
+        lines.forEach( (newLine) => {
+            if (newLine !== editor.getLine(i))
+            {
+                editor.replaceRange(newLine, {line: i, ch: 0}, {line: i});
+            }
+            i++;
+        });
+    };
+
     smartGoToLine = (line) => {
         const lineNow = editor.getCursor().line;
         if (lineNow === line) { return; }
@@ -416,25 +436,7 @@ function do_cm_custom()
         reindentButton.onclick = (e) => { e.preventDefault(); return false };
         saveFile(() => {
             ajaxAction("reindent", `file=${proj.currFile}`, (txt) => {
-                if (txt)
-                {
-                    let i = 0;
-                    const lines = txt.split(/\r\n|\r|\n/);
-                    const newCount = lines.length, oldCount = editor.lineCount();
-                    if (newCount > oldCount)
-                    {
-                        const lastLineNum = editor.lastLine();
-                        const lastWithBreaks = editor.getLine(lastLineNum) + ("\n").repeat(newCount-oldCount);
-                        editor.replaceRange(lastWithBreaks, {line: lastLineNum, ch: 0}, {line: lastLineNum});
-                    }
-                    lines.forEach( (newLine) => {
-                        if (newLine !== editor.getLine(i))
-                        {
-                            editor.replaceRange(newLine, {line: i, ch: 0}, {line: i});
-                        }
-                        i++;
-                    });
-                }
+                txt && smartReplaceEditorContent(txt);
                 saveFile( () => { reindentButton.onclick = (e) => { reindent(); return false }; } );
             });
         });
