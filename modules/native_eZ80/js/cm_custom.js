@@ -426,29 +426,83 @@ function do_cm_custom()
         });
     };
 
+    // Credits to Runer112
+    const reindentAsmLine = function(line)
+    {
+        line = line.replace(/^(_?:?)[ \t]+(\w[\w.]*)/, "$1\t$2");
+        line = line.replace(/^(_?:?)[ \t]+(\w[\w.]*)[ \t]+(?![ \t]*[\\;])/, "$1\t$2\t");
+
+        const tabWidth      = editor.options.tabSize;
+        const targetCol     = 40; // TODO: allow the user to customize this setting (multiple of 8 for now)
+        const minColIfBlank = 16;
+        const minTheoreticalDistanceToNonSpace = 2;
+
+        if (line.indexOf(";") >= Math.ceil(minColIfBlank / tabWidth))
+        {
+            let i   = 0;
+            let col = 0;
+            let iAfterLastNonSpace   = 0;
+            let colAfterLastNonSpace = 0;
+            let theoreticalDistanceToNonSpace = 0;
+
+            let inCharacterLiteral = false;
+            let inStringLiteral    = false;
+
+            while (i < line.length)
+            {
+                let c = line.charAt(i);
+
+                if (c === "'") {
+                    if (!inStringLiteral) {
+                        inCharacterLiteral = !inCharacterLiteral;
+                    }
+                } else if (c === "\"") {
+                    if (!inCharacterLiteral) {
+                        inStringLiteral = !inStringLiteral;
+                    }
+                } else if (c === "\\") {
+                    if (inCharacterLiteral || inStringLiteral) {
+                        col++;
+                        c = line.charAt(++i);
+                    }
+                } else if (c === ";") {
+                    if (!inCharacterLiteral && !inStringLiteral) {
+                        if ((colAfterLastNonSpace > 0 || col >= minColIfBlank) && theoreticalDistanceToNonSpace >= minTheoreticalDistanceToNonSpace) {
+                            const tabsNeeded = Math.ceil((targetCol - colAfterLastNonSpace) / tabWidth);
+                            const preComment = line.substr(0, iAfterLastNonSpace);
+                            const comment = line.substr(i);
+                            line = preComment + (tabsNeeded > 0 ? "\t".repeat(tabsNeeded) : " ") + comment;
+                        }
+
+                        break;
+                    }
+                }
+
+                i++;
+
+                if (c === "\t") {
+                    col = (Math.floor(col / tabWidth) + 1) * tabWidth;
+                    theoreticalDistanceToNonSpace += tabWidth;
+                } else {
+                    col++;
+                    if (c !== " ") {
+                        iAfterLastNonSpace = i;
+                        colAfterLastNonSpace = col;
+                        theoreticalDistanceToNonSpace = 0;
+                    } else {
+                        theoreticalDistanceToNonSpace++;
+                    }
+                }
+            }
+        }
+
+        return line;
+    };
+
     reindent = () => {
         if (/\.(asm|inc)$/i.test(proj.currFile))
         {
-            // Credits to Runer112
-            const str = editor.getValue()
-                  // pre/post mnemonic
-                  .replace(/^(_?:?)[ \t]+(\w[\w.]*)/gm,                      '$1\t$2')
-                  .replace(/^(_?:?)[ \t]+(\w[\w.]*)[ \t]+(?![ \t]*[\\;])/gm, '$1\t$2\t')
-                  // comments on single instruction lines
-                  .replace(/^(_?:?\t\w[\w.]{0,6})[ \t]*(;.*)/gm,                               '$1\t\t\t\t$2')
-                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{0,6}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1\t\t\t$2')
-                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{7,14}[^; \t\r\n])[ \t]*(;.*)/gm,  '$1\t\t$2')
-                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{15,22}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t$2')
-                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{23,}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1 $2')
-                  // comments on lines with no tabs
-                  .replace(/^([^;\t\r\n]{0,6}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1\t\t\t\t\t$2')
-                  .replace(/^([^;\t\r\n]{7,14}[^; \t\r\n])[ \t]*(;.*)/gm,  '$1\t\t\t\t$2')
-                  .replace(/^([^;\t\r\n]{15,22}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t\t\t$2')
-                  .replace(/^([^;\t\r\n]{23,30}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t\t$2')
-                  .replace(/^([^;\t\r\n]{31,38}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t$2')
-                  .replace(/^([^;\t\r\n]{39,}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1 $2')
-                  // comments on otherwise empty lines
-                  .replace(/^(?= *\t *\t| {16})[ \t]*(;.*)/gm, '\t\t\t\t\t$1');
+            const str = editor.getValue().split(/\r\n|\r|\n/).map(reindentAsmLine).join("\n");
             str && smartReplaceEditorContent(str);
             return;
         }
