@@ -427,9 +427,34 @@ function do_cm_custom()
     };
 
     reindent = () => {
+        if (/\.(asm|inc)$/i.test(proj.currFile))
+        {
+            // Credits to Runer112
+            const str = editor.getValue()
+                  // pre/post mnemonic
+                  .replace(/^(_?:?)[ \t]+(\w[\w.]*)/gm,                      '$1\t$2')
+                  .replace(/^(_?:?)[ \t]+(\w[\w.]*)[ \t]+(?![ \t]*[\\;])/gm, '$1\t$2\t')
+                  // comments on single instruction lines
+                  .replace(/^(_?:?\t\w[\w.]{0,6})[ \t]*(;.*)/gm,                               '$1\t\t\t\t$2')
+                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{0,6}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1\t\t\t$2')
+                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{7,14}[^; \t\r\n])[ \t]*(;.*)/gm,  '$1\t\t$2')
+                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{15,22}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t$2')
+                  .replace(/^(_?:?\t\w[\w.]{0,6}\t[^;\t\r\n]{23,}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1 $2')
+                  // comments on lines with no tabs
+                  .replace(/^([^;\t\r\n]{0,6}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1\t\t\t\t\t$2')
+                  .replace(/^([^;\t\r\n]{7,14}[^; \t\r\n])[ \t]*(;.*)/gm,  '$1\t\t\t\t$2')
+                  .replace(/^([^;\t\r\n]{15,22}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t\t\t$2')
+                  .replace(/^([^;\t\r\n]{23,30}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t\t$2')
+                  .replace(/^([^;\t\r\n]{31,38}[^; \t\r\n])[ \t]*(;.*)/gm, '$1\t$2')
+                  .replace(/^([^;\t\r\n]{39,}[^; \t\r\n])[ \t]*(;.*)/gm,   '$1 $2')
+                  // comments on otherwise empty lines
+                  .replace(/^(?= *\t *\t| {16})[ \t]*(;.*)/gm, '\t\t\t\t\t$1');
+            str && smartReplaceEditorContent(str);
+            return;
+        }
         if (!/\.[chp]+$/i.test(proj.currFile))
         {
-            showNotification("danger", "Did not re-indent", "Re-indenting only works on C/C++ code.");
+            showNotification("danger", "Did not re-indent", "Re-indenting only works on C/C++/ASM code.");
             return;
         }
         const reindentButton = document.getElementById('reindentButton');
