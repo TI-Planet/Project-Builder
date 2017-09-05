@@ -427,82 +427,119 @@ function do_cm_custom()
     };
 
     // Credits to Runer112
-    const reindentAsmLine = function(line)
+    const reindentAsm = function(lines)
     {
-        line = line.replace(/^(_?:?)[ \t]+(\w[\w.]*)/, "$1\t$2");
-        line = line.replace(/^(_?:?)[ \t]+(\w[\w.]*)[ \t]+(?![ \t]*[\\;])/, "$1\t$2\t");
-
         const tabWidth      = editor.options.tabSize;
-        const targetCol     = 40; // TODO: allow the user to customize this setting (multiple of 8 for now)
+        const targetCol     = 40; // TODO: allow the user to customize this setting
         const minColIfBlank = 16;
         const minTheoreticalDistanceToNonSpace = 2;
 
-        if (line.indexOf(";") >= Math.ceil(minColIfBlank / tabWidth))
-        {
-            let i   = 0;
-            let col = 0;
-            let iAfterLastNonSpace   = 0;
-            let colAfterLastNonSpace = 0;
-            let theoreticalDistanceToNonSpace = 0;
+        let prevLineCommentCol = 0;
 
-            let inCharacterLiteral = false;
-            let inStringLiteral    = false;
+        return lines.map(function (line) {
+            // reindent instructions
 
-            while (i < line.length)
+            line = line.replace(/^(_?:?)[ \t]+(\w[\w.]*)/, "$1\t$2");
+            line = line.replace(/^(_?:?)[ \t]+(\w[\w.]*)[ \t]+(?![ \t]*[\\;])/, "$1\t$2\t");
+
+            // reindent comments
+
+            let commentCol = 0;
+
+            if (line.indexOf(";") >= Math.ceil(minColIfBlank / tabWidth))
             {
-                let c = line.charAt(i);
+                let i   = 0;
+                let col = 0;
+                let iAfterLastNonSpace   = 0;
+                let colAfterLastNonSpace = 0;
+                let theoreticalDistanceToNonSpace = 0;
 
-                if (c === "'") {
-                    if (!inStringLiteral) {
-                        inCharacterLiteral = !inCharacterLiteral;
-                    }
-                } else if (c === "\"") {
-                    if (!inCharacterLiteral) {
-                        inStringLiteral = !inStringLiteral;
-                    }
-                } else if (c === "\\") {
-                    if (inCharacterLiteral || inStringLiteral) {
-                        col++;
-                        c = line.charAt(++i);
-                    }
-                } else if (c === ";") {
-                    if (!inCharacterLiteral && !inStringLiteral) {
-                        if ((colAfterLastNonSpace > 0 || col >= minColIfBlank) && theoreticalDistanceToNonSpace >= minTheoreticalDistanceToNonSpace) {
-                            const tabsNeeded = Math.ceil((targetCol - colAfterLastNonSpace) / tabWidth);
-                            const preComment = line.substr(0, iAfterLastNonSpace);
-                            const comment = line.substr(i);
-                            line = preComment + (tabsNeeded > 0 ? "\t".repeat(tabsNeeded) : " ") + comment;
+                let inCharacterLiteral = false;
+                let inStringLiteral    = false;
+
+                while (i < line.length)
+                {
+                    let c = line.charAt(i);
+
+                    if (c === "'") {
+                        if (!inStringLiteral) {
+                            inCharacterLiteral = !inCharacterLiteral;
                         }
+                    } else if (c === "\"") {
+                        if (!inCharacterLiteral) {
+                            inStringLiteral = !inStringLiteral;
+                        }
+                    } else if (c === "\\") {
+                        if (inCharacterLiteral || inStringLiteral) {
+                            col++;
+                            c = line.charAt(++i);
+                        }
+                    } else if (c === ";") {
+                        if (!inCharacterLiteral && !inStringLiteral) {
+                            if (colAfterLastNonSpace > 0 || col >= minColIfBlank) {
+                                const reindentComment = theoreticalDistanceToNonSpace >= minTheoreticalDistanceToNonSpace;
+                                let lineTargetCol;
+                                if (colAfterLastNonSpace > 0) {
+                                    lineTargetCol = targetCol;
+                                    commentCol = reindentComment ? Math.max(lineTargetCol, colAfterLastNonSpace + 1) : col;
+                                } else {
+                                    lineTargetCol = prevLineCommentCol ? prevLineCommentCol : targetCol;
+                                    commentCol = lineTargetCol;
+                                }
 
-                        break;
+                                if (reindentComment) {
+                                    const lineTargetTabCol = lineTargetCol - (lineTargetCol % tabWidth);
+
+                                    const tabsNeeded = Math.ceil((lineTargetTabCol - colAfterLastNonSpace) / tabWidth);
+                                    let tabs, spacesNeeded;
+                                    if (tabsNeeded > 0) {
+                                        tabs = "\t".repeat(tabsNeeded);
+                                        spacesNeeded = lineTargetCol - lineTargetTabCol;
+                                    } else {
+                                        tabs = "";
+                                        spacesNeeded = commentCol - colAfterLastNonSpace;
+                                    }
+                                    const spaces = " ".repeat(spacesNeeded);
+
+                                    const preComment = line.substr(0, iAfterLastNonSpace);
+                                    const comment = line.substr(i);
+
+                                    line = preComment + tabs + spaces + comment;
+                                }
+                            }
+
+                            break;
+                        }
                     }
-                }
 
-                i++;
+                    i++;
 
-                if (c === "\t") {
-                    col = (Math.floor(col / tabWidth) + 1) * tabWidth;
-                    theoreticalDistanceToNonSpace += tabWidth;
-                } else {
-                    col++;
-                    if (c !== " ") {
-                        iAfterLastNonSpace = i;
-                        colAfterLastNonSpace = col;
-                        theoreticalDistanceToNonSpace = 0;
+                    if (c === "\t") {
+                        col = (Math.floor(col / tabWidth) + 1) * tabWidth;
+                        theoreticalDistanceToNonSpace += tabWidth;
                     } else {
-                        theoreticalDistanceToNonSpace++;
+                        col++;
+                        if (c !== " ") {
+                            iAfterLastNonSpace = i;
+                            colAfterLastNonSpace = col;
+                            theoreticalDistanceToNonSpace = 0;
+                        } else {
+                            theoreticalDistanceToNonSpace++;
+                        }
                     }
                 }
             }
-        }
 
-        return line;
+            prevLineCommentCol = commentCol;
+
+            return line;
+        });
     };
 
     reindent = () => {
         if (/\.(asm|inc)$/i.test(proj.currFile))
         {
-            const str = editor.getValue().split(/\r\n|\r|\n/).map(reindentAsmLine).join("\n");
+            const str = reindentAsm(editor.getValue().split(/\r\n|\r|\n/)).join("\n");
             str && smartReplaceEditorContent(str);
             return;
         }
