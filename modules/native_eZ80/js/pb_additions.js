@@ -325,7 +325,8 @@ function getInc84PCECtags()
 
 function downloadCurrentFile(name)
 {
-    name = (typeof(name) === 'undefined') ? (prompt('Name of the file') || proj.currFile) : proj.currFile;
+    name = (typeof(name) === 'undefined') ? prompt('Name of the file') : proj.currFile;
+    if (name === null) { return false; }
     const dlLink = document.createElement('a');
     dlLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(editor.getValue()));
     dlLink.setAttribute('download', name);
