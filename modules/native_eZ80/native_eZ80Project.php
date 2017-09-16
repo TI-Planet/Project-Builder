@@ -27,6 +27,9 @@ class native_eZ80Project extends Project
     const TEMPLATE_FILE            = 'main.c';
     const TEMPLATE_FILE_PATH       = '/../../projects/template/main.c';
 
+    /**
+     * @var native_eZ80ProjectBackend
+     */
     private $backend;
     private $availableFiles;
 
@@ -41,8 +44,10 @@ class native_eZ80Project extends Project
             // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
             $this->availableFiles = [ self::TEMPLATE_FILE ];
         }
-
         $this->currentFile = $this->availableFiles[0];
+
+        require_once 'internal/builder.php';
+        $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
     }
 
     public static function cleanPrgmName($prgName = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($prgName)); }
@@ -173,9 +178,12 @@ class native_eZ80Project extends Project
     public function doUserAction(UserInfo $user, array $params = [])
     {
         // handle actions that don't need calling the internal backend but aren't global.
-        require_once 'internal/builder.php';
-        $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
         return $this->backend->doUserAction($user, $params);
+    }
+
+    public function getSettings()
+    {
+        return $this->backend->getSettings();
     }
 
     public function removeFromAvailableFilesList($file)

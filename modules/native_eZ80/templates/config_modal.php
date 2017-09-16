@@ -20,6 +20,8 @@ if (!isset($pm))
 {
     die('Ahem ahem');
 }
+
+$currProjectSettings = $currProject->getSettings();
 ?>
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="mySettingsModalLabel">
         <div class="modal-dialog" role="document">
@@ -64,13 +66,13 @@ if (!isset($pm))
                                 Chat enabled (when shared):
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="chatEnabled" value="0" checked>
+                                        <input type="radio" name="chatEnabled" value="0" <?= $currProject->isChatEnabled() ? '' : 'checked'; ?>>
                                         <b>No</b>
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="chatEnabled" value="1">
+                                        <input type="radio" name="chatEnabled" value="1" <?= $currProject->isChatEnabled() ? 'checked' : ''; ?>>
                                         <b>Yes</b>
                                     </label>
                                 </div>
@@ -84,13 +86,13 @@ if (!isset($pm))
                                 Format:
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputFormat" value="program" checked>
+                                        <input type="radio" name="outputFormat" value="program" <?= $currProjectSettings->outputFormat === 'program' ? 'checked' : ''; ?>>
                                         <b>Program</b> (.8xp)
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputFormat" value="appvar">
+                                        <input type="radio" name="outputFormat" value="appvar" <?= $currProjectSettings->outputFormat === 'appvar' ? 'checked' : ''; ?>>
                                         <b>Appvar</b> (.8xv)
                                     </label>
                                 </div>
@@ -99,13 +101,13 @@ if (!isset($pm))
                                 Location:
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputLoc" value="ram" checked>
+                                        <input type="radio" name="outputLoc" value="ram" <?= $currProjectSettings->outputLoc === 'ram' ? 'checked' : ''; ?>>
                                         <b>RAM</b>
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputLoc" value="archive">
+                                        <input type="radio" name="outputLoc" value="archive" <?= $currProjectSettings->outputLoc === 'archive' ? 'checked' : ''; ?>>
                                         <b>Archive</b>
                                     </label>
                                 </div>
@@ -120,13 +122,13 @@ if (!isset($pm))
                                 Optimize for...
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="optFor" value="speed" checked>
+                                        <input type="radio" name="optFor" value="speed" <?= $currProjectSettings->optFor === 'speed' ? 'checked' : ''; ?>>
                                         <b>Speed</b> (faster code)
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="optFor" value="size">
+                                        <input type="radio" name="optFor" value="size" <?= $currProjectSettings->optFor === 'size' ? 'checked' : ''; ?>>
                                         <b>Size</b> (smaller code)
                                     </label>
                                 </div>
@@ -135,13 +137,13 @@ if (!isset($pm))
                                 <i>(Advanced)</i> Use Flash functions:
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="flashFuncs" value="linked" checked>
+                                        <input type="radio" name="flashFuncs" value="YES" <?= $currProjectSettings->flashFuncs === 'YES' ? 'checked' : ''; ?>>
                                         <b>Yes</b> (linked)
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="flashFuncs" value="static">
+                                        <input type="radio" name="flashFuncs" value="NO" <?= $currProjectSettings->flashFuncs === 'NO' ? 'checked' : ''; ?>>
                                         <b>No</b> (static)
                                     </label>
                                 </div>
@@ -156,7 +158,7 @@ if (!isset($pm))
                                 Clang extra args
                                 <div class="radio-inline" style="width: 400px;">
                                     <label style="width: 100%;">
-                                        <input class="form-control" type="text" pattern="^(?:(?:-(?:[wWD]|std))[\w=+-]* *)*$" name="clangArgs" value="-W -Wall -Wwrite-strings -Wno-incompatible-library-redeclaration -Wno-main-return-type -Ddouble=float -Dreentrant=">
+                                        <input class="form-control" type="text" pattern="^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs); ?>>
                                     </label>
                                 </div>
                                 <br/>
@@ -168,7 +170,7 @@ if (!isset($pm))
                 <div class="modal-footer">
                     <span class="pull-left" id="configModalStatus"></span>
 
-                    <button type="button" class="btn btn-primary">Save and close</button>
+                    <button type="button" onclick="sendSettings();" class="btn btn-primary">Save and close</button>
                 </div>
             </div>
         </div>

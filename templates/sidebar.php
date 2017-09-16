@@ -63,7 +63,7 @@ function genSidebar()
 
         $content .= '<div style="height: 5px;"></div>';
         if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) {
-            $content .= '<button class="btn btn-primary btn-xs" disabled><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings...</button> ';
+            $content .= '<button class="btn btn-primary btn-xs" onclick="$(\'#settingsModal\').modal()"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings...</button> ';
         }
         $cloneLabel = $isUserAuthorOfProject ? 'Clone' : 'Fork';
         $content .= "<button class='btn btn-primary btn-xs' onclick='forkProject();' title='Duplicate this project'><span class='glyphicon glyphicon-duplicate' aria-hidden='true'></span> {$cloneLabel} project</button> ";

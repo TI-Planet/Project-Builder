@@ -261,9 +261,8 @@ abstract class Project
     /****************************************************/
     // To override, especially for backend-powered projects
 
-    public function doUserAction(UserInfo $user, array $params = [])
-    {
-        return PBStatus::Error('Nothing to see here...');
-    }
+    abstract public function doUserAction(UserInfo $user, array $params = []);
+
+    abstract public function getSettings();
 
 }

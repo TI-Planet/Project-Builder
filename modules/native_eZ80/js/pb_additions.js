@@ -592,7 +592,7 @@ function llvmCompile()
 {
     saveFile(() =>
     {
-        $("#myDiffModalLabel").text('Output of LLVM compilation (-O3)');
+        $("#myDiffModalLabel").text('Output of LLVM compilation');
         ajaxAction("llvm", `file=${proj.currFile}`, (result) =>
         {
             if (!result) {
@@ -626,6 +626,21 @@ function llvmCompile()
         });
     });
 }
+
+function sendSettings()
+{
+    const formData = $("#settingsForm").serialize();
+    ajaxAction("setSettings", formData, () =>
+    {
+        $("#settingsModal").modal('hide');
+        showNotification("success", "OK", "Settings saved successfully. You can reload the page if needed", null, 5000);
+    }, (err) =>
+    {
+        $("#settingsModal").modal('hide');
+        showNotification("danger", "Error", err, null, 50000);
+    });
+}
+
 
 /*  :/  */
 window.addEventListener('resize', () => {
