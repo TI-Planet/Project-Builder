@@ -225,6 +225,7 @@ abstract class Project
 
     abstract public function setInternalName($internalName);
     abstract public function setCurrentFile($name);
+    abstract public function getCurrentFile();
 
     /**
      * @param boolean $multiuser
