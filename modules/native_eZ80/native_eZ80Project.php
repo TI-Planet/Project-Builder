@@ -38,7 +38,7 @@ class native_eZ80Project extends Project
         parent::__construct($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
 
         $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . '*.*')), __CLASS__ . '::isFileNameOK');
-        sort($this->availableFiles);
+        sort($this->availableFiles); // TODO: custom sort so that header files appear just before their implementation file
         if (count($this->availableFiles) === 0)
         {
             // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
