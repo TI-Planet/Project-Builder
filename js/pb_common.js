@@ -34,6 +34,7 @@ function loadProjConfig()
         if (typeof conf.show_bottom_tools !== "undefined") { proj.show_bottom_tools = conf.show_bottom_tools; }
         if (typeof conf.show_code_outline !== "undefined") { proj.show_code_outline = conf.show_code_outline; }
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
+        if (typeof conf.autocomplete_delay !== "undefined") { proj.autocomplete_delay = conf.autocomplete_delay; }
     }
     editorPostSetup();
 

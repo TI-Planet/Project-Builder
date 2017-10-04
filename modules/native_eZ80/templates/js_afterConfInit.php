@@ -30,6 +30,8 @@ if (!isset($pm))
 <script src="<?= cacheBusterPath('js/jquery.filedrop.js') ?>"></script>
 <script>
     $(function(){
+        if (typeof(setupAutocompletionAutoDisplayDelay) !== "undefined") setupAutocompletionAutoDisplayDelay();
+
         let lastOKName = proj.currFile;
         let inviteNotif;
         let progressNotif;

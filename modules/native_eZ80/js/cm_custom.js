@@ -558,16 +558,21 @@ function do_cm_custom()
         });
     };
 
-    editor.on("keyup", debounce(function (cm, event)
+    // Will get called as needed
+    setupAutocompletionAutoDisplayDelay = () =>
     {
-        // disable esc, enter, shift, ctrl, alt, windows/cmd, select/cmd, and arrows
-        const toFilter = [ 13, 27, 16, 17, 18, 91, 93, 37, 38, 39, 40 ];
-        if (!cm.state.completionActive &&     /* Enables keyboard navigation in autocomplete list */
-            toFilter.indexOf(event.keyCode) < 0)
+        editor.on("keyup", debounce(function (cm, event)
         {
-            CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
-        }
-    }, 500));
+            // disable esc, enter, shift, ctrl, alt, windows/cmd, select/cmd, and arrows
+            const toFilter = [13, 27, 16, 17, 18, 91, 93, 37, 38, 39, 40];
+            if (!cm.state.completionActive && /* Enables keyboard navigation in autocomplete list */
+                toFilter.indexOf(event.keyCode) < 0)
+            {
+                CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+            }
+        }, proj.autocomplete_delay));
+    };
+    setupAutocompletionAutoDisplayDelay();
 
     editor.on("mousedown", (cm, e) => {
         if (e.ctrlKey || e.metaKey)
