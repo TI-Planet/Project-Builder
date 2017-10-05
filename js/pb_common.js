@@ -164,7 +164,7 @@ function toggleLeftSidebar(delay)
     saveProjConfig();
 
     sideBar.animate( { "margin-left": (needToggleLeftValue ? '+=' : '-=') +(sideBar.width()+20) }, delay);
-    mainWrapper.animate( { "margin-left": (needToggleLeftValue ? '+=' : '-=') +(sideBar.width()+14) }, delay);
+    mainWrapper.animate( { "margin-left": (needToggleLeftValue ? '+=' : '-=') +(sideBar.width()+13) }, delay);
     $("#leftSidebarToggle").animate( {width: (needToggleLeftValue ? '-=' : '+=')+(7) }, delay, 0);
 
     document.getElementById("leftSidebarToggle").onclick = toggleLeftSidebar;
