@@ -63,6 +63,11 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
         <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
+    <form id="hexDlForm" action="ActionHandler.php" method="POST">
+        <input type="hidden" name="id" value="<?= $projectID ?>">
+        <input type="hidden" name="action" value="downloadHexFile" id="actionInput3">
+        <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
+    </form>
 
     <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
     <textarea id="codearea"></textarea>
@@ -93,6 +98,8 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
+                <li class="hasTooltip" data-placement="right" title="Download the built .hex file"><a onclick="downloadHexFile(); return false">Download .hex file</a></li>
+                <li role="separator" class="divider"></li>
                 <li class="hasTooltip" data-placement="right" title="Download this file only"><a onclick="downloadCurrentFile(proj.currFile); return false">Download current file</a></li>
                 <li class="hasTooltip" data-placement="right" title="Download this file only as..."><a onclick="downloadCurrentFile(); return false">Download current file as...</a></li>
                 <li role="separator" class="divider"></li>

@@ -229,6 +229,11 @@ function buildAndDownload()
     });
 }
 
+function downloadHexFile()
+{
+    buildAndGetLog(isLastBuildLLVM, () => { $('#hexDlForm').submit(); });
+}
+
 function buildAndRunInEmu()
 {
     // TODO: use a flag
