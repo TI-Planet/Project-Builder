@@ -62,8 +62,7 @@ if (isset($_POST['id']) && !empty($_POST['id']))
                 }
                 $paramsStr = count($paramsCopy) > 0 ? substr(json_encode($paramsCopy), 0, 49) : '';
 
-                $pm->getDBHelper()->execQuery('INSERT INTO `pb_logs` (`user_id`, `proj_id`, `action`, `params`, `ok`, `tstamp`) VALUES ( ? , ? , ? , ? , ? , ? )',
-                                              [ @$pm->getCurrentUser()->getID(), @$pm->getCurrentProject()->getDBID(), $act, $paramsStr, $ok === true, time() ]);
+                $pm->logActionInDB($act, $paramsStr, $ok === true);
             } catch (\Exception $e)
             {}
         };
