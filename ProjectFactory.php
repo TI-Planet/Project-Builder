@@ -21,7 +21,7 @@ require_once 'Project.php';
 class ProjectFactory
 {
     // TODO : probably build that list from the DB
-    public static $projectTypes = ['basic_z80','native_z80','native_eZ80','lua_nspire','sprite','var_z80'];
+    public static $projectTypes = [ 'basic_z80', 'native_z80', 'native_eZ80', 'lua_nspire', 'sprite', 'var_z80' ];
 
     /* TODO : Also move the load/create from DB stuff into this class ? */
 
@@ -48,7 +48,7 @@ class ProjectFactory
         }
 
         $customClassName = "{$type}Project";
-        $customFullClassName = "ProjectBuilder\\{$type}Project";
+        $customFullClassName = "ProjectBuilder\\{$customClassName}";
         $customIncludePath = __DIR__ . "/modules/{$type}/{$customClassName}.php";
         if (file_exists($customIncludePath))
         {

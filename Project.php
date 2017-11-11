@@ -26,8 +26,8 @@ require_once 'ProjectFactory.php';
 abstract class Project
 {
     // To override
-    const MODULE_NAME = 'Module Name here';
-    const MODULE_DESCRIPTION = 'Module Description here';
+    const PROJECT_MODULE_NAME        = "Project's Module name here";
+    const PROJECT_MODULE_DESCRIPTION = "Project's Module description here";
 
     protected $id;
     protected $db_id;
@@ -51,7 +51,7 @@ abstract class Project
         {
             throw new \InvalidArgumentException("db_id isn't an int");
         }
-        if (!is_string($randKey) || preg_match("/^[a-zA-Z0-9]{10}$/", $randKey) !== 1)
+        if (!is_string($randKey) || preg_match('/^[a-zA-Z0-9]{10}$/', $randKey) !== 1)
         {
             throw new \InvalidArgumentException('Rand key is invalid');
         }
