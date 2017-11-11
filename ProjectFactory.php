@@ -16,9 +16,9 @@
 
 namespace ProjectBuilder;
 
-require_once 'Project.php';
+require_once 'Project.class.php';
 
-class ProjectFactory
+abstract class ProjectFactory
 {
     // TODO : probably build that list from the DB
     public static $projectTypes = [ 'basic_z80', 'native_z80', 'native_eZ80', 'lua_nspire', 'sprite', 'var_z80' ];

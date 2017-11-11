@@ -16,7 +16,7 @@
 
 namespace ProjectBuilder;
 
-require_once 'PBStatus.php';
+require_once 'PBStatus.class.php';
 require_once 'ProjectManager.php';
 
 header('Content-Type: application/json');

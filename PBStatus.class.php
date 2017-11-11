@@ -2,7 +2,7 @@
 
 namespace ProjectBuilder;
 
-class PBStatus
+abstract class PBStatus
 {
     const OK = '[OK]'; // no message needed, just a marker
     const ErrorMarker = '[Error] '; // message needed, to there')s a trailing space

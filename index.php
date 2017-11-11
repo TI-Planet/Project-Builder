@@ -17,7 +17,7 @@
 namespace ProjectBuilder;
 
 require_once 'utils.php';
-require_once 'PBStatus.php';
+require_once 'PBStatus.class.php';
 require_once 'ProjectManager.php';
 
 $projectID = (isset($_GET['id']) && !empty($_GET['id'])) ? $_GET['id'] : null;

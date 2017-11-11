@@ -20,7 +20,7 @@ namespace ProjectBuilder;
 error_reporting(0);
 ini_set('display_errors', 'Off');
 
-require_once 'PBStatus.php';
+require_once 'PBStatus.class.php';
 require_once 'ProjectFactory.php';
 
 abstract class Project
@@ -45,7 +45,8 @@ abstract class Project
     protected $projDirectory;
     protected $currentFile;
 
-    public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)
+    // This is protected since only children classes extending it will call it.
+    protected function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)
     {
         if (!is_int($db_id))
         {
