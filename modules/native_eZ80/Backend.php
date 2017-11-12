@@ -48,15 +48,10 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
     public function doUserAction(UserInfo $user, array $params)
     {
-        // Until we decide what to do...
-        if ($user->isAnonymous())
+        $retParent = parent::handleGlobalProjectAction($user, $params);
+        if ($retParent !== self::doUserAction_Unhandled_Action)
         {
-            die('Not yet open to non-logged in TI-Planet members');
-        }
-
-        if (!isset($params['action']) || empty($params['action']))
-        {
-            return PBStatus::Error('No action parameter given');
+            return $retParent;
         }
 
         /** @var native_eZ80Project $thisProject */
@@ -66,8 +61,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         // Ready now.
         $this->projCurrFile = $thisProject->getCurrentFile();
-
-        // TODO: First switch in parent classes, and if they return something like -1, handle the action here.
 
         // In this switch, we only check high-level permissions (for special actions) and parameters format etc.
         // The underlying validity of parameters (e.g if file exists, etc.) will have to be checked by the called functions.
@@ -97,13 +90,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
             case 'getCurrentSrc':
                 return $this->getCurrentSrc();
-
-            case 'deleteProj':
-                if (!($thisProject->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
-                {
-                    return PBStatus::Error('Unauthorized');
-                }
-                return $this->deleteProjectDirectory();
 
             case 'renameFile':
                 if (   (!isset($params['oldName']) || empty($params['oldName']))
@@ -215,18 +201,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 $this->build();
                 $this->download();
                 return PBStatus::OK; // unreachable
-
-            case 'fork':
-                if (!isset($params['fork_newid']))
-                {
-                    return PBStatus::Error('Internal error when trying to fork the project (no new_id)');
-                }
-                if (preg_match('/^(\d+)_(\d{10})_([a-zA-Z0-9]{10})$/', $params['fork_newid']) !== 1)
-                {
-                    return PBStatus::Error('Internal error when trying to fork the project (bad new_id)');
-                }
-                return $this->forkProject($params['fork_newid']);
-                break;
 
             case 'downloadZipExport':
                 $this->downloadZipExport();

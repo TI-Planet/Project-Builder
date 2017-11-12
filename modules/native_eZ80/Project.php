@@ -172,7 +172,6 @@ final class native_eZ80Project extends Project
 
     public function doUserAction(UserInfo $user, array $params = [])
     {
-        // handle actions that don't need calling the internal backend but aren't global.
         return $this->backend->doUserAction($user, $params);
     }
 

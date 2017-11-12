@@ -25,6 +25,8 @@ namespace ProjectBuilder;
  */
 abstract class IBackend
 {
+    const doUserAction_Unhandled_Action = -100;
+
     /**
      * @var Project
      */
@@ -81,7 +83,7 @@ abstract class IBackend
         return $code;
     }
 
-    final protected function createProjectDirectory()
+    final private function createProjectDirectory()
     {
         $ret = $this->callFSHelperWithAction('createproj');
         $this->hasFolderinFS = is_dir($this->projFolder);
@@ -136,11 +138,46 @@ abstract class IBackend
     abstract protected function setSettings(array $params = []);
 
     /**
-     * @param   UserInfo    $user
-     * @param   array       $params
-     * Note: Security checks should be good now.
-     * @return  mixed       Depends on the action. Or nothing (die) if download.
+     * May die/exit in certain cases (download...)
+     * @return mixed
      */
     abstract protected function doUserAction(UserInfo $user, array $params);
+
+    final protected function handleGlobalProjectAction(UserInfo $user, array $params)
+    {
+        // Until we decide what to do...
+        if ($user->isAnonymous())
+        {
+            die('Not yet open to non-logged-in TI-Planet members');
+        }
+
+        if (!isset($params['action']) || empty($params['action']))
+        {
+            return PBStatus::Error('No action parameter given');
+        }
+
+        switch ($params['action'])
+        {
+            case 'deleteProj':
+                if (!($this->project->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
+                {
+                    return PBStatus::Error('Unauthorized');
+                }
+                return $this->deleteProjectDirectory();
+
+            case 'fork':
+                if (!isset($params['fork_newid']))
+                {
+                    return PBStatus::Error('Internal error when trying to fork the project (no new_id)');
+                }
+                if (preg_match('/^(\d+)_(\d{10})_([a-zA-Z0-9]{10})$/', $params['fork_newid']) !== 1)
+                {
+                    return PBStatus::Error('Internal error when trying to fork the project (bad new_id)');
+                }
+                return $this->forkProject($params['fork_newid']);
+        }
+
+        return self::doUserAction_Unhandled_Action; // "continue" processing in child classes
+    }
 
 }
