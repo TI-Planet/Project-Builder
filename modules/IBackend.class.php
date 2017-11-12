@@ -85,7 +85,7 @@ abstract class IBackend
 
     final private function createProjectDirectory()
     {
-        $ret = $this->callFSHelperWithAction('createproj');
+        $ret = $this->callFSHelperWithAction('createProj');
         $this->hasFolderinFS = is_dir($this->projFolder);
         return $this->hasFolderinFS ? PBStatus::OK : PBStatus::Error("Could not create project folder (ret = {$ret})");
     }

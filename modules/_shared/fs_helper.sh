@@ -30,8 +30,8 @@ if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]
 then
     echo "***USAGE***" 1>&2
     echo "  First argument needs to be the project's unique ID. Then, a command and its arg if needed: " 1>&2
-    echo "    createproj" 1>&2
-    echo "    deleteproj" 1>&2
+    echo "    createProj" 1>&2
+    echo "    deleteProj" 1>&2
     echo "    setdirty" 1>&2
     echo "    clone [newID]" 1>&2
     exit 2
@@ -81,7 +81,7 @@ else
         cp -rp "${dir}/projects/${id}" "${dir}/projects/${newid}" || exit 3
         touch "${dir}/projects/${newid}/.dirty"
 
-    elif [[ "$cmd" == "createproj" ]]
+    elif [[ "$cmd" == "createProj" ]]
     then
         cp -rp "${dir}/projects/template" "${dir}/projects/${id}" || exit 3
         touch "${dir}/projects/${id}/config.json"
