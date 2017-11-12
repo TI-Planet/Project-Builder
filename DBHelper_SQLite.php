@@ -27,7 +27,20 @@ class DBHelper_SQLite implements IDBHelper
         $this->lastErrCode = null;
         try
         {
-            //return $this->db->prepare($sql)->execute($params);
+            $stmt = $this->dbConn->prepare($sql);
+            if ($params !== null)
+            {
+                foreach ($params as $pName => $pValue)
+                {
+                    $stmt->bindParam(':' . $pName, $pValue);
+                }
+            }
+            if (($res = $stmt->execute()) !== false)
+            {
+                @$res->finalize();
+                return true;
+            }
+            return false;
         } catch (\SQLiteException $e)
         {
             $this->lastErrCode = $e->getCode();
@@ -37,13 +50,37 @@ class DBHelper_SQLite implements IDBHelper
 
     public function getQueryResults($sql, array $params = null)
     {
+        $this->lastErrCode = null;
         try
         {
-            //$req = $this->db->prepare($sql);
-            //$req->execute($params);
-            //$res = $req->fetchAll(\PDO::FETCH_OBJ);
-            //$this->lastErrCode = null;
-            //return $res;
+            $stmt = $this->dbConn->prepare($sql);
+            if ($params !== null)
+            {
+                foreach ($params as $pName => $pValue)
+                {
+                    $stmt->bindParam(':' . $pName, $pValue);
+                }
+            }
+            if (($res = $stmt->execute()) === false)
+            {
+                return [];
+            }
+            $multiArray = [];
+            if ($res->numColumns() > 0)
+            {
+                $idx = 0;
+                while ($row = $res->fetchArray(SQLITE3_ASSOC))
+                {
+                    foreach ($row as $colName => $value)
+                    {
+                        $multiArray[$idx][$colName] = $value;
+                    }
+                    $multiArray[$idx] = (object)$multiArray[$idx];
+                    $idx++;
+                }
+            }
+            @$res->finalize();
+            return $multiArray;
         } catch (\SQLiteException $e)
         {
             $this->lastErrCode = $e->getCode();
