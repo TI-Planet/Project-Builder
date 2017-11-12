@@ -22,7 +22,7 @@ class DBHelper_PDO implements IDBHelper
 {
     use DBHelper_Trait;
 
-    public function execQuery($sql, $params = null)
+    public function execQuery($sql, array $params = null)
     {
         $this->lastErrCode = null;
         try
@@ -37,13 +37,12 @@ class DBHelper_PDO implements IDBHelper
 
     public function getQueryResults($sql, array $params = null)
     {
+        $this->lastErrCode = null;
         try
         {
             $req = $this->dbConn->prepare($sql);
             $req->execute($params);
-            $res = $req->fetchAll(\PDO::FETCH_OBJ);
-            $this->lastErrCode = null;
-            return $res;
+            return $req->fetchAll(\PDO::FETCH_OBJ);
         } catch (\PDOException $e)
         {
             $this->lastErrCode = $e->getCode();

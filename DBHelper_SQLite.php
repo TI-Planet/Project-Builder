@@ -22,7 +22,7 @@ class DBHelper_SQLite implements IDBHelper
 {
     use DBHelper_Trait;
 
-    public function execQuery($sql, $params = null)
+    public function execQuery($sql, array $params = null)
     {
         $this->lastErrCode = null;
         try

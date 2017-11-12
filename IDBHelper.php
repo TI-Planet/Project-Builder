@@ -69,7 +69,7 @@ interface IDBHelper
      * @param   string[]|null   $params     For prepared statements
      * @return  bool                        Whether it succeeded
      */
-    public function execQuery($sql, $params = null);
+    public function execQuery($sql, array $params = null);
 
     /**
      * @param   string          $sql        The query
