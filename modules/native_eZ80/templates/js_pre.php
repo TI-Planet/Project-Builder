@@ -112,8 +112,8 @@ if ($currProject->isMultiuser())
 <script src="js/codemirror/foldcode.js"></script>
 <script src="js/codemirror/foldgutter.js"></script>
 <script src="js/codemirror/matchbrackets.js"></script>
-<script src="js/codemirror/search.min.js"></script>
-<script src="js/codemirror/searchcursor.min.js"></script>
+<script src="js/codemirror/search.js"></script>
+<script src="js/codemirror/searchcursor.js"></script>
 <script src="js/codemirror/match-highlighter.js"></script>
 <script src="js/codemirror/annotatescrollbar.js"></script>
 <script src="js/codemirror/matchesonscrollbar.js"></script>
