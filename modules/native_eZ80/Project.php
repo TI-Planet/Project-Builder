@@ -18,36 +18,35 @@ namespace ProjectBuilder;
 
 // TODO: constify projects folder somewhere up the class hierarchy
 
-class native_eZ80Project extends Project
+final class native_eZ80Project extends Project
 {
     const PROJECT_MODULE_NAME        = 'C/C++ IDE for the TI CE calculators';
     const PROJECT_MODULE_DESCRIPTION = 'C/C++ IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
     const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|cpp|h|hpp|asm|inc)$/i";
     const TEMPLATE_FILE            = 'main.c';
-    const TEMPLATE_FILE_PATH       = '/../../projects/template/main.c';
 
     /**
      * @var native_eZ80ProjectBackend
      */
     private $backend;
+
     private $availableFiles;
 
     public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
         parent::__construct($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
 
-        $this->availableFiles = array_filter(array_map('basename', glob($this->projDirectory . '*.*')), __CLASS__ . '::isFileNameOK');
-        sort($this->availableFiles); // TODO: custom sort so that header files appear just before their implementation file
+        require_once 'Backend.php';
+        $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
+
+        $this->availableFiles = $this->backend->getAvailableFiles();
         if (count($this->availableFiles) === 0)
         {
             // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
             $this->availableFiles = [ self::TEMPLATE_FILE ];
         }
         $this->currentFile = $this->availableFiles[0];
-
-        require_once 'internal/builder.php';
-        $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
     }
 
     public static function cleanPrgmName($prgName = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($prgName)); }
@@ -116,9 +115,7 @@ class native_eZ80Project extends Project
      */
     public function getCurrentFileSourceHTML()
     {
-        $sourceFile = $this->projDirectory . $this->currentFile;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . self::TEMPLATE_FILE_PATH);
-        return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
+        return $this->backend->getCurrentFileSourceHTML();
     }
 
     /**
@@ -126,9 +123,7 @@ class native_eZ80Project extends Project
      */
     public function getCurrentFileMtime()
     {
-        $sourceFile = $this->projDirectory . $this->currentFile;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . self::TEMPLATE_FILE_PATH);
-        return (int)filemtime($whichSource);
+        return $this->backend->getCurrentFileMtime();
     }
 
 

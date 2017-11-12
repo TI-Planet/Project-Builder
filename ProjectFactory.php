@@ -49,7 +49,7 @@ abstract class ProjectFactory
 
         $customClassName = "{$type}Project";
         $customFullClassName = "ProjectBuilder\\{$customClassName}";
-        $customIncludePath = __DIR__ . "/modules/{$type}/{$customClassName}.php";
+        $customIncludePath = __DIR__ . "/modules/{$type}/Project.php";
         if (file_exists($customIncludePath))
         {
             // There's a custom class (server-side)
