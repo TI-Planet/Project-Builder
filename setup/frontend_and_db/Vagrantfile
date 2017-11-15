@@ -1,0 +1,68 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/stretch64"
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  config.vm.network "forwarded_port", guest: 443, host: 443, host_ip: "127.0.0.1"
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  config.vm.synced_folder "../..", "/vagrant/data", type: "rsync", rsync__args: ["-a", "--delete"]
+
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = false
+    # Customize the amount of memory on the VM:
+    vb.memory = "1024"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    cp /vagrant/data/config.example.php /vagrant/data/config.php
+    sed -i -e "s@/the/path/to/your/own/pdo_connection_maker.php@/data/web/tiplanetpb.org/connect_pdo_SQLite.php@" /vagrant/data/config.php
+    sed -i -e "s@/the/path/to/your/own/my_UserInfoProvider.php@/data/web/tiplanetpb.org/SQLite_UserInfoProvider.php@" /vagrant/data/config.php
+    sed -i -e "s@my_UserInfoProvider@SQLite_UserInfoProvider@" /vagrant/data/config.php
+  SHELL
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt update
+    apt full-upgrade
+    apt install -y apache2 openssl ssl-cert php7.0-fpm php7.0-sqlite3 php7.0-mbstring curl
+    a2enmod proxy_fcgi setenvif ssl expires http2
+    a2enconf php7.0-fpm
+  SHELL
+
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "127.0.0.1 tiplanetpb.org" >> /etc/hosts
+    rm -f /data/web/tiplanetpb.org
+    mkdir -p /data/web/
+    ln -s /vagrant/data /data/web/tiplanetpb.org
+    chown -R www-data:www-data /vagrant/data
+    cp /vagrant/pb.conf /etc/apache2/sites-available/100-pb.conf
+    a2ensite 100-pb
+    perl -pi -e "s/Listen 80/#Listen 80/g" /etc/apache2/ports.conf
+  SHELL
+
+  config.vm.provision "shell", inline: <<-SHELL
+    mkdir -p /etc/ssl/localcerts
+    openssl req -new -x509 -days 365 -nodes -out /etc/ssl/localcerts/apache.pem -keyout /etc/ssl/localcerts/apache.key < /vagrant/reqinput
+    chmod 600 /etc/ssl/localcerts/apache*
+    a2dissite 000-default
+    service apache2 restart
+  SHELL
+
+end
