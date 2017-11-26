@@ -78,11 +78,17 @@ require_once 'utils.php';
         firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
             if (error) { // possibly expired token, etc.
                 window.onunload = window.onbeforeunload = null;
-                ajax("firebase/tokenRefresh.php", `uid=${user.id}`, () => {
-                    showNotification("success", "Collaborative edition token refreshed", "You can save and reload the page");
-                });
                 showNotification("danger", "Shared-project session expired or invalid - it will be regenerated now",
-                    "You might want to backup any unsaved changes and refresh the page...", null, 999999);
+                                           "You might want to backup any unsaved changes...", null, 999999);
+                setTimeout( () => {
+                    ajaxAction("refreshFirebaseToken", "",
+                        (text) => {
+                            showNotification("success", "Collaborative edition token refreshed", "Reload the page to continue.", null, 999999);
+                        },
+                        (text) => {
+                            showNotification("danger", "Collaborative edition token refresh failed: ", (text || "") + "Reload the page to continue.", null, 999999);
+                        });
+                }, 1000);
             }
         });
 

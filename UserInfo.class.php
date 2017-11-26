@@ -58,4 +58,23 @@ class UserInfo
     public function isAnonymous() { return $this->isAnonymous; }
     public function isModeratorOrMore() { return $this->isModeratorOrMore; }
 
+    /*
+     *  OPEN-SOURCE USERS: TODO HERE:
+     *
+     *  If you wish tu support multi-user live collaboration...
+     *
+     *  Implement your own logic for the function
+     *  getOrGenerateFirebaseTokenForUID(int $userID, bool $forceRefresh)
+     *  which returns the Firebase token as a string, or null on failure.
+     *
+     *  Here is a useful resource: https://github.com/firebase/firebase-token-generator-php
+     *
+     *  Your function will have to get/insert/replace the pb_tokens table in the database.
+     */
+    public function getOrGenerateFirebaseToken($forceRefresh = false)
+    {
+        require_once 'firebase/firebase.php';
+        return getOrGenerateFirebaseTokenForUID($this->id, $forceRefresh);
+    }
+
 }
