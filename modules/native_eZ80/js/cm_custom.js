@@ -563,6 +563,7 @@ function do_cm_custom()
     {
         editor.on("keyup", debounce(function (cm, event)
         {
+            if (editor.getMode().name === 'z80') { return; }
             // disable esc, enter, shift, ctrl, alt, windows/cmd, select/cmd, and arrows
             const toFilter = [13, 27, 16, 17, 18, 91, 93, 37, 38, 39, 40];
             if (!cm.state.completionActive && /* Enables keyboard navigation in autocomplete list */
