@@ -33,7 +33,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             'outputLoc'    => 'ram',
             'optFor'       => 'speed',
             'flashFuncs'   => 'YES',
-            'clangArgs'    => '-W -Wall -Wwrite-strings -Wno-incompatible-library-redeclaration -Wno-main-return-type -Ddouble=float -Dreentrant='
+            'clangArgs'    => '-W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type -Ddouble=float -Dreentrant='
         ];
 
         $this->projPrgmExtension = $this->settings->outputFormat === 'program' ? '8xp' : '8xv';
