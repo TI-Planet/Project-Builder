@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS `pb_projects` (
 `id` UNSIGNED INTEGER PRIMARY KEY NOT NULL,
   `randkey` varchar(10) NOT NULL,

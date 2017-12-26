@@ -31,11 +31,14 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
   end
 
+  # We'll use SQLite3 here
   config.vm.provision "shell", inline: <<-SHELL
     cp /vagrant/data/config.example.php /vagrant/data/config.php
-    sed -i -e "s@/the/path/to/your/own/pdo_connection_maker.php@/data/web/tiplanetpb.org/connect_pdo_SQLite.php@" /vagrant/data/config.php
-    sed -i -e "s@/the/path/to/your/own/my_UserInfoProvider.php@/data/web/tiplanetpb.org/SQLite_UserInfoProvider.php@" /vagrant/data/config.php
-    sed -i -e "s@my_UserInfoProvider@SQLite_UserInfoProvider@" /vagrant/data/config.php
+    sed -i -e "s@/the/path/to/your/own/pdo_connection_maker.php@/data/web/tiplanetpb.org/setup/database/example_sqlite3_getter.php@" /vagrant/data/config.php
+    sed -i -e "s@/the/path/to/your/own/my_UserInfoProvider.php@/data/web/tiplanetpb.org/example_UserInfoProvider.php@" /vagrant/data/config.php
+    sed -i -e "s@my_UserInfoProvider@example_UserInfoProvider@" /vagrant/data/config.php
+    sed -i -e "s@PDO;@SQLite;@" /vagrant/data/config.php
+    sed -i -e "s@pdo;@sqlite3;@" /vagrant/data/config.php
   SHELL
 
   config.vm.provision "shell", inline: <<-SHELL

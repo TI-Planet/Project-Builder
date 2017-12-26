@@ -19,11 +19,13 @@ namespace ProjectBuilder;
 require_once 'IDBHelper.php';
 
 // Customize these lines to your setup.
-require_once '/the/path/to/your/own/pdo_connection_maker.php';
-global $PB_CONFIG, $pdo;
+require_once '/the/path/to/your/own/pdo_connection_maker.php'; // or your sqlite3_object_getter.php
+
+global $PB_CONFIG, $pdo; // $pdo or your $sqlite3...
+
 // You have to fill those two config values with your things.
-$PB_CONFIG['DB_TYPE'] = DBHelper_Type::PDO;
-$PB_CONFIG['DB_OBJ']  = $pdo;
+$PB_CONFIG['DB_TYPE'] = DBHelper_Type::PDO; // or DBHelper_Type::SQLite
+$PB_CONFIG['DB_OBJ']  = $pdo; // $pdo or your $sqlite3...
 $PB_CONFIG['USER_INFO_PROVIDER_CLASS'] = 'my_UserInfoProvider';
 
 // Require your custom UserInfoProvider here

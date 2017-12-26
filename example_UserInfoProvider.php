@@ -18,11 +18,12 @@ namespace ProjectBuilder;
 
 require_once 'IUserInfoProvider.php';
 
-final class SQLite_UserInfoProvider implements IUserInfoProvider
+final class example_UserInfoProvider implements IUserInfoProvider
 {
 
     public static function getConnectedUserInfo()
     {
+        // write your code here
     }
 
     /**
@@ -31,5 +32,6 @@ final class SQLite_UserInfoProvider implements IUserInfoProvider
      */
     public static function getUserInfoFromID($userID = 1)
     {
+        // write your code here, it should return a UserInfo
     }
 }
