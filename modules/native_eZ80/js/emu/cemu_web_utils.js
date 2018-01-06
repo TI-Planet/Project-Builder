@@ -33,27 +33,22 @@ pauseEmul = function(paused)
 
 initLCD = function()
 {
-    var c = document.getElementById("emu_canvas");
+    const c = document.getElementById("emu_canvas");
 
-    var w = 320;
-    var h = 240;
+    const w = 320;
+    const h = 240;
     c.width = w;
     c.height = h;
 
     canvasCtx = c.getContext('2d'); // global var
-    var imageData = canvasCtx.getImageData(0, 0, w, h);
-    var bufSize = w * h * 4;
-    var bufPtr = Module['_malloc'](bufSize);
-    var buf = new Uint8Array(Module['HEAPU8']['buffer'], bufPtr, bufSize);
-
-    var wrappedPaint = Module['cwrap']('paint_LCD_to_JS', 'void');
-
-    Module['ccall']('set_lcd_js_ptr', 'void', ['number'], [ buf.byteOffset ]);
+    const imageData = canvasCtx.getImageData(0, 0, w, h);
+    const bufSize = w * h * 4;
+    const bufPtr = Module['ccall']('lcd_get_frame', 'number');
 
     repaint = function()
     {
         if (emul_is_paused) { window.requestAnimationFrame(repaint); return; }
-        imageData.data.set(buf);
+        imageData.data.set(Module['HEAPU8'].subarray(bufPtr, bufPtr + bufSize));
         canvasCtx.putImageData(imageData, 0, 0);
         window.requestAnimationFrame(repaint);
     };
