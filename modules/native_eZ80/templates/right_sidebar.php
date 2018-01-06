@@ -89,7 +89,7 @@ if (!isset($pm))
         <script src="<?= $modulePath ?>js/emu/jquery.custom-file-input.js"></script>
 
         <script type='text/javascript'>
-            if (typeof(Atomics) !== "undefined" && typeof(SharedArrayBuffer) !== "undefined")
+            if (typeof(WebAssembly) !== "undefined")
             {
                 var Module = {
                     memoryInitializerPrefixURL:'<?= $modulePath ?>js/emu/',
@@ -111,14 +111,20 @@ if (!isset($pm))
                 };
 
                 var script = document.createElement('script');
-                script.src = "<?= $modulePath ?>js/emu/cemu_web.js?v=2";
+                script.src = "<?= $modulePath ?>js/emu/cemu_web.js?v=3";
                 document.body.appendChild(script);
                 script.onload = function() {
                     localforage.getItem('ce_rom').then(function(ce_rom) {
                         if (ce_rom !== null) {
-                            setTimeout(function() {
-                                fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
-                            }, 1000);
+                            const tryLoad = function() {
+                                if (typeof(fileLoad) !== "undefined")
+                                {
+                                    fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                                } else {
+                                    setTimeout(tryLoad, 250);
+                                }
+                            };
+                            tryLoad();
                         }
                     }).catch(function(err) {
                         console.log("Error while getting ROM from LF", err);
@@ -134,7 +140,7 @@ if (!isset($pm))
                     return true;
                 }
             } else {
-                var old_warn = "WebCEmu needs a very recent browser, please upgrade!\n(Chrome 60 / Opera 47, Firefox 55, Safari 10.1, Edge 16)";
+                var old_warn = "WebCEmu needs a recent browser supporting WebAssembly, please update!";
                 console.log("Error! " + old_warn);
                 document.getElementById('ROMTransferDiv').innerText = old_warn;
             }
