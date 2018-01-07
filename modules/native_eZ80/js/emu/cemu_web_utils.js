@@ -15,9 +15,7 @@ initFuncs = function()
     pressKey = Module['cwrap']('keypad_key_event', 'void', ['number', 'number', 'number']);
     sendKey = Module['cwrap']('sendKey', 'void', ['number']);
     slkp = Module['cwrap']('sendLetterKeyPress', 'void', ['number']);
-    //sendVariable = Module['cwrap']('sendVariableLink', 'number', ['string']);
     set_file_to_send = Module['cwrap']('set_file_to_send', 'void', ['string']);
-    set_sleep_amount_us = Module['cwrap']('set_sleep_amount_us', 'void', ['number']);
     resetEmul = Module['cwrap']('emu_reset', 'void', []);
 }
 
@@ -28,7 +26,6 @@ pauseEmul = function(paused)
     document.getElementById('pauseButtonIcon').className = paused ? 'glyphicon glyphicon-play' : 'glyphicon glyphicon-pause';
     document.getElementById('pauseButtonLabel').innerHTML = paused ? 'Resume' : 'Pause';
     Module['ccall'](paused ? 'emsc_pause_main_loop' : 'emsc_resume_main_loop', 'void', [], []);
-    //repaint();
 }
 
 initLCD = function()
