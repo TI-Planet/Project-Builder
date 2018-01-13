@@ -35,6 +35,8 @@ if (!isset($pm))
                 <a target="_blank" download="<?php echo 'screenshot_' . $currProject->getInternalName() . '.png' ?>" class="btn btn-default btn-sm" onclick="emu_screenshot(this)">
                     <i class="glyphicon glyphicon-camera"></i> Screenshot
                 </a>
+                <button id="record_btn_start" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-record"></i> Record webm</button>
+                <button id="record_btn_stop" class="btn btn-default btn-sm" style="display: none"><i class="glyphicon glyphicon-stop"></i> Stop recording</button>
             </div>
         </div>
 
@@ -151,3 +153,31 @@ if (!isset($pm))
     <div id="cemu_notice">
         <span class="copyright">Emulation powered by CEmu (see <a href="https://github.com/CE-Programming/CEmu" target="_blank">on GitHub</a>)</span>
     </div>
+
+    <script type="text/javascript"> /* Very ugly workaround for the WebRTC no-local restriction */ cerror = console.error; console.error = console.warn;</script>
+    <script type="text/javascript" src="https://cdn.webrtc-experiment.com/screenshot.js"></script>
+    <script type="text/javascript" src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+    <script type="text/javascript"> /* Very ugly workaround for the WebRTC no-local restriction */ console.error = cerror;</script>
+    <script type="text/javascript">
+        const recorder = RecordRTC(document.getElementById('emu_canvas'), { type: 'canvas' });
+        const btn_start = document.getElementById('record_btn_start');
+        const btn_stop = document.getElementById('record_btn_stop');
+        btn_start.onclick = function () {
+            recorder.startRecording();
+            btn_start.style.display = 'none';
+            btn_stop.style.display = 'inline';
+        };
+        btn_stop.onclick = function () {
+            btn_start.style.display = 'inline';
+            btn_stop.style.display = 'none';
+            recorder.stopRecording(url => {
+                const a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style.display = "none";
+                a.href = url;
+                a.download = "recording_" + "<?= $currProject->getInternalName() ?>_" + (+ new Date()) + ".webm";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+        };
+    </script>
