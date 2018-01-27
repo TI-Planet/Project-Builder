@@ -176,6 +176,8 @@ div.subfirepad {
     font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
     font-size: 9pt;
     resize: none;
+    outline:0 !important;
+    -webkit-appearance:none;
 }
 
 div.subfirepad > * {

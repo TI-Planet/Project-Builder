@@ -116,7 +116,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
 <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
     <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>
     <div id="bottomTools">
-        <textarea id="consoletextarea" disabled></textarea>
+        <textarea id="consoletextarea" readonly></textarea>
     </div>
 <?php } ?>
 
