@@ -27,6 +27,9 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
   var errors = /^sl(ia|l|1)\b/i;
   var numbers = /^(\d[\da-f]*h|(?:\$|%)[\da-f]+|\d+d?)\b/i;
   var preproc = /^\s*[#.]\w+/i;
+  var opers = /^(not|mod|xor|and|or|shl|shr|bswap|bsf|bsr)\b/;
+  var data  = /^\.?(dbx|db|dw|dd|dp|dq|dt|ddq|dqq|ddqq|rb|rw|rd|rp|rq|rt|rdq|rqq|rdqq|file)\b/;
+  var fasmg = /^(string|float|trunc|sizeof|lengthof|elementsof|element|scale|metadata|elementof|scaleof|metadataof|equ|reequ|define|redefine|restore|namespace|display|err|include|eval|assert|defined|used|eqtype|eq|relativeto|if|match|rmatch|rawmatch|while|repeat|iterate|rept|irp|irpv|indx|break|else|end|postpone|macro|struc|esc|local|purge|restruc|org|section|format|emit|__file__|__line__|byte|word|dword|pword|fword|qword|tword|tbyte|dqword|xword|qqword|yword|dqqword|zword|label|virtual|load|store|at|from|as|dup|binary)\b/;
 
   return {
     startState: function() {
@@ -49,6 +52,12 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
         }
         w = stream.current();
 
+        if (fasmg.test(w)) {
+            return 'asm-fasmg';
+        } else if (data.test(w)) {
+            return 'asm-data';
+        }
+
         if (stream.indentation())
         {
           if ((state.context == 1 || state.context == 4) && variables1.test(w)) {
@@ -69,6 +78,12 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
             return 'asm-keyword';
           } else if (numbers.test(w)) {
             return 'asm-number';
+          }
+
+          if (fasmg.test(w)) {
+            return 'asm-fasmg';
+          } else if (opers.test(w)) {
+            return 'asm-opers';
           }
 
           if (errors.test(w))
@@ -111,6 +126,12 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
                 } else if (numbers.test(w))
                 {
                     return 'asm-number';
+                } else if (fasmg.test(w))
+                {
+                    return 'asm-fasmg';
+                } else if (opers.test(w))
+                {
+                    return 'asm-opers';
                 } else {
                     return 'asm-variable';
                 }
@@ -137,7 +158,8 @@ CodeMirror.defineMode('z80', function(_config, parserConfig) {
         state.context = 5;
 
         if (stream.eatWhile(/\w/)) {
-          return stream.current().match(preproc) ? 'asm-preproc' : 'asm-def';
+          return stream.current().match(data)    ? 'asm-data'    :
+                 stream.current().match(preproc) ? 'asm-preproc' :'asm-def';
         }
       } else if (stream.eat('$')) {
         if (stream.eatWhile(/[\da-f]/i))

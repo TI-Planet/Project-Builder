@@ -43,10 +43,13 @@ THE SOFTWARE.
 
 .cm-s-xq-light span.cm-asm-var2 { color: #0080c0; }
 .cm-s-xq-light span.cm-asm-var3 { color: brown; }
+.cm-s-xq-light span.cm-asm-opers { color: #004400; font-weight: bold; }
 .cm-s-xq-light span.cm-asm-comment { color: #008000; font-style: italic; }
 .cm-s-xq-light span.cm-asm-keyword { line-height: 1em; font-weight: bold; color: #0000ff }
 .cm-s-xq-light span.cm-asm-number { color: #ff6000 }
 .cm-s-xq-light span.cm-asm-preproc { color: #606060 }
+.cm-s-xq-light span.cm-asm-data { color: #7F007F; font-weight: bold }
+.cm-s-xq-light span.cm-asm-fasmg { color: #242F8A; font-weight: bold }
 .cm-s-xq-light span.cm-asm-label { font-weight: bold }
 
 .cm-s-xq-light .CodeMirror-activeline-background { background: #F1F7FF; }
