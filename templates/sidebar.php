@@ -105,7 +105,7 @@ function genSidebar()
                         <button type="button" class="btn btn-primary btn-xs" style="border-radius:0" onclick="toggleDarkTheme();"><span class="glyphicon glyphicon-eye-close"></span> Dark mode</button>
                         <button id="customExtraSBButton" type="button" class="btn btn-primary btn-xs" style="display:none; border-radius:0"></button>
                     </div>
-                    <span class="copyright">PB &copy; 2015-2017 "Adriweb"</span>
+                    <span class="copyright">PB &copy; 2015-2018 "Adriweb"</span>
                 </div>';
 
     $content .= '<div class="modal fade" id="keybindingsModal" tabindex="-1" role="dialog" aria-labelledby="myKeybindingsModalLabel">
