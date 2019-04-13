@@ -248,7 +248,7 @@ function buildAndRunInEmu()
                 pauseEmul(false);
                 fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
                 setTimeout(() => {
-                    setTimeout(() => { sendKey(0x9CFC); }, 0); // Asm(
+//                    setTimeout(() => { sendKey(0x9CFC); }, 0); // Asm(
                     setTimeout(() => { sendKey(0xDA); }, 250); // prgm
                     setTimeout(() => { sendStringKeyPress(proj.prgmName); }, 500);
                     setTimeout(() => { sendKey(0x05); }, 500 + 150 + 250 * proj.prgmName.length); // Enter

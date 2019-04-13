@@ -25,8 +25,6 @@ if (!isset($pm))
 ?>
     <link rel="stylesheet" href="<?= $modulePath ?>css/right_sidebar.css">
 
-    <script src="<?= $modulePath ?>js/emu/cemu_web_utils.js"></script>
-
     <div id="emu_container" class="unselectable">
 
         <div id="emu_canvas_container">
@@ -113,7 +111,7 @@ if (!isset($pm))
                 };
 
                 var script = document.createElement('script');
-                script.src = "<?= $modulePath ?>js/emu/cemu_web.js?v=3";
+                script.src = "<?= cacheBusterPath("{$modulePath}js/emu/cemu_web.js") ?>";
                 document.body.appendChild(script);
                 script.onload = function() {
                     localforage.getItem('ce_rom').then(function(ce_rom) {

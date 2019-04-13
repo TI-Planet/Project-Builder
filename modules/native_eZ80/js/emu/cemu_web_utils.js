@@ -12,7 +12,7 @@ emul_is_paused = false;
 /* Init C functions wrappers */
 initFuncs = function()
 {
-    pressKey = Module['cwrap']('keypad_key_event', 'void', ['number', 'number', 'number']);
+    pressKey = Module['cwrap']('emu_keypad_event', 'void', ['number', 'number', 'number']);
     sendKey = Module['cwrap']('sendKey', 'void', ['number']);
     slkp = Module['cwrap']('sendLetterKeyPress', 'void', ['number']);
     set_file_to_send = Module['cwrap']('set_file_to_send', 'void', ['string']);
