@@ -90,29 +90,29 @@ require_once 'utils.php';
     }
 </script>
 
-<script src="js/codemirror/codemirror.min.js?v=2"></script>
-<script src="js/codemirror/active-line.js"></script>
-<script src="js/codemirror/dialog.js"></script>
+<script src="<?= cacheBusterPath('js/codemirror/codemirror.min.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/active-line.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/dialog.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/z80.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/clike.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/anyword-ctags-hint.js') ?>"></script>
-<script src="js/codemirror/brace-fold.js"></script>
-<script src="js/codemirror/closebrackets.js"></script>
-<script src="js/codemirror/comment-fold.js"></script>
-<script src="js/codemirror/foldcode.js"></script>
-<script src="js/codemirror/foldgutter.js"></script>
-<script src="js/codemirror/matchbrackets.js"></script>
-<script src="js/codemirror/search.js"></script>
-<script src="js/codemirror/searchcursor.js"></script>
-<script src="js/codemirror/match-highlighter.js"></script>
-<script src="js/codemirror/annotatescrollbar.js"></script>
-<script src="js/codemirror/matchesonscrollbar.js"></script>
-<script src="js/codemirror/trailingspace.js"></script>
-<script src="js/codemirror/jump-to-line.js"></script>
-<script src="js/codemirror/diff_match_patch.js"></script>
-<script src="js/codemirror/merge.js"></script>
+<script src="<?= cacheBusterPath('js/codemirror/brace-fold.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/closebrackets.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/comment-fold.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/foldcode.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/foldgutter.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/matchbrackets.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/search.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/searchcursor.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/match-highlighter.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/annotatescrollbar.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/matchesonscrollbar.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/trailingspace.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/jump-to-line.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/diff_match_patch.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/merge.js') ?>"></script>
 
 <?php
 if ($currProject->isMulti_ReadWrite())
