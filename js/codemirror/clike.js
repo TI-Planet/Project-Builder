@@ -1,5 +1,5 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -64,7 +64,11 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       isPunctuationChar = parserConfig.isPunctuationChar || /[\[\]{}\(\),;\:\.]/,
       numberStart = parserConfig.numberStart || /[\d\.]/,
       number = parserConfig.number || /^(?:0x[a-f\d]+|0b[01]+|(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)(u|ll?|l|f)?/i,
-      isOperatorChar = parserConfig.isOperatorChar || /[+\-*&%=<>!?|\/]/;
+      isOperatorChar = parserConfig.isOperatorChar || /[+\-*&%=<>!?|\/]/,
+      isIdentifierChar = parserConfig.isIdentifierChar || /[\w\$_\xa1-\uffff]/,
+      // An optional function that takes a {string} token and returns true if it
+      // should be treated as a builtin.
+      isReservedIdentifier = parserConfig.isReservedIdentifier || false;
 
   var curPunc, isDefKeyword;
 
@@ -101,9 +105,9 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       while (!stream.match(/^\/[\/*]/, false) && stream.eat(isOperatorChar)) {}
       return "operator";
     }
-    stream.eatWhile(/[\w\$_\xa1-\uffff]/);
+    stream.eatWhile(isIdentifierChar);
     if (namespaceSeparator) while (stream.match(namespaceSeparator))
-      stream.eatWhile(/[\w\$_\xa1-\uffff]/);
+      stream.eatWhile(isIdentifierChar);
 
     var cur = stream.current();
     if (contains(keywords, cur)) {
@@ -112,7 +116,8 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       return "keyword";
     }
     if (contains(types, cur)) return "variable-3";
-    if (contains(builtin, cur)) {
+    if (contains(builtin, cur)
+        || (isReservedIdentifier && isReservedIdentifier(cur))) {
       if (contains(blockKeywords, cur)) curPunc = "newstatement";
       return "builtin";
     }
@@ -215,15 +220,15 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     indent: function(state, textAfter) {
       if (state.tokenize != tokenBase && state.tokenize != null || state.typeAtEndOfLine) return CodeMirror.Pass;
       var ctx = state.context, firstChar = textAfter && textAfter.charAt(0);
+      var closing = firstChar == ctx.type;
       if (ctx.type == "statement" && firstChar == "}") ctx = ctx.prev;
       if (parserConfig.dontIndentStatements)
         while (ctx.type == "statement" && parserConfig.dontIndentStatements.test(ctx.info))
           ctx = ctx.prev
       if (hooks.indent) {
-        var hook = hooks.indent(state, ctx, textAfter);
+        var hook = hooks.indent(state, ctx, textAfter, indentUnit);
         if (typeof hook == "number") return hook
       }
-      var closing = firstChar == ctx.type;
       var switchBlock = ctx.prev && ctx.prev.info == "switch";
       if (parserConfig.allmanIndentation && /[{(]/.test(firstChar)) {
         while (ctx.type != "top" && ctx.type != "}") ctx = ctx.prev
@@ -243,6 +248,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     electricInput: indentSwitch ? /^\s*(?:case .*?:|default:|\{\}?|\})$/ : /^\s*[{}]$/,
     blockCommentStart: "/*",
     blockCommentEnd: "*/",
+    blockCommentContinue: " * ",
     lineComment: "//",
     fold: "brace"
   };
@@ -261,7 +267,8 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     }
   }
   var cKeywords = "auto if break case register continue return default do sizeof " +
-    "static else struct switch extern typedef union for goto while enum const volatile";
+    "static else struct switch extern typedef union for goto while enum const " +
+    "volatile inline restrict asm fortran";
   var cTypes = "int long char short double float unsigned signed void size_t ptrdiff_t";
 
   function cppHook(stream, state) {
@@ -282,6 +289,14 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   function pointerHook(_stream, state) {
     if (state.prevToken == "variable-3") return "variable-3";
     return false;
+  }
+
+  // For C and C++ (and ObjC): identifiers starting with __
+  // or _ followed by a capital letter are reserved for the compiler.
+  function cIsReservedIdentifier(token) {
+    if (!token || token.length < 2) return false;
+    if (token[0] != '_') return false;
+    return (token[1] == '_') || (token[1] !== token[1].toLowerCase());
   }
 
   function cpp14Literal(stream) {
@@ -314,7 +329,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   }
 
   function cppLooksLikeConstructor(word) {
-    var lastTwo = /(\w+)::(\w+)$/.exec(word);
+    var lastTwo = /(\w+)::~?(\w+)$/.exec(word);
     return lastTwo && lastTwo[1] == lastTwo[2];
   }
 
@@ -397,6 +412,8 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
     typeFirstDefinitions: true,
     atoms: words(all_c_atoms),
     dontIndentStatements: /^template$/,
+    isIdentifierChar: /[\w\$_~\xa1-\uffff]/,
+    isReservedIdentifier: cIsReservedIdentifier,
     hooks: {
       "#": cppHook,
       "*": pointerHook,
