@@ -232,9 +232,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
         $output = @file_get_contents($this->projFolder . ($ofLLVM ? 'output_llvm_build.txt' : 'output.txt'));
 
-        // Just filter out a bit some stuff
-        $output = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80', '', $output);
-
         return ($output !== false) ? $output : 'No Build Log! Have you built yet?';
     }
 
@@ -354,11 +351,10 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             $log = str_replace("err:module:load_builtin_dll failed to load .so lib for builtin L\"winex11.drv\": libXext.so.6: cannot open shared object file: No such file or directory\n", '', $log);
             $log = str_replace("Unknown error (127).\n", '', $log);
             // Useless absolute paths
-            $log = str_replace('X:\projects\\' . $this->projID . '\\', './', $log);
-            $log = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80/internal', '', $log);
+            $log = str_ireplace('X:\\projects\\' . $this->projID . '\\', './', $log);
+            $log = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80/internal', '...', $log);
         }
-
-        if ($type === 'analysis')
+        elseif ($type === 'analysis')
         {
             $log = preg_replace('/^\s+.*\n/m', '', $log);
         }
