@@ -44,7 +44,7 @@ if (isset($_POST['id']) && !empty($_POST['id']))
 
 
         /************* Logging ************/
-        $log_action = function($ok) use ($pm)
+        $log_action = static function($ok) use ($pm)
         {
             // We don't want to log all actions like fetching data. Only modifying actions are worth logging.
             $act = $_POST['action'];

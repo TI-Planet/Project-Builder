@@ -40,19 +40,19 @@ $currProjectSettings = $currProject->getSettings();
                             <div class="col-sm-11">
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="sharingMode" value="private" <?= $currProject->isMultiuser() ? '' : 'checked'; ?>>
+                                        <input type="radio" name="sharingMode" value="private" <?= $currProject->isMultiuser() ? '' : 'checked' ?>>
                                         <b>Private</b> - Only you have read+write access to the project
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="sharingMode" value="publicRO" <?= $currProject->isMultiuser() ? 'checked' : ''; ?>>
+                                        <input type="radio" name="sharingMode" value="publicRO" <?= $currProject->isMultiuser() ? 'checked' : '' ?>>
                                         <b>Public read-only</b> - Anyone can read project files, but cannot edit them
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="sharingMode" value="publicRW" <?= $currProject->isMulti_ReadWrite() ? 'checked' : ''; ?>>
+                                        <input type="radio" name="sharingMode" value="publicRW" <?= $currProject->isMulti_ReadWrite() ? 'checked' : '' ?>>
                                         <b>Public read+write</b> - Anyone can read and edit project files
                                     </label>
                                 </div>
@@ -66,13 +66,13 @@ $currProjectSettings = $currProject->getSettings();
                                 Chat enabled (when shared):
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="chatEnabled" value="0" <?= $currProject->isChatEnabled() ? '' : 'checked'; ?>>
+                                        <input type="radio" name="chatEnabled" value="0" <?= $currProject->isChatEnabled() ? '' : 'checked' ?>>
                                         <b>No</b>
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="chatEnabled" value="1" <?= $currProject->isChatEnabled() ? 'checked' : ''; ?>>
+                                        <input type="radio" name="chatEnabled" value="1" <?= $currProject->isChatEnabled() ? 'checked' : '' ?>>
                                         <b>Yes</b>
                                     </label>
                                 </div>
@@ -86,13 +86,13 @@ $currProjectSettings = $currProject->getSettings();
                                 Format:
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputFormat" value="program" <?= $currProjectSettings->outputFormat === 'program' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="outputFormat" value="program" <?= $currProjectSettings->outputFormat === 'program' ? 'checked' : '' ?>>
                                         <b>Program</b> (.8xp)
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputFormat" value="appvar" <?= $currProjectSettings->outputFormat === 'appvar' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="outputFormat" value="appvar" <?= $currProjectSettings->outputFormat === 'appvar' ? 'checked' : '' ?>>
                                         <b>Appvar</b> (.8xv)
                                     </label>
                                 </div>
@@ -101,13 +101,13 @@ $currProjectSettings = $currProject->getSettings();
                                 Location:
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputLoc" value="ram" <?= $currProjectSettings->outputLoc === 'ram' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="outputLoc" value="ram" <?= $currProjectSettings->outputLoc === 'ram' ? 'checked' : '' ?>>
                                         <b>RAM</b>
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="outputLoc" value="archive" <?= $currProjectSettings->outputLoc === 'archive' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="outputLoc" value="archive" <?= $currProjectSettings->outputLoc === 'archive' ? 'checked' : '' ?>>
                                         <b>Archive</b>
                                     </label>
                                 </div>
@@ -122,13 +122,13 @@ $currProjectSettings = $currProject->getSettings();
                                 Optimize for...
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="optFor" value="speed" <?= $currProjectSettings->optFor === 'speed' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="optFor" value="speed" <?= $currProjectSettings->optFor === 'speed' ? 'checked' : '' ?>>
                                         <b>Speed</b> (faster code)
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="optFor" value="size" <?= $currProjectSettings->optFor === 'size' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="optFor" value="size" <?= $currProjectSettings->optFor === 'size' ? 'checked' : '' ?>>
                                         <b>Size</b> (smaller code)
                                     </label>
                                 </div>
@@ -137,13 +137,13 @@ $currProjectSettings = $currProject->getSettings();
                                 <i>(Advanced)</i> Use Flash functions:
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="flashFuncs" value="YES" <?= $currProjectSettings->flashFuncs === 'YES' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="flashFuncs" value="YES" <?= $currProjectSettings->flashFuncs === 'YES' ? 'checked' : '' ?>>
                                         <b>Yes</b> (linked)
                                     </label>
                                 </div>
                                 <div class="radio-inline">
                                     <label>
-                                        <input type="radio" name="flashFuncs" value="NO" <?= $currProjectSettings->flashFuncs === 'NO' ? 'checked' : ''; ?>>
+                                        <input type="radio" name="flashFuncs" value="NO" <?= $currProjectSettings->flashFuncs === 'NO' ? 'checked' : '' ?>>
                                         <b>No</b> (static)
                                     </label>
                                 </div>
@@ -158,7 +158,7 @@ $currProjectSettings = $currProject->getSettings();
                                 Clang extra args
                                 <div class="radio-inline" style="width: 400px;">
                                     <label style="width: 100%;">
-                                        <input class="form-control" type="text" pattern="^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs); ?>>
+                                        <input class="form-control" type="text" pattern="^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs) ?>>
                                     </label>
                                 </div>
                                 <br/>

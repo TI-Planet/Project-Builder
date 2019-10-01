@@ -29,10 +29,10 @@ require_once 'utils.php';
 <script>
     proj = {
         pid: '<?= $projectID ?>',
-        name: '<?= $currProject->getName(); ?>',
-        prgmName: '<?= $currProject->getInternalName(); ?>',
-        currFile: '<?= $currProject->getCurrentFile(); ?>',
-        updated: <?= $currProject->getUpdatedTstamp(); ?>,
+        name: '<?= $currProject->getName() ?>',
+        prgmName: '<?= $currProject->getInternalName() ?>',
+        currFile: '<?= $currProject->getCurrentFile() ?>',
+        updated: <?= $currProject->getUpdatedTstamp() ?>,
         is_multi: <?= $currProject->isMultiuser() ? 'true' : 'false' ?>,
         use_dark: false,
         show_left_sidebar: true,
@@ -42,9 +42,9 @@ require_once 'utils.php';
         autocomplete_delay: 800
     };
     user = {
-        id: '<?= $currUser->getID(); ?>',
-        name: '<?= $currUser->getName(); ?>',
-        avatar: '<?= $currUser->getAvatarURL(); ?>',
+        id: '<?= $currUser->getID() ?>',
+        name: '<?= $currUser->getName() ?>',
+        avatar: '<?= $currUser->getAvatarURL() ?>',
         firebase_token: '<?= $currProject->isMultiuser() ? $currUser->getOrGenerateFirebaseToken() : '' ?>'
     };
 </script>

@@ -22,7 +22,7 @@ if (!isset($pm))
 }
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 <script>
-    proj.currFile = '<?= $currProject->getCurrentFile(); ?>';
+    proj.currFile = '<?= $currProject->getCurrentFile() ?>';
     proj.files = <?php echo json_encode($currProject->getAvailableFiles()); ?>;
 </script>
 

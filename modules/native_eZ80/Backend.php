@@ -167,11 +167,11 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 if (!isset($params['file']) || empty($params['file']))
                 {
                     return PBStatus::Error('No file name given');
-                } else {
-                    if (!native_eZ80Project::isFileNameOK($params['file']))
-                    {
-                        return PBStatus::Error('Bad file name given');
-                    }
+                }
+
+                if (!native_eZ80Project::isFileNameOK($params['file']))
+                {
+                    return PBStatus::Error('Bad file name given');
                 }
                 return $this->llvm($params['file']);
 
@@ -179,11 +179,11 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 if (!isset($params['file']) || empty($params['file']))
                 {
                     return PBStatus::Error('No file name given');
-                } else {
-                    if (!native_eZ80Project::isFileNameOK($params['file']))
-                    {
-                        return PBStatus::Error('Bad file name given');
-                    }
+                }
+
+                if (!native_eZ80Project::isFileNameOK($params['file']))
+                {
+                    return PBStatus::Error('Bad file name given');
                 }
                 return $this->getAnalysis($params['file']);
 

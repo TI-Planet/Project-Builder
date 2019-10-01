@@ -25,11 +25,11 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
 
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
-    <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime(); ?>"><?= $currProject->getCurrentFileSourceHTML(); ?></textarea>
+    <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
     <div class="filelist">
         <ul class="nav nav-tabs">
-            <?= $currProject->getFileListHTML(); ?>
+            <?= $currProject->getFileListHTML() ?>
             <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
             {
                 if (count($currProject->getAvailableFiles()) > 1)
@@ -51,7 +51,7 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
     <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
     <form id="postForm" action="ActionHandler.php" method="POST">
         <input type="hidden" name="id" value="<?= $projectID ?>">
-        <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile(); ?>">
+        <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile() ?>">
         <input type="hidden" name="prgmName" id="prgmNameInput" value="CPRGMCE">
         <input type="hidden" name="action" value="download" id="actionInput">
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">

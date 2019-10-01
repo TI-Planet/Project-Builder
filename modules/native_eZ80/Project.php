@@ -81,10 +81,8 @@ final class native_eZ80Project extends Project
     {
         $fileListHTML = '';
         $filesCount = count($this->availableFiles);
-        for ($i=0; $i<$filesCount; $i++)
+        foreach ($this->availableFiles as $i => $file)
         {
-            $file = $this->availableFiles[$i];
-
             // Group same header and implementation files together
             // (no margin between tabs)
             $counterpartClass = '';
@@ -144,9 +142,9 @@ final class native_eZ80Project extends Project
             {
                 $this->currentFile = $name;
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
         return false;
     }

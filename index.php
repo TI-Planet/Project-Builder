@@ -135,8 +135,8 @@ if ($projectID !== null)
             $url = '/pb/?id=' . $projKey;
             header('Location: ' . $url);
             die();
-        } else {
-            require 'templates/newOrLoadProject.php';
         }
+
+        require 'templates/newOrLoadProject.php';
     }
 }

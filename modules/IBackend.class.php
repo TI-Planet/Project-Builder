@@ -70,7 +70,7 @@ abstract class IBackend
         $this->hasFolderinFS = is_dir($projFolder);
     }
 
-    final private function callFSHelperWithAction($action = '')
+    private function callFSHelperWithAction($action = '')
     {
         if ($action === '')
         {
@@ -83,7 +83,7 @@ abstract class IBackend
         return $code;
     }
 
-    final private function createProjectDirectory()
+    private function createProjectDirectory()
     {
         $ret = $this->callFSHelperWithAction('createProj');
         $this->hasFolderinFS = is_dir($this->projFolder);
