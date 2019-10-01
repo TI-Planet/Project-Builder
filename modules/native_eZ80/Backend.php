@@ -21,7 +21,7 @@ require_once __DIR__ . '/../NativeBasedBackend.class.php';
 
 final class native_eZ80ProjectBackend extends NativeBasedBackend
 {
-    const TEMPLATE_FILE_PATH = '/../../projects/template/main.c';
+    private const TEMPLATE_FILE_PATH = '/../../projects/template/main.c';
 
     public function __construct(native_eZ80Project $project, $projFolder)
     {
@@ -48,6 +48,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
     public function doUserAction(UserInfo $user, array $params)
     {
+        /** @noinspection MissUsingParentKeywordInspection */
         $retParent = parent::handleGlobalProjectAction($user, $params);
         if ($retParent !== self::doUserAction_Unhandled_Action)
         {
@@ -230,6 +231,10 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return '';
         }
         $output = @file_get_contents($this->projFolder . ($ofLLVM ? 'output_llvm_build.txt' : 'output.txt'));
+
+        // Just filter out a bit some stuff
+        $output = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80', '', $output);
+
         return ($output !== false) ? $output : 'No Build Log! Have you built yet?';
     }
 
@@ -348,6 +353,9 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             $log = str_replace("Make sure that your X server is running and that \$DISPLAY is set correctly.\n", '', $log);
             $log = str_replace("err:module:load_builtin_dll failed to load .so lib for builtin L\"winex11.drv\": libXext.so.6: cannot open shared object file: No such file or directory\n", '', $log);
             $log = str_replace("Unknown error (127).\n", '', $log);
+            // Useless absolute paths
+            $log = str_replace('X:\projects\\' . $this->projID . '\\', './', $log);
+            $log = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80/internal', '', $log);
         }
 
         if ($type === 'analysis')
@@ -473,9 +481,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             header('Content-Length: ' . filesize($targetPath));
             readfile($targetPath);
         } else {
-            header('Content-Type: text/html; charset=utf-8');
-            echo '<b>Error: There is no target file to download. Did you build succesfully?</b><br/>';
-            echo '<pre>' . htmlentities($this->getRawBuildLog(), ENT_QUOTES) . '</pre>';
+            header('HTTP/1.0 404 Not Found', true, 404);
+            die(PBStatus::Error('There is no target file to download, check the build log for errors.'));
         }
         die(); // meh
     }
