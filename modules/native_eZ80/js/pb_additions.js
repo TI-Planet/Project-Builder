@@ -391,7 +391,8 @@ function buildAndGetLog(llvm, callback)
             {
                 showNotification("warning", "Fatal build error (undefined/unresolved calls)", "Check the build log", null, 10000);
                 buildStatusClass = "buildError"
-            } else if (result.includes("\\tERROR") || result.includes("Internal Error")) {
+            } else if (result.includes("\\tERROR") || result.includes("Internal Error")
+                    || result[result.length-1].includes(" Error ") || result[result.length-1].includes("There was a problem in the build process...")) {
                 showNotification("warning", "Fatal build error", "Check the build log", null, 10000);
                 buildStatusClass = "buildError"
             } else {
