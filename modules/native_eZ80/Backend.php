@@ -551,9 +551,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             header('Content-Length: ' . filesize($targetPath));
             readfile($targetPath);
         } else {
-            header('Content-Type: text/html; charset=utf-8');
-            echo '<b>Error: There is no hex file to download. Did you build succesfully?</b><br/>';
-            echo '<pre>' . htmlentities($this->getRawBuildLog(), ENT_QUOTES) . '</pre>';
+            header('HTTP/1.0 404 Not Found', true, 404);
+            die(PBStatus::Error('There is no hex file to download, check the build log for errors.'));
         }
         die(); // meh
     }
