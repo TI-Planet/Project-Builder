@@ -93,7 +93,7 @@ More info: <a href='https://tiplanet.org/forum/viewtopic.php?f=41&amp;t=18118'>h
 // Until we decide what to do...
 if ($pm->getCurrentUser()->isAnonymous())
 {
-    $url = 'https://tiplanet.org/forum/ucp.php?mode=login&redirect=' . urlencode($_SERVER['REQUEST_URI']);
+    $url = '/forum/ucp.php?mode=login&redirect=' . urlencode($_SERVER['REQUEST_URI']);
     header('Location: ' . $url);
     die();
 }
@@ -132,7 +132,7 @@ if ($projectID !== null)
         {
             $uid = $pm->getCurrentUser()->getID();
             $projKey = "{$uid}_{$userProjects[0]->created}_{$userProjects[0]->randkey}";
-            $url = 'https://tiplanet.org/pb/?id=' . $projKey;
+            $url = '/pb/?id=' . $projKey;
             header('Location: ' . $url);
             die();
         } else {

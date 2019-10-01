@@ -28,10 +28,8 @@ if (!isset($pm))
     $proj = $pm->createNewProject('native_eZ80', 'My awesome C Project', 'CPRGMCE');
     if ($proj !== null)
     {
-        $projID = $proj->getID();
-
-        $baseURL = 'https://' . $_SERVER['SERVER_NAME'] . strtok($_SERVER['REQUEST_URI'], '?') . "?id={$projID}";
-        header("Location: {$baseURL}");
+        $url = '/pb/?id=' . $proj->getID();
+        header('Location: ' . $url);
         die();
     }
 
