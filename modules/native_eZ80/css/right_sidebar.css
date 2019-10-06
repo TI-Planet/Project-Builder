@@ -7,6 +7,7 @@
 
 #emu_container button {
     outline: none !important;
+    height: 29px;
 }
 
 #emu_container .emscripten {
@@ -17,7 +18,17 @@
 }
 
 #emu_canvas_container, #emu_keypad_buttons {
-    margin-top: 6px;
+    margin-top: 5px;
+}
+
+#emu_keypad_buttons {
+    display: block;
+    background-image: url(/pb/modules/native_eZ80/img/emu_keypad_84pce.png);
+    background-repeat: no-repeat;
+    background-position: center -15px;
+    background-size: 100%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
 }
 
 #emu_canvas {
@@ -30,17 +41,26 @@
 }
 
 #emu_keypad_buttons button {
-    width: 52px;
-    height: 31px;
-    margin-bottom: 6px;
+    width: 46px;
+    height: 27px;
     font-size: 14px;
     padding-top: 4px;
+    margin: 7px 1px 12px;
+    opacity: 0;
+    position: relative;
 }
 
 #emu_keypad_buttons button.topRowButton {
     height: 22px;
     padding-top: 0;
+    margin-top: 14px;
+    margin-bottom: 20px;
 }
+
+#emu_keypad_buttons button.numeric1 { top: -6px; height: 31px; margin-bottom: 1px; }
+#emu_keypad_buttons button.numeric2 { top: -2px; height: 31px; margin-bottom: 1px; }
+#emu_keypad_buttons button.numeric3 { top: 2px; height: 32px; margin-bottom: 1px; }
+#emu_keypad_buttons button.numeric4 { top: 10px; height: 31px; }
 
 #cemu_notice {
     border-top: 2px grey solid;
@@ -67,11 +87,12 @@
     cursor: pointer;
     margin: 0;
     padding: .55rem 1.2rem;
-    max-width: 181px;
+    max-width: 110px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     border-radius: 4px;
+    height: 29px;
 }
 
 #screenshot_btn_container {

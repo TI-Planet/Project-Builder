@@ -54,7 +54,7 @@ initLCD = function()
 
 enableGUI = function()
 {
-    document.getElementById('varTransferDiv').style.display = 'block';
+    document.getElementById('varTransferDiv').style.display = 'inline-block';
     document.getElementById('emu_keypad_buttons').style.display = 'block';
     document.getElementById('emu_canvas').style.display = 'block';
     document.getElementById('emu_divider').style.display = 'block';
@@ -78,7 +78,7 @@ disableGUI = function()
 
 fileLoaded = function(event, filename, isAutoloadedROM)
 {
-    if (event.target.readyState == FileReader.DONE)
+    if (event.target.readyState === FileReader.DONE)
     {
         var fileAsUint8Array = new Uint8Array(event.target.result);
 
@@ -101,8 +101,18 @@ fileLoaded = function(event, filename, isAutoloadedROM)
 
             if (isAutoloadedROM)
             {
-                setTimeout(function(){ pauseEmul(true); }, 2000);
+                setTimeout(function(){ pauseEmul(true); }, 3000);
             }
+
+            setTimeout(function()
+            {
+                let el = document.getElementById('emu_keypad_buttons');
+                if (Module['ccall']('get_device_type', 'number') === 1) {
+                    el.style.backgroundImage = getComputedStyle(el).backgroundImage.replace('84pce', '83pce');
+                } else {
+                    el.style.backgroundImage = getComputedStyle(el).backgroundImage.replace('83pce', '84pce');
+                }
+            }, 1000);
         } else {
             if (emul_is_inited) {
                 if (emul_is_paused) {

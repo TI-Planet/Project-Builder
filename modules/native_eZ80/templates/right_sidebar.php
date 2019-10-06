@@ -53,36 +53,42 @@ if (!isset($pm))
                     ["on", [0,2]], ["<b>0</b>", [0,3]], [".", [0,4]], ["(-)", [0,5]], ["enter", [0,6]]
                 ];
                 for (var i = 0; i < keypad.length; i++) {
-                    var btn = keypad[i];
+                    const btn = keypad[i];
                     if (i>0) {
-                        document.write((i%5 == 0) ? '<br>' : '&nbsp;&nbsp;');
+                        document.write((i%5 === 0) ? '<br>' : '&nbsp;&nbsp;');
                     }
-                    var specialClass = i<5 ? 'topRowButton' : '';
+                    const specialClass = i < 5 ? 'topRowButton' : '';
                     document.write(`<button id="cemu_btn_${i}" class="btn btn-default btn-sm ${specialClass}" onmousedown="pressKey(${btn[1][1]}, ${btn[1][0]}, 1);"
                                            onmouseup="setTimeout(function() \{ pressKey(${btn[1][1]}, ${btn[1][0]}, 0); }, 50);">${btn[0]}</button>`);
                 }
                 // Move arrows where they should be (left, up, down, right)
-                document.getElementById("cemu_btn_8" ).style.cssText = "position: relative; width: 30px; top: 20px;";
-                document.getElementById("cemu_btn_9" ).style.cssText = "position: relative; height: 23px; line-height: 14px; right: 19px; bottom: 8px; width: 45px; margin: 0 15px;";
-                document.getElementById("cemu_btn_13").style.cssText = "position: relative; height: 23px; line-height: 14px; left: 19px; top: 5px; width: 45px; margin: 0 15px;";
-                document.getElementById("cemu_btn_14").style.cssText = "position: relative; width: 30px; bottom: 17px; padding-left: 7px;";
+                document.getElementById("cemu_btn_8" ).style.cssText = "width: 28px;height: 35px;top: 21px;left: 16px;margin: 0;";
+                document.getElementById("cemu_btn_9" ).style.cssText = "width: 45px;height: 19px;line-height: 14px;right: 15px;bottom: 6px;margin: 0 12px;";
+                document.getElementById("cemu_btn_13").style.cssText = "width: 45px;height: 18px;line-height: 14px;left: 22px;top: 2px;margin: 0 11px;";
+                document.getElementById("cemu_btn_14").style.cssText = "width: 26px;height: 35px;bottom: 25px;right: 6px;padding-left: 4px;margin: 0 2px;";
+                // Move [on] and [enter] where they should be
+                document.getElementById("cemu_btn_45").style.cssText = "bottom: 5px;";
+                document.getElementById("cemu_btn_49").style.cssText = "bottom: 5px;";
+                // Assign "numeric" class to some of the appropriate buttons
+                for (var i=0; i<3; i++) {
+                    document.getElementById('cemu_btn_' + (31 + i)).className += ' numeric1';
+                    document.getElementById('cemu_btn_' + (36 + i)).className += ' numeric2';
+                    document.getElementById('cemu_btn_' + (41 + i)).className += ' numeric3';
+                    document.getElementById('cemu_btn_' + (46 + i)).className += ' numeric4';
+                }
             </script>
         </div>
-        <hr id="emu_divider" style="margin:8px;display:none;"/>
         <div>
-            <button id="emu_playpause_btn" class="btn btn-default btn-sm" style="display:none;" onclick="pauseEmul(!emul_is_paused)"><span id="pauseButtonIcon" class="glyphicon glyphicon-pause"></span> <span id="pauseButtonLabel">Pause</span> emulation </button>
-            <button id="emu_reset_btn" class="btn btn-default btn-sm" style="display:none;" onclick="resetEmul()"><span class="glyphicon glyphicon-asterisk"></span> Reset calculator </button>
-            <br><br>
+        <hr id="emu_divider" style="margin:4px;display:none;"/>
+            <button id="emu_playpause_btn" class="btn btn-default btn-sm" style="display:none;" onclick="pauseEmul(!emul_is_paused)"><span id="pauseButtonIcon" class="glyphicon glyphicon-pause"></span> <span id="pauseButtonLabel">Pause</span> </button>
+            <button id="emu_reset_btn" class="btn btn-default btn-sm" style="display:none;" onclick="resetEmul()"><span class="glyphicon glyphicon-asterisk"></span> Reset </button>
             <div id="varTransferDiv" style="display:none;">
-                Variable transfer:
                 <input type="file" id="VarInputFile" name="file" class="inputfile inputfile-1" onChange="fileLoadFromInput(event)" multiple>
                 <label for="VarInputFile" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-file"></span> <span class="fileInputLabel">TI file(s)</span></label>
             </div>
-            <div style="height:4px;"></div>
-            <div id="ROMTransferDiv">
-                Emulator ROM:
+            <div id="ROMTransferDiv" style="display:inline-block;">
                 <input type="file" id="ROMinputFile" name="file" class="inputfile inputfile-1" accept=".rom" onChange="fileLoadFromInput(event)">
-                <label for="ROMinputFile" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-file"></span> <span class="fileInputLabel">ROM image...</span></label>
+                <label for="ROMinputFile" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-file"></span> <span class="fileInputLabel">ROM</span></label>
             </div>
         </div>
 
