@@ -78,8 +78,8 @@ if (!isset($pm))
                 }
             </script>
         </div>
-        <div>
         <hr id="emu_divider" style="margin:4px;display:none;"/>
+        <div id="emu_control_buttons">
             <button id="emu_playpause_btn" class="btn btn-default btn-sm" style="display:none;" onclick="pauseEmul(!emul_is_paused)"><span id="pauseButtonIcon" class="glyphicon glyphicon-pause"></span> <span id="pauseButtonLabel">Pause</span> </button>
             <button id="emu_reset_btn" class="btn btn-default btn-sm" style="display:none;" onclick="resetEmul()"><span class="glyphicon glyphicon-asterisk"></span> Reset </button>
             <div id="varTransferDiv" style="display:none;">
@@ -150,6 +150,46 @@ if (!isset($pm))
                 console.log("Error! " + old_warn);
                 document.getElementById('ROMTransferDiv').innerText = old_warn;
             }
+
+            const debounced_resize = function(){
+                const wh = window.innerHeight;
+                let el = document.getElementById('emu_keypad_buttons');
+                let el2 = document.getElementById('emu_control_buttons');
+                if (wh < 800)
+                {
+                    if (typeof window.InstallTrigger !== 'undefined') { // isFirefox
+                        el.style.transformOrigin = 'center 0';
+                        el.style.transform = 'scale(0.7)';
+                        el2.style.position = 'absolute';
+                        el2.style.bottom = '27px';
+                        el2.style.left = '22px';
+                        el2.style.transform = 'scale(.75)';
+                        el2.style.transformOrigin = 'center 0';
+                    } else {
+                        el.style.zoom = '70%';
+                        el.style.backgroundSize = '70%';
+                    }
+                } else {
+                    if (typeof window.InstallTrigger !== 'undefined') { // isFirefox
+                        el.style.transformOrigin = 'unset';
+                        el.style.transform = 'unset';
+                        el2.style.position = 'unset';
+                        el2.style.bottom = 'unset';
+                        el2.style.left = 'unset';
+                        el2.style.transform = 'unset';
+                        el2.style.transformOrigin = 'unset';
+                    } else {
+                        el.style.zoom = 'unset';
+                        el.style.backgroundSize = '100%';
+                    }
+                }
+            };
+            let debounced_resize_timeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(debounced_resize_timeout);
+                debounced_resize_timeout = setTimeout(debounced_resize, 200);
+            });
+            debounced_resize();
         </script>
 
     </div>
