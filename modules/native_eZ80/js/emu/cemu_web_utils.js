@@ -55,6 +55,7 @@ initLCD = function()
 enableGUI = function()
 {
     document.getElementById('varTransferDiv').style.display = 'inline-block';
+    document.getElementById('emu_intro').style.display = 'none';
     document.getElementById('emu_keypad_buttons').style.display = 'block';
     document.getElementById('emu_canvas').style.display = 'block';
     document.getElementById('emu_divider').style.display = 'block';
@@ -68,6 +69,7 @@ enableGUI = function()
 disableGUI = function()
 {
     document.getElementById('varTransferDiv').style.display = 'none';
+    document.getElementById('emu_intro').style.display = 'inline-block';
     document.getElementById('emu_keypad_buttons').style.display = 'none';
     document.getElementById('emu_canvas').style.display = 'none';
     document.getElementById('emu_divider').style.display = 'none';

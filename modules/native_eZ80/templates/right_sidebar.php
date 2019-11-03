@@ -26,6 +26,7 @@ if (!isset($pm))
     <link rel="stylesheet" href="<?= $modulePath ?>css/right_sidebar.css">
 
     <div id="emu_container" class="unselectable">
+        <div id="emu_intro"><br><b>WebCEmu</b>: load your CE ROM to emulate it:<br><br></div>
 
         <div id="emu_canvas_container">
             <canvas id="emu_canvas" class="emscripten" style="display:none;" oncontextmenu="event.preventDefault()" width="320" height="240"></canvas>
