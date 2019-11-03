@@ -31,6 +31,10 @@
     image-rendering: optimize-contrast;
 }
 
+#emu_keypad_buttons.ti83pce {
+    background-image: url(/pb/modules/native_eZ80/img/emu_keypad_83pce.png);
+}
+
 #emu_canvas {
     border: 1px grey solid;
 }

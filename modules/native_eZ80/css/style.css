@@ -101,6 +101,7 @@ div.filelist li span.glyphicon-trash {
 }
 #codeOutlineFilter {
     display: inline-block;
+    padding: 0 0 0 4px;
     width: 199px;
     height: 24px;
     z-index: 10;

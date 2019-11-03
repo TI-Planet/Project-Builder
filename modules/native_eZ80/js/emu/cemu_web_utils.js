@@ -109,11 +109,7 @@ fileLoaded = function(event, filename, isAutoloadedROM)
             setTimeout(function()
             {
                 let el = document.getElementById('emu_keypad_buttons');
-                if (Module['ccall']('get_device_type', 'number') === 1) {
-                    el.style.backgroundImage = getComputedStyle(el).backgroundImage.replace('84pce', '83pce');
-                } else {
-                    el.style.backgroundImage = getComputedStyle(el).backgroundImage.replace('83pce', '84pce');
-                }
+                el.className = Module['ccall']('get_device_type', 'number') === 1 ? "ti83pce" : "ti84pce";
             }, 1000);
         } else {
             if (emul_is_inited) {
