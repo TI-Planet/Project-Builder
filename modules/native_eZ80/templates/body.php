@@ -21,8 +21,6 @@ if (!isset($pm))
     die('Ahem ahem');
 }
 
-$llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/ && git rev-parse --short HEAD)'), ENT_QUOTES);
-
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 
     <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
@@ -37,9 +35,10 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
                 echo '<li class="active pull-right" style="margin-right:-2px;margin-left:5px;"><a style="color: #337ab7;" href="#" onclick="addFile(); return false;"><span class="glyphicon glyphicon-plus"></span> New file</a></li>';
-                if (substr($currProject->getCurrentFile(), -2) === '.c')
+                $fExt = strtolower(pathinfo($currProject->getCurrentFile())['extension']);
+                if ($fExt === 'c' || $fExt === 'cpp')
                 {
-                    echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="dispSrc(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
+                    echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="llvmCompile(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
                 }
                 echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to toggle the code outline"><a id="codeOutlineToggleButton" style="color: #337ab7;" href="#" onclick="toggleOutline(); return false;"><span class="glyphicon glyphicon-align-left"></span></a></li>';
                 echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to re-indent the file"><a id="reindentButton" style="color: #337ab7;" href="#" onclick="reindent(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
@@ -63,11 +62,6 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
         <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
-    <form id="hexDlForm" action="ActionHandler.php" method="POST">
-        <input type="hidden" name="id" value="<?= $projectID ?>">
-        <input type="hidden" name="action" value="downloadHexFile" id="actionInput3">
-        <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
-    </form>
 
     <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
     <textarea id="codearea"></textarea>
@@ -83,12 +77,10 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li class="hasTooltip" data-placement="right" title="Delete build files then build with ZDS"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
+                <li class="hasTooltip" data-placement="right" title="Delete build files then build"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
                 <li class="hasTooltip" data-placement="right" title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
                 <li role="separator" class="divider"></li>
-                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-eZ80 (<?= $llvmGitSHA ?>)"><a onclick="llvmCompile(); return false">Show ASM from LLVM <sup class="text-muted">alpha</sup></a></li>
-                <li class="hasTooltip" data-placement="right" title="Show ASM from LLVM-eZ80 and diff with the ZDS one"><a onclick="llvmCompileAndDiff(); return false">Diff ASM from LLVM &amp; ZDS <sup class="text-muted">alpha</sup></a></li>
-                <li class="hasTooltip" data-placement="right" title="Compile with LLVM-eZ80, and assemble+link with ZDS"><a onclick="buildAndGetLog(true); return false">Build from LLVM ASM <sup class="text-muted pull">alpha</sup></a></li>
+                <li class="hasTooltip" data-placement="right" title="Show ASM"><a onclick="llvmCompile(); return false">Show ASM</a></li>
             </ul>
         </div>
         <div class="btn-group">
@@ -98,8 +90,6 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li class="hasTooltip" data-placement="right" title="Download the built .hex file"><a onclick="downloadHexFile(); return false">Download .hex file</a></li>
-                <li role="separator" class="divider"></li>
                 <li class="hasTooltip" data-placement="right" title="Download this file only"><a onclick="downloadCurrentFile(proj.currFile); return false">Download current file</a></li>
                 <li class="hasTooltip" data-placement="right" title="Download this file only as..."><a onclick="downloadCurrentFile(); return false">Download current file as...</a></li>
                 <li role="separator" class="divider"></li>
@@ -137,14 +127,14 @@ $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../../../opt/llvm/
         </div>
     </div>
 
-    <div class="modal fade" id="diffModal" tabindex="-1" role="dialog" aria-labelledby="myDiffModalLabel">
+    <div class="modal fade" id="asmViewModal" tabindex="-1" role="dialog" aria-labelledby="myAsmViewModalLabel">
         <div class="modal-dialog" role="document" style="max-width: 1200px !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myDiffModalLabel">Diff ZDS - LLVM</h4>
+                    <h4 class="modal-title" id="myAsmViewModalLabel">ASM generated by LLVM</h4>
                 </div>
-                <div class="modal-body" id="modalDiffSourceBody">
+                <div class="modal-body" id="modalAsmViewSourceBody">
 
                 </div>
                 <div class="modal-footer">

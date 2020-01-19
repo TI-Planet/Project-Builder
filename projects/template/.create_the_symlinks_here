@@ -1,2 +1,1 @@
-convhex -> ../../modules/native_eZ80/internal/toolchain/bin/convhex
-Makefile -> ../../modules/native_eZ80/internal/toolchain/Makefile
+makefile -> ../../modules/native_eZ80/internal/toolchain/makefile

@@ -20,8 +20,6 @@ function do_cm_custom()
     let widgets = [];
     let lineWidgetsAsm = [];
 
-    asmBeingShown = false;
-
     const clearWidgets = function()
     {
         widgets.forEach((widget) => {
@@ -227,105 +225,6 @@ function do_cm_custom()
         if (!auto) { saveProjConfig(); }
     };
 
-    dispSrc = (targetEditor, callback) => {
-        let i;
-
-        if (typeof(targetEditor) === "undefined") {
-            targetEditor = editor;
-        }
-
-        if (asmBeingShown === true) {
-            asmBeingShown = false;
-            clearWidgetsAsm();
-            targetEditor.refresh();
-            targetEditor.focus();
-
-            $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
-
-            if (typeof callback === "function") {
-                callback();
-            }
-            return;
-        }
-        ajaxAction("getCurrentSrc", `file=${proj.currFile}`, (data) => {
-            if (data === null)
-            {
-                asmBeingShown = false;
-                $("#asmToggleButton").css('background-color', 'white').parent().attr('title', 'Click to show ASM').tooltip('fixTitle').tooltip('show');
-                showNotification("warning", "There is no ASM file for this source file", "Have you built the project yet?", null, 10000);
-                if (typeof callback === "function") {
-                    callback();
-                }
-            } else {
-                asmBeingShown = true;
-                $("#asmToggleButton").css('background-color', '#CACBC7').parent().attr('title', 'Click to hide ASM').tooltip('fixTitle').tooltip('show');
-
-                const allSrcLines = data.replace("\\r", "").split("\n");
-
-                const linesForC = { '0':[] }; // format: key = C line (start). value = [ asm lines... ].
-                let currKey = '0';
-
-                for (i=0; i<allSrcLines.length; i++)
-                {
-                    const line = allSrcLines[i];
-                    const matchesNewCLine = line.match(/^;\s+(\d+)\t/);
-                    if (matchesNewCLine && matchesNewCLine.length >= 1)
-                    {
-                        // New C line found. Let's process the previous range
-                        linesForC[currKey].shift(); // Remove first line (which is the C one)
-                        if (!linesForC[currKey].length) {
-                            delete linesForC[currKey];
-                        }
-                        // Prepare for insertions
-                        currKey = matchesNewCLine[1];
-                        linesForC[currKey] = [];
-                    }
-                    // Insert
-                    if (line.trim().length > 0) {
-                        linesForC[currKey].push(line);
-                    }
-                }
-
-                clearWidgetsAsm();
-
-                let key;
-                for (key in linesForC)
-                {
-                    if (!linesForC.hasOwnProperty(key) || key === '0') continue;
-
-                    const lines = linesForC[key];
-
-                    let valueChunk = "<pre style='padding:4px;line-height:.65em;'><code>";
-                    let asmLineIdx;
-                    for (asmLineIdx in lines)
-                    {
-                        if (!lines.hasOwnProperty(asmLineIdx) || lines[asmLineIdx][0] === ";") continue;
-
-                        const trimmedLine = lines[asmLineIdx].trim();
-                        if (trimmedLine.indexOf("XREF") === 0 || trimmedLine.indexOf("XDEF") === 0 || trimmedLine.indexOf("END") === 0) {
-                            continue;
-                        }
-                        valueChunk += `${lines[asmLineIdx].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}<br/>`;
-                    }
-                    valueChunk = valueChunk.slice(0, -1); // remove extra newline at the end
-                    valueChunk += "</code></pre>";
-                    const msg = document.createElement("div");
-                    msg.innerHTML = valueChunk;
-                    msg.className = "inline-asm";
-
-                    lineWidgetsAsm.push(targetEditor.addLineWidget(parseInt(key)-1, msg, {coverGutter: false, noHScroll: true}));
-                }
-
-                targetEditor.refresh();
-                targetEditor.focus();
-
-                if (typeof callback === "function") {
-                    callback();
-                }
-            }
-        });
-    };
-
     addIconToFileTab = (filename, errtype) => {
         $(`div.filelist span.filename:contains('${filename}')`).each((idx, el) => {
             $(el).next().html(`<span class="glyphicon glyphicon-${errtype == 'error' ? 'exclamation-sign' : 'alert'}"></span>`);
@@ -345,7 +244,12 @@ function do_cm_custom()
             let i;
             clearWidgets();
 
-            const combined_logs = build_output.concat(build_check).concat(code_analysis);
+            const combined_logs_nonunique = build_output.concat(build_check).concat(code_analysis);
+
+            // unique
+            const combined_logs = combined_logs_nonunique.filter((object,index) => {
+                return index === combined_logs_nonunique.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object));
+            });
 
             if (combined_logs.length)
             {
@@ -653,9 +557,9 @@ function do_cm_custom()
                             {
                                 ctag_from_sdk = ctag_from_sdk[0];
                                 const line = parseInt(ctag_from_sdk.l);
-                                const isFromLibs = [ 'graphx.h', 'fileioc.h', 'keypadc.h', 'graphx.h' ].indexOf(ctag_from_sdk.file) > -1;
-                                const isFromCE   = [ 'debug.h', 'decompress.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
-                                const baseURL = 'https://github.com/CE-Programming/toolchain/blob/a3f0cb7/';
+                                const isFromLibs = [ 'graphx.h', 'fatdrvce.h', 'fileioc.h', 'fontlibc.h', 'keypadc.h', 'graphx.h', 'srldrvce.h', 'usbdrvce.h' ].indexOf(ctag_from_sdk.file) > -1;
+                                const isFromCE   = [ 'debug.h', 'compression.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
+                                const baseURL = 'https://github.com/CE-Programming/toolchain/blob/llvm';
                                 if (isFromLibs) {
                                     window.open(`${baseURL}/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 } else if (isFromCE) {

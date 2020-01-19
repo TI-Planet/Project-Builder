@@ -32,7 +32,6 @@ then
     echo "  First argument needs to be the project's unique ID. Then, a command and its arg if needed: " 1>&2
     echo "    createProj" 1>&2
     echo "    deleteProj" 1>&2
-    echo "    setdirty" 1>&2
     echo "    clone [newID]" 1>&2
     exit 2
 else
@@ -69,24 +68,17 @@ else
 ## Processing
 ################################
 
-    if [[ "$cmd" == "setdirty" ]]
-    then
-        cd "${dir}/projects/${id}" || exit 5
-        touch "${dir}/projects/${id}/.dirty"
-
-    elif [[ "$cmd" == "clone" ]]
+    if [[ "$cmd" == "clone" ]]
     then
         # check if it exists then clone it keeping permissions (www-data)
         cd "${dir}/projects/${id}" || exit 5
         cp -rp "${dir}/projects/${id}" "${dir}/projects/${newid}" || exit 3
-        touch "${dir}/projects/${newid}/.dirty"
 
     elif [[ "$cmd" == "createProj" ]]
     then
         cp -rp "${dir}/projects/template" "${dir}/projects/${id}" || exit 3
         touch "${dir}/projects/${id}/config.json"
         find "${dir}/projects/${id}/" -type f -regex '.*\.\(c\|cpp\|h\|hpp\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
-        touch "${dir}/projects/${id}/.dirty"
 
     elif [[ "$cmd" == "deleteProj" ]]
     then

@@ -79,84 +79,12 @@ $currProjectSettings = $currProject->getSettings();
                             </div>
                         </div>
 
-                        <h4>Output</h4>
+                        <h4>Compiler options</h4>
                         <div class="form-group">
                             <label class="col-sm-1 control-label"></label>
                             <div class="col-sm-11">
-                                Format:
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="outputFormat" value="program" <?= $currProjectSettings->outputFormat === 'program' ? 'checked' : '' ?>>
-                                        <b>Program</b> (.8xp)
-                                    </label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="outputFormat" value="appvar" <?= $currProjectSettings->outputFormat === 'appvar' ? 'checked' : '' ?>>
-                                        <b>Appvar</b> (.8xv)
-                                    </label>
-                                </div>
-                                <br/>
-
-                                Location:
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="outputLoc" value="ram" <?= $currProjectSettings->outputLoc === 'ram' ? 'checked' : '' ?>>
-                                        <b>RAM</b>
-                                    </label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="outputLoc" value="archive" <?= $currProjectSettings->outputLoc === 'archive' ? 'checked' : '' ?>>
-                                        <b>Archive</b>
-                                    </label>
-                                </div>
-                                <br/>
-                            </div>
-                        </div>
-
-                        <h4>Compilation optimization</h4>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <div class="col-sm-11">
-                                Optimize for...
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="optFor" value="speed" <?= $currProjectSettings->optFor === 'speed' ? 'checked' : '' ?>>
-                                        <b>Speed</b> (faster code)
-                                    </label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="optFor" value="size" <?= $currProjectSettings->optFor === 'size' ? 'checked' : '' ?>>
-                                        <b>Size</b> (smaller code)
-                                    </label>
-                                </div>
-                                <br/>
-
-                                <i>(Advanced)</i> Use Flash functions:
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="flashFuncs" value="YES" <?= $currProjectSettings->flashFuncs === 'YES' ? 'checked' : '' ?>>
-                                        <b>Yes</b> (linked)
-                                    </label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="flashFuncs" value="NO" <?= $currProjectSettings->flashFuncs === 'NO' ? 'checked' : '' ?>>
-                                        <b>No</b> (static)
-                                    </label>
-                                </div>
-                                <br/>
-                            </div>
-                        </div>
-
-                        <h4>Tools options</h4>
-                        <div class="form-group">
-                            <label class="col-sm-1 control-label"></label>
-                            <div class="col-sm-11">
-                                Clang extra args
-                                <div class="radio-inline" style="width: 400px;">
+                                Clang extra args (<tt>-Wall -O3</tt> etc.)
+                                <div class="radio-inline" style="width: 100%; padding-left: 0;">
                                     <label style="width: 100%;">
                                         <input class="form-control" type="text" pattern="^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs) ?>>
                                     </label>

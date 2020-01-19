@@ -21,7 +21,7 @@ require_once __DIR__ . '/../NativeBasedBackend.class.php';
 
 final class native_eZ80ProjectBackend extends NativeBasedBackend
 {
-    private const TEMPLATE_FILE_PATH = '/../../projects/template/main.c';
+    private const TEMPLATE_FILE_PATH = '/../../projects/template/src/main.c';
 
     public function __construct(native_eZ80Project $project, $projFolder)
     {
@@ -29,11 +29,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         $settingsFromJsonOK = is_readable($this->projFolder . 'config.json') ? json_decode(file_get_contents($this->projFolder . 'config.json')) : [];
         $this->settings = (!empty((array)$settingsFromJsonOK)) ? $settingsFromJsonOK : (object)[
-            'outputFormat' => 'program',
-            'outputLoc'    => 'ram',
-            'optFor'       => 'speed',
-            'flashFuncs'   => 'YES',
-            'clangArgs'    => '-W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type -Ddouble=float -Dreentrant='
+            'outputFormat' => 'program', // forced for now
+            'clangArgs'    => '-O3 -W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type',
         ];
 
         $this->projPrgmExtension = $this->settings->outputFormat === 'program' ? '8xp' : '8xv';
@@ -41,7 +38,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
     public function getAvailableFiles()
     {
-        $availableFiles = array_filter(array_map('basename', glob($this->projFolder . '*.*')), '\ProjectBuilder\native_eZ80Project::isFileNameOK');
+        $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/*.*')), '\ProjectBuilder\native_eZ80Project::isFileNameOK');
         sort($availableFiles); // TODO: custom sort so that header files appear just before their implementation file
         return $availableFiles;
     }
@@ -158,10 +155,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->clean();
 
             case 'build':
-                return $this->build(false);
-
             case 'llvmbuild':
-                return $this->build(true);
+                return $this->build();
 
             case 'llvm':
                 if (!isset($params['file']) || empty($params['file']))
@@ -207,10 +202,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 $this->downloadZipExport();
                 return PBStatus::OK; // unreachable
 
-            case 'downloadHexFile':
-                $this->downloadHexFile();
-                return PBStatus::OK; // unreachable
-
             case 'setSettings':
                 return $this->setSettings($params);
 
@@ -225,19 +216,19 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
     // All the following methods assume security checks etc. have been made !
     /**********************************************/
 
-    private function getRawBuildLog($ofLLVM = false)
+    private function getRawBuildLog()
     {
         if (!$this->hasFolderinFS) {
             return '';
         }
-        $output = @file_get_contents($this->projFolder . ($ofLLVM ? 'output_llvm_build.txt' : 'output.txt'));
+        $output = @file_get_contents($this->projFolder . 'output_llvm_build.txt');
 
         return ($output !== false) ? $output : 'No Build Log! Have you built yet?';
     }
 
-    private function getBuildLog($ofLLVM = false)
+    private function getBuildLog()
     {
-        return explode($ofLLVM ? "\n" : "\r\n", $this->cleanLog($this->getRawBuildLog($ofLLVM), $ofLLVM ? 'build_clang' : 'build_zds'));
+        return explode("\n", $this->cleanLog($this->getRawBuildLog(), 'build_clang'));
     }
 
     private function getRawAnalysisLog()
@@ -254,18 +245,21 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         return explode("\n", $this->cleanLog($this->getRawAnalysisLog(), 'analysis'));
     }
 
-    private function getRawLLVMCompileOutput()
+    private function getRawLLVMCompileOutput($src_file)
     {
         if (!$this->hasFolderinFS) {
             return '';
         }
-        $output = @file_get_contents($this->projFolder . 'output_llvm.txt');
-        return ($output !== false) ? $output : 'No LLVM compile log! Hmm?';
+        $output  = @file_get_contents($this->projFolder . 'obj/' . preg_replace('/\.c$/', '.src', $src_file)); // toto.c -> toto.src
+        if ($output === false) {
+            $output = @file_get_contents($this->projFolder . 'obj/' . $src_file . '.src'); // toto.cpp -> toto.cpp.src
+        }
+        return ($output !== false) ? $output : 'No ASM src file produced by LLVM, did you build yet?';
     }
 
-    private function getLLVMCompileOutput()
+    private function getLLVMCompileOutput($src_file)
     {
-        return explode("\n", $this->cleanLog($this->getRawLLVMCompileOutput(), 'clang'));
+        return explode("\n", $this->getRawLLVMCompileOutput($src_file));
     }
 
     private function getRawCheckLog()
@@ -343,21 +337,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
     private function cleanLog($log = '', $type = null)
     {
-        if ($type === 'build_zds' || $type === 'build_clang')
-        {
-            // Wine stuff
-            $log = str_replace("Application tried to create a window, but no driver could be loaded.\n", '', $log);
-            $log = str_replace("Make sure that your X server is running and that \$DISPLAY is set correctly.\n", '', $log);
-            $log = str_replace("err:module:load_builtin_dll failed to load .so lib for builtin L\"winex11.drv\": libXext.so.6: cannot open shared object file: No such file or directory\n", '', $log);
-            $log = str_replace("Unknown error (127).\n", '', $log);
-            // Useless absolute paths
-            $log = str_ireplace('X:\\projects\\' . $this->projID . '\\', './', $log);
-            $log = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80/internal', '...', $log);
-        }
-        elseif ($type === 'analysis')
-        {
-            $log = preg_replace('/^\s+.*\n/m', '', $log);
-        }
+        $log = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80/internal', '...', $log);
+        $log = preg_replace('/\/projectbuilder\/projects\/(\d+)_(\d{10})_([a-zA-Z0-9]{10})\//', '', $log);
 
         return $log;
     }
@@ -368,7 +349,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return '';
         }
         $fileList = implode(' ', $files);
-        chdir($this->projFolder);
+        chdir($this->projFolder . 'src');
         exec("ctags -u --fields=nktSZ --c-kinds=+defgpstuvxml --langmap=ASM:+.inc --output-format=json {$fileList}", $tagList, $retval);
         if ($retval === 0 && is_array($tagList))
         {
@@ -429,7 +410,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
     protected function addFile($fileName, $content = '')
     {
-        if (file_exists($this->projFolder . $fileName))
+        if (file_exists($this->projFolder . 'src/' . $fileName))
         {
             return PBStatus::Error('This file already exists');
         }
@@ -503,10 +484,11 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             die(PBStatus::Error('Could not create the .zip file... Retry?'));
         }
         $zip->addEmptyDir($zipFileName);
+        $zip->addEmptyDir($zipFileName . '/src');
         $files = $thisProject->getAvailableFiles();
         foreach($files as $file)
         {
-            if ($zip->addFromString($zipFileName . '/' . basename($file), file_get_contents($file)) === false)
+            if ($zip->addFromString($zipFileName . '/src/' . basename($file), file_get_contents('src/' . $file)) === false)
             {
                 die(PBStatus::Error('Could not add source files to the .zip file... Retry?'));
             }
@@ -531,32 +513,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         die('Internal error creating the .zip file... Retry?');
     }
 
-
-    /**
-     * Warning: dies.
-     */
-    private function downloadHexFile()
-    {
-        $target = $this->projPrgmName . '.hex';
-        $targetPath = $this->projFolder . 'bin/' . $target;
-
-        if (file_exists($targetPath))
-        {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . $target . '"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($targetPath));
-            readfile($targetPath);
-        } else {
-            header('HTTP/1.0 404 Not Found', true, 404);
-            die(PBStatus::Error('There is no hex file to download, check the build log for errors.'));
-        }
-        die(); // meh
-    }
-
     private function saveSource($source)
     {
         if (mb_strlen($source) > 1024*1024)
@@ -564,21 +520,15 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return PBStatus::Error("Couldn't save such a big content (Max = 1 MB)");
         }
         $this->createProjectDirectoryIfNeeded();
-        $ok = file_put_contents($this->projFolder . $this->projCurrFile, $source);
-        if ($ok !== false)
-        {
-            return $this->setDirty();
-        }
-        return PBStatus::Error("Couldn't save source to current file");
+        $ok = file_put_contents($this->projFolder . 'src/' . $this->projCurrFile, $source);
+        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Couldn't save source to current file");
     }
 
     private function llvm($src_file)
     {
         $this->createProjectDirectoryIfNeeded();
 
-        $this->callNativeHelperWithAction('llvm ' . $src_file);
-
-        return $this->getLLVMCompileOutput();
+        return $this->getLLVMCompileOutput($src_file);
     }
 
     private function getAnalysis($src_file)
@@ -588,7 +538,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return [];
         }
 
-        $this->callNativeHelperWithAction('llvmsyntax ' . $src_file);
+        $this->callNativeHelperWithAction('llvmsyntax src/' . $src_file);
 
         return $this->getAnalysisLog();
     }
@@ -601,36 +551,26 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
         $this->createProjectDirectoryIfNeeded();
 
-        if (!(chdir($this->projFolder) && is_readable($src_file)))
+        if (!(chdir($this->projFolder) && is_readable('src/' . $src_file)))
         {
             return PBStatus::Error("Couldn't read the input file");
         }
-        exec("astyle -q --options=none -n -s4 --keep-one-line-statements --keep-one-line-blocks {$src_file}", $out, $retval);
+        exec("astyle -q --options=none -n -s4 --keep-one-line-statements --keep-one-line-blocks src/{$src_file}", $out, $retval);
         if ($retval === 0)
         {
-            $output = @file_get_contents($src_file);
+            $output = @file_get_contents('src/' . $src_file);
             return ($output !== false) ? $output : null;
         }
         return PBStatus::Error("Error while re-indenting the file ($retval)");
     }
 
-    private function build($withLLVM = false)
+    private function build()
     {
         $this->createProjectDirectoryIfNeeded();
 
-        if ($withLLVM)
-        {
-            $this->clean();
-        }
+        $this->callNativeHelperWithAction('llvmbuild ' . $this->projPrgmName);
 
-        $targetPath = $this->projFolder . 'bin/' . $this->projPrgmName . '.' . $this->projPrgmExtension;
-        $dirtyPath  = $this->projFolder . '.dirty';
-        if (!file_exists($targetPath) || file_exists($dirtyPath))
-        {
-            $this->callNativeHelperWithAction(($withLLVM ? 'llvmbuild ' : 'build ') . $this->projPrgmName);
-        }
-
-        return $this->getBuildLog($withLLVM);
+        return $this->getBuildLog();
     }
 
     protected function setSettings(array $params = [])
@@ -639,9 +579,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         $configPatterns = [
             'outputFormat' => '/^(program|appvar)$/',
-            'outputLoc'    => '/^(ram|archive)$/',
-            'optFor'       => '/^(speed|size)$/',
-            'flashFuncs'   => '/^(YES|NO)$/',
             'clangArgs'    => '/^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$/',
         ];
 
@@ -660,9 +597,9 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
 
         $this->createProjectDirectoryIfNeeded();
-        file_put_contents($this->projFolder . 'config.json', json_encode($this->settings, JSON_PRETTY_PRINT));
+        $ret = file_put_contents($this->projFolder . 'config.json', json_encode($this->settings, JSON_PRETTY_PRINT));
 
-        return PBStatus::OK;
+        return ($ret !== false) ? PBStatus::OK : PBStatus::Error('Could not write config file');
     }
 
     /**
@@ -670,8 +607,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
      */
     public function getCurrentFileSourceHTML()
     {
-        $sourceFile = $this->projFolder . $this->project->getCurrentFile();
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . self::TEMPLATE_FILE_PATH);
+        $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
+        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . 'src/' . self::TEMPLATE_FILE_PATH);
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
@@ -680,8 +617,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
      */
     public function getCurrentFileMtime()
     {
-        $sourceFile = $this->projFolder . $this->project->getCurrentFile();
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . self::TEMPLATE_FILE_PATH);
+        $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
+        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . 'src/' . self::TEMPLATE_FILE_PATH);
         return (int)filemtime($whichSource);
     }
 

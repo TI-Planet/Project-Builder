@@ -67,36 +67,36 @@ abstract class NativeBasedBackend extends IBackend
         {
             return $status;
         }
-        if (file_exists($this->projFolder . $fileName))
+        if (file_exists($this->projFolder . 'src/' . $fileName))
         {
             return PBStatus::Error('This file already exists');
         }
-        $ret = $this->callNativeHelperWithAction('addfile ' . $fileName);
-        $ok = file_put_contents($this->projFolder . $fileName, $content);
+        $ret = $this->callNativeHelperWithAction('addfile src/' . $fileName);
+        $ok = file_put_contents($this->projFolder . 'src/' . $fileName, $content);
         return ($ok !== false) ? PBStatus::OK : PBStatus::Error("File couldn't be created (ret = {$ret})");
     }
 
     final protected function renameFile($oldName, $newName)
     {
-        if (!file_exists($this->projFolder . $oldName))
+        if (!file_exists($this->projFolder . 'src/' . $oldName))
         {
             return PBStatus::Error("This old file doesn't exist");
         }
-        if (file_exists($this->projFolder . $newName))
+        if (file_exists($this->projFolder . 'src/' . $newName))
         {
             return PBStatus::Error('This new file already exists');
         }
-        $ret = $this->callNativeHelperWithAction('renamefile ' . $oldName . ' ' . $newName);
-        $ok = (!file_exists($this->projFolder . $oldName)) && is_writable($this->projFolder . $newName);
+        $ret = $this->callNativeHelperWithAction('renamefile src/' . $oldName . ' src/' . $newName);
+        $ok = (!file_exists($this->projFolder . 'src/' . $oldName)) && is_writable($this->projFolder . 'src/' . $newName);
         return $ok ? PBStatus::OK : PBStatus::Error("File couldn't be renamed (ret = {$ret})");
     }
 
     final protected function deleteCurrentFile()
     {
-        if ($this->hasFolderinFS && file_exists($this->projFolder . $this->projCurrFile))
+        if ($this->hasFolderinFS && file_exists($this->projFolder . 'src/' . $this->projCurrFile))
         {
-            $ret = $this->callNativeHelperWithAction('deletefile ' . $this->projCurrFile);
-            $ok = !file_exists($this->projFolder . $this->projCurrFile);
+            $ret = $this->callNativeHelperWithAction('deletefile src/' . $this->projCurrFile);
+            $ok = !file_exists($this->projFolder . 'src/' . $this->projCurrFile);
             return $ok ? PBStatus::OK : PBStatus::Error("File couldn't be deleted (ret = {$ret})");
         }
         return PBStatus::OK;

@@ -107,13 +107,6 @@ abstract class IBackend
         return $this->hasFolderinFS ? PBStatus::OK : PBStatus::Error("Could not create cloned project folder (ret = {$ret})");
     }
 
-    final protected function setDirty()
-    {
-        $this->createProjectDirectoryIfNeeded();
-        $ret = $this->callFSHelperWithAction('setdirty');
-        return ($ret === 0) ? PBStatus::OK : PBStatus::Error("Could not setDirty project folder (ret = {$ret})");
-    }
-
     final protected function deleteProjectDirectory()
     {
         $this->hasFolderinFS = is_dir($this->projFolder);

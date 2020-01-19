@@ -20,9 +20,11 @@ function genSidebar()
 {
     global $pm;
 
+    $llvmGitSHA = htmlentities(exec('echo $(cd ' . __DIR__ . '/../../opt/llvm-project/ && git rev-parse --short HEAD)'), ENT_QUOTES);
+
     $currUser = $pm->getCurrentUser();
     $currProject = $pm->getCurrentProject();
-    $currProjectAuthor = $pm->getCurrentProject()->getAuthor();
+    $currProjectAuthor = $currProject->getAuthor();
 
     $isUserAuthorOfProject = $currProject->getAuthorID() === $currUser->getID();
 
@@ -111,11 +113,11 @@ function genSidebar()
     $content .= '<div class="modal fade" id="keybindingsModal" tabindex="-1" role="dialog" aria-labelledby="myKeybindingsModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header" style="border: 0; padding-bottom: 5px;">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 <h4 class="modal-title" id="myKeybindingsModalLabel">Editor key bindings</h4>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body" style="border-bottom: 1px #eee solid;">
             
                             </div>
                             <div class="modal-footer">

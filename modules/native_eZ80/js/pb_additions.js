@@ -28,7 +28,6 @@ var enable_sdk_ctags = true; // true when not asm
 var ti84pceInc_ctags = [];
 var enable_ti84pceInc_ctags = false; // true when asm
 var lastSavedSource = '';
-var isLastBuildLLVM = false;
 
 function applyPrgmNameChange(name)
 {
@@ -222,16 +221,11 @@ function addFile(name)
 
 function buildAndDownload()
 {
-    buildAndGetLog(isLastBuildLLVM, () => {
+    buildAndGetLog(() => {
         document.getElementById('builddlButton').removeAttribute("onclick");
         document.getElementById('postForm').submit();
         document.getElementById('builddlButton').setAttribute("onclick", 'buildAndDownload(); return false;');
     });
-}
-
-function downloadHexFile()
-{
-    buildAndGetLog(isLastBuildLLVM, () => { $('#hexDlForm').submit(); });
 }
 
 function buildAndRunInEmu()
@@ -243,7 +237,7 @@ function buildAndRunInEmu()
     }
     if (emul_is_inited)
     {
-        buildAndGetLog(isLastBuildLLVM, () => {
+        buildAndGetLog(() => {
             ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), (file) => {
                 pauseEmul(false);
                 fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
@@ -367,7 +361,7 @@ function cleanProj(callback)
     });
 }
 
-function buildAndGetLog(llvm, callback)
+function buildAndGetLog(callback)
 {
     const buildButton = document.getElementById('buildButton');
     const cleanButton = document.getElementById('cleanButton');
@@ -379,20 +373,16 @@ function buildAndGetLog(llvm, callback)
 
     saveFile(() => {
         // build output
-        isLastBuildLLVM = (typeof llvm === 'boolean' && llvm);
-        const buildName = isLastBuildLLVM ? 'llvmbuild' : 'build';
-        ajaxAction(buildName, `prgmName=${proj.prgmName}`, (result) => {
+        ajaxAction('llvmbuild', `prgmName=${proj.prgmName}`, (result) => {
             build_output_raw = result;
 
             build_output = parseBuildLog(build_output_raw);
 
             let buildStatusClass = "buildOK";
-            if (result.includes("ERROR: Object file(s) deleted because of option unresolved=fatal."))
-            {
-                showNotification("warning", "Fatal build error (undefined/unresolved calls)", "Check the build log", null, 10000);
-                buildStatusClass = "buildError"
-            } else if (result.includes("\\tERROR") || result.includes("Internal Error")
-                    || result[result.length-1].includes(" Error ") || result[result.length-1].includes("There was a problem in the build process...")) {
+            if (!result.length || (result.length > 1 && (
+                                    result[result.length-2].includes("src] Error 1")
+                                 || result[result.length-2].includes("bin] Error 2")) )
+            ) {
                 showNotification("warning", "Fatal build error", "Check the build log", null, 10000);
                 buildStatusClass = "buildError"
             } else {
@@ -415,18 +405,6 @@ function buildAndGetLog(llvm, callback)
 
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
 
-            if (asmBeingShown) {
-                const oldCursor = editor.getCursor();
-                dispSrc(editor);
-                dispSrc(editor, () => {
-                    editor.setCursor(oldCursor);
-                    const cursor_line_div = document.querySelector("div.CodeMirror-activeline");
-                    if (cursor_line_div) {
-                        cursor_line_div.scrollIntoView();
-                    }
-                });
-            }
-
             // Call cppcheck
             ajaxAction("getCheckLog", "", (text) => {
                 build_check = parseCheckLog(text);
@@ -445,12 +423,13 @@ function parseBuildLog(log)
     {
         for (let i = 0; i < log.length; i++)
         {
-            const regex = /(\w+\.(?:c|h|asm|inc))\s+\((\d+),(\d+)\)\s+:\s+(.*?)\s+\((\d+)\)\s(.*?)$/gmi;
+            const regex = /^src\/(\w+\.(?:[chp]+)):(\d+):(\d+): (\w+)(.*?)(?: \[(-.*?)\])?$/gmi;
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
-                // not doing anything with matches[5] ? (code)
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4].toLowerCase(), category: "", text: matches[6], from: 'ZDS'})
+                const category = (matches.length >= 7 && matches[6]) ? matches[6] : "";
+                const text = matches[4] + " " + matches[5];
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: category, text: text, from: 'clang', fixit: null});
             }
         }
     } else {
@@ -466,11 +445,11 @@ function parseCheckLog(log)
     {
         for (let i = 0; i < log.length; i++)
         {
-            const regex = /^\[(\w+\.(?:c|cpp|h|hpp)):(\d+)\]: \((.*?)\) (.*)$/gmi;
+            const regex = /^\[src\/(\w+\.(?:c|cpp|h|hpp)):(\d+)\]: \((.*?)\) (.*)$/gmi;
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], category: "", text: matches[4], from: 'cppcheck'})
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], category: "", text: matches[4], from: 'cppcheck', fixit: null})
             }
         }
     } else {
@@ -486,16 +465,21 @@ function parseAnalysisLog(log)
     {
         for (let i = 0; i < log.length; i++)
         {
-            const regex = /^\/tmp\/\w+\/(\w+.(?:[chp]+)):(\d+):(\d+): (\w+)(.*?)(?: \[(-.*?)\])?$/gmi;
+            const regex = /^\/tmp\/\w+\/src\/(\w+.(?:[chp]+)):(\d+):(\d+): (\w+)(.*?)(?: \[(-.*?)\])?$/gmi;
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
                 // check if there is a fix-it available
                 let fixit = null;
+                const regex_fixit = /^fix-it:"\/tmp\/\w+\/src\/(\w+.(?:[chp]+))":\{(\d+):(\d+)-(\d+):(\d+)\}:"(.*?)"$/gmi;
                 if (i<log.length-1 && log[i+1].startsWith('fix-it'))
                 {
-                    const regex_fixit   = /^fix-it:"\/tmp\/\w+\/(\w+.(?:[chp]+))":\{(\d+):(\d+)-(\d+):(\d+)\}:"(.*?)"$/gmi;
                     const m_fixit = regex_fixit.exec(log[i+1]);
+                    fixit = { src_l: m_fixit[2], src_c: m_fixit[3], dest_l: m_fixit[4], dest_c: m_fixit[5], repl: m_fixit[6] };
+                    i++;
+                } else if (i<log.length-4 && log[i+4].startsWith('fix-it'))
+                {
+                    const m_fixit = regex_fixit.exec(log[i+4]);
                     fixit = { src_l: m_fixit[2], src_c: m_fixit[3], dest_l: m_fixit[4], dest_c: m_fixit[5], repl: m_fixit[6] };
                     i++;
                 }
@@ -518,94 +502,17 @@ function rightSidebar_toggle_callback(willBeHidden)
     }
 }
 
-function showOnDiff(asm1, asm2)
-{
-    const target = document.getElementById('modalDiffSourceBody');
-    target.innerHTML = "";
-    const mergeView = CodeMirror.MergeView(target, {
-        value: asm1,
-        readOnly: true,
-        origRight: asm2,
-        lineNumbers: true,
-        mode: "text/x-ez80",
-        theme: "xq-light",
-        highlightDifferences: true,
-        connect: null,
-        ignoreWhitespace: true,
-        collapseIdentical: false,
-        indentUnit: 8,
-        tabSize: 8
-    });
-
-    mergeView.editor().refresh();
-    $('#diffModal').modal();
-    $('#diffModal').find('div.modal-dialog').css("width", "80%");
-    setTimeout(function ()
-    {
-        $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.5 * ($(document).height())) + 'px');
-        mergeView.editor().scrollTo(null, 1);
-        mergeView.editor().scrollTo(null, 0);
-        $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75 * ($(document).height())) + 'px');
-        mergeView.editor().refresh();
-    }, 500);
-}
-
-function llvmCompileAndDiff()
-{
-    saveFile(() =>
-    {
-        $("#myDiffModalLabel").text('Diff ZDS - LLVM');
-        showOnDiff("(loading ZDS ASM...)", "(loading LLVM ASM...)");
-        ajaxAction("llvm", `file=${proj.currFile}`, (result) =>
-        {
-            if (!result) {
-                result = [ "Hmm, empty output, or something went wrong." ];
-            }
-
-            let llvmASM = result.join("\n").replace(/^;.*/gm, "").replace(/^\s*$/gm, "").toLowerCase();
-            llvmASM = llvmASM.replace(/ \+ /gm, "+").replace(/\s*.global.*/gm, "");
-            showOnDiff("(loading ZDS...)", llvmASM);
-
-            ajaxAction("getCurrentSrc", `file=${proj.currFile}`, (zdsASM) =>
-            {
-                const showFinalDiff = (asm) =>
-                {
-                    if (!asm || asm === "null") {
-                        showOnDiff("(not built yet?)", llvmASM);
-                    } else {
-                        asm = asm.replace("\\r", "").replace(/^;.*/gm, "").replace(/^\s*$/gm, "").replace(/ \+ /gm, "+").toLowerCase();
-                        showOnDiff(asm, llvmASM);
-                    }
-                };
-                if (zdsASM === null)
-                {
-                    ajaxAction("build", `prgmName=${proj.prgmName}`, () =>
-                    {
-                        ajaxAction("getCurrentSrc", `file=${proj.currFile}`, (finalZDSASM) =>
-                        {
-                            showFinalDiff(finalZDSASM);
-                        });
-                    });
-                } else {
-                    showFinalDiff(zdsASM);
-                }
-            });
-        });
-    });
-}
-
 function llvmCompile()
 {
     saveFile(() =>
     {
-        $("#myDiffModalLabel").text('Output of LLVM compilation');
         ajaxAction("llvm", `file=${proj.currFile}`, (result) =>
         {
             if (!result) {
                 result = [ "Hmm, empty output, or something went wrong." ];
             }
 
-            $('#modalDiffSourceBody').html("<textarea id='llvmModalTextarea'></textarea>");
+            $('#modalAsmViewSourceBody').html("<textarea id='llvmModalTextarea'></textarea>");
             const $ta = $("#llvmModalTextarea");
             $ta.val(result.join("\n"));
 
@@ -619,14 +526,14 @@ function llvmCompile()
             });
 
             cm.refresh();
-            $('#diffModal').modal();
-            $('#diffModal').find('div.modal-dialog').css("width", "80%");
+            $('#asmViewModal').modal();
+            $('#asmViewModal').find('div.modal-dialog').css("width", "80%");
             setTimeout(function ()
             {
-                $("#diffModal .CodeMirror").css("height", (.5 * ($(document).height())) + 'px');
+                $("#asmViewModal .CodeMirror").css("height", (.5 * ($(document).height())) + 'px');
                 cm.scrollTo(null, 1);
                 cm.scrollTo(null, 0);
-                $("#diffModal .CodeMirror").css("height", (.75 * ($(document).height())) + 'px');
+                $("#asmViewModal .CodeMirror").css("height", (.75 * ($(document).height())) + 'px');
                 cm.refresh();
             }, 500);
         });
