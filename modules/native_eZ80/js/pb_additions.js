@@ -28,6 +28,7 @@ var enable_sdk_ctags = true; // true when not asm
 var ti84pceInc_ctags = [];
 var enable_ti84pceInc_ctags = false; // true when asm
 var lastSavedSource = '';
+var liveLogInterval = 0;
 
 function applyPrgmNameChange(name)
 {
@@ -372,7 +373,22 @@ function buildAndGetLog(callback)
     removeClass(buildButton.children[1], "hidden");
 
     saveFile(() => {
-        // build output
+        // get live log
+        liveLogInterval = setInterval(() => {
+            ajaxAction("getBuildLog", "", (log) => {
+                // Remove the timestamp
+                log.shift();
+                if (build_output_raw.toString() !== log.toString())
+                {
+                    build_output_raw = log;
+                    // Update console
+                    const consoletextarea = document.getElementById('consoletextarea');
+                    consoletextarea.value = log.join("\n");
+                    consoletextarea.scrollTop = consoletextarea.scrollHeight;
+                }
+            });
+        }, 1000);
+
         ajaxAction('llvmbuild', `prgmName=${proj.prgmName}`, (result) => {
             build_output_raw = result;
 
@@ -412,7 +428,7 @@ function buildAndGetLog(callback)
                 addClass(buildButton.children[1], "hidden");
                 cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = false;
             });
-        });
+        }, null, () => { clearInterval(liveLogInterval); });
     });
 }
 
