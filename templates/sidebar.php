@@ -120,6 +120,23 @@ function genSidebar()
                             <div class="modal-body" style="border-bottom: 1px #eee solid;">
             
                             </div>
+                            <div class="modal-header" style="border: 0; padding-bottom: 5px;">
+                                <h4 class="modal-title" id="myKeybindingsModalLabel">About</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <b style="margin-bottom: 4px; display: inline-block;">Project Builder &copy; 2015-' . date('Y') . ' "Adriweb"</b>.
+                                    [ <a href="https://tiplanet.org/forum/viewtopic.php?t=18118" target="_blank">TI-Planet topic</a> ]<br/>
+                                    <span style="margin-bottom: 4px; display: inline-block;">Many thanks to Matt "MateoC" Waltz, Jacob "Jacobly" Young, Zachary "Runer112" Wassall, TI-Planet colleagues, and others...</span><br/>
+                                    The PB\'s source is available <a href="https://github.com/TI-Planet/Project-Builder" target="_blank">on GitHub</a>.
+                                    It makes use of, among other things,
+                                      <a href="https://codemirror.net/" target="_blank">CodeMirror</a>,
+                                      the community\'s <a href="https://github.com/CE-Programming/toolchain" target="_blank">CE toolchain</a>,
+                                      <a href="https://github.com/CE-Programming/CEmu" target="_blank">CEmu</a>,
+                                      <a href="https://github.com/jacobly0/llvm-project" target="_blank" title="' . $llvmGitSHA . '">LLVM (e)z80</a>,
+                                      <a href="https://github.com/adriweb/tivars_lib_cpp" target="_blank">tivars_lib_cpp</a>...
+                                </div>
+                            </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
