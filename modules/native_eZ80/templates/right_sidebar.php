@@ -93,6 +93,13 @@ if (!isset($pm))
             </div>
         </div>
 
+        <script>
+            // Chrome bugfix ?!
+            $("#VarInputFile, #ROMinputFile").on("click", () => {
+                $("#emu_control_buttons").toggle(); setTimeout(() => { $("#emu_control_buttons").toggle(); }, 10);
+            });
+        </script>
+
         <script src="<?= $modulePath ?>js/emu/jquery.custom-file-input.js"></script>
 
         <script type='text/javascript'>
