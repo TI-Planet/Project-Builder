@@ -49,16 +49,16 @@ if (!isset($pm))
                 }
             }
         };
-        const endCallback = (name) => {
+        const endCallback = (name, needToGoToFile) => {
             progressCallback(name);
-            setTimeout( () => { goToFile(lastOKName);  }, 500);
-            setTimeout( () => { progressNotif.close(); }, 1500);
+            if (needToGoToFile) { setTimeout( () => { goToFile(lastOKName);  }, 500); }
+            setTimeout( () => { progressNotif && progressNotif.close(); }, 1500);
         };
-        $("#editorContainer").filedrop({
-            onDrop: (file, str, isLast) => {
+        $("#editorContainer, #leftSidebar").filedrop({
+            onDrop: (file, str, isLast, numFiles) => {
                 if (file.size < 1024*1024)
                 {
-                    createFileWithContent(file.name, str, isLast ? endCallback : progressCallback);
+                    createFileWithContent(file.name, str, isLast ? endCallback : progressCallback, isLast, numFiles);
                 } else {
                     const escapedName = $('<div/>').text(file.name).html();
                     showNotification("warning", "A file was not imported", `The file ${escapedName} looks a bit too big... Max = 1 MB`, isLast ? endCallback : null, 5000);
@@ -67,7 +67,7 @@ if (!isset($pm))
             onEnter: (event) => {
                 if (!inviteNotif)
                 {
-                    inviteNotif = showNotification("info", "File import", "Drop source code files on the editor to import them into the project");
+                    inviteNotif = showNotification("info", "File import", "Drop source code files, or an icon.png file, on the editor to import them into the project");
                     inviteNotif.$ele[0].addEventListener("dragenter", () => { inviteNotif.$ele.hide(); inviteNotif.close() }, false);
                 }
             }

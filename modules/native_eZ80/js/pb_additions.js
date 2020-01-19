@@ -39,6 +39,13 @@ function applyPrgmNameChange(name)
     saveProjConfig();
 }
 
+function applyProjectNameChange(name)
+{
+    proj.name = name;
+    document.getElementById("projectNameSpan").innerHTML = name;
+    saveProjConfig();
+}
+
 function changePrgmName()
 {
     let name = prompt("Enter the new program name (8 letters max, A-Z 0-9, starts by a letter)", "");
@@ -53,6 +60,24 @@ function changePrgmName()
             ajaxAction("setInternalName", `internalName=${name}`, () => {
                 addClass(document.querySelector("#prgmNameContainer span.loadingicon"), "hidden");
                 applyPrgmNameChange(name);
+            });
+        }
+    }
+}
+
+function changeProjectName()
+{
+    let name = prompt("Enter the new description (25 characters max, alphanumerical and common symbols)", "");
+    if (name != null)
+    {
+        if (!name.match(/^[\w ._+\-*/<>,:()]{0,25}$/))
+        {
+            showNotification("danger", "Invalid name", "25 characters max, alphanumerical and common symbols");
+        } else {
+            removeClass(document.querySelector("#projectNameContainer span.loadingicon"), "hidden");
+            ajaxAction("setName", `name=${name}`, () => {
+                addClass(document.querySelector("#projectNameContainer span.loadingicon"), "hidden");
+                applyProjectNameChange(name);
             });
         }
     }
@@ -145,28 +170,38 @@ function saveFile(callback)
 
 function isValidFileName(name)
 {
-    return /^[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm|inc)$/i.test(name);
+    return name === 'icon.png' || /^[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm|inc)$/i.test(name);
 }
 
-function createFileWithContent(name, content, cb)
+function createFileWithContent(name, content, cb, isLast, numFiles)
 {
     const escapedName = $('<div/>').text(name).html();
     if (isValidFileName(name))
     {
         if (proj.files.indexOf(name) === -1)
         {
-            ajaxAction("addFile", `fileName=${name}`, () =>
-            {
-                proj.files = proj.files.concat([name]);
-                saveProjConfig();
-                ajaxAction("save", `file=${name}&source=${encodeURIComponent(content)}`, null, null, () => { cb(name) });
-            }, () => { cb(name) });
+            if (name === "icon.png") {
+                content = content.replace('data:image/png;base64,', '');
+                ajaxAction("addIconFile", `icon=${encodeURIComponent(content)}`, () =>
+                {
+                    document.getElementById('prgmIconImg').src = `/pb/projects/${proj.pid}/icon.png`;
+                    showNotification("success", 'Icon added', 'The project icon has been set successfully');
+                    cb(name, isLast && numFiles > 1);
+                }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
+            } else {
+                ajaxAction("addFile", `fileName=${name}`, () =>
+                {
+                    proj.files = proj.files.concat([name]);
+                    saveProjConfig();
+                    ajaxAction("save", `file=${name}&source=${encodeURIComponent(content)}`, null, null, () => { cb(name, true) });
+                }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
+            }
         } else {
-            showNotification("warning", "A file was not created", `'${escapedName}' already exists in the project`, null, 10000);
+            showNotification("warning", "File not imported", `'${escapedName}' already exists in the project`, null, 10000);
             if (typeof(cb) === "function") { cb(name); }
         }
     } else {
-        showNotification("warning", "A file was not created", `'${escapedName}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)`, null, 10000);
+        showNotification("warning", "File not imported", `'${escapedName}' is not a valid name (Could be icon.png, or: Chars: a-z,A-Z,0-9,_ Extension: c,cpp,h,hpp,asm,inc)`, null, 10000);
         if (typeof(cb) === "function") { cb(name); }
     }
 }

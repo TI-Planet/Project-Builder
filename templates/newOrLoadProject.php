@@ -25,7 +25,7 @@ if (!isset($pm))
     // echo "new or load page";
 
     // For now, hardcode the native_eZ80 project type
-    $proj = $pm->createNewProject('native_eZ80', 'My awesome C Project', 'CPRGMCE');
+    $proj = $pm->createNewProject('native_eZ80', '', 'CPRGMCE');
     if ($proj !== null)
     {
         $url = '/pb/?id=' . $proj->getID();

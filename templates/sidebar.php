@@ -39,8 +39,11 @@ function genSidebar()
     {
         $content .= '<div class="sidebarListHeader"><b>Current project:</b></div>';
         $content .= '<div id="currentProject">';
-        $content .= '<div id="prgmNameContainer"><span id="prgmNameSpan">' . $currProject->getInternalName() . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> (<a href="#" onclick="changePrgmName(); return false;">rename</a>)</div>';
+        $content .= '<div id="prgmIconContainer"><img id="prgmIconImg" alt="" class="hasTooltip" title="Drag\'n\'drop an icon.png file to change the project icon" src="' . $currProject->getIconURL() . '" /></div>';
+        $content .= '<div id="prgmNameContainer"><span class="fieldSubContainer" onclick="changePrgmName(); return false;" title="Edit name"><span id="prgmNameSpan">' . $currProject->getInternalName() . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> <span class="glyphicon glyphicon-pencil inlineEditPencil"></span></span></div>';
 
+        // Turns out name is Description and internal name is Name.
+        $content .= '<u title="Description">Desc</u>: <span id="projectNameContainer" class="fieldSubContainer" onclick="changeProjectName(); return false;" title="Edit description"><span id="projectNameSpan">' . htmlentities($currProject->getName(), ENT_QUOTES) . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> <span class="glyphicon glyphicon-pencil inlineEditPencil"></span></span><br/>';
         if (!$isUserAuthorOfProject) {
             $authorNameHTML = htmlentities($currProjectAuthor->getName(), ENT_QUOTES);
             $content .= "<u>Author</u>: <a href='https://tiplanet.org/forum/memberlist.php?mode=viewprofile&amp;u={$currProjectAuthor->getID()}' target='_blank'>$authorNameHTML</a><br/>";

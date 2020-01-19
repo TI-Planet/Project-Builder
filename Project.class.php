@@ -169,6 +169,11 @@ abstract class Project
     }
 
     /**
+     * @return string
+     */
+    abstract public function getIconURL();
+
+    /**
      * @return boolean
      */
     final public function isMultiuser()
@@ -214,9 +219,9 @@ abstract class Project
      * @param mixed $name
      * @return bool
      */
-    final public function setName($name)
+    public function setName($name)
     {
-        if (is_string($name))
+        if (is_string($name) && strlen($name) <= 25 && preg_match('~^[\w ._+\-*/<>,:()]{0,25}$~', $name) === 1)
         {
             $this->name = $name;
             return true;

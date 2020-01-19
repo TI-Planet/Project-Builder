@@ -36,8 +36,12 @@ $.fn.extend({
                         if (options.filterFunc(file.name))
                         {
                             const reader = new FileReader();
-                            reader.onload = (event) => { options.onDrop(file, event.target.result, i === files.length - 1); };
-                            reader.readAsText(file);
+                            reader.onload = (event) => { options.onDrop(file, event.target.result, i === files.length - 1, files.length); };
+                            if (/\.png$/.test(file.name)) {
+                                reader.readAsDataURL(file);
+                            } else {
+                                reader.readAsText(file);
+                            }
                         }
                     });
                 }

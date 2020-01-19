@@ -31,6 +31,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $this->settings = (!empty((array)$settingsFromJsonOK)) ? $settingsFromJsonOK : (object)[
             'outputFormat' => 'program', // forced for now
             'clangArgs'    => '-O3 -W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type',
+            'description'  => ''
         ];
 
         $this->projPrgmExtension = $this->settings->outputFormat === 'program' ? '8xp' : '8xv';
@@ -111,6 +112,13 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                     return PBStatus::Error('Bad file name');
                 }
                 return $this->addFile($params['fileName']);
+
+            case 'addIconFile':
+                if (!isset($params['icon']) || empty($params['icon']))
+                {
+                    return PBStatus::Error('No icon given');
+                }
+                return $this->addIconFile($params['icon']);
 
             case 'deleteCurrentFile':
                 if (!($thisProject->isMulti_ReadWrite() || $thisProject->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
@@ -573,13 +581,14 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         return $this->getBuildLog();
     }
 
-    protected function setSettings(array $params = [])
+    public function setSettings(array $params = [])
     {
         if (empty($params)) { return PBStatus::Error('No settings given'); }
 
         $configPatterns = [
             'outputFormat' => '/^(program|appvar)$/',
             'clangArgs'    => '/^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$/',
+            'description'  => '~^[\w ._+\-*/<>,:()]{0,25}$~',
         ];
 
         foreach ($params as $name => $value)
@@ -620,6 +629,14 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
         $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . 'src/' . self::TEMPLATE_FILE_PATH);
         return (int)filemtime($whichSource);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function hasIconFile()
+    {
+        return file_exists($this->projFolder . 'icon.png');
     }
 
 }

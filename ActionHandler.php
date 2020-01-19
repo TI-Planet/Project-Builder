@@ -60,6 +60,11 @@ if (isset($_POST['id']) && !empty($_POST['id']))
                     $paramsCopy['_len_'] = mb_strlen($paramsCopy['source']);
                     unset($paramsCopy['source']);
                 }
+                if (isset($paramsCopy['icon']))
+                {
+                    $paramsCopy['_len_'] = mb_strlen($paramsCopy['icon']);
+                    unset($paramsCopy['icon']);
+                }
                 $paramsStr = count($paramsCopy) > 0 ? substr(json_encode($paramsCopy), 0, 49) : '';
 
                 $pm->logActionInDB($act, $paramsStr, $ok === true);

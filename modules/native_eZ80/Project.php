@@ -67,6 +67,14 @@ final class native_eZ80Project extends Project
     }
 
     /**
+     * @return string
+     */
+    public function getIconURL()
+    {
+        return $this->backend->hasIconFile() ? ('/pb/projects/' . $this->getID() . '/icon.png') : '';
+    }
+
+    /**
      * @return string[]
      */
     public function getAvailableFiles()
@@ -147,6 +155,21 @@ final class native_eZ80Project extends Project
             return false;
         }
         return false;
+    }
+
+    /**
+     * Yes, description is actually the project name.
+     * @param string $name
+     * @return bool
+     */
+    public function setName($name)
+    {
+        if (!parent::setName($name)) {
+            return false;
+        }
+        $newSettings = $this->backend->getSettings();
+        $newSettings->description = $name;
+        return $this->backend->setSettings((array)$newSettings) === PBStatus::OK;
     }
 
     /**

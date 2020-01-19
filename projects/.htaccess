@@ -1,2 +1,5 @@
-order deny,allow
+order allow,deny
+<Files "icon.png">
+   allow from all
+</Files>
 Deny from all

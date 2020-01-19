@@ -76,6 +76,26 @@ abstract class NativeBasedBackend extends IBackend
         return ($ok !== false) ? PBStatus::OK : PBStatus::Error("File couldn't be created (ret = {$ret})");
     }
 
+    protected function addIconFile($iconB64)
+    {
+        if (mb_strlen($iconB64) > 1024*1024)
+        {
+            return PBStatus::Error("Couldn't save such a big content (Max = 1 MB)");
+        }
+        $status = $this->createProjectDirectoryIfNeeded();
+        if ($status !== PBStatus::OK)
+        {
+            return $status;
+        }
+        $decoded = base64_decode($iconB64);
+        if ($decoded === false) {
+            return PBStatus::Error("Couldn't decode icon Base64");
+        }
+        $ret = $this->callNativeHelperWithAction('addfile icon.png');
+        $ok = file_put_contents($this->projFolder . 'icon.png', $decoded);
+        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Icon couldn't be saved (ret = {$ret})");
+    }
+
     final protected function renameFile($oldName, $newName)
     {
         if (!file_exists($this->projFolder . 'src/' . $oldName))

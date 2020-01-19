@@ -124,6 +124,7 @@ abstract class IBackend
     abstract protected function getAvailableFiles();
 
     abstract protected function addFile($fileName, $content = '');
+    abstract protected function addIconFile($icon);
     abstract protected function renameFile($oldName, $newName);
     abstract protected function deleteCurrentFile();
 
