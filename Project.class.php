@@ -97,7 +97,7 @@ abstract class Project
         $this->chatEnabled = $chatEnabled;
         $this->createdTstamp = $cTime;
         $this->updatedTstamp = $uTime;
-        $this->projDirectory = __DIR__ . "/projects/{$this->id}/";
+        $this->projDirectory = __DIR__ . "/../../pbprojects/{$this->id}/";
     }
 
     /****************************************************/
