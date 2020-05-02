@@ -482,7 +482,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         chdir($this->projFolder);
         $zip = new \ZipArchive();
-        $zipFileName = $this->projPrgmName . '_source_' . time();
+        $zipFileName = $this->projPrgmName;
         $zipFilePath = '/tmp/php_pb_export_' . $this->projID . '.zip';
         if (file_exists($zipFilePath))
         {
@@ -503,6 +503,19 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 die(PBStatus::Error('Could not add source files to the .zip file... Retry?'));
             }
         }
+
+        if (is_readable('icon.png'))
+        {
+            $zip->addFile('icon.png');
+        }
+
+        $makefileStr = '# Exported from https://tiplanet.org/pb/ on ' . strftime('%c (%Z)') . "\n\n";
+        $makefileStr.= file_get_contents(__DIR__ . '/internal/toolchain/makefile');
+        $makefileStr = str_replace(['NAME         ?= DEMO',                  'DESCRIPTION  ?= "CE C SDK Demo"'],
+                                   ["NAME         ?= {$this->projPrgmName}", "DESCRIPTION  ?= \"{$this->project->getName()}\""],
+                                   $makefileStr);
+        $zip->addFromString($zipFileName . '/Makefile', $makefileStr);
+
         $zip->close();
         if (file_exists($zipFilePath))
         {
