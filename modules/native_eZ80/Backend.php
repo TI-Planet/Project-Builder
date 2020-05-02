@@ -21,7 +21,7 @@ require_once __DIR__ . '/../NativeBasedBackend.class.php';
 
 final class native_eZ80ProjectBackend extends NativeBasedBackend
 {
-    private const TEMPLATE_FILE_PATH = '/../../projects/template/src/main.c';
+    private const TEMPLATE_FILE_PATH = __DIR__ . '/../../projects/template/src/main.c';
 
     public function __construct(native_eZ80Project $project, $projFolder)
     {
@@ -491,7 +491,9 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         if (!$zip->open($zipFilePath, \ZipArchive::CREATE)) {
             die(PBStatus::Error('Could not create the .zip file... Retry?'));
         }
+
         $zip->addEmptyDir($zipFileName);
+
         $zip->addEmptyDir($zipFileName . '/src');
         $files = $thisProject->getAvailableFiles();
         foreach($files as $file)
@@ -617,7 +619,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
     public function getCurrentFileSourceHTML()
     {
         $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . 'src/' . self::TEMPLATE_FILE_PATH);
+        $whichSource = file_exists($sourceFile) ? $sourceFile : self::TEMPLATE_FILE_PATH;
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
@@ -627,7 +629,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
     public function getCurrentFileMtime()
     {
         $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
-        $whichSource = file_exists($sourceFile) ? $sourceFile : (__DIR__ . 'src/' . self::TEMPLATE_FILE_PATH);
+        $whichSource = file_exists($sourceFile) ? $sourceFile : self::TEMPLATE_FILE_PATH;
         return (int)filemtime($whichSource);
     }
 
