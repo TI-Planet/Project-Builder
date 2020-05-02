@@ -587,7 +587,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         $configPatterns = [
             'outputFormat' => '/^(program|appvar)$/',
-            'clangArgs'    => '/^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$/',
+            'clangArgs'    => '/^(?:(?:(?:-(?:[wWDO]|std))[\w=+-]* *)|(?:-[mf][\w+-]* *))*$/',
             'description'  => '~^[\w ._+\-*/<>,:()]{0,25}$~',
         ];
 

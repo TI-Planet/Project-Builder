@@ -86,7 +86,7 @@ $currProjectSettings = $currProject->getSettings();
                                 Clang extra args (<tt>-Wall -O3</tt> etc.)
                                 <div class="radio-inline" style="width: 100%; padding-left: 0;">
                                     <label style="width: 100%;">
-                                        <input class="form-control" type="text" pattern="^(?:(?:-(?:[wWDO]|std))[\w=+-]* *)*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs) ?>>
+                                        <input class="form-control" type="text" pattern="^(?:(?:(?:-(?:[wWDO]|std))[\w=+-]* *)|(?:-[mf][\w+-]* *))*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs) ?>>
                                     </label>
                                 </div>
                                 <br/>
