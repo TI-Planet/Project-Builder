@@ -30,7 +30,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $settingsFromJsonOK = is_readable($this->projFolder . 'config.json') ? json_decode(file_get_contents($this->projFolder . 'config.json')) : [];
         $this->settings = (!empty((array)$settingsFromJsonOK)) ? $settingsFromJsonOK : (object)[
             'outputFormat' => 'program', // forced for now
-            'clangArgs'    => '-O3 -W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type',
+            'clangArgs'    => '-Oz -W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type',
             'description'  => ''
         ];
 
