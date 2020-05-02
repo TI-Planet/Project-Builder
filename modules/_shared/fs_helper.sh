@@ -35,12 +35,12 @@ then
     echo "    clone [newID]" 1>&2
     exit 2
 else
-    dir="/home/pbbot/projectbuilder"
+    projectsdir="/home/pbbot/pbprojects"
     id=$1
     cmd=$2
 
-    #echo "bash fs_helper called with $# args" > ${dir}/projects/templog_fs.txt
-    #echo "${cmd} command received on id ${id}" >> ${dir}/projects/templog_fs.txt
+    #echo "bash fs_helper called with $# args" > ${projectsdir}/templog_fs.txt
+    #echo "${cmd} command received on id ${id}" >> ${projectsdir}/templog_fs.txt
 
     if [[ ! $id =~ ^[a-zA-Z0-9_]+$ ]]
     then
@@ -71,19 +71,19 @@ else
     if [[ "$cmd" == "clone" ]]
     then
         # check if it exists then clone it keeping permissions (www-data)
-        cd "${dir}/projects/${id}" || exit 5
-        cp -rp "${dir}/projects/${id}" "${dir}/projects/${newid}" || exit 3
+        cd "${projectsdir}/${id}" || exit 5
+        cp -rp "${projectsdir}/${id}" "${projectsdir}/${newid}" || exit 3
 
     elif [[ "$cmd" == "createProj" ]]
     then
-        cp -rp "${dir}/projects/template" "${dir}/projects/${id}" || exit 3
-        touch "${dir}/projects/${id}/config.json"
-        find "${dir}/projects/${id}/" -type f -regex '.*\.\(c\|cpp\|h\|hpp\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
+        cp -Lrp "${projectsdir}/template" "${projectsdir}/${id}" || exit 3
+        touch "${projectsdir}/${id}/config.json"
+        find "${projectsdir}/${id}/" -type f -regex '.*\.\(c\|cpp\|h\|hpp\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
 
     elif [[ "$cmd" == "deleteProj" ]]
     then
-        rm -rf "${dir}/projects/${id}" || exit 4
-        # echo $? >> ${dir}/projects/templog_fs.txt
+        rm -rf "${projectsdir}/${id}" || exit 4
+        # echo $? >> ${projectsdir}/templog_fs.txt
 
     else
         echo "Unrecognized command '$cmd'" 1>&2

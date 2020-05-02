@@ -48,7 +48,7 @@ then
     echo "Needs 2, 3, or 4 args: unique_id and command (addfile, deletefile, clean, llvmsyntax). 3 if [llvm]build/syntax (prgmName) or addfile/deletefile (fileName), 4 if renamefile (old new)" 1>&2
     exit 2
 else
-    dir="/PUT/YOUR/BASE/PB/PATH/HERE/"
+    projectsdir="/home/pbbot/pbprojects"
     id=$1
     cmd=$2
     prgmName="CPRGMCE"
@@ -106,33 +106,33 @@ else
 
     if [[ "$cmd" == "addfile" ]]
     then
-        touch "${dir}/projects/${id}/${fileName}" || exit 44
         # TODO: Add permissions here to other users/groups if need be.
+        touch "${projectsdir}/${id}/${fileName}" || exit 44
         exit 0
     fi
 
     if [[ "$cmd" == "deletefile" ]]
     then
-        rm "${dir}/projects/${id}/${fileName}" || exit 45
+        rm "${projectsdir}/${id}/${fileName}" || exit 45
         exit 0
     fi
 
     if [[ "$cmd" == "renamefile" ]]
     then
-        mv "${dir}/projects/${id}/${oldName}" "${dir}/projects/${id}/${newName}" || exit 46
+        mv "${projectsdir}/${id}/${oldName}" "${projectsdir}/${id}/${newName}" || exit 46
         exit 0
     fi
 
     if [[ "$cmd" == "clean" ]]
     then
-        cd "${dir}/projects/${id}" || exit 5
+        cd "${projectsdir}/${id}" || exit 5
         find . -regex ".*\.\(o\|cppobj\|obj\|src\|lst\|8xp\|hex\|map\|txt\)" -delete
         exit 0
     fi
 
     if [[ "$cmd" == "llvmsyntax" ]]
     then
-        cd "${dir}/projects/${id}" || exit 5
+        cd "${projectsdir}/${id}" || exit 5
 
         logFile="output_llvm_syntax.txt";
         rm -f $logFile
@@ -166,7 +166,7 @@ else
 
     if [[ "$cmd" == "build" ]] || [[ "$cmd" == "llvmbuild" ]]
     then
-        cd "${dir}/projects/${id}" || exit 5
+        cd "${projectsdir}/${id}" || exit 5
         find . -name "*.txt" -delete
 
         logFile="output_llvm_build.txt";
@@ -187,7 +187,7 @@ else
               extraCflagsParam="EXTRA_CFLAGS=\"${extraParams}\""
         fi
         # TODO: Replace "SAFELAUNCH" by something to make it safer than just launching it directly (for instance, in a chroot etc.)
-        SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && make version && make DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} " >> $logFile 2>&1
+        SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} version all " >> $logFile 2>&1
 
         exit 0
     fi
