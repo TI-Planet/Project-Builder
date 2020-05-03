@@ -506,7 +506,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         if (is_readable('icon.png'))
         {
-            $zip->addFile('icon.png');
+            $zip->addFile('icon.png', $zipFileName . '/icon.png');
         }
 
         $makefileStr = '# Exported from https://tiplanet.org/pb/ on ' . strftime('%c (%Z)') . "\n\n";
