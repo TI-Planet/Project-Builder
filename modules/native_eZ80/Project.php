@@ -71,7 +71,8 @@ final class native_eZ80Project extends Project
      */
     public function getIconURL()
     {
-        return $this->backend->hasIconFile() ? ('/pb/projects/' . $this->getID() . '/icon.png') : '';
+        return $this->backend->hasIconFile() ? ('/pb/projects/' . $this->getID() . '/icon.png')
+                                             : Project::PROJECT_ICON_URL_FALLBACK;
     }
 
     /**

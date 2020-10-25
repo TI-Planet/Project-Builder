@@ -29,6 +29,8 @@ abstract class Project
     const PROJECT_MODULE_NAME        = "Project's Module name here";
     const PROJECT_MODULE_DESCRIPTION = "Project's Module description here";
 
+    const PROJECT_ICON_URL_FALLBACK  = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+
     protected $id;
     protected $db_id;
     protected $randKey;
