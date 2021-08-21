@@ -118,6 +118,17 @@ abstract class IBackend
         return PBStatus::OK;
     }
 
+    // This is just to delete some files at the top of the project dir. Not specific to a kind of project.
+    final protected function deleteBaseProjectFile($file)
+    {
+        $this->hasFolderinFS = is_dir($this->projFolder);
+        if ($this->hasFolderinFS) {
+            $ret = $this->callFSHelperWithAction('deleteFile ' . $file);
+            return ($ret === 0) ? PBStatus::OK : PBStatus::Error("Could not delete project file (ret = {$ret})");
+        }
+        return PBStatus::OK;
+    }
+
     /**
      * @return string[]
      */

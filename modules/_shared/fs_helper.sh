@@ -32,6 +32,7 @@ then
     echo "  First argument needs to be the project's unique ID. Then, a command and its arg if needed: " 1>&2
     echo "    createProj" 1>&2
     echo "    deleteProj" 1>&2
+    echo "    deleteFile [filename]" 1>&2
     echo "    clone [newID]" 1>&2
     exit 2
 else
@@ -64,6 +65,22 @@ else
         fi
     fi
 
+    if [[ "$cmd" == "deleteFile" ]]
+    then
+        if [ "$#" -eq 3 ]
+        then
+            file=$3
+            if [[ ! $file =~ ^[a-zA-Z0-9_]+[a-zA-Z0-9_\.]+$ ]]
+            then
+                echo "Bad file arg" 1>&2
+                exit 43
+            fi
+        else
+            echo "deleteFile command needs file arg" 1>&2
+            exit 7
+        fi
+    fi
+
 ################################
 ## Processing
 ################################
@@ -79,6 +96,13 @@ else
         cp -Lrp "${projectsdir}/template" "${projectsdir}/${id}" || exit 3
         touch "${projectsdir}/${id}/config.json"
         find "${projectsdir}/${id}/" -type f -regex '.*\.\(c\|cpp\|h\|hpp\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
+
+    elif [[ "$cmd" == "deleteFile" ]]
+    then
+        cd "${projectsdir}/${id}" || exit 5
+        if [[ -f "$file" ]]; then
+            rm "$file" || exit 3
+        fi
 
     elif [[ "$cmd" == "deleteProj" ]]
     then

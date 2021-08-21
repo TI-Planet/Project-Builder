@@ -543,6 +543,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return PBStatus::Error("Couldn't save such a big content (Max = 1 MB)");
         }
         $this->createProjectDirectoryIfNeeded();
+        $this->deleteBaseProjectFile('output_llvm_build.txt');
         $ok = file_put_contents($this->projFolder . 'src/' . $this->projCurrFile, $source);
         return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Couldn't save source to current file");
     }

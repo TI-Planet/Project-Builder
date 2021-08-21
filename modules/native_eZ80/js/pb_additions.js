@@ -123,7 +123,10 @@ const _saveFile_impl = (callback) =>
         ajaxAction("save", `file=${proj.currFile}&source=${encodeURIComponent(currSource)}`, () => {
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
-            if (editor.getMode().name === "clike") { getAnalysisLogAndUpdateHintsMaybe(true); }
+            if (editor.getMode().name === "clike") {
+                build_output = []; // it's likely obsolete now.
+                getAnalysisLogAndUpdateHintsMaybe(true);
+            }
             getCtags(proj.currFile, () => { filterOutline($("#codeOutlineFilter").val()); });
             if (typeof callback === "function") callback();
         }, () => {
