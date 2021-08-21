@@ -30,7 +30,7 @@ if (!isset($pm))
             <?= $currProject->getFileListHTML() ?>
             <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
             {
-                if (count($currProject->getAvailableFiles()) > 1)
+                if (count($currProject->getAvailableSrcFiles()) > 1)
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }

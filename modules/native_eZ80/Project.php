@@ -31,7 +31,8 @@ final class native_eZ80Project extends Project
      */
     private $backend;
 
-    private $availableFiles;
+    private $availableSrcFiles;
+    private $availableBinFiles;
 
     public function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
@@ -40,13 +41,14 @@ final class native_eZ80Project extends Project
         require_once 'Backend.php';
         $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
 
-        $this->availableFiles = $this->backend->getAvailableFiles();
-        if (count($this->availableFiles) === 0)
+        $this->availableBinFiles = $this->backend->getAvailableBinFiles();
+        $this->availableSrcFiles = $this->backend->getAvailableSrcFiles();
+        if (count($this->availableSrcFiles) === 0)
         {
             // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
-            $this->availableFiles = [ self::TEMPLATE_FILE ];
+            $this->availableSrcFiles = [ self::TEMPLATE_FILE ];
         }
-        $this->currentFile = $this->availableFiles[0];
+        $this->currentFile = $this->availableSrcFiles[0];
     }
 
     public static function cleanPrgmName($prgName = '') { return preg_replace('/[^A-Z0-9]/', '', strtoupper($prgName)); }
@@ -78,9 +80,17 @@ final class native_eZ80Project extends Project
     /**
      * @return string[]
      */
-    public function getAvailableFiles()
+    public function getAvailableSrcFiles()
     {
-        return $this->availableFiles;
+        return $this->availableSrcFiles;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAvailableBinFiles()
+    {
+        return $this->availableBinFiles;
     }
 
     /**
@@ -89,8 +99,8 @@ final class native_eZ80Project extends Project
     public function getFileListHTML()
     {
         $fileListHTML = '';
-        $filesCount = count($this->availableFiles);
-        foreach ($this->availableFiles as $i => $file)
+        $filesCount = count($this->availableSrcFiles);
+        foreach ($this->availableSrcFiles as $i => $file)
         {
             // Group same header and implementation files together
             // (no margin between tabs)
@@ -98,9 +108,9 @@ final class native_eZ80Project extends Project
             if ($i < $filesCount-1)
             {
                 preg_match(self::REGEXP_GOOD_FILE_PATTERN, $file, $matches);
-                list(, $nameNoExtCurr, ) = $matches;
-                preg_match(self::REGEXP_GOOD_FILE_PATTERN, $this->availableFiles[$i+1], $matches);
-                list(, $nameNoExtNext, ) = $matches;
+                [, $nameNoExtCurr, ] = $matches;
+                preg_match(self::REGEXP_GOOD_FILE_PATTERN, $this->availableSrcFiles[$i +1], $matches);
+                [, $nameNoExtNext, ] = $matches;
                 if ($nameNoExtCurr === $nameNoExtNext) {
                     $counterpartClass = 'counterpart';
                 }
@@ -204,8 +214,8 @@ final class native_eZ80Project extends Project
 
     public function removeFromAvailableFilesList($file)
     {
-        if (($key = array_search($file, $this->availableFiles, true)) !== false) {
-            unset($this->availableFiles[$key]);
+        if (($key = array_search($file, $this->availableSrcFiles, true)) !== false) {
+            unset($this->availableSrcFiles[$key]);
         }
     }
 

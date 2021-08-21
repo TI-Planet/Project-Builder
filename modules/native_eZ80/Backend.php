@@ -37,10 +37,17 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $this->projPrgmExtension = $this->settings->outputFormat === 'program' ? '8xp' : '8xv';
     }
 
-    public function getAvailableFiles()
+    public function getAvailableSrcFiles()
     {
         $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/*.*')), '\ProjectBuilder\native_eZ80Project::isFileNameOK');
         sort($availableFiles); // TODO: custom sort so that header files appear just before their implementation file
+        return $availableFiles;
+    }
+
+    public function getAvailableBinFiles()
+    {
+        $availableFiles = array_map('basename', glob($this->projFolder . 'bin/*.8x[pv]'));
+        sort($availableFiles);
         return $availableFiles;
     }
 
@@ -77,8 +84,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     $scope = $params['scope'];
                     if ($scope === 'all') {
-                        $files = $thisProject->getAvailableFiles();
-                    } elseif (in_array($scope, $thisProject->getAvailableFiles(), true)) {
+                        $files = $thisProject->getAvailableSrcFiles();
+                    } elseif (in_array($scope, $thisProject->getAvailableSrcFiles(), true)) {
                         $files = [ $scope ];
                     }
                 }
@@ -133,7 +140,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('Bad file name given');
                 }
-                if (count($thisProject->getAvailableFiles()) === 1)
+                if (count($thisProject->getAvailableSrcFiles()) === 1)
                 {
                     return PBStatus::Error('Cannot delete the only remaining file');
                 }
@@ -431,7 +438,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             /** @var native_eZ80Project $thisProject */
             $thisProject = &$this->project;
 
-            $availFiles = $thisProject->getAvailableFiles();
+            $availFiles = $thisProject->getAvailableSrcFiles();
             $availFiles = array_map('strtolower', $availFiles);
             foreach ($implExts as $implExt)
             {
@@ -494,8 +501,18 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         $zip->addEmptyDir($zipFileName);
 
+        $zip->addEmptyDir($zipFileName . '/bin');
+        $files = $thisProject->getAvailableBinFiles();
+        foreach($files as $file)
+        {
+            if ($zip->addFromString($zipFileName . '/bin/' . basename($file), file_get_contents('bin/' . $file)) === false)
+            {
+                die(PBStatus::Error('Could not add binary files to the .zip file... Retry?'));
+            }
+        }
+
         $zip->addEmptyDir($zipFileName . '/src');
-        $files = $thisProject->getAvailableFiles();
+        $files = $thisProject->getAvailableSrcFiles();
         foreach($files as $file)
         {
             if ($zip->addFromString($zipFileName . '/src/' . basename($file), file_get_contents('src/' . $file)) === false)
@@ -603,7 +620,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         $configPatterns = [
             'outputFormat' => '/^(program|appvar)$/',
-            'clangArgs'    => '/^(?:(?:(?:-(?:[wWDO]|std))[\w=+-]* *)|(?:-[mf][\w+-]* *))*$/',
+            'clangArgs'    => '/^(?:(?:(?:-(?:[gwWDO]|std))[\w=+-]* *)|(?:-[mf][\w+-]* *))*$/',
             'description'  => '~^[\w ._+\-*/<>,:()]{0,25}$~',
         ];
 

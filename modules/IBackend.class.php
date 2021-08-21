@@ -132,7 +132,8 @@ abstract class IBackend
     /**
      * @return string[]
      */
-    abstract protected function getAvailableFiles();
+    abstract protected function getAvailableSrcFiles();
+    abstract protected function getAvailableBinFiles();
 
     abstract protected function addFile($fileName, $content = '');
     abstract protected function addIconFile($icon);

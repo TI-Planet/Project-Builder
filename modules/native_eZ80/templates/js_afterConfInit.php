@@ -23,7 +23,7 @@ if (!isset($pm))
 /** @var \ProjectBuilder\native_eZ80Project $currProject */ ?>
 <script>
     proj.currFile = '<?= $currProject->getCurrentFile() ?>';
-    proj.files = <?php echo json_encode($currProject->getAvailableFiles()); ?>;
+    proj.files = <?php echo json_encode($currProject->getAvailableSrcFiles()); ?>;
 </script>
 
 <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
