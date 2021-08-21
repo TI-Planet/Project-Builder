@@ -255,13 +255,24 @@ function do_cm_custom()
             {
                 $(".fileTabIconContainer").empty();
             }
-            const linesProcessed = [];
+            let errAlreadyProcessed = {};
             let errOnOtherFiles = false;
             for (i = 0; i < combined_logs.length; ++i)
             {
                 const err = combined_logs[i];
-                if (!err /*|| linesProcessed.includes(err.line)*/)
+                if (!err)
                     continue;
+
+                const errIdentifier = `${err.type}|${err.file}|${err.line}|${err.col}|${err.text.length}`;
+                const existing = errAlreadyProcessed[errIdentifier];
+                if (existing)
+                {
+                    if (err.fixit && !existing.fixit) {
+                        editor.removeLineWidget(existing.widget);
+                    } else {
+                        continue;
+                    }
+                }
 
                 addIconToFileTab(err.file.toLowerCase(), err.type);
 
@@ -296,9 +307,10 @@ function do_cm_custom()
                 }
                 tmp.appendChild(actualText);
                 msg.className = "lint-error";
-                widgets.push(editor.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: false}));
+                const widget = editor.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: false});
                 $(tmp).find(".hasTooltip").tooltip({container: 'body', placement: 'left'});
-                linesProcessed.push(err.line);
+                widgets.push(widget);
+                errAlreadyProcessed[errIdentifier] = { text: err.text, fixit: err.fixit, widget: widget };
             }
             editor.refresh();
             editor.focus();
