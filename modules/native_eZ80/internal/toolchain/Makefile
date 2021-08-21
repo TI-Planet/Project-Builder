@@ -12,14 +12,17 @@ ARCHIVED     ?= YES
 # Compile Options
 # ----------------------------
 
-# That one gets passed by builder.sh inside EXTRA_CFLAGS
-OPT_MODE      =
-EXTRA_CFLAGS ?= -Oz -W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type
+CFLAGS   ?= -Oz -W -Wall -Wextra -Wwrite-strings
+CXXFLAGS ?= -Oz -W -Wall -Wextra -Wwrite-strings
 
 # ----------------------------
 # Debug Options
 # ----------------------------
 
-OUTPUT_MAP   ?= NO
+# ----------------------------
 
-include $(CEDEV)/include/.makefile
+ifndef CEDEV
+$(error CEDEV environment path variable is not set)
+endif
+
+include $(CEDEV)/meta/makefile.mk

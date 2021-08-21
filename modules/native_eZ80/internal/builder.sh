@@ -126,7 +126,7 @@ else
     if [[ "$cmd" == "clean" ]]
     then
         cd "${projectsdir}/${id}" || exit 5
-        find . -regex ".*\.\(o\|cppobj\|obj\|src\|lst\|8xp\|hex\|map\|txt\)" -delete
+        find . -regex ".*\.\(o\|cppobj\|obj\|bin\|src\|lst\|8xp\|8xv\|hex\|map\|txt\)" -delete
         exit 0
     fi
 
@@ -137,6 +137,11 @@ else
         logFile="output_llvm_syntax.txt";
         rm -f $logFile
 
+        if [[ ! -f "$3" ]]; then
+            echo "Bad input file for llvmsyntax. Aborting" 1>&2
+            exit 47
+        fi
+
         validateIncludesOrDie $logFile
 
         cpfolder=/put/some/temp/dir/here/src_llvm_${id}
@@ -145,13 +150,11 @@ else
 
         # TODO: make sure to use your own paths here
         clangbin=/opt/llvm-project/build/bin/clang
-        warns="-w" # only show ASM or errors
-        params="-I/opt/CEdev/include/ -I/opt/CEdev/include/compat"
+        params="-I/opt/CEdev/include/"
+        diags="-fsyntax-only -fdiagnostics-parseable-fixits -fdiagnostics-fixit-info"
+        warns="-W -Wall -Wextra -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type -Wno-dangling-else"
 
-        [[ "$cmd" == "llvmsyntax" ]] && diags="-fsyntax-only -fdiagnostics-parseable-fixits -fdiagnostics-fixit-info"
-        [[ "$cmd" == "llvmsyntax" ]] && warns="-W -Wall -Wextra -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type -Wno-dangling-else"
-
-        [[ "$3" == *pp ]] && params="$params -std=c++1z -fno-exceptions"
+        [[ "$3" == *pp ]] && params="$params -std=c++1z -fno-exceptions -fno-rtti"
 
         extraParams=$(jq -r ".clangArgs | select (.!=null)" config.json 2>/dev/null)
 
@@ -184,7 +187,7 @@ else
         then
               extraCflagsParam=""
         else
-              extraCflagsParam="EXTRA_CFLAGS=\"${extraParams}\""
+              extraCflagsParam="CFLAGS=\"${extraParams}\" CXXFLAGS=\"${extraParams}\""
         fi
         # TODO: Replace "SAFELAUNCH" by something to make it safer than just launching it directly (for instance, in a chroot etc.)
         SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} version all " >> $logFile 2>&1
