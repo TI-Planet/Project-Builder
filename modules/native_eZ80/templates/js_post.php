@@ -145,7 +145,6 @@ require_once 'utils.php';
                     getAnalysisLogAndUpdateHintsMaybe(true);
                 } else {
                     getBuildLogAndUpdateHintsMaybe(false);
-                    getCheckLogAndUpdateHints(false);
                     getAnalysisLogAndUpdateHintsMaybe(true);
                 }
 
@@ -200,7 +199,6 @@ require_once 'utils.php';
                 getAnalysisLogAndUpdateHintsMaybe(true);
             } else {
                 getBuildLogAndUpdateHintsMaybe(false);
-                getCheckLogAndUpdateHints(false);
                 getAnalysisLogAndUpdateHintsMaybe(true);
             }
         <?php } ?>

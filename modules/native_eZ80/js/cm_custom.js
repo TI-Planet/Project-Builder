@@ -236,7 +236,7 @@ function do_cm_custom()
         editor.replaceRange(fixit.repl, { line: fixit.src_l-1, ch: fixit.src_c-1 }, { line: fixit.dest_l-1, ch: fixit.dest_c-1 });
         $('.tooltip').hide();
         editor.focus();
-        saveFile( () => { getAnalysisLogAndUpdateHintsMaybe(true); } );
+        saveFile();
     };
 
     updateHints = (silent) => {

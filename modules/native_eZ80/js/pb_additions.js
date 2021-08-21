@@ -299,20 +299,15 @@ function getBuildLogAndUpdateHintsMaybe(doUpdateHints)
     });
 }
 
-function getCheckLogAndUpdateHints(doUpdateHints)
-{
-    ajaxAction("getCheckLog", "", (lines) => {
-        build_check = parseCheckLog(lines);
-        doUpdateHints && updateHints(true);
-    });
-}
-
 function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 {
-    // Call llvm syntax only
-    ajaxAction("getAnalysis", `file=${proj.currFile}`, (lines) => {
-        code_analysis = parseAnalysisLog(lines);
-        doUpdateHints && updateHints(true);
+    // Call llvmsyntax (cppcheck + clang fsyntax-only)
+    ajaxAction("getAnalysis", `file=${proj.currFile}`, (clangSyntaxOutput) => {
+        code_analysis = parseAnalysisLog(clangSyntaxOutput);
+        ajaxAction("getCheckLog", "", (cppcheckOutput) => {
+            build_check = parseCheckLog(cppcheckOutput);
+            doUpdateHints && updateHints(true);
+        });
     });
 }
 
