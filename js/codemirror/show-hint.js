@@ -1,6 +1,8 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
+// declare global: DOMRect
+
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
@@ -85,12 +87,19 @@
     },
 
     pick: function(data, i) {
-      var completion = data.list[i];
-      if (completion.hint) completion.hint(this.cm, data, completion);
-      else this.cm.replaceRange(getText(completion), completion.from || data.from,
-                                completion.to || data.to, "complete");
-      CodeMirror.signal(data, "pick", completion);
-      this.close();
+      var completion = data.list[i], self = this;
+      this.cm.operation(function() {
+        if (completion.hint)
+          completion.hint(self.cm, data, completion);
+        else
+          self.cm.replaceRange(getText(completion), completion.from || data.from,
+                               completion.to || data.to, "complete");
+        CodeMirror.signal(data, "pick", completion);
+        self.cm.scrollIntoView();
+      });
+      if (this.options.closeOnPick) {
+        this.close();
+      }
     },
 
     cursorActivity: function() {
@@ -99,11 +108,18 @@
         this.debounce = 0;
       }
 
+      var identStart = this.startPos;
+      if(this.data) {
+        identStart = this.data.from;
+      }
+
       var pos = this.cm.getCursor(), line = this.cm.getLine(pos.line);
       if (pos.line != this.startPos.line || line.length - pos.ch != this.startLen - this.startPos.ch ||
-          pos.ch < this.startPos.ch || this.cm.somethingSelected() ||
+          pos.ch < identStart.ch || this.cm.somethingSelected() ||
           (!pos.ch || this.options.closeCharacters.test(line.charAt(pos.ch - 1)))) {
-        this.close();
+        if (this.options.closeOnCursorActivity) {
+          this.close();
+        }
       } else {
         var self = this;
         this.debounce = requestAnimationFrame(function() {self.update();});
@@ -249,10 +265,15 @@
     var winW = parentWindow.innerWidth || Math.max(ownerDocument.body.offsetWidth, ownerDocument.documentElement.offsetWidth);
     var winH = parentWindow.innerHeight || Math.max(ownerDocument.body.offsetHeight, ownerDocument.documentElement.offsetHeight);
     container.appendChild(hints);
-    var box = hints.getBoundingClientRect(), overlapY = box.bottom - winH;
-    var scrolls = hints.scrollHeight > hints.clientHeight + 1
-    var startScroll = cm.getScrollInfo();
 
+    var box = completion.options.moveOnOverlap ? hints.getBoundingClientRect() : new DOMRect();
+    var scrolls = completion.options.paddingForScrollbar ? hints.scrollHeight > hints.clientHeight + 1 : false;
+
+    // Compute in the timeout to avoid reflow on init
+    var startScroll;
+    setTimeout(function() { startScroll = cm.getScrollInfo(); });
+
+    var overlapY = box.bottom - winH;
     if (overlapY > 0) {
       var height = box.bottom - box.top, curTop = pos.top - (pos.bottom - box.top);
       if (curTop - height > 0) { // Fits above cursor
@@ -323,6 +344,12 @@
       setTimeout(function(){cm.focus();}, 20);
     });
 
+    // The first hint doesn't need to be scrolled to on init
+    var selectedHintRange = this.getSelectedHintRange();
+    if (selectedHintRange.from !== 0 || selectedHintRange.to !== 0) {
+      this.scrollToActive();
+    }
+
     CodeMirror.signal(data, "select", completions[this.selectedHint], hints.childNodes[this.selectedHint]);
     return true;
   }
@@ -363,15 +390,31 @@
       if (node) node.className = node.className.replace(" " + ACTIVE_HINT_ELEMENT_CLASS, "");
       node = this.hints.childNodes[this.selectedHint = i];
       node.className += " " + ACTIVE_HINT_ELEMENT_CLASS;
-      if (node.offsetTop < this.hints.scrollTop)
-        this.hints.scrollTop = node.offsetTop - 3;
-      else if (node.offsetTop + node.offsetHeight > this.hints.scrollTop + this.hints.clientHeight)
-        this.hints.scrollTop = node.offsetTop + node.offsetHeight - this.hints.clientHeight + 3;
+      this.scrollToActive()
       CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node);
+    },
+
+    scrollToActive: function() {
+      var selectedHintRange = this.getSelectedHintRange();
+      var node1 = this.hints.childNodes[selectedHintRange.from];
+      var node2 = this.hints.childNodes[selectedHintRange.to];
+      var firstNode = this.hints.firstChild;
+      if (node1.offsetTop < this.hints.scrollTop)
+        this.hints.scrollTop = node1.offsetTop - firstNode.offsetTop;
+      else if (node2.offsetTop + node2.offsetHeight > this.hints.scrollTop + this.hints.clientHeight)
+        this.hints.scrollTop = node2.offsetTop + node2.offsetHeight - this.hints.clientHeight + firstNode.offsetTop;
     },
 
     screenAmount: function() {
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;
+    },
+
+    getSelectedHintRange: function() {
+      var margin = this.completion.options.scrollMargin || 0;
+      return {
+        from: Math.max(0, this.selectedHint - margin),
+        to: Math.min(this.data.list.length - 1, this.selectedHint + margin),
+      };
     }
   };
 
@@ -449,11 +492,15 @@
     completeSingle: false, /* modified by adriweb */
     alignWithWord: true,
     closeCharacters: /[\s()\[\]{};:>,]/,
+    closeOnCursorActivity: true,
+    closeOnPick: true,
     closeOnUnfocus: true,
     completeOnSingleClick: true,
     container: null,
     customKeys: null,
-    extraKeys: null
+    extraKeys: null,
+    paddingForScrollbar: true,
+    moveOnOverlap: true,
   };
 
   CodeMirror.defineOption("hintOptions", null);

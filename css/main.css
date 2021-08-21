@@ -335,6 +335,11 @@ div.CodeMirror pre {
     padding: 0 2px !important;
 }
 
+pre.inline-lint-msg {
+    visibility: hidden;
+    height: 0;
+}
+
 .inlineTooltip {
     border: 1px solid silver;
     border-radius: 3px;
