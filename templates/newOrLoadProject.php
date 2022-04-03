@@ -28,7 +28,7 @@ if (!isset($pm))
     $proj = $pm->createNewProject('native_eZ80', '', 'CPRGMCE');
     if ($proj !== null)
     {
-        $url = '/pb/?id=' . $proj->getID();
+        $url = '/pb/?id=' . $proj->getPID();
         header('Location: ' . $url);
         die();
     }

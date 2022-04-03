@@ -49,9 +49,8 @@ require_once 'utils.php';
     };
 </script>
 
-<?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
-    <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
-<?php } else { ?>
+<script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
+<?php if (!$pm->currentUserIsProjOwnerOrStaff() && !$currProject->isMulti_ReadWrite()) { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
 <?php } ?>
 

@@ -210,11 +210,13 @@ require_once 'utils.php';
 
         <?php } ?>
 
-        if (window.sdk_ctags.length === 0)
+        <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
+        if ((!window.sdk_ctags || window.sdk_ctags.length === 0) && editor.getMode().name !== 'yaml')
         {
             getSDKCtags();
             getInc84PCECtags();
         }
+        <?php } ?>
     }
     init_post_js_2(false);
 

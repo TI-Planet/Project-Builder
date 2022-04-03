@@ -60,7 +60,7 @@ abstract class IBackend
     {
         $this->project = $project;
         // To avoid calling getters multiple times later... Note: currentFile isn't initialized correctly yet at this point.
-        $this->projID = $project->getID();
+        $this->projID = $project->getPID();
         $this->projPrgmName = $project->getInternalName();
         $this->projFolder = $projFolder;
         $this->hasFolderinFS = is_dir($projFolder);
@@ -168,15 +168,15 @@ abstract class IBackend
                 return $this->deleteProjectDirectory();
 
             case 'fork':
-                if (!isset($params['fork_newid']))
+                if (!isset($params['fork_newpid']))
                 {
-                    return PBStatus::Error('Internal error when trying to fork the project (no new_id)');
+                    return PBStatus::Error('Internal error when trying to fork the project (no fork_newpid)');
                 }
-                if (preg_match('/^(\d+)_(\d{10})_([a-zA-Z0-9]{10})$/', $params['fork_newid']) !== 1)
+                if (preg_match('/^(\d+)_(\d{10})_([a-zA-Z0-9]{10})$/', $params['fork_newpid']) !== 1)
                 {
-                    return PBStatus::Error('Internal error when trying to fork the project (bad new_id)');
+                    return PBStatus::Error('Internal error when trying to fork the project (bad fork_newpid)');
                 }
-                return $this->forkProject($params['fork_newid']);
+                return $this->forkProject($params['fork_newpid']);
         }
 
         return self::doUserAction_Unhandled_Action; // "continue" processing in child classes

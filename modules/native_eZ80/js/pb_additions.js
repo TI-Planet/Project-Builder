@@ -496,18 +496,21 @@ function buildAndGetLog(callback)
             }
 
             // Update build timestamp
-            const buildTimestamp = build_output_raw.shift(); // Remove the timestamp
-            const buildTimestampElement = document.getElementById('buildTimestamp');
-            buildTimestampElement.parentNode.className = "";
-            buildTimestampElement.className = buildStatusClass;
-            buildTimestampElement.innerText = (build_output_raw === null) ? '(Error)' : (new Date(buildTimestamp * 1000).toLocaleTimeString());
+            if (build_output_raw !== null && build_output_raw.constructor === Array)
+            {
+                const buildTimestamp = build_output_raw.shift(); // Remove the timestamp
+                const buildTimestampElement = document.getElementById('buildTimestamp');
+                buildTimestampElement.parentNode.className = "";
+                buildTimestampElement.className = buildStatusClass;
+                buildTimestampElement.innerText = (build_output_raw === null) ? '(Error)' : (new Date(buildTimestamp * 1000).toLocaleTimeString());
 
-            // Update console
-            const consoletextarea = document.getElementById('consoletextarea');
-            consoletextarea.value = build_output_raw.join("\n");
-            consoletextarea.scrollTop = consoletextarea.scrollHeight;
+                // Update console
+                const consoletextarea = document.getElementById('consoletextarea');
+                consoletextarea.value = build_output_raw.join("\n");
+                consoletextarea.scrollTop = consoletextarea.scrollHeight;
 
-            savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
+                savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
+            }
 
             // Call cppcheck
             ajaxAction("getCheckLog", "", (text) => {

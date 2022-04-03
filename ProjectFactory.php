@@ -27,7 +27,7 @@ abstract class ProjectFactory
 
     /**
      * @param          $db_id
-     * @param          $randKey
+     * @param          $pid
      * @param UserInfo $author
      * @param          $type
      * @param          $name
@@ -40,7 +40,7 @@ abstract class ProjectFactory
      * @return null|Project
      * @throws \Exception
      */
-    public static function create($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
+    public static function create($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
         if (!in_array($type, self::$projectTypes, true))
         {
@@ -55,7 +55,7 @@ abstract class ProjectFactory
             // There's a custom class (server-side)
             require_once $customIncludePath;
             try {
-                return new $customFullClassName($db_id, $randKey, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
+                return new $customFullClassName($db_id, $pid, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
             } catch (\Exception $e)
             {
                 echo $e->getMessage();

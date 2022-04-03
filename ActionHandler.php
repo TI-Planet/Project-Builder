@@ -26,7 +26,13 @@ if (isset($_POST['id']) && !empty($_POST['id']))
     if (isset($_POST['action']) && !empty($_POST['action']))
     {
         $pm = new ProjectManager($_POST['id']);
-
+        /*
+        if (!in_array($pm->getCurrentUser()->getID(), [ 1381 ], true)) {
+            header( "HTTP/1.1 503 Service Unavailable", true, 503 );
+            header( "Retry-After: 3600" );
+            die("Maintenance in progress, please come back soon!");
+        }
+        */
 
         /******** CSRF Token stuff ********/
         if (isset($_POST['csrf_token']) && !empty($_POST['csrf_token']))

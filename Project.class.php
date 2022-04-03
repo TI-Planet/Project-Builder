@@ -31,9 +31,8 @@ abstract class Project
 
     const PROJECT_ICON_URL_FALLBACK  = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 
-    protected $id;
+    protected $pid;
     protected $db_id;
-    protected $randKey;
     protected $author;
     protected $type;
     protected $name;
@@ -48,15 +47,15 @@ abstract class Project
     protected $currentFile;
 
     // This is protected since only children classes extending it will call it.
-    protected function __construct($db_id, $randKey, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)
+    protected function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)
     {
         if (!is_int($db_id))
         {
             throw new \InvalidArgumentException("db_id isn't an int");
         }
-        if (!is_string($randKey) || preg_match('/^[a-zA-Z0-9]{10}$/', $randKey) !== 1)
+        if (!is_string($pid) || empty($pid))
         {
-            throw new \InvalidArgumentException('Rand key is invalid');
+            throw new \InvalidArgumentException('pid is invalid');
         }
         if ($author === null)
         {
@@ -89,8 +88,7 @@ abstract class Project
 
         $this->db_id = $db_id;
         $this->author = $author;
-        $this->id = $author->getID() . '_' . $cTime . '_' . $randKey;
-        $this->randKey = $randKey;
+        $this->pid = $pid;
         $this->type = $type;
         $this->name = $name;
         $this->internalName = $internalName;
@@ -99,7 +97,7 @@ abstract class Project
         $this->chatEnabled = $chatEnabled;
         $this->createdTstamp = $cTime;
         $this->updatedTstamp = $uTime;
-        $this->projDirectory = __DIR__ . "/../../pbprojects/{$this->id}/";
+        $this->projDirectory = __DIR__ . "/../../pbprojects/{$this->pid}/";
     }
 
     /****************************************************/
@@ -117,17 +115,9 @@ abstract class Project
     /**
      * @return string
      */
-    final public function getID()
+    final public function getPID()
     {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    final public function getRandKey()
-    {
-        return $this->randKey;
+        return $this->pid;
     }
 
     /**
@@ -234,6 +224,14 @@ abstract class Project
     abstract public function setInternalName($internalName);
     abstract public function setCurrentFile($name);
     abstract public function getCurrentFile();
+    abstract public function isCurrentFileEditable();
+    abstract public function isCurrentFileRenamable();
+    abstract public function isCurrentFileDeletable();
+
+    public function canUserEditCurrentFile(UserInfo $user)
+    {
+        return $this->isCurrentFileEditable() && ($user->isModeratorOrMore() || $this->getAuthorID() === $user->getID() || ($this->isMultiuser() && $this->isMulti_ReadWrite()));
+    }
 
     /**
      * @param boolean $multiuser

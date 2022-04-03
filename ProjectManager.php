@@ -68,7 +68,7 @@ final class ProjectManager
     {
         $this->initFromConfig();
 
-        $this->currentUser = $this->userInfoProvider->getConnectedUserInfo();
+        $this->currentUser = $this->userInfoProvider::getConnectedUserInfo();
         if ($projectID !== null)
         {
             $this->currentProject = $this->getProjectIfExistsAndAllowed($projectID);
@@ -160,21 +160,21 @@ final class ProjectManager
         $author = $this->currentUser;
         $now = time();
 
-        $project = null;
-
         $fork_of = ($isForkOfCurrent && $this->hasValidCurrentProject() ? $this->currentProject->getDBID() : null);
 
         $ok = $this->pmdb->execQuery('INSERT INTO `pb_projects` (`randkey`, `author`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `chat_enabled`, `created`, `updated`, `fork_of`)
                                          VALUES ( :rk , :aut , :type , :pname , :iname , :mu , :murw , :chat , :crea , :upd , :forkof )',
                                     [ 'rk' => $randKey, 'aut' => $author->getID(), 'type' => $type, 'pname' => $name, 'iname' => $internalName,
-                                      'mu' => false, 'murw' => false, 'chat' => false, 'crea' => $now, 'upd' => $now, 'forkof' => $fork_of ]);
+                                      'mu' => 0, 'murw' => 0, 'chat' => 0, 'crea' => $now, 'upd' => $now, 'forkof' => $fork_of ]);
         if ($ok === false)
         {
             $this->lastError = 'Error creating the project in the DB';
             return null;
         }
 
-        $project = ProjectFactory::create((int)$this->pmdb->lastInsertId(), $randKey, $author, $type, $name, $internalName, false, false, true, $now, $now);
+        $pid = $author->getID() . '_' . $now . '_' . $randKey; // TODO: get back from DB?
+
+        $project = ProjectFactory::create((int)$this->pmdb->lastInsertId(), $pid, $author, $type, $name, $internalName, false, false, true, $now, $now);
         if ($project === null)
         {
             // TODO : delete DB line
@@ -217,14 +217,14 @@ final class ProjectManager
                             if ($forkProj !== null)
                             {
                                 // Now, handle fork stuff at a module level as well
-                                $params['fork_newid'] = $forkProj->getID();
+                                $params['fork_newpid'] = $forkProj->getPID();
                                 $msg = $this->currentProject->doUserAction($this->currentUser, $params);
                                 if (PBStatus::isError($msg))
                                 {
                                     return ($this->lastError = $msg);
                                 }
 
-                                return $forkProj->getID();
+                                return $forkProj->getPID();
                             } else {
                                 // Error message already set
                                 return $this->lastError;
@@ -238,8 +238,8 @@ final class ProjectManager
                     }
                 }
 
-                // Special case of the zip dl, which only needs to have read-only access minimum
-                if (isset($params['action']) && $params['action'] === 'downloadZipExport')
+                // Special case for a few actions, which only need to have read-only access minimum
+                if (isset($params['action']) && in_array($params['action'], [ 'downloadZipExport', 'getCtags', 'getBuildLog', 'getCheckLog', 'download' ], true))
                 {
                     if ($this->currentUserIsProjOwnerOrStaff() || $this->currentProject->isMultiuser())
                     {
@@ -344,7 +344,7 @@ final class ProjectManager
                     if ($this->currentProject->setMultiuser($wantMultiUser, $wantReadWrite))
                     {
                         $ok = $this->pmdb->execQuery('UPDATE `pb_projects` SET `multiuser` = :mu , `multi_readwrite` = :murw WHERE `id` = :id ',
-                                                    [ 'mu' => $wantMultiUser, 'murw' => $wantReadWrite, 'id' => $this->currentProject->getDBID() ] );
+                                                    [ 'mu' => (int)$wantMultiUser, 'murw' => (int)$wantReadWrite, 'id' => $this->currentProject->getDBID() ] );
                         unset($params['action']);
                         $this->lastError = $ok ? $this->lastError : 'Error updating the sharing status in the DB';
                         return $ok;
@@ -416,7 +416,7 @@ final class ProjectManager
                         if ($val === '1' || $val === '0')
                         {
                             $ok = $this->pmdb->execQuery('UPDATE `pb_projects` SET `chat_enabled` = :val WHERE `id` = :id ',
-                                                        ['val'  => $val === '1', 'id' => $this->currentProject->getDBID() ] );
+                                                        ['val'  => (int)($val === '1'), 'id' => $this->currentProject->getDBID() ] );
                             $this->lastError = $ok ? $this->lastError : 'Error updating the setting in the DB';
                         } else {
                             $this->lastError = 'Error - invalid value for chatEnabled';
@@ -431,7 +431,7 @@ final class ProjectManager
                         if ($this->currentProject->setMultiuser($wantMultiUser, $wantReadWrite))
                         {
                             $ok = $this->pmdb->execQuery('UPDATE `pb_projects` SET `multiuser` = :mu , `multi_readwrite` = :murw WHERE `id` = :id ',
-                                                         [ 'mu' => $wantMultiUser, 'murw' => $wantReadWrite, 'id' => $this->currentProject->getDBID() ] );
+                                                         [ 'mu' => (int)$wantMultiUser, 'murw' => (int)$wantReadWrite, 'id' => $this->currentProject->getDBID() ] );
                             $this->lastError = $ok ? $this->lastError : 'Error updating the sharing status in the DB';
                         } else {
                             $this->lastError = 'Error changing the sharing status';
@@ -454,31 +454,33 @@ final class ProjectManager
      */
     private function getProjectIfExistsAndAllowed($projectID)
     {
-        if (!is_string($projectID) || preg_match('/^(\d+)_(\d{10})_([a-zA-Z0-9]{10})$/', $projectID, $matches) !== 1)
+        if (!is_string($projectID) || preg_match('/^\d+_\d{10}_[a-zA-Z0-9]{10}$/', $projectID) !== 1)
         {
             return null;
         }
 
-        $projAuthor = $this->userInfoProvider->getUserInfoFromID((int)$matches[1]);
-        $projCTime  = (int)$matches[2];
-        $projKey    = $matches[3];
-
-        // TODO : finer permission check (multi user -> if user is allowed)
-        $sqlCond = ($projAuthor->getID() !== $this->currentUser->getID()) ? ' AND `multiuser` = 1 ' : '';
-        $res = $this->pmdb->getQueryResults('SELECT `id`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `chat_enabled`, `updated`
+        $res = $this->pmdb->getQueryResults('SELECT `id`, `author`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `chat_enabled`, `created`, `updated`
                                                FROM `pb_projects`
-                                              WHERE `author` = :aut AND `created` = :crea AND `randkey` = :rk AND `deleted` IS NULL ' . $sqlCond,
-                                           [ 'aut' => $projAuthor->getID(), 'crea' => $projCTime, 'rk' => $projKey ]);
+                                              WHERE `pid` = :pid AND `deleted` IS NULL ',
+                                           [ 'pid' => $projectID ]);
         if (count($res) === 1)
         {
             $res = $res[0];
+
+            $projAuthor = $this->userInfoProvider::getUserInfoFromID((int)$res->author);
             $db_id = (int)$res->id;
             $multiuser = $res->multiuser === '1';
             $multi_readwrite = $res->multi_readwrite === '1';
             $chatEnabled = $res->chat_enabled === '1';
+            $projCTime = (int)$res->created;
             $projUTime = (int)$res->updated;
 
-            return ProjectFactory::create($db_id, $projKey, $projAuthor, $res->type, $res->name, $res->internal_name, $multiuser, $multi_readwrite, $chatEnabled, $projCTime, $projUTime);
+            // TODO : finer permission check (multi user -> if user is allowed)
+            if (!$multiuser && $projAuthor->getID() !== $this->currentUser->getID()) {
+                return null;
+            }
+
+            return ProjectFactory::create($db_id, $projectID, $projAuthor, $res->type, $res->name, $res->internal_name, $multiuser, $multi_readwrite, $chatEnabled, $projCTime, $projUTime);
         }
 
         return null;
