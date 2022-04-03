@@ -56,7 +56,9 @@ function editorPostSetupAlways()
         proj.cursors = {};
     }
     $(".hasTooltip, [data-toggle='tooltip']").tooltip({container: 'body'});
-    toggleOutline(proj.show_code_outline, true);
+    if (editor.getMode().name !== 'yaml') {
+        toggleOutline(proj.show_code_outline, true);
+    }
 }
 
 function editorPostSetup()

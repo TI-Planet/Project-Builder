@@ -30,7 +30,7 @@ if (!isset($pm))
             <?= $currProject->getFileListHTML() ?>
             <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
             {
-                if (count($currProject->getAvailableSrcFiles()) > 1)
+                if (count($currProject->getAvailableSrcFiles()) > 1 && $currProject->isCurrentFileDeletable())
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="#" onclick="deleteCurrentFile(); return false;"><span class="glyphicon glyphicon-trash"></span> Delete current file</a></li>';
                 }
@@ -41,7 +41,21 @@ if (!isset($pm))
                     echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to show ASM"><a id="asmToggleButton" style="color: #337ab7;" href="#" onclick="llvmCompile(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>';
                 }
                 echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to toggle the code outline"><a id="codeOutlineToggleButton" style="color: #337ab7;" href="#" onclick="toggleOutline(); return false;"><span class="glyphicon glyphicon-align-left"></span></a></li>';
-                echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to re-indent the file"><a id="reindentButton" style="color: #337ab7;" href="#" onclick="reindent(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
+                if (!$currProject->canUserEditCurrentFile($currUser))
+                {
+                    echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a href="#"><b>Note</b>: this file is read-only</a></li>';
+                }
+                else
+                {
+                    if ($currProject->getCurrentFile() === 'gfx/convimg.yaml')
+                    {
+                        echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a style="color: #337ab7;" href="https://github.com/mateoconlechuga/convimg#command-line-help" target="_blank">Click here for format documentation</a></li>';
+                    }
+                    else
+                    {
+                        echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to re-indent the file"><a id="reindentButton" style="color: #337ab7;" href="#" onclick="reindent(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
+                    }
+                }
             }
             ?>
         </ul>
@@ -80,7 +94,7 @@ if (!isset($pm))
                 <li class="hasTooltip" data-placement="right" title="Delete build files then build"><a onclick="cleanProj(buildAndGetLog); return false">Clean &amp; Build</a></li>
                 <li class="hasTooltip" data-placement="right" title="Delete build files"><a onclick="cleanProj(); return false">Clean only</a></li>
                 <li role="separator" class="divider"></li>
-                <li class="hasTooltip" data-placement="right" title="Show ASM"><a onclick="llvmCompile(); return false">Show ASM</a></li>
+                <li class="hasTooltip <?php if(!$currProject->hasGfxFiles()) { echo 'disabled'; } ?>" data-placement="right" title="(Re)build gfx resources"><a onclick="makeGfx(function() { goToFile('gfx/convimg.yaml') }); return false"><tt>make gfx</tt></a></li>
             </ul>
         </div>
         <div class="btn-group">

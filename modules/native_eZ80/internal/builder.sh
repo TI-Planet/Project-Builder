@@ -45,13 +45,16 @@ function validateIncludesOrDie {
 
 if [ "$#" -lt 2 ] || [ "$#" -gt 4 ]
 then
-    echo "Needs 2, 3, or 4 args: unique_id and command (addfile, deletefile, clean, llvmsyntax). 3 if [llvm]build/syntax (prgmName) or addfile/deletefile (fileName), 4 if renamefile (old new)" 1>&2
+    echo "Needs 2, 3, or 4 args: none (makegfx), unique_id and command (addfile, deletefile, clean, llvmsyntax, makegfx). 3 if [llvm]build/syntax (prgmName) or addfile/deletefile (fileName), 4 if renamefile (old new)" 1>&2
     exit 2
 else
     projectsdir="/home/pbbot/pbprojects"
     id=$1
     cmd=$2
     prgmName="CPRGMCE"
+
+    #echo "bash builder called with $# args" > ${projectsdir}/templog.txt
+    #echo "${cmd} command received on id ${id}. \$3 = $3 ;; \$4 = $4 ;;" >> ${projectsdir}/templog.txt
 
     if [ "$#" -eq 3 ]
     then
@@ -67,7 +70,7 @@ else
         if [ "$cmd" == "addfile" ] || [ "$cmd" == "deletefile" ]
         then
             fileName=$3
-            if [[ "$fileName" != "icon.png" && ! $fileName =~ ^src\/[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm|inc)$ ]]
+            if [[ "$fileName" != "icon.png" && ! $fileName =~ ^src\/(gfx\/)?[a-zA-Z0-9_]+\.(png|bmp|c|cpp|h|hpp|asm|inc)$ ]]
             then
                 echo "Bad fileName. Aborting" 1>&2
                 exit 41
@@ -106,6 +109,11 @@ else
 
     if [[ "$cmd" == "addfile" ]]
     then
+        gfxPath="${projectsdir}/${id}/src/gfx"
+        if [[ $fileName =~ ^src\/gfx\/ ]] && [[ ! -d "${gfxPath}" ]]; then
+            mkdir -p "${gfxPath}" || exit 44
+            touch "${gfxPath}/convimg.yaml"
+        fi
         # TODO: Add permissions here to other users/groups if need be.
         touch "${projectsdir}/${id}/${fileName}" || exit 44
         exit 0
@@ -126,7 +134,7 @@ else
     if [[ "$cmd" == "clean" ]]
     then
         cd "${projectsdir}/${id}" || exit 5
-        find . -regex ".*\.\(o\|cppobj\|obj\|bin\|src\|lst\|8xp\|8xv\|hex\|map\|txt\)" -delete
+        find . -regex ".*\.\(o\|cppobj\|obj\|bin\|src\|lst\|8xp\|8xv\|hex\|map\|txt\|gfxbuilt\)" -delete
         exit 0
     fi
 
@@ -144,9 +152,15 @@ else
 
         validateIncludesOrDie $logFile
 
-        cpfolder=/put/some/temp/dir/here/src_llvm_${id}
+        timeout 5 cppcheck --enable=warning,performance "$3" &> cppcheck.txt
+
+        cpfolder=/home/pbbot/debchroot/tmp/src_llvm_${id}
         mkdir -p $cpfolder/src
         cp src/*.c src/*.cpp src/*.h src/*.hpp src/*.asm src/*.inc $cpfolder/src/
+        if [[ -d src/gfx/ ]]; then
+          mkdir -p $cpfolder/src/gfx
+          cp src/gfx/*.c src/gfx/*.h $cpfolder/src/gfx/
+        fi
 
         # TODO: make sure to use your own paths here
         clangbin=/opt/llvm-project/build/bin/clang
@@ -167,6 +181,34 @@ else
         exit 0
     fi
 
+    if [[ "$cmd" == "makegfx" ]]
+    then
+        cd "${projectsdir}/${id}" || exit 5
+        find . -name "*.txt" -delete
+
+        logFile="output_llvm_build.txt";
+        rm -f $logFile
+
+        echo -e $(date +%s)"\r" > $logFile
+
+        validateIncludesOrDie $logFile
+
+        chrootedProjectDir="/home/pbbot/debchroot/projectbuilder/projects/${id}"
+        rm -rf "${chrootedProjectDir}"
+        cp -Ra "${projectsdir}/${id}" "${chrootedProjectDir}"
+        buildret=0
+        if [[ -d src/gfx/ ]] && [[ -s src/gfx/convimg.yaml ]]; then
+          # TODO: Replace "SAFELAUNCH" by something to make it safer than just launching it directly (for instance, in a chroot etc.)
+          SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile version gfx && touch src/gfx/.gfxbuilt" >> ${logFile} 2>&1
+          buildret=$?
+        fi
+        for folder in bin obj; do [[ -d "${chrootedProjectDir}/${folder}" ]] && cp -Ra "${chrootedProjectDir}/${folder}" "${projectsdir}/${id}/"; done
+        [[ -d "${chrootedProjectDir}/src/gfx" ]] && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"
+        rm -rf "${chrootedProjectDir}"
+
+        exit $buildret
+    fi
+
     if [[ "$cmd" == "build" ]] || [[ "$cmd" == "llvmbuild" ]]
     then
         cd "${projectsdir}/${id}" || exit 5
@@ -175,11 +217,11 @@ else
         logFile="output_llvm_build.txt";
         rm -f $logFile
 
-        cppcheck --enable=warning,performance src/*.c src/*.cpp src/*.h src/*.hpp &> cppcheck.txt &
-
         echo -e $(date +%s)"\r" > $logFile
 
         validateIncludesOrDie $logFile
+
+        timeout 5 cppcheck --enable=warning,performance src/*.c src/*.cpp src/*.h src/*.hpp &> cppcheck.txt &
 
         extraParams=$(jq -r ".clangArgs | select (.!=null)" config.json 2>/dev/null)
         description=$(jq -r ".description | select (.!=null)" config.json 2>/dev/null)
@@ -189,10 +231,22 @@ else
         else
               extraCflagsParam="CFLAGS=\"${extraParams}\" CXXFLAGS=\"${extraParams}\""
         fi
-        # TODO: Replace "SAFELAUNCH" by something to make it safer than just launching it directly (for instance, in a chroot etc.)
-        SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} version all " >> $logFile 2>&1
 
-        exit 0
+        # TODO: Replace "SAFELAUNCH" by something to make it safer than just launching it directly (for instance, in a chroot etc.)
+
+        chrootedProjectDir="/home/pbbot/debchroot/projectbuilder/projects/${id}"
+        rm -rf "${chrootedProjectDir}"
+        cp -Ra "${projectsdir}/${id}" "${chrootedProjectDir}"
+        if [[ -d src/gfx/ ]] && [[ -s src/gfx/convimg.yaml ]] && [[ ! -f src/gfx/.gfxbuilt ]]; then
+          SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile version gfx && touch src/gfx/.gfxbuilt" >> ${logFile} 2>&1
+        fi
+        SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} version all " >> ${logFile} 2>&1
+        buildret=$?
+        for folder in bin obj; do [[ -d "${chrootedProjectDir}/${folder}" ]] && cp -Ra "${chrootedProjectDir}/${folder}" "${projectsdir}/${id}/"; done
+        [[ -d "${chrootedProjectDir}/src/gfx" ]] && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"
+        rm -rf "${chrootedProjectDir}"
+
+        exit $buildret
     fi
 
     echo "Unrecognized command '$cmd'" 1>&2

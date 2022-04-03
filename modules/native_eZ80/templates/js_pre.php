@@ -92,8 +92,11 @@ require_once 'utils.php';
 
 <script src="<?= cacheBusterPath('js/codemirror/codemirror.min.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/active-line.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/anyword-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/dialog.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/z80.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/yaml.js') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/yaml-lint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/clike.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>

@@ -46,10 +46,6 @@ abstract class IBackend
     /**
      * @var string
      */
-    protected $projCurrFile;
-    /**
-     * @var string
-     */
     protected $projFolder;
     /**
      * @var boolean

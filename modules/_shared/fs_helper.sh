@@ -94,6 +94,7 @@ else
     elif [[ "$cmd" == "createProj" ]]
     then
         cp -Lrp "${projectsdir}/template" "${projectsdir}/${id}" || exit 3
+        rm -rf "${projectsdir}/${id}/src/gfx/" # we don't want any gfx at first
         touch "${projectsdir}/${id}/config.json"
         find "${projectsdir}/${id}/" -type f -regex '.*\.\(c\|cpp\|h\|hpp\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
 

@@ -21,7 +21,8 @@ require_once __DIR__ . '/../NativeBasedBackend.class.php';
 
 final class native_eZ80ProjectBackend extends NativeBasedBackend
 {
-    private const TEMPLATE_FILE_PATH = __DIR__ . '/../../projects/template/src/main.c';
+    private const TEMPLATE_C_FILE_PATH = __DIR__ . '/../../projects/template/src/main.c';
+    private const TEMPLATE_CONVIMG_YAML_FILE_PATH = __DIR__ . '/../../projects/template/src/gfx/convimg.yaml';
 
     public function __construct(native_eZ80Project $project, $projFolder)
     {
@@ -40,6 +41,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
     public function getAvailableSrcFiles()
     {
         $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/*.*')), '\ProjectBuilder\native_eZ80Project::isFileNameOK');
+        $gfxFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/gfx/*.*')), '\ProjectBuilder\native_eZ80Project::isFileNameOK');
+        foreach ($gfxFiles as $file) { $availableFiles[] = 'gfx/' . $file; }
         sort($availableFiles); // TODO: custom sort so that header files appear just before their implementation file
         return $availableFiles;
     }
@@ -49,6 +52,21 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $availableFiles = array_map('basename', glob($this->projFolder . 'bin/*.8x[pv]'));
         sort($availableFiles);
         return $availableFiles;
+    }
+
+    public function getAvailableGfxImageFiles($addPrefix = true)
+    {
+        $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/gfx/*.*')), '\ProjectBuilder\native_eZ80Project::isImageFileNameOK');
+        if ($addPrefix) {
+            foreach ($availableFiles as &$file) { $file = 'gfx/' . $file; }
+        }
+        sort($availableFiles);
+        return $availableFiles;
+    }
+
+    public function hasGfxFiles()
+    {
+        return is_readable($this->projFolder . 'src/gfx/');
     }
 
     public function doUserAction(UserInfo $user, array $params)
@@ -65,9 +83,6 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
         $action = $params['action'];
 
-        // Ready now.
-        $this->projCurrFile = $thisProject->getCurrentFile();
-
         // In this switch, we only check high-level permissions (for special actions) and parameters format etc.
         // The underlying validity of parameters (e.g if file exists, etc.) will have to be checked by the called functions.
         switch ($action)
@@ -79,7 +94,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->getCheckLog();
 
             case 'getCtags':
-                $files = [ $this->projCurrFile ];
+                $files = [ $this->project->getCurrentFile() ];
                 if (isset($params['scope']) && !empty($params['scope']))
                 {
                     $scope = $params['scope'];
@@ -103,7 +118,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('No file name(s) given');
                 }
-                if (!native_eZ80Project::isFileNameOK($params['oldName']) || !native_eZ80Project::isFileNameOK($params['newName']))
+                if (!$this->project::isFileNameOK($params['oldName']) || !$this->project::isFileNameOK($params['newName']))
                 {
                     return PBStatus::Error('Bad file name(s)');
                 }
@@ -114,11 +129,55 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('No file name given');
                 }
-                if (!native_eZ80Project::isFileNameOK($params['fileName']))
+                if (!$this->project::isFileNameOK($params['fileName']))
                 {
                     return PBStatus::Error('Bad file name');
                 }
                 return $this->addFile($params['fileName']);
+
+            case 'addGfxImage':
+                if (!isset($params['fileName']) || empty($params['fileName']))
+                {
+                    return PBStatus::Error('No file name given');
+                }
+                if (!isset($params['content']) || empty($params['content']))
+                {
+                    return PBStatus::Error('No content given');
+                }
+                $params['fileName'] = 'gfx/' . $params['fileName'];
+                if (!$this->project::isImageFileNameOK($params['fileName']))
+                {
+                    return PBStatus::Error('Bad file name');
+                }
+                $decodedContent = base64_decode($params['content']);
+                if (!$decodedContent)
+                {
+                    return PBStatus::Error('Invalid image content');
+                }
+                if (!$this->addFile($params['fileName'], $decodedContent))
+                {
+                    return PBStatus::Error('Could not save image');
+                }
+                if (filesize($this->projFolder . 'src/gfx/convimg.yaml') === 0)
+                {
+                    if (!$this->project->setCurrentFile('gfx/convimg.yaml'))
+                    {
+                        return PBStatus::Error('Could not set current file to gfx/convimg.yaml, wut?');
+                    }
+                    $yamlTemplate = file_get_contents(self::TEMPLATE_CONVIMG_YAML_FILE_PATH);
+                    $imgs = $this->getAvailableGfxImageFiles(false);
+                    if (!empty($imgs))
+                    {
+                        $fileListAsYaml = '';
+                        foreach ($imgs as $img)
+                        {
+                            $fileListAsYaml .= "      - {$img}\n";
+                        }
+                        $yamlTemplate = str_replace('%REPLACEME%', $fileListAsYaml, $yamlTemplate);
+                    }
+                    return $this->saveSource($yamlTemplate);
+                }
+                return PBStatus::OK;
 
             case 'addIconFile':
                 if (!isset($params['icon']) || empty($params['icon']))
@@ -136,13 +195,17 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('No file name given');
                 }
-                if (!native_eZ80Project::isFileNameOK($params['file']))
+                if (!($this->project::isFileNameOK($params['file']) || $this->project::isImageFileNameOK($params['file'])))
                 {
                     return PBStatus::Error('Bad file name given');
                 }
                 if (count($thisProject->getAvailableSrcFiles()) === 1)
                 {
                     return PBStatus::Error('Cannot delete the only remaining file');
+                }
+                if (!$this->project->isCurrentFileDeletable())
+                {
+                    return PBStatus::Error('Current file not deletable');
                 }
                 $thisProject->removeFromAvailableFilesList($params['file']);
                 return $this->deleteCurrentFile();
@@ -156,7 +219,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('No file name given');
                 }
-                if (!native_eZ80Project::isFileNameOK($params['file']))
+                if (!$this->project::isFileNameOK($params['file']))
                 {
                     return PBStatus::Error('Bad file name given');
                 }
@@ -164,10 +227,17 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('No source code given');
                 }
+                if (!$this->project->isCurrentFileEditable())
+                {
+                    return PBStatus::Error('Current file not editable');
+                }
                 return $this->saveSource($params['source']);
 
             case 'clean':
                 return $this->clean();
+
+            case 'makeGfx':
+                return $this->makeGfx();
 
             case 'build':
             case 'llvmbuild':
@@ -179,7 +249,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                     return PBStatus::Error('No file name given');
                 }
 
-                if (!native_eZ80Project::isFileNameOK($params['file']))
+                if (!$this->project::isFileNameOK($params['file']))
                 {
                     return PBStatus::Error('Bad file name given');
                 }
@@ -191,7 +261,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                     return PBStatus::Error('No file name given');
                 }
 
-                if (!native_eZ80Project::isFileNameOK($params['file']))
+                if (!$this->project::isFileNameOK($params['file']))
                 {
                     return PBStatus::Error('Bad file name given');
                 }
@@ -202,7 +272,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('No file name given');
                 }
-                if (!native_eZ80Project::isFileNameOK($params['file']))
+                if (!$this->project::isFileNameOK($params['file']))
                 {
                     return PBStatus::Error('Bad file name given');
                 }
@@ -265,10 +335,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         if (!$this->hasFolderinFS) {
             return '';
         }
-        $output  = @file_get_contents($this->projFolder . 'obj/' . preg_replace('/\.c$/', '.src', $src_file)); // toto.c -> toto.src
-        if ($output === false) {
-            $output = @file_get_contents($this->projFolder . 'obj/' . $src_file . '.src'); // toto.cpp -> toto.cpp.src
-        }
+        $output = @file_get_contents($this->projFolder . 'obj/src/' . $src_file . '.src'); // toto.cpp -> toto.cpp.src
         return ($output !== false) ? $output : 'No ASM src file produced by LLVM, did you build yet?';
     }
 
@@ -414,7 +481,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
 
     private function getCurrentSrc()
     {
-        $srcFile = $this->projFolder . 'obj/' . @pathinfo($this->projCurrFile, PATHINFO_FILENAME) . '.src';
+        $srcFile = $this->projFolder . 'obj/' . @pathinfo($this->project->getCurrentFile(), PATHINFO_FILENAME) . '.src';
         if (file_exists($srcFile))
         {
             $output = @file_get_contents($srcFile);
@@ -429,6 +496,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         {
             return PBStatus::Error('This file already exists');
         }
+
+        $this->createProjectDirectoryIfNeeded();
 
         $implExts = [ 'c', 'cpp', 'asm' ];
         $fNameNoExt = pathinfo($fileName)['filename'];
@@ -512,10 +581,21 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
 
         $zip->addEmptyDir($zipFileName . '/src');
+
+        $imgs = $this->getAvailableGfxImageFiles(false);
+        if (!empty($imgs))
+        {
+            $zip->addEmptyDir($zipFileName . '/src/gfx');
+            if ($zip->addFromString($zipFileName . '/src/gfx/convimg.yaml', file_get_contents('src/gfx/convimg.yaml')) === false)
+            {
+                die(PBStatus::Error('Could not add source files to the .zip file... Retry?'));
+            }
+        }
+
         $files = $thisProject->getAvailableSrcFiles();
         foreach($files as $file)
         {
-            if ($zip->addFromString($zipFileName . '/src/' . basename($file), file_get_contents('src/' . $file)) === false)
+            if ($zip->addFromString($zipFileName . '/src/' . $file, file_get_contents('src/' . $file)) === false)
             {
                 die(PBStatus::Error('Could not add source files to the .zip file... Retry?'));
             }
@@ -559,9 +639,13 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         {
             return PBStatus::Error("Couldn't save such a big content (Max = 1 MB)");
         }
+        if ($this->project->getCurrentFile() === 'gfx/convimg.yaml' && mb_strpos($source, '/') !== false)
+        {
+            return PBStatus::Error("Invalid character in convimg.yaml file. Make sure to have only simple file names and no paths!");
+        }
         $this->createProjectDirectoryIfNeeded();
         $this->deleteBaseProjectFile('output_llvm_build.txt');
-        $ok = file_put_contents($this->projFolder . 'src/' . $this->projCurrFile, $source);
+        $ok = file_put_contents($this->projFolder . 'src/' . $this->project->getCurrentFile(), $source);
         return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Couldn't save source to current file");
     }
 
@@ -603,6 +687,15 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return ($output !== false) ? $output : null;
         }
         return PBStatus::Error("Error while re-indenting the file ($retval)");
+    }
+
+    private function makeGfx()
+    {
+        $this->createProjectDirectoryIfNeeded();
+
+        $this->callNativeHelperWithAction('makegfx');
+
+        return $this->getBuildLog();
     }
 
     private function build()
@@ -649,8 +742,10 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
      */
     public function getCurrentFileSourceHTML()
     {
-        $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
-        $whichSource = file_exists($sourceFile) ? $sourceFile : self::TEMPLATE_FILE_PATH;
+        $currFile = $this->project->getCurrentFile();
+        $sourceFile = $this->projFolder . 'src/' . $currFile;
+        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
+        $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
@@ -659,8 +754,10 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
      */
     public function getCurrentFileMtime()
     {
-        $sourceFile = $this->projFolder . 'src/' . $this->project->getCurrentFile();
-        $whichSource = file_exists($sourceFile) ? $sourceFile : self::TEMPLATE_FILE_PATH;
+        $currFile = $this->project->getCurrentFile();
+        $sourceFile = $this->projFolder . 'src/' . $currFile;
+        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
+        $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
         return (int)filemtime($whichSource);
     }
 

@@ -38,7 +38,7 @@ if (!isset($pm))
         let progressNotifMsg = '';
         const progressCallback = (name) => {
             inviteNotif && inviteNotif.close();
-            if (isValidFileName(name))
+            if (isValidFileName(name) || isValidGfxImageFileName(name))
             {
                 lastOKName = name;
                 progressNotifMsg += `${name}, `;
@@ -49,9 +49,9 @@ if (!isset($pm))
                 }
             }
         };
-        const endCallback = (name, needToGoToFile) => {
+        const endCallback = (name, needToGoToFile, goToFileTargetOverride) => {
             progressCallback(name);
-            if (needToGoToFile) { setTimeout( () => { goToFile(lastOKName);  }, 500); }
+            if (needToGoToFile) { setTimeout( () => { goToFile(goToFileTargetOverride || lastOKName);  }, 500); }
             setTimeout( () => { progressNotif && progressNotif.close(); }, 1500);
         };
         $("#editorContainer, #leftSidebar").filedrop({
@@ -67,7 +67,7 @@ if (!isset($pm))
             onEnter: (event) => {
                 if (!inviteNotif)
                 {
-                    inviteNotif = showNotification("info", "File import", "Drop source code files, or an icon.png file, on the editor to import them into the project");
+                    inviteNotif = showNotification("info", "File import", "Drop source code files, a 16x16 icon.png file for the project icon, or image files for gfx resources, to import them into the project");
                     inviteNotif.$ele[0].addEventListener("dragenter", () => { inviteNotif.$ele.hide(); inviteNotif.close() }, false);
                 }
             }

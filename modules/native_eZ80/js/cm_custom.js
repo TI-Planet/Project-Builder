@@ -571,7 +571,7 @@ function do_cm_custom()
                                 const line = parseInt(ctag_from_sdk.l);
                                 const isFromLibs = [ 'graphx.h', 'fatdrvce.h', 'fileioc.h', 'fontlibc.h', 'keypadc.h', 'graphx.h', 'srldrvce.h', 'usbdrvce.h' ].indexOf(ctag_from_sdk.file) > -1;
                                 const isFromCE   = [ 'debug.h', 'compression.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
-                                const baseURL = 'https://github.com/CE-Programming/toolchain/blob/llvm';
+                                const baseURL = 'https://github.com/CE-Programming/toolchain/blob/master';
                                 if (isFromLibs) {
                                     window.open(`${baseURL}/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 } else if (isFromCE) {

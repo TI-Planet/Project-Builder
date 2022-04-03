@@ -113,10 +113,10 @@ abstract class NativeBasedBackend extends IBackend
 
     final protected function deleteCurrentFile()
     {
-        if ($this->hasFolderinFS && file_exists($this->projFolder . 'src/' . $this->projCurrFile))
+        if ($this->hasFolderinFS && file_exists($this->projFolder . 'src/' . $this->project->getCurrentFile()))
         {
-            $ret = $this->callNativeHelperWithAction('deletefile src/' . $this->projCurrFile);
-            $ok = !file_exists($this->projFolder . 'src/' . $this->projCurrFile);
+            $ret = $this->callNativeHelperWithAction('deletefile src/' . $this->project->getCurrentFile());
+            $ok = !file_exists($this->projFolder . 'src/' . $this->project->getCurrentFile());
             return $ok ? PBStatus::OK : PBStatus::Error("File couldn't be deleted (ret = {$ret})");
         }
         return PBStatus::OK;

@@ -39,7 +39,7 @@ function genSidebar()
     {
         $content .= '<div class="sidebarListHeader"><b>Current project:</b></div>';
         $content .= '<div id="currentProject">';
-        $content .= '<div id="prgmIconContainer"><img id="prgmIconImg" alt="" class="hasTooltip" title="Drag\'n\'drop an icon.png file to change the project icon" src="' . $currProject->getIconURL() . '" /></div>';
+        $content .= '<div id="prgmIconContainer"><img id="prgmIconImg" alt="" class="hasTooltip" title="Drag\'n\'drop a 16x16 icon.png file to change the project icon" src="' . $currProject->getIconURL() . '" /></div>';
         $content .= '<div id="prgmNameContainer"><span class="fieldSubContainer" onclick="changePrgmName(); return false;" title="Edit name"><span id="prgmNameSpan">' . $currProject->getInternalName() . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> <span class="glyphicon glyphicon-pencil inlineEditPencil"></span></span></div>';
 
         // Turns out name is Description and internal name is Name.

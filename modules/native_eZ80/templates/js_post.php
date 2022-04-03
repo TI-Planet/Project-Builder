@@ -34,11 +34,12 @@ require_once 'utils.php';
         textarea = document.getElementById('codearea');
         fakeContainer = document.getElementById('fakeContainer');
 
-        /* CodeMirror init */
-
-        CodeMirror.commands.autocomplete = function(cm) { cm.showHint({ hint: CodeMirror.hint.any_and_ctags }); };
-
         const isAsmFile = /\.(asm|inc)$/.test(proj.currFile);
+        const isYamlFile = /\.ya?ml$/.test(proj.currFile);
+
+        /* CodeMirror init */
+        CodeMirror.commands.autocomplete = function(cm) { cm.showHint({ hint: isYamlFile ? CodeMirror.hint.anyword : CodeMirror.hint.any_and_ctags }); };
+
         editor = CodeMirror.fromTextArea(textarea, {
             lineNumbers: true,
             styleActiveLine: true,
@@ -49,12 +50,12 @@ require_once 'utils.php';
             foldGutter: true,
             showTrailingSpace: true,
             dragDrop: false,
-            mode: isAsmFile ? "text/x-ez80" : (proj.currFile.match(/\.[ch]pp$/i) ? "text/x-c++src" : "text/x-csrc"),
+            mode: isYamlFile ? 'text/x-yaml' : (isAsmFile ? "text/x-ez80" : (proj.currFile.match(/\.[ch]pp$/i) ? "text/x-c++src" : "text/x-csrc")),
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Ctrl-Space": "autocomplete"},
             highlightSelectionMatches: {showToken: /\w/},
             theme: 'xq-light',
-            readOnly: <?= (!$currUser->isModeratorOrMore() && $currProject->getAuthorID() !== $currUser->getID() && $currProject->isMultiuser() && !$currProject->isMulti_ReadWrite()) ? 'true' : 'false' ?>
+            readOnly: <?= $currProject->canUserEditCurrentFile($currUser) ? 'false' : 'true' ?>
         });
         enable_sdk_ctags = !isAsmFile;
         enable_ti84pceInc_ctags = isAsmFile;
@@ -195,10 +196,11 @@ require_once 'utils.php';
         editorContainer.css('pointer-events', 'auto');
 
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
-            if (isChangingTab) {
-                getAnalysisLogAndUpdateHintsMaybe(true);
-            } else {
-                getBuildLogAndUpdateHintsMaybe(false);
+
+            if (!isChangingTab) {
+                getBuildLogAndUpdateHintsMaybe(true);
+            }
+            if (editor.getMode().name !== 'yaml') {
                 getAnalysisLogAndUpdateHintsMaybe(true);
             }
         <?php } ?>

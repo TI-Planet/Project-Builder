@@ -123,11 +123,14 @@ const _saveFile_impl = (callback) =>
         ajaxAction("save", `file=${proj.currFile}&source=${encodeURIComponent(currSource)}`, () => {
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
-            if (editor.getMode().name === "clike") {
+            const editorMode = editor.getMode().name;
+            if (editorMode === "clike") {
                 build_output = []; // it's likely obsolete now.
                 getAnalysisLogAndUpdateHintsMaybe(true);
             }
-            getCtags(proj.currFile, () => { filterOutline($("#codeOutlineFilter").val()); });
+            if (editorMode !== 'yaml') {
+                getCtags(proj.currFile, () => { filterOutline($("#codeOutlineFilter").val()); });
+            }
             if (typeof callback === "function") callback();
         }, () => {
             saveButton.disabled = false;
@@ -176,20 +179,43 @@ function isValidFileName(name)
     return name === 'icon.png' || /^[a-zA-Z0-9_]+\.(c|cpp|h|hpp|asm|inc)$/i.test(name);
 }
 
+function isValidGfxImageFileName(name)
+{
+    return /^(gfx\/)?[a-zA-Z0-9_]+\.(png|bmp)$/i.test(name);
+}
+
 function createFileWithContent(name, content, cb, isLast, numFiles)
 {
     const escapedName = $('<div/>').text(name).html();
-    if (isValidFileName(name))
+    if (isValidFileName(name) || isValidGfxImageFileName(name))
     {
         if (proj.files.indexOf(name) === -1)
         {
             if (name === "icon.png") {
-                content = content.replace('data:image/png;base64,', '');
-                ajaxAction("addIconFile", `icon=${encodeURIComponent(content)}`, () =>
+                const iconCheck = new Image();
+                iconCheck.src = content;
+                iconCheck.onload = () => {
+                    if (iconCheck.width !== 16 && iconCheck.height !== 16) {
+                        showNotification("danger", 'Invalid icon dimenstions', 'Make sure the icon PNG file is 16x16 px and try again');
+                        cb(name);
+                        return;
+                    }
+                    content = content.replace('data:image/png;base64,', '');
+                    ajaxAction("addIconFile", `icon=${encodeURIComponent(content)}`, () =>
+                    {
+                        document.getElementById('prgmIconImg').src = `/pb/projects/${proj.pid}/icon.png`;
+                        showNotification("success", 'Icon added', 'The project icon has been set successfully');
+                        cb(name, isLast && numFiles > 1);
+                    }, () => { showNotification("danger", 'Oops?', 'An error happened - make sure the icon PNG file is 16x16 px, and retry?'); cb(name); });
+                };
+            } else if (isValidGfxImageFileName(name)) {
+                content = content.replace(/^data:image\/(png|bmp);base64,/, '');
+                ajaxAction("addGfxImage", `fileName=${name}&content=${encodeURIComponent(content)}`, () =>
                 {
-                    document.getElementById('prgmIconImg').src = `/pb/projects/${proj.pid}/icon.png`;
-                    showNotification("success", 'Icon added', 'The project icon has been set successfully');
-                    cb(name, isLast && numFiles > 1);
+                    proj.files = proj.files.concat([name]);
+                    saveProjConfig();
+                    showNotification("success", 'Image added', 'The file is available in the gfx folder');
+                    cb(name, isLast && numFiles > 1, 'gfx/convimg.yaml');
                 }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
             } else {
                 ajaxAction("addFile", `fileName=${name}`, () =>
@@ -213,7 +239,7 @@ function deleteCurrentFile()
 {
     if (window.confirm("Do you really want to delete this file?"))
     {
-        if (proj.currFile && isValidFileName(proj.currFile))
+        if (proj.currFile && (isValidFileName(proj.currFile) || isValidGfxImageFileName(proj.currFile)))
         {
             ajaxAction("deleteCurrentFile", `file=${proj.currFile}`, () => {
                 const idx = proj.files.indexOf(proj.currFile);
@@ -316,6 +342,8 @@ function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 
 function getCtags(scope, cb)
 {
+    getLiveLogCB(); // temp workaround to get that called early. todo: put it elsewhere
+
     if (scope === undefined) { scope = proj.currFile; }
     ajaxAction("getCtags", `scope=${scope}`, (allCtags) => {
         const list = [];
@@ -395,6 +423,46 @@ function cleanProj(callback)
     });
 }
 
+// get live log
+const getLiveLogCB = () => {
+    ajaxAction("getBuildLog", "", (log) => {
+        // Remove the timestamp
+        log.shift();
+        if (build_output_raw.toString() !== log.toString())
+        {
+            build_output_raw = log;
+            // Update console
+            const consoletextarea = document.getElementById('consoletextarea');
+            consoletextarea.value = log.join("\n");
+            consoletextarea.scrollTop = consoletextarea.scrollHeight;
+        }
+    });
+};
+
+function makeGfx(callback)
+{
+    const buildButton = document.getElementById('buildButton');
+    const cleanButton = document.getElementById('cleanButton');
+    const builddlButton = document.getElementById('builddlButton');
+    const buildRunButton = document.getElementById('buildRunButton');
+    const zipDlCaretButton = document.getElementById('zipDlCaretButton');
+    cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = true;
+    removeClass(buildButton.children[1], "hidden");
+
+    // get live log
+    getLiveLogCB();
+    liveLogInterval = setInterval(getLiveLogCB, 1000);
+
+    ajaxAction("makeGfx", "", () => {
+        addClass(buildButton.children[1], "hidden");
+        cleanButton.disabled = buildButton.disabled = builddlButton.disabled = buildRunButton.disabled = zipDlCaretButton.disabled = false;
+
+        if (typeof callback === "function") {
+            callback();
+        }
+    }, null, () => { clearInterval(liveLogInterval); });
+}
+
 function buildAndGetLog(callback)
 {
     const buildButton = document.getElementById('buildButton');
@@ -406,21 +474,8 @@ function buildAndGetLog(callback)
     removeClass(buildButton.children[1], "hidden");
 
     saveFile(() => {
-        // get live log
-        liveLogInterval = setInterval(() => {
-            ajaxAction("getBuildLog", "", (log) => {
-                // Remove the timestamp
-                log.shift();
-                if (build_output_raw.toString() !== log.toString())
-                {
-                    build_output_raw = log;
-                    // Update console
-                    const consoletextarea = document.getElementById('consoletextarea');
-                    consoletextarea.value = log.join("\n");
-                    consoletextarea.scrollTop = consoletextarea.scrollHeight;
-                }
-            });
-        }, 1000);
+        getLiveLogCB();
+        liveLogInterval = setInterval(getLiveLogCB, 1000);
 
         ajaxAction('llvmbuild', `prgmName=${proj.prgmName}`, (result) => {
             build_output_raw = result;

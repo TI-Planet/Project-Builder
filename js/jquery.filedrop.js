@@ -37,7 +37,7 @@ $.fn.extend({
                         {
                             const reader = new FileReader();
                             reader.onload = (event) => { options.onDrop(file, event.target.result, i === files.length - 1, files.length); };
-                            if (/\.png$/.test(file.name)) {
+                            if (/\.(png|bmp)$/.test(file.name)) {
                                 reader.readAsDataURL(file);
                             } else {
                                 reader.readAsText(file);

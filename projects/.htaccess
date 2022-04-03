@@ -1,5 +1,7 @@
 order allow,deny
-<Files "icon.png">
+
+<Files ~ "\.(png|bmp)$">
    allow from all
 </Files>
+
 Deny from all

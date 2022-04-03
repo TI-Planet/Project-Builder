@@ -246,13 +246,13 @@ final class ProjectManager
                         return $this->currentProject->doUserAction($this->currentUser, $params);
                     }
 
-                    return ($this->lastError = 'Unauthorized');
+                    return ($this->lastError = $params['action'] . ' unauthorized');
                 }
 
                 // From here on, need special permissions
                 if (!($this->currentUserIsProjOwnerOrStaff() || $this->currentProject->isMulti_ReadWrite()))
                 {
-                    return ($this->lastError = 'Unauthorized');
+                    return ($this->lastError = ($params['action'] ?? 'action') . ' unauthorized');
                 }
 
                 // Security checks are OK at this point
