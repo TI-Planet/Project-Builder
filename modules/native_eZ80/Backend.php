@@ -404,6 +404,12 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             }
         }
 
+        // remove typename typeref stuff
+        if (isset($tag->typeref))
+        {
+            $tag->typeref = str_replace('typename:', '', $tag->typeref);
+        }
+
         // Save space
         unset($tag->_type, $tag->pattern);
         if (isset($tag->name)) { $tag->n = $tag->name; unset($tag->name); }
@@ -432,7 +438,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
         $fileList = implode(' ', $files);
         chdir($this->projFolder . 'src');
-        exec("ctags -u --fields=nktSZ --c-kinds=+defgpstuvxml --langmap=ASM:+.inc --output-format=json {$fileList}", $tagList, $retval);
+        exec("ctags -u --fields=FnNktSZ --c-kinds=+defgpstuvxml --langmap=ASM:+.inc --output-format=json {$fileList}", $tagList, $retval);
         if ($retval === 0 && is_array($tagList))
         {
             $tagsObject = [];
@@ -459,7 +465,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
         chdir($this->projFolder);
         $fileList = '$(find ' . __DIR__ . '/internal/toolchain/include/ -name \'*.c\' -o -name \'*.h\' | grep -v TINYSTL)';
-        exec("ctags -u --fields=nktSZ --c-kinds=+defgpstuvxm --output-format=json {$fileList}", $tagList, $retval);
+        exec("ctags -u --fields=FnNktSZ --c-kinds=+defgpstuvxm --output-format=json {$fileList}", $tagList, $retval);
         if ($retval === 0 && is_array($tagList))
         {
             $tagsObject = [];
