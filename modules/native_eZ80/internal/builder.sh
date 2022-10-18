@@ -134,7 +134,7 @@ else
     if [[ "$cmd" == "clean" ]]
     then
         cd "${projectsdir}/${id}" || exit 5
-        find . -regex ".*\.\(o\|cppobj\|obj\|bin\|src\|lst\|8xp\|8xv\|hex\|map\|txt\|gfxbuilt\)" -delete
+        find . -regex ".*\.\(o\|d\|bc\|cppobj\|obj\|bin\|src\|lst\|8xp\|8xv\|hex\|map\|txt\|gfxbuilt\)\$" -delete
         exit 0
     fi
 
@@ -203,7 +203,7 @@ else
           buildret=$?
         fi
         for folder in bin obj; do [[ -d "${chrootedProjectDir}/${folder}" ]] && cp -Ra "${chrootedProjectDir}/${folder}" "${projectsdir}/${id}/"; done
-        [[ -d "${chrootedProjectDir}/src/gfx" ]] && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"
+        [[ -d "${chrootedProjectDir}/src/gfx" ]] && rm -rf "${projectsdir}/${id}/src/gfx" && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"
         rm -rf "${chrootedProjectDir}"
 
         exit $buildret
@@ -243,7 +243,7 @@ else
         SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} version all " >> ${logFile} 2>&1
         buildret=$?
         for folder in bin obj; do [[ -d "${chrootedProjectDir}/${folder}" ]] && cp -Ra "${chrootedProjectDir}/${folder}" "${projectsdir}/${id}/"; done
-        [[ -d "${chrootedProjectDir}/src/gfx" ]] && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"
+        [[ -d "${chrootedProjectDir}/src/gfx" ]] && rm -rf "${projectsdir}/${id}/src/gfx" && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"
         rm -rf "${chrootedProjectDir}"
 
         exit $buildret
