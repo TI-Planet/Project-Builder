@@ -16,13 +16,5 @@ CFLAGS   ?= -Oz -W -Wall -Wextra -Wwrite-strings
 CXXFLAGS ?= -Oz -W -Wall -Wextra -Wwrite-strings
 
 # ----------------------------
-# Debug Options
-# ----------------------------
 
-# ----------------------------
-
-ifndef CEDEV
-$(error CEDEV environment path variable is not set)
-endif
-
-include $(CEDEV)/meta/makefile.mk
+include $(shell cedev-config --makefile)
