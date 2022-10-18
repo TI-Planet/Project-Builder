@@ -21,7 +21,7 @@ namespace ProjectBuilder;
 final class native_eZ80Project extends Project
 {
     const PROJECT_MODULE_NAME        = 'C/C++ IDE for the TI CE calculators';
-    const PROJECT_MODULE_DESCRIPTION = 'C/C++ IDE for the TI-84 Plus CE / TI-83 Premium CE. <span style="float:right"><i>Now LLVM-based!</i></span>';
+    const PROJECT_MODULE_DESCRIPTION = 'C/C++ IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
     const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(c|cpp|h|hpp|asm|inc|yaml)$/i";
     const TEMPLATE_FILE            = 'main.c';
