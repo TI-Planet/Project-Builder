@@ -569,15 +569,17 @@ function do_cm_custom()
                             {
                                 ctag_from_sdk = ctag_from_sdk[0];
                                 const line = parseInt(ctag_from_sdk.l);
-                                const isFromLibs = [ 'graphx.h', 'fatdrvce.h', 'fileioc.h', 'fontlibc.h', 'keypadc.h', 'graphx.h', 'srldrvce.h', 'usbdrvce.h' ].indexOf(ctag_from_sdk.file) > -1;
-                                const isFromCE   = [ 'debug.h', 'compression.h', 'intce.h', 'tice.h', 'usb.h' ].indexOf(ctag_from_sdk.file) > -1;
+                                const isFromLibs = ctag_from_sdk.file.match(/\/(fatdrvce|fileioc|fontlibc|keypadc|graphx|libload|srldrvce|usbdrvce)\.h$/);
+                                const isFromCE = (/\b(include\/(ti|sys|c\+\+))\//.test(ctag_from_sdk.file)) || (/\/(debug|compression|intce|tice|usb)\.h$/.test(ctag_from_sdk.file));
                                 const baseURL = 'https://github.com/CE-Programming/toolchain/blob/master';
                                 if (isFromLibs) {
-                                    window.open(`${baseURL}/src/${ctag_from_sdk.file.slice(0,-2)}/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                    window.open(`${baseURL}/src/${isFromLibs[1]}/${isFromLibs[1]}.h#L${line}`, '_blank');
                                 } else if (isFromCE) {
                                     window.open(`${baseURL}/src/ce/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                } else if (proj.currFile.match(/\.[ch]pp$/i) && (!ctag_from_sdk.file.includes('.') || ctag_from_sdk.file.endsWith('.hpp'))) {
+                                    window.open(`${baseURL}/src/libcxx/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 } else {
-                                    window.open(`${baseURL}/src/std/${ctag_from_sdk.file}#L${line}`, '_blank');
+                                    window.open(`${baseURL}/src/libc/${ctag_from_sdk.file}#L${line}`, '_blank');
                                 }
                                 clearTooltip();
                                 return;
@@ -585,7 +587,10 @@ function do_cm_custom()
                         }
 
                         // Otherwise try from any word in the file
-                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`)));
+                        const searchRes = editor.getValue().search(new RegExp(`\\b${escapeRegExp(wholeWord)}\\b`));
+                        if (searchRes > -1) {
+                            lineNumOfFirstDef = editor.posFromIndex(searchRes);
+                        }
                     }
 
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
@@ -684,7 +689,10 @@ function do_cm_custom()
                         }
 
                         // Otherwise try from any word in the file
-                        lineNumOfFirstDef = editor.posFromIndex(editor.getValue().search(wordRegexp));
+                        const searchRes = editor.getValue().search(wordRegexp);
+                        if (searchRes > -1) {
+                            lineNumOfFirstDef = editor.posFromIndex(searchRes);
+                        }
                     }
 
                     if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)

@@ -8,10 +8,10 @@ abstract class PBStatus
     const ErrorMarker = '[Error] '; // message needed, to there')s a trailing space
 
     /**
-     * @param   string $msg
+     * @param string $msg
      * @return  string
      */
-    public static function Error($msg = 'Unknown error')
+    public static function Error(string $msg = 'Unknown error')
     {
         return static::ErrorMarker . $msg;
     }

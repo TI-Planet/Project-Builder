@@ -18,13 +18,13 @@ namespace ProjectBuilder;
 
 class UserInfo
 {
-    protected $id;   // Unique user id
-    protected $sid;  // Some sort of session id (will be used as a CSRF token)
-    protected $name;
-    protected $avatarURL;
-    protected $isBot;
-    protected $isAnonymous;
-    protected $isModeratorOrMore;
+    protected int $id;   // Unique user id
+    protected string $sid;  // Some sort of session id (will be used as a CSRF token)
+    protected string $name;
+    protected string $avatarURL;
+    protected bool $isBot;
+    protected bool $isAnonymous;
+    protected bool $isModeratorOrMore;
 
     public function __construct($id, $sid, $name, $avatarURL = '', $isBot = false, $isAnonymous = true, $isModeratorOrMore = false)
     {

@@ -31,20 +31,20 @@ abstract class Project
 
     const PROJECT_ICON_URL_FALLBACK  = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 
-    protected $pid;
-    protected $db_id;
-    protected $author;
-    protected $type;
-    protected $name;
-    protected $internalName;
-    protected $multiuser;
-    protected $multi_readwrite;
-    protected $chatEnabled;
-    protected $createdTstamp;
-    protected $updatedTstamp;
+    protected string $pid;
+    protected int $db_id;
+    protected UserInfo $author;
+    protected string $type;
+    protected string $name;
+    protected string $internalName;
+    protected bool $multiuser;
+    protected bool $multi_readwrite;
+    protected bool $chatEnabled;
+    protected int $createdTstamp;
+    protected int $updatedTstamp;
 
-    protected $projDirectory;
-    protected $currentFile;
+    protected string $projDirectory;
+    protected string $currentFile;
 
     // This is protected since only children classes extending it will call it.
     protected function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)

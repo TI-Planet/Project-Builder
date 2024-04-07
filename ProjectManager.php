@@ -29,26 +29,11 @@ header('X-Frame-Options: SAMEORIGIN');
 
 final class ProjectManager
 {
-    /**
-     * @var IDBHelper
-     */
-    private $pmdb;
-    /**
-     * @var IUserInfoProvider
-     */
-    private $userInfoProvider;
-    /**
-     * @var UserInfo
-     */
-    private $currentUser;
-    /**
-     * @var Project
-     */
-    private $currentProject;
-    /**
-     * @var string|null
-     */
-    private $lastError;
+    private IDBHelper $pmdb;
+    private IUserInfoProvider $userInfoProvider;
+    private UserInfo $currentUser;
+    private ?Project $currentProject;
+    private ?string $lastError;
 
     private function initFromConfig()
     {
@@ -66,6 +51,7 @@ final class ProjectManager
 
     public function __construct($projectID = null, array $opts = [])
     {
+        $this->lastError = null;
         $this->initFromConfig();
 
         $this->currentUser = $this->userInfoProvider::getConnectedUserInfo();
@@ -326,7 +312,7 @@ final class ProjectManager
      */
     private function handleGlobalParameters(array &$params)
     {
-        if ($params !== null && !empty($params) && isset($params['action']))
+        if (!empty($params) && isset($params['action']))
         {
             switch ($params['action'])
             {

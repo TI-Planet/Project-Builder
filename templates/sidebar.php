@@ -79,7 +79,20 @@ function genSidebar()
         $content .= '</div>';
     }
 
-    $content .= '<div id="projectListHeader" class="sidebarListHeader"><a href="/pb/?new=1&amp;csrf_token=' . $currUser->getSID() . '" id="newProjLink" class="btn btn-success btn-xs" style="float:right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project</a><b>My projects:</b></div>';
+    $content .= '<div id="projectListHeader" class="sidebarListHeader">
+                      <div class="btn-group" role="group" style="float:right">
+                        <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New project
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropbox-menu-right" style="min-width: 0;">
+                          <li><a href="/pb/?new=1&amp;type=native_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE C/C++</a></li>
+                          <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=basic_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE TI-Basic</a></li>
+                          <li class="disabled" title="Soon!" data-toggle="tooltip" data-placement="right"><a href="#" class="disabled" disabled>TI-Nspire Python</a></li>
+                        </ul>
+                      </div>
+                      <b>My projects:</b>
+                 </div>';
 
     $content .= '<div id="projectList">';
     if (count($userProjects) > 0)
@@ -87,12 +100,12 @@ function genSidebar()
         $content .= '<ul style="margin-top: 2px">';
         foreach ($userProjects as $project)
         {
-            // TODO: Use name and icon
+            $projID = "{$currUser->getID()}_{$project->created}_{$project->randkey}";
             if ($currProject && (int)$project->id !== $currProject->getDBID())
             {
-                $content .= "<li><a href='/pb/?id={$currUser->getID()}_{$project->created}_{$project->randkey}'>{$project->internal_name}</a> <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <a href='/pb/?id={$projID}'>{$project->internal_name}</a> <small><i>({$project->type})</i></small></li>";
             } else {
-                $content .= "<li><span id='prgmNameSpanInList'>{$project->internal_name}</span> <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <span id='prgmNameSpanInList'>{$project->internal_name}</span> <small><i>({$project->type})</i></small></li>";
             }
         }
         $content .= '</ul>';

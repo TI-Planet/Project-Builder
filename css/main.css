@@ -576,3 +576,14 @@ span.gfxImgPreviewSpan > img {
     max-width: 36px;
     max-height: 24px;
 }
+
+#emuTransferProgress {
+    vertical-align: middle;
+    height: 30px;
+}
+#emuTransferProgress::after {
+    position: relative;
+    content: attr(value) "%";
+    color: black;
+    top: 4px;
+}

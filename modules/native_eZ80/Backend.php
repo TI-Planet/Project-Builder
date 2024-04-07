@@ -113,8 +113,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->getCurrentSrc();
 
             case 'renameFile':
-                if (   (!isset($params['oldName']) || empty($params['oldName']))
-                    && (!isset($params['newName']) || empty($params['newName'])) )
+                if (empty($params['oldName']) && empty($params['newName']))
                 {
                     return PBStatus::Error('No file name(s) given');
                 }
@@ -125,7 +124,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->renameFile($params['oldName'], $params['newName']);
 
             case 'addFile':
-                if (!isset($params['fileName']) || empty($params['fileName']))
+                if (empty($params['fileName']))
                 {
                     return PBStatus::Error('No file name given');
                 }
@@ -136,11 +135,11 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->addFile($params['fileName']);
 
             case 'addGfxImage':
-                if (!isset($params['fileName']) || empty($params['fileName']))
+                if (empty($params['fileName']))
                 {
                     return PBStatus::Error('No file name given');
                 }
-                if (!isset($params['content']) || empty($params['content']))
+                if (empty($params['content']))
                 {
                     return PBStatus::Error('No content given');
                 }
@@ -180,7 +179,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return PBStatus::OK;
 
             case 'addIconFile':
-                if (!isset($params['icon']) || empty($params['icon']))
+                if (empty($params['icon']))
                 {
                     return PBStatus::Error('No icon given');
                 }
@@ -191,7 +190,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('Unauthorized');
                 }
-                if (!isset($params['file']) || empty($params['file']))
+                if (empty($params['file']))
                 {
                     return PBStatus::Error('No file name given');
                 }
@@ -244,7 +243,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->build();
 
             case 'llvm':
-                if (!isset($params['file']) || empty($params['file']))
+                if (empty($params['file']))
                 {
                     return PBStatus::Error('No file name given');
                 }
@@ -256,7 +255,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->llvm($params['file']);
 
             case 'getAnalysis':
-                if (!isset($params['file']) || empty($params['file']))
+                if (empty($params['file']))
                 {
                     return PBStatus::Error('No file name given');
                 }
@@ -268,7 +267,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->getAnalysis($params['file']);
 
             case 'reindent':
-                if (!isset($params['file']) || empty($params['file']))
+                if (empty($params['file']))
                 {
                     return PBStatus::Error('No file name given');
                 }
@@ -336,7 +335,9 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return '';
         }
         $output = @file_get_contents($this->projFolder . 'obj/src/' . $src_file . '.src'); // toto.cpp -> toto.cpp.src
-        return ($output !== false) ? $output : 'No ASM src file produced by LLVM, did you build yet?';
+        if (!$output) $output = @file_get_contents($this->projFolder . 'obj/lto.src'); // fallback as it may exist in case of LTO
+        return ($output !== false) ? (mb_convert_encoding($output, 'UTF-8', mb_detect_encoding($output, 'UTF-8, ISO-8859-1', true)))
+                                   : 'No ASM src file produced by LLVM, did you build yet?';
     }
 
     private function getLLVMCompileOutput($src_file)
@@ -385,8 +386,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
 
         // Remove the path (keep filename only)
-        $tag->path = @pathinfo($tag->path)['basename'];
-        if (!$tag->path) {
+        $tag->path = preg_replace('@.*?/internal/toolchain/(.*)$@', '\1', $tag->path);
+        if (empty($tag->path)) {
             $tag->path = 'unknown';
         }
 
@@ -427,6 +428,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
     {
         $log = str_replace('/home/pbbot/debchroot/projectbuilder/modules/native_eZ80/internal', '...', $log);
         $log = preg_replace('/\/projectbuilder\/projects\/(\d+)_(\d{10})_([a-zA-Z0-9]{10})\//', '', $log);
+        $log = preg_replace('/\/home\/pbbot\/pbprojects\/(\d+)_(\d{10})_([a-zA-Z0-9]{10})\//', '', $log);
 
         return $log;
     }

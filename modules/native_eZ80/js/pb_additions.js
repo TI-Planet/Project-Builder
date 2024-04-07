@@ -303,15 +303,21 @@ function buildAndRunInEmu()
     if (emul_is_inited)
     {
         buildAndGetLog(() => {
+            window.emul_file_load_error_extcb = function() {
+                $("#buildRunButton").removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
+            }
+            window.emul_file_load_done_extcb = function() {
+                console.log(`[PB] launching on CEmu: prgm${proj.prgmName} ...`);
+                setTimeout(() => { sendKey(0xDA); }, 100); // prgm
+                setTimeout(() => { sendStringKeyPress(proj.prgmName); }, 800);
+                setTimeout(() => { sendKey(0x05); }, 500 + 300 * proj.prgmName.length); // Enter
+                setTimeout(() => { $("#buildRunButton").removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden"); }, 2500);
+                window.emul_file_load_error_extcb = window.emul_file_load_done_extcb = null;
+            }
             ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), (file) => {
+                $("#buildRunButton").addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
                 pauseEmul(false);
                 fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
-                setTimeout(() => {
-//                    setTimeout(() => { sendKey(0x9CFC); }, 0); // Asm(
-                    setTimeout(() => { sendKey(0xDA); }, 250); // prgm
-                    setTimeout(() => { sendStringKeyPress(proj.prgmName); }, 500);
-                    setTimeout(() => { sendKey(0x05); }, 500 + 150 + 250 * proj.prgmName.length); // Enter
-                }, 500);
             });
         });
     } else {
@@ -552,11 +558,11 @@ function parseCheckLog(log)
     {
         for (let i = 0; i < log.length; i++)
         {
-            const regex = /^\[src\/(\w+\.(?:c|cpp|h|hpp)):(\d+)\]: \((.*?)\) (.*)$/gmi;
+            const regex = /^src\/(\w+\.(?:c|cpp|h|hpp)):(\d+):(\d+): (.*?): (.*?) \[(.*)\]$/gmi;
             const matches = regex.exec(log[i]);
             if (matches !== null)
             {
-                arr.push({file: matches[1], line: parseInt(matches[2]), col: 0, type: matches[3], category: "", text: matches[4], from: 'cppcheck', fixit: null})
+                arr.push({file: matches[1], line: parseInt(matches[2]), col: parseInt(matches[3]), type: matches[4], category: matches[6], text: matches[5], from: 'cppcheck', fixit: null})
             }
         }
     } else {

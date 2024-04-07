@@ -28,14 +28,11 @@ final class native_eZ80Project extends Project
 
     const REGEXP_GOOD_IMAGE_FILE_PATTERN = "/^([a-z0-9_]+)\\.(png|bmp)$/i";
 
-    /**
-     * @var native_eZ80ProjectBackend
-     */
-    private $backend;
+    private native_eZ80ProjectBackend $backend;
 
-    private $availableSrcFiles;
-    private $availableBinFiles;
-    private $availableGfxImageFiles;
+    private array $availableSrcFiles;
+    private array $availableBinFiles;
+    private array $availableGfxImageFiles;
 
     public function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
     {
@@ -206,7 +203,7 @@ final class native_eZ80Project extends Project
                         }
                         else
                         {
-                            echo '<li><a href="#">No gfx resources yet<br>Drag\'n\'drop images files!</a></li>';
+                            echo '<li><a href="#">No gfx resources yet<br>Drag\'n\'drop image files!</a></li>';
                         }
                         ?>
                         </ul>

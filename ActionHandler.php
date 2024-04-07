@@ -21,9 +21,9 @@ require_once 'ProjectManager.php';
 
 header('Content-Type: application/json');
 
-if (isset($_POST['id']) && !empty($_POST['id']))
+if (!empty($_POST['id']))
 {
-    if (isset($_POST['action']) && !empty($_POST['action']))
+    if (!empty($_POST['action']))
     {
         $pm = new ProjectManager($_POST['id']);
         /*
@@ -35,7 +35,7 @@ if (isset($_POST['id']) && !empty($_POST['id']))
         */
 
         /******** CSRF Token stuff ********/
-        if (isset($_POST['csrf_token']) && !empty($_POST['csrf_token']))
+        if (!empty($_POST['csrf_token']))
         {
             if ($_POST['csrf_token'] !== $pm->getCurrentUser()->getSID())
             {

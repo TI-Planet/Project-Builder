@@ -27,34 +27,13 @@ abstract class IBackend
 {
     const doUserAction_Unhandled_Action = -100;
 
-    /**
-     * @var Project
-     */
-    protected $project;
-    /**
-     * @var int
-     */
-    protected $projID;
-    /**
-     * @var string
-     */
-    protected $projPrgmName;
-    /**
-     * @var string
-     */
-    protected $projPrgmExtension;
-    /**
-     * @var string
-     */
-    protected $projFolder;
-    /**
-     * @var boolean
-     */
-    protected $hasFolderinFS;
-    /**
-     * @var \stdClass
-     */
-    protected $settings;
+    protected Project $project;
+    protected string $projID;
+    protected string $projPrgmName;
+    protected string $projPrgmExtension;
+    protected string $projFolder;
+    protected bool $hasFolderinFS;
+    protected \stdClass $settings;
 
     protected function __construct(Project $project, $projFolder)
     {
@@ -64,6 +43,7 @@ abstract class IBackend
         $this->projPrgmName = $project->getInternalName();
         $this->projFolder = $projFolder;
         $this->hasFolderinFS = is_dir($projFolder);
+        $this->settings = (object)[];
     }
 
     private function callFSHelperWithAction($action = '')
@@ -79,9 +59,9 @@ abstract class IBackend
         return $code;
     }
 
-    private function createProjectDirectory()
+    protected function createProjectDirectory()
     {
-        $ret = $this->callFSHelperWithAction('createProj');
+        $ret = $this->callFSHelperWithAction('createProj ' . $this->project->getType());
         $this->hasFolderinFS = is_dir($this->projFolder);
         return $this->hasFolderinFS ? PBStatus::OK : PBStatus::Error("Could not create project folder (ret = {$ret})");
     }
@@ -129,7 +109,7 @@ abstract class IBackend
      * @return string[]
      */
     abstract protected function getAvailableSrcFiles();
-    abstract protected function getAvailableBinFiles();
+    protected function getAvailableBinFiles() { return []; }
 
     abstract protected function addFile($fileName, $content = '');
     abstract protected function addIconFile($icon);
@@ -153,7 +133,7 @@ abstract class IBackend
             die('Not yet open to non-logged-in TI-Planet members');
         }
 
-        if (!isset($params['action']) || empty($params['action']))
+        if (empty($params['action']))
         {
             return PBStatus::Error('No action parameter given');
         }

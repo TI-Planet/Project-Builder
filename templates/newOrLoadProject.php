@@ -14,6 +14,8 @@
 * GNU General Public License for more details.
 */
 
+require_once 'ProjectFactory.php';
+
 /* This content will be included and displayed.
    This page should not be called directly. */
 if (!isset($pm))

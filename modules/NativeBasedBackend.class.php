@@ -28,7 +28,7 @@ abstract class NativeBasedBackend extends IBackend
     /**
      * @var string
      */
-    private $nativeHelperPath;
+    private string $nativeHelperPath;
 
     protected function __construct(Project $project, $projFolder, $nativeHelperPath)
     {

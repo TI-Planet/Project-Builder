@@ -29,5 +29,5 @@ interface IUserInfoProvider
      * @param int $userID
      * @return UserInfo
      */
-    public static function getUserInfoFromID($userID = 1);
+    public static function getUserInfoFromID(int $userID = 1);
 }

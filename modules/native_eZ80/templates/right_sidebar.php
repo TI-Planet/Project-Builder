@@ -93,6 +93,11 @@ if (!isset($pm))
             </div>
         </div>
 
+        <p style="margin-top: 4px; display: none">
+            <label for="emuTransferProgress">Current transfer: </label>
+            <progress id="emuTransferProgress" value="0" max="100"></progress>
+        </p>
+
         <script>
             // Chrome bugfix ?!
             $("#VarInputFile, #ROMinputFile").on("click", () => {
@@ -102,63 +107,40 @@ if (!isset($pm))
 
         <script src="<?= $modulePath ?>js/emu/jquery.custom-file-input.js"></script>
 
-        <script type='text/javascript'>
-            if (typeof(WebAssembly) !== "undefined")
-            {
-                var Module = {
-                    memoryInitializerPrefixURL:'<?= $modulePath ?>js/emu/',
-                    preRun: [],
-                    postRun: [],
-                    print: function() { },
-                    printErr: function(text) {
-                        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                        console.log("[Error] " + text);
-                    },
-                    canvas: (function() { return document.getElementById('emu_canvas'); })(),
-                    setStatus: function(text) { console.log(text); },
-                    totalDependencies: 0,
-                    monitorRunDependencies: function(left) { }
-                };
+        <script src="<?= cacheBusterPath("{$modulePath}js/emu/WebCEmu_utils.js") ?>"></script>
+        <script type="module">
+            import WebCEmu from './<?= cacheBusterPath("{$modulePath}js/emu/WebCEmu.js") ?>';
+            window.CEmu = await WebCEmu();
 
-                window.onerror = function(event) {
-                    Module.setStatus = function(text) { if (text) alert('[post-exception status] ' + text); };
-                };
+            initWebCEmuUtils();
 
-                var script = document.createElement('script');
-                script.src = "<?= cacheBusterPath("{$modulePath}js/emu/cemu_web.js") ?>";
-                document.body.appendChild(script);
-                script.onload = function() {
-                    localforage.getItem('ce_rom').then(function(ce_rom) {
-                        if (ce_rom !== null) {
-                            const tryLoad = function() {
-                                if (typeof(fileLoad) !== "undefined")
-                                {
-                                    fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
-                                } else {
-                                    setTimeout(tryLoad, 250);
-                                }
-                            };
-                            tryLoad();
+            localforage.getItem('ce_rom').then(function(ce_rom) {
+                if (ce_rom !== null) {
+                    const tryLoad = function() {
+                        if (typeof(fileLoad) !== "undefined")
+                        {
+                            fileLoad(new Blob([ce_rom], {type: "application/octet-stream"}), 'CE.rom', true);
+                            setTimeout(() => { $("#buildRunButton").removeClass("disabled").attr("disabled", false); }, 4000);
+                        } else {
+                            setTimeout(tryLoad, 250);
                         }
-                    }).catch(function(err) {
-                        console.log("Error while getting ROM from LF", err);
-                    });
-                };
-
-                document.getElementById('emu_canvas_container').addEventListener('mouseenter', function() { document.getElementById('screenshot_btn_container').style.display = 'block'; });
-                document.getElementById('emu_canvas_container').addEventListener('mouseleave', function() { document.getElementById('screenshot_btn_container').style.display = 'none'; });
-
-                function emu_screenshot(btn)
-                {
-                    btn.href = document.getElementById('emu_canvas').toDataURL('image/png');
-                    return true;
+                    };
+                    tryLoad();
                 }
-            } else {
-                var old_warn = "WebCEmu needs a recent browser supporting WebAssembly, please update!";
-                console.log("Error! " + old_warn);
-                document.getElementById('ROMTransferDiv').innerText = old_warn;
-            }
+            }).catch(function(err) {
+                console.log("Error while getting ROM from LF", err);
+            });
 
+            document.getElementById('emu_canvas_container').addEventListener('mouseenter', function() { document.getElementById('screenshot_btn_container').style.display = 'block'; });
+            document.getElementById('emu_canvas_container').addEventListener('mouseleave', function() { document.getElementById('screenshot_btn_container').style.display = 'none'; });
+
+            window.emu_screenshot = function(btn)
+            {
+                btn.href = document.getElementById('emu_canvas').toDataURL('image/png');
+                return true;
+            }
+        </script>
+        <script type='text/javascript'>
             const debounced_resize = function(){
                 const wh = window.innerHeight;
                 let el = document.getElementById('emu_keypad_buttons');
