@@ -98,7 +98,6 @@ require_once 'utils.php';
 <script src="<?= cacheBusterPath('js/codemirror/yaml-lint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/clike.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/anyword-ctags-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/brace-fold.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/closebrackets.js"') ?>"></script>

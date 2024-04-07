@@ -29,17 +29,26 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-variable { color: black; }
 .cm-s-xq-light span.cm-variable-2 { color: green; }
 .cm-s-xq-light span.cm-variable-3 { color: darkorange; }
+.cm-s-xq-light span.cm-basicvar-rw, .cm-s-xq-light span.cm-basicvar-ro { color: black; font-weight: bold; }
+.cm-s-xq-light span.cm-basicvar-ro { background-color: #B6B6FF33 }
+.cm-s-xq-light span.cm-basicvar-ro.cm-overlay { background-color: yellow;}
+.cm-s-xq-light span.cm-basiccmd { color: #5b5c01; }
+.cm-s-xq-light span.cm-basicaction { color: #3e5c01; }
 .cm-s-xq-light span.cm-property { color:green }
 .cm-s-xq-light span.cm-operator { color: #00c; }
+.cm-s-xq-light span.cm-operator-2 { color: #9200cc; }
 .cm-s-xq-light span.cm-comment { color: #0080FF; font-style: italic; }
 .cm-s-xq-light span.cm-string, .cm-s-xq-light span.cm-asm-string { color: #c22; }
 .cm-s-xq-light span.cm-meta { color: darkgreen; }
+.cm-s-xq-light span.cm-ans { color: maroon; font-weight: bold; }
 .cm-s-xq-light span.cm-qualifier { color: grey; }
 .cm-s-xq-light span.cm-builtin { color: #7EA656; }
 .cm-s-xq-light span.cm-bracket { color: #cc7; }
 .cm-s-xq-light span.cm-tag { color: #3F7F7F; }
 .cm-s-xq-light span.cm-attribute { color: #7F007F; }
+.cm-s-xq-light span.cm-label { color: #7F007F; font-weight: bold; }
 .cm-s-xq-light span.cm-error { color: #f33; }
+.cm-s-xq-light span.cm-store { color: #db7010; font-weight: bold; font-size: large; vertical-align: top; }
 
 .cm-s-xq-light span.cm-asm-var2 { color: #0080c0; }
 .cm-s-xq-light span.cm-asm-var3 { color: brown; }

@@ -19,6 +19,7 @@
 
   max-height: 20em;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .CodeMirror-hint {
@@ -34,71 +35,3 @@ li.CodeMirror-hint-active {
   background: #08f;
   color: white;
 }
-li.CodeMirror-hint-active .text-muted {
-  color: #cecece;
-}
-
-
-/*** for completions ***/
-.CodeMirror-hint {
-  margin: 0;
-  padding: 0 4px;
-  padding-left: 22px;
-  border-radius: 2px;
-  white-space: pre;
-  color: black;
-  cursor: pointer;
-  position: relative;
-  line-height: 1.5;
-}
-
-.CodeMirror-hint:before {
-  position: absolute;
-  left: 2px;
-  bottom: 2px;
-  border-radius: 4px;
-  font-size: 12px;
-  height: 15px;
-  width: 14px;
-  line-height: 15px;
-  text-align: center;
-  color: white;
-  background-color: #777;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.CodeMirror-hint>span>b {
-  color: darkred;
-}
-
-.ctag-type-label.CodeMirror-hint:before, .ctag-type-prototype.CodeMirror-hint:before, .ctag-type-function.CodeMirror-hint:before {
-  background: #337ab7;
-}
-.ctag-type-macro.CodeMirror-hint:before {
-  background: #c09853;
-}
-.ctag-type-enumerator.CodeMirror-hint:before, .ctag-type-member.CodeMirror-hint:before {
-  background: #d9534f;
-}
-.ctag-type-externvar.CodeMirror-hint:before, .ctag-type-variable.CodeMirror-hint:before, .ctag-type-typedef.CodeMirror-hint:before {
-  background: #5bc0de;
-}
-.ctag-type-define.CodeMirror-hint:before, .ctag-type-enum.CodeMirror-hint:before, .ctag-type-struct.CodeMirror-hint:before, .ctag-type-class.CodeMirror-hint:before {
-  background: #5cb85c;
-}
-
-.ctag-type-class.CodeMirror-hint:before { content: 'C' }
-.ctag-type-local.CodeMirror-hint:before { content: 'loc'; font-family: sans-serif; font-size: 68%; }
-.ctag-type-label.CodeMirror-hint:before { content: 'L' }
-.ctag-type-function.CodeMirror-hint:before { content: 'F' }
-.ctag-type-prototype.CodeMirror-hint:before { content: 'f'; font-family: cursive; font-size: 69%; font-weight: bold; } /* as func */
-.ctag-type-enumerator.CodeMirror-hint:before { content: 'E' }
-.ctag-type-enum.CodeMirror-hint:before { content: 'E' }
-.ctag-type-externvar.CodeMirror-hint:before { content: 'v' }
-.ctag-type-variable.CodeMirror-hint:before { content: 'V' }
-.ctag-type-define.CodeMirror-hint:before { content: 'D' }
-.ctag-type-macro.CodeMirror-hint:before { content: 'm' }
-.ctag-type-typedef.CodeMirror-hint:before { content: 'T' }
-.ctag-type-struct.CodeMirror-hint:before { content: 'S' }
-.ctag-type-member.CodeMirror-hint:before { content: 'M' }

@@ -1,22 +1,19 @@
-var Module;
-// From emscripten: in order to reference the preexisting Module var or create it if needed.
-if (!Module) Module = (typeof Module !== 'undefined' ? Module : null) || {};
+window.initWebCEmuUtils = function() {
 
-Module['memoryInitializerPrefixURL'] = '/pb/modules/native_eZ80/js/emu/';
+window.emul_is_inited = false;
+window.emul_is_paused = false;
 
-Module['preRun'] = function() {
-
-emul_is_inited = false;
-emul_is_paused = false;
+const emuContainer = document.getElementById("emu_container");
+const transferProgressIndicator = document.getElementById("emuTransferProgress");
 
 /* Init C functions wrappers */
 initFuncs = function()
 {
-    pressKey = Module['cwrap']('emu_keypad_event', 'void', ['number', 'number', 'number']);
-    sendKey = Module['cwrap']('sendKey', 'void', ['number']);
-    slkp = Module['cwrap']('sendLetterKeyPress', 'void', ['number']);
-    set_file_to_send = Module['cwrap']('set_file_to_send', 'void', ['string']);
-    resetEmul = Module['cwrap']('emu_reset', 'void', []);
+    pressKey = CEmu['cwrap']('emu_keypad_event', 'void', ['number', 'number', 'number']);
+    sendKey = CEmu['cwrap']('sendKey', 'void', ['number']);
+    slkp = CEmu['cwrap']('sendLetterKeyPress', 'void', ['number']);
+    set_file_to_send = CEmu['cwrap']('set_file_to_send', 'void', ['string']);
+    resetEmul = CEmu['cwrap']('emu_reset', 'void', []);
 }
 
 pauseEmul = function(paused)
@@ -25,7 +22,7 @@ pauseEmul = function(paused)
     document.getElementById('emu_playpause_btn').className = paused ? 'btn btn-success btn-sm' : 'btn btn-default btn-sm';
     document.getElementById('pauseButtonIcon').className = paused ? 'glyphicon glyphicon-play' : 'glyphicon glyphicon-pause';
     document.getElementById('pauseButtonLabel').innerHTML = paused ? 'Resume' : 'Pause';
-    Module['ccall'](paused ? 'emsc_pause_main_loop' : 'emsc_resume_main_loop', 'void', [], []);
+    CEmu['ccall'](paused ? 'emsc_pause_main_loop' : 'emsc_resume_main_loop', 'void', [], []);
 }
 
 initLCD = function()
@@ -37,15 +34,15 @@ initLCD = function()
     c.width = w;
     c.height = h;
 
-    canvasCtx = c.getContext('2d'); // global var
+    const canvasCtx = c.getContext('2d');
     const imageData = canvasCtx.getImageData(0, 0, w, h);
     const bufSize = w * h * 4;
-    const bufPtr = Module['ccall']('lcd_get_frame', 'number');
+    const bufPtr = CEmu['ccall']('lcd_get_frame', 'number');
 
     repaint = function()
     {
         if (emul_is_paused) { window.requestAnimationFrame(repaint); return; }
-        imageData.data.set(Module['HEAPU8'].subarray(bufPtr, bufPtr + bufSize));
+        imageData.data.set(CEmu['HEAPU8'].subarray(bufPtr, bufPtr + bufSize));
         canvasCtx.putImageData(imageData, 0, 0);
         window.requestAnimationFrame(repaint);
     };
@@ -61,7 +58,7 @@ enableGUI = function()
     document.getElementById('emu_divider').style.display = 'block';
     document.getElementById('emu_playpause_btn').style.display = 'inline-block';
     document.getElementById('emu_reset_btn').style.display = 'inline-block';
-    var docHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    const docHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     if (docHeight < 775) {
         document.getElementById('cemu_notice').style.display = 'none';
     }
@@ -82,9 +79,9 @@ fileLoaded = function(event, filename, isAutoloadedROM)
 {
     if (event.target.readyState === FileReader.DONE)
     {
-        var fileAsUint8Array = new Uint8Array(event.target.result);
+        const fileAsUint8Array = new Uint8Array(event.target.result);
 
-        FS.writeFile(filename, fileAsUint8Array, {encoding: 'binary'});
+        CEmu["FS"].writeFile(filename, fileAsUint8Array, {encoding: 'binary'});
 
         if (filename === "CE.rom")
         {
@@ -97,9 +94,9 @@ fileLoaded = function(event, filename, isAutoloadedROM)
             }
 
             if (emul_is_inited) {
-                Module['ccall']('emsc_cancel_main_loop', 'void', [], []);
+                CEmu['ccall']('emsc_cancel_main_loop', 'void', [], []);
             }
-            Module['callMain']();
+            CEmu['callMain']();
 
             if (isAutoloadedROM)
             {
@@ -109,13 +106,22 @@ fileLoaded = function(event, filename, isAutoloadedROM)
             setTimeout(function()
             {
                 let el = document.getElementById('emu_keypad_buttons');
-                el.className = Module['ccall']('get_device_type', 'number') === 1 ? "ti83pce" : "ti84pce";
+                el.className = CEmu['ccall']('get_device_type', 'number') === 1 ? "ti83pce" : "ti84pce";
             }, 1000);
         } else {
             if (emul_is_inited) {
+                if (emuContainer) {
+                    emuContainer.style.opacity = '0.5';
+                    emuContainer.style.pointerEvents = 'none';
+                }
+                if (transferProgressIndicator) {
+                    transferProgressIndicator.value = "0";
+                    transferProgressIndicator.parentElement.style.display = 'block';
+                }
                 if (emul_is_paused) {
                     pauseEmul(false);
                 }
+                if (CEmu['_emsc_set_main_loop_timing']) CEmu['_emsc_set_main_loop_timing'](0, 0); // EM_TIMING_SETTIMEOUT, as fast as possible.
                 set_file_to_send(filename);
             } else {
                 alert('Please start the emulation with a ROM first!');
@@ -126,7 +132,8 @@ fileLoaded = function(event, filename, isAutoloadedROM)
 
 sendStringKeyPress = function(str)
 {
-    for (var i=0, delay=0; i < str.length; delay+=250, i++)
+    let i = 0, delay = 0;
+    for (; i < str.length; delay+=250, i++)
     {
         (function(char, delay) {
             setTimeout(function() { slkp(char.charCodeAt(0)); }, delay);
@@ -149,13 +156,42 @@ fileLoad = function(file, filename, isAutoloadedROM)
     }
 
     if(!file)
-        return FS.unlink(filename);
+        return CEmu["FS"].unlink(filename);
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onloadend = function(event) {
         fileLoaded(event, filename, isAutoloadedROM);
     };
     reader.readAsArrayBuffer(file);
+}
+
+transferProgressCallback = function(val, max)
+{
+    if (window.emul_file_load_progress_extcb) emul_file_load_progress_extcb(val, max);
+    if (val === 1 && max === 1) {
+        console.log("[CEmu] file transfer done.");
+        if (CEmu['_emsc_set_main_loop_timing']) CEmu['_emsc_set_main_loop_timing'](0, 1000/60); // EM_TIMING_SETTIMEOUT, 60fps.
+        if (window.emul_file_load_done_extcb) emul_file_load_done_extcb();
+        if (transferProgressIndicator) transferProgressIndicator.parentElement.style.display = 'none';
+        if (emuContainer) {
+            emuContainer.style.opacity = '1';
+            emuContainer.style.pointerEvents = 'initial';
+        }
+    } else {
+        if (transferProgressIndicator) transferProgressIndicator.value = (val*100/max).toFixed(0);
+    }
+}
+
+transferErrorCallback = function()
+{
+    console.log("[CEmu] error during file transfer");
+    if (CEmu['_emsc_set_main_loop_timing']) CEmu['_emsc_set_main_loop_timing'](0, 1000/60); // EM_TIMING_SETTIMEOUT, 60fps.
+    if (window.emul_file_load_error_extcb) emul_file_load_error_extcb();
+    if (transferProgressIndicator) transferProgressIndicator.parentElement.style.display = 'none';
+    if (emuContainer) {
+        emuContainer.style.opacity = '1';
+        emuContainer.style.pointerEvents = 'initial';
+    }
 }
 
 fileLoadFromInput = function(event)
@@ -164,21 +200,19 @@ fileLoadFromInput = function(event)
         pauseEmul(false);
     }
 
-    var files = event.target.files;
+    const files = event.target.files;
 
-    document.getElementById('emu_container').style.opacity = .5;
-    document.getElementById('emu_container').style.pointerEvents = 'none';
-    setTimeout(function() {
-        document.getElementById('emu_container').style.opacity = 1;
-        document.getElementById('emu_container').style.pointerEvents = 'initial';
-    }, files.length*900);
-
-    for (var i=0, delay=0; i<files.length; delay+=900, i++)
+    let i = 0, delay = 0;
+    for (; i<files.length; delay+=900, i++)
     {
         (function(file, delay) {
             setTimeout(function() { fileLoad(file, file.name, false); }, delay);
         })(files[i], delay);
     }
+
+    event.target.value = null;
 }
 
-} // preRun function
+console.log("initWebCEmuUtils done");
+
+}

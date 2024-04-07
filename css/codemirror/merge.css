@@ -1,7 +1,3 @@
-/* Modified by Adrien "Adriweb" Bertrand for the Project Builder */
-
-
-
 .CodeMirror-merge {
   position: relative;
   border: 1px solid #ddd;
@@ -60,13 +56,10 @@
 }
 
 .CodeMirror-merge-copybuttons-left, .CodeMirror-merge-copybuttons-right {
-  /*
   position: absolute;
   left: 0; top: 0;
   right: 0; bottom: 0;
   line-height: 1;
-  */
-  display: none;
 }
 
 .CodeMirror-merge-copy {
@@ -86,17 +79,21 @@
 .CodeMirror-merge-copybuttons-right .CodeMirror-merge-copy { right: 2px; }
 
 .CodeMirror-merge-r-inserted, .CodeMirror-merge-l-inserted {
-  background-color: rgba(0,255,0,.2);
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAAGUlEQVQI12MwuCXy3+CWyH8GBgYGJgYkAABZbAQ9ELXurwAAAABJRU5ErkJggg==);
+  background-position: bottom left;
+  background-repeat: repeat-x;
 }
 
 .CodeMirror-merge-r-deleted, .CodeMirror-merge-l-deleted {
-  background-color: rgba(255,0,0,.2);
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAAGUlEQVQI12M4Kyb2/6yY2H8GBgYGJgYkAABURgPz6Ks7wQAAAABJRU5ErkJggg==);
+  background-position: bottom left;
+  background-repeat: repeat-x;
 }
 
-.CodeMirror-merge-r-chunk { background: rgba(255, 255, 224, .5); }
+.CodeMirror-merge-r-chunk { background: #ffffe0; }
 .CodeMirror-merge-r-chunk-start { border-top: 1px solid #ee8; }
 .CodeMirror-merge-r-chunk-end { border-bottom: 1px solid #ee8; }
-.CodeMirror-merge-r-connect { fill: rgba(255, 255, 224, .5); stroke: #ee8; stroke-width: 1px; }
+.CodeMirror-merge-r-connect { fill: #ffffe0; stroke: #ee8; stroke-width: 1px; }
 
 .CodeMirror-merge-l-chunk { background: #eef; }
 .CodeMirror-merge-l-chunk-start { border-top: 1px solid #88e; }

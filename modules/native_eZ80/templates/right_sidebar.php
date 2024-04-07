@@ -190,7 +190,7 @@ if (!isset($pm))
 
     <script type="text/javascript"> /* Very ugly workaround for the WebRTC no-local restriction */ cerror = console.error; console.error = console.warn;</script>
     <script type="text/javascript" src="https://cdn.webrtc-experiment.com/screenshot.js"></script>
-    <script type="text/javascript" src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+    <script type="text/javascript" src="https://cdn.webrtc-experiment.com/RecordRTC.min.js"></script>
     <script type="text/javascript"> /* Very ugly workaround for the WebRTC no-local restriction */ console.error = cerror;</script>
     <script type="text/javascript">
         const recorder = RecordRTC(document.getElementById('emu_canvas'), { type: 'canvas' });

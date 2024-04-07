@@ -48,11 +48,11 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
     <link rel="stylesheet" data-href="css/dark.css" class="darkThemeLink">
 
     <script src="<?= cacheBusterPath('js/utils.js') ?>"></script>
-    <script src="js/localforage.min.js"></script>
+    <script src="<?= cacheBusterPath('js/localforage.min.js') ?>"></script>
 
     <script src="<?= cacheBusterPath('js/pb_common.js') ?>"></script>
 
-    <script src="js/jquery-2.2.4.min.js"></script>
+    <script src="js/jquery-3.6.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-notify.min.js"></script>
 
