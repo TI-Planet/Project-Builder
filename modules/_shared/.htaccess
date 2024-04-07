@@ -1,0 +1,7 @@
+order allow,deny
+
+<Files ~ "\.(css|js|wasm|html?)$">
+   allow from all
+</Files>
+
+Deny from all

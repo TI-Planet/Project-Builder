@@ -1,0 +1,146 @@
+/*
+ * Part of TI-Planet's Project Builder
+ * (C) Adrien "Adriweb" Bertrand
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*** File list stuff ***/
+
+div.filelist {
+    height: auto;
+    min-height: auto; /* Sometimes, height and min-height are both needed (for flex-related reasons, maybe...) */
+}
+
+div.filelist .nav-tabs {
+    border: none;
+}
+div.filelist .nav-tabs>li>a {
+    padding: 1px 8px;
+    border: 1px solid #666;
+}
+div.filelist .nav-tabs>li>a:hover {
+    border: 1px solid #666;
+    color: blue;
+}
+div.filelist .nav-tabs>li.active>a:hover {
+    color: initial;
+}
+div.filelist .nav-tabs>li.active.tabover {
+    position:relative;
+    z-index: 10;
+}
+div.filelist .nav-tabs>li.active.tabover > a {
+    border-bottom: 1px white solid !important;
+}
+
+div.filelist .nav-tabs>li.active.tabover.renamableFile a > span.filename:hover {
+    cursor: text;
+    border-bottom: 1px red dotted;
+}
+
+div.filelist li {
+    margin-right: 1px;
+}
+
+div.filelist li span.fileTabIconContainer {
+    color: orange;
+}
+
+div.filelist li.counterpart {
+    margin-right: -3px;
+}
+
+div.filelist li.active.pull-right > * {
+    cursor: pointer !important;
+    z-index: 99;
+}
+
+div.filelist li span.glyphicon-trash {
+    position: relative;
+    top: 2px;
+}
+
+/*** Sidebar(s) stuff ***/
+
+#prgmNameSpan {
+    font-weight: bold;
+}
+
+#rightSidebar {
+    width: 350px;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#rightSidebarContent {
+    height: 100%;
+    position: relative;
+    right: 0;
+}
+
+#codeOutline {
+    width: 201px;
+    background: #f0f0f0;
+    border: 1px solid grey;
+    z-index: 9;
+    float: right;
+    overflow: hidden;
+    border-bottom-right-radius: 5px;
+}
+#codeOutlineFilter {
+    display: inline-block;
+    padding: 0 0 0 4px;
+    width: 199px;
+    height: 24px;
+    z-index: 10;
+}
+#codeOutlineList {
+    padding: 3px 5px;
+    list-style-type: none;
+    overflow: auto;
+}
+#codeOutlineFilter, #codeOutlineList {
+    line-height: 15px;
+    font-size: 9pt;
+    font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
+}
+
+#codeOutlineList li span.taglink {
+    cursor: pointer;
+}
+#codeOutlineList li span.label {
+    padding: 1px 3px;
+    font-weight: normal;
+    bottom: 1px;
+    position: relative;
+    margin-right: 5px;
+}
+
+/*** Other specific things ***/
+
+#buildTimestampContainer {
+    margin-left: 2px;
+}
+
+span#buildTimestamp.buildOK:before {
+    content: '✔ ';
+    color: green;
+}
+
+span#buildTimestamp.buildError:before {
+    content: '✘ ';
+    color: red;
+}
+

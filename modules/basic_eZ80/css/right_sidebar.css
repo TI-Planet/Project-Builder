@@ -1,0 +1,109 @@
+#emu_container {
+    width: 350px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#emu_container button {
+    outline: none !important;
+    height: 29px;
+}
+
+#emu_container .emscripten {
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#emu_canvas_container, #emu_keypad_buttons {
+    margin-top: 5px;
+}
+
+#emu_keypad_buttons {
+    display: block;
+    background-image: url(/pb/modules/native_eZ80/img/emu_keypad_84pce.png);
+    background-repeat: no-repeat;
+    background-position: center -15px;
+    background-size: 100%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+}
+
+#emu_keypad_buttons.ti83pce {
+    background-image: url(/pb/modules/native_eZ80/img/emu_keypad_83pce.png);
+}
+
+#emu_canvas {
+    border: 1px grey solid;
+}
+
+#emu_container input[type="file"] {
+    display: inline-block !important;
+    width: 210px;
+}
+
+#emu_keypad_buttons button {
+    width: 46px;
+    height: 27px;
+    font-size: 14px;
+    padding-top: 4px;
+    margin: 7px 1px 12px;
+    opacity: 0;
+    position: relative;
+}
+
+#emu_keypad_buttons button.topRowButton {
+    height: 22px;
+    padding-top: 0;
+    margin-top: 14px;
+    margin-bottom: 20px;
+}
+
+#emu_keypad_buttons button.numeric1 { top: -6px; height: 31px; margin-bottom: 1px; }
+#emu_keypad_buttons button.numeric2 { top: -2px; height: 31px; margin-bottom: 1px; }
+#emu_keypad_buttons button.numeric3 { top: 2px; height: 32px; margin-bottom: 1px; }
+#emu_keypad_buttons button.numeric4 { top: 10px; height: 31px; }
+
+#cemu_notice {
+    border-top: 2px grey solid;
+    font-size: .9em;
+    position: absolute;
+    bottom: 6px;
+    width: 100%;
+    background-color: #f0f0f0;
+    height: 24px;
+    padding: 1px 0 0 5px;
+}
+
+.inputfile {
+    width: .1px;
+    height: .1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin: 0;
+    padding: .55rem 1.2rem;
+    max-width: 110px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: 4px;
+    height: 29px;
+}
+
+#screenshot_btn_container {
+    background-color: rgba(100, 100, 100, .5);
+    width: 320px;
+    margin: -42px auto auto;
+    position: relative;
+    padding: 6px;
+    display: none;
+}

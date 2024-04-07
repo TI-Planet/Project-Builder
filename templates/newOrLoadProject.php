@@ -26,8 +26,11 @@ if (!isset($pm))
     // TODO : create (from modules) or load (get user's projects list from DB)
     // echo "new or load page";
 
-    // For now, hardcode the native_eZ80 project type
-    $proj = $pm->createNewProject('native_eZ80', '', 'CPRGMCE');
+    $projType = $_GET['type'] ?? null;
+    if (!in_array($projType, \ProjectBuilder\ProjectFactory::$projectTypes, true)) {
+        $projType = 'native_eZ80';
+    }
+    $proj = $pm->createNewProject($projType, '', $projType === 'native_eZ80' ? 'CPRGMCE' : ($projType === 'python_eZ80' ? 'PYSCRIPT' : 'MYPRGM'));
     if ($proj !== null)
     {
         $url = '/pb/?id=' . $proj->getPID();

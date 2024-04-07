@@ -30,7 +30,7 @@ if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]
 then
     echo "***USAGE***" 1>&2
     echo "  First argument needs to be the project's unique ID. Then, a command and its arg if needed: " 1>&2
-    echo "    createProj" 1>&2
+    echo "    createProj [type]" 1>&2
     echo "    deleteProj" 1>&2
     echo "    deleteFile [filename]" 1>&2
     echo "    clone [newID]" 1>&2
@@ -93,10 +93,18 @@ else
 
     elif [[ "$cmd" == "createProj" ]]
     then
-        cp -Lrp "${projectsdir}/template" "${projectsdir}/${id}" || exit 3
+        templateDirName="template"
+        if [[ "$3" == "python_eZ80" ]]; then templateDirName="template_py"; fi
+        if [[ "$3" == "lua_nspire" ]]; then templateDirName="template_lua"; fi
+        cp -Lrp "${projectsdir}/${templateDirName}" "${projectsdir}/${id}" || exit 3
         rm -rf "${projectsdir}/${id}/src/gfx/" # we don't want any gfx at first
         touch "${projectsdir}/${id}/config.json"
-        find "${projectsdir}/${id}/" -type f -regex '.*\.\(c\|cpp\|h\|hpp\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
+        find "${projectsdir}/${id}/" -type f -regex '.*\.\(bas\|py\|c\|cpp\|h\|hpp\|lua\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
+        if [[ "$3" == "python_eZ80" ]] || [[ "$3" == "basic_eZ80" ]] || [[ "$3" == "lua_nspire" ]]
+        then
+          chmod -R ugo+rw "${projectsdir}/${id}" # let www-data write
+          chmod 777 "${projectsdir}/${id}/src/" # let www-data write
+        fi
 
     elif [[ "$cmd" == "deleteFile" ]]
     then
@@ -117,4 +125,3 @@ else
 
     exit 0
 fi
-

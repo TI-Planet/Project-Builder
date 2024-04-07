@@ -87,7 +87,9 @@ function genSidebar()
                         </button>
                         <ul class="dropdown-menu dropbox-menu-right" style="min-width: 0;">
                           <li><a href="/pb/?new=1&amp;type=native_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE C/C++</a></li>
+                          <li><a href="/pb/?new=1&amp;type=python_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE Python</a></li>
                           <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=basic_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE TI-Basic</a></li>
+                          <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=lua_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire Lua</a></li>
                           <li class="disabled" title="Soon!" data-toggle="tooltip" data-placement="right"><a href="#" class="disabled" disabled>TI-Nspire Python</a></li>
                         </ul>
                       </div>
