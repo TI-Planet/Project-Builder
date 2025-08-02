@@ -385,7 +385,7 @@ final class python_eZ80ProjectBackend extends PHPBasedBackend
      */
     private function downloadZipExport()
     {
-        /** @var native_eZ80Project $thisProject */
+        /** @var python_eZ80Project $thisProject */
         $thisProject = &$this->project;
 
         chdir($this->projFolder);

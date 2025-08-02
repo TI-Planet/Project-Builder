@@ -21,7 +21,7 @@ if (!isset($pm))
     die('Ahem ahem');
 }
 
-/** @var \ProjectBuilder\lua_nspireProject $currProject */ ?>
+/** @var \ProjectBuilder\python_nspireProject $currProject */ ?>
 
     <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
@@ -81,11 +81,12 @@ if (!isset($pm))
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
-                <li><a onclick="downloadCurrentFile(proj.currFile); return false">Download current source file (.lua)</a></li>
+                <li><a onclick="downloadCurrentFile(proj.currFile); return false">Download current source file (.py)</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a onclick="$('#zipDlForm').submit(); return false">Download project (.zip) with all sources</a></li>
             </ul>
         </div>
+        <button id="transferButton" class="btn btn-primary btn-sm hasTooltip disabled" disabled title="Can't run it yet, however" onclick="transferToEmu(); return false"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Transfer to emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
     </div>
 
     <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>

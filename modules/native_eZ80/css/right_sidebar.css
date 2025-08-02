@@ -44,6 +44,12 @@
     width: 210px;
 }
 
+#emu_keypad_buttons button:active {
+    opacity: .5;
+    font-size: 0;
+    box-shadow: 0 0 8px 4px rgba(255,0,0,.75) inset;
+}
+
 #emu_keypad_buttons button {
     width: 46px;
     height: 27px;

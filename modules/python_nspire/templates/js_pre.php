@@ -23,7 +23,7 @@ if (!isset($pm))
 
 require_once 'utils.php';
 
-/** @var \ProjectBuilder\python_eZ80Project $currProject */
+/** @var \ProjectBuilder\python_nspireProject $currProject */
 
 ?>
 <script>
@@ -53,10 +53,28 @@ require_once 'utils.php';
 <?php if (!$pm->currentUserIsProjOwnerOrStaff() && !$currProject->isMulti_ReadWrite()) { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
 <?php } else { ?>
-    <script src="<?= cacheBusterPath("js/FileSaver.min.js") ?>"></script>
+    <script src="<?= cacheBusterPath("./modules/_shared/FileSaver.min.js") ?>"></script>
     <script type="module">
-        import TIVarsLib from '<?= cacheBusterPath("./modules/_shared/TIVarsLib.js") ?>';
-        window.TIVarsLib = await TIVarsLib();
+        import WebLuna from './modules/_shared/WebLuna.js';
+        window.lunaLib = await WebLuna();
+
+        window.callLunaWithMultipleSrc = function(sourcesArray, filenamesArray, tnsNameNoExt)
+        {
+            if (!sourcesArray || !filenamesArray || sourcesArray.length !== filenamesArray.length) {
+                alert('Invalid callLuna params');
+                return;
+            }
+            const tnsName = `${tnsNameNoExt}.tns`;
+            for (let i=0; i<sourcesArray.length; i++) {
+                lunaLib.FS.writeFile(filenamesArray[i], sourcesArray[i]);
+            }
+            try { lunaLib.FS.unlink(tnsName); } catch (e){}
+            if (lunaLib.callMain([...filenamesArray, tnsName]) !== 0) {
+                alert('Oops, something went wrong generating the .tns file (see console)');
+                return;
+            }
+            return lunaLib.FS.readFile(tnsName, {encoding: 'binary'});
+        }
     </script>
 <?php } ?>
 
@@ -66,7 +84,6 @@ require_once 'utils.php';
     function goToFile(newfile)
     {
         incrementActivityIndicatorCounterAndShow();
-        const wasBuildAndRunButtonEnabled = !!$("#buildRunButton").length && !$("#buildRunButton").hasClass("disabled");
         const wasReadOnly = editor.isReadOnly();
         const editorContainer = $('#editorContainer');
         editorContainer.css('pointer-events', 'none');
@@ -74,7 +91,6 @@ require_once 'utils.php';
             editorContainer.css('pointer-events', 'auto');
             editor.setOption("readOnly", wasReadOnly);
             decrementActivityIndicatorCounterAndHide();
-            wasBuildAndRunButtonEnabled && $("#buildRunButton").removeClass("disabled").attr("disabled", false);
         };
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         $.get(newURL, (data) =>

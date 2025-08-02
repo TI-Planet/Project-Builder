@@ -60,6 +60,7 @@ require_once 'utils.php';
     function goToFile(newfile)
     {
         incrementActivityIndicatorCounterAndShow();
+        const wasBuildAndRunButtonEnabled = !!$("#buildRunButton").length && !$("#buildRunButton").hasClass("disabled");
         const wasReadOnly = editor.isReadOnly();
         const editorContainer = $('#editorContainer');
         editorContainer.css('pointer-events', 'none');
@@ -67,6 +68,7 @@ require_once 'utils.php';
             editorContainer.css('pointer-events', 'auto');
             editor.setOption("readOnly", wasReadOnly);
             decrementActivityIndicatorCounterAndHide();
+            wasBuildAndRunButtonEnabled && $("#buildRunButton").removeClass("disabled").attr("disabled", false);
         };
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         $.get(newURL, (data) =>

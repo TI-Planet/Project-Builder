@@ -19,11 +19,11 @@ namespace ProjectBuilder;
 require_once __DIR__ . '/../PHPBasedBackend.class.php';
 
 
-final class lua_nspireProjectBackend extends PHPBasedBackend
+final class python_nspireProjectBackend extends PHPBasedBackend
 {
-    private const TEMPLATE_LUA_FILE_PATH = __DIR__ . '/../../projects/template_lua/src/PRGM.lua';
+    private const TEMPLATE_PY_FILE_PATH = __DIR__ . '/../../projects/template_py/src/script.py';
 
-    public function __construct(lua_nspireProject $project, $projFolder)
+    public function __construct(python_nspireProject $project, $projFolder)
     {
         parent::__construct($project, $projFolder);
         $this->projPrgmExtension = 'tns';
@@ -31,7 +31,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
 
     public function getAvailableSrcFiles()
     {
-        $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/*.*')), '\ProjectBuilder\lua_nspireProject::isFileNameOK');
+        $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/*.*')), '\ProjectBuilder\python_nspireProject::isFileNameOK');
         sort($availableFiles);
         return $availableFiles;
     }
@@ -45,7 +45,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
             return $retParent;
         }
 
-        /** @var lua_nspireProject $thisProject */
+        /** @var python_nspireProject $thisProject */
         $thisProject = &$this->project;
 
         $action = $params['action'];
@@ -148,6 +148,17 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
                 }
                 return $this->getAnalysis($params['file']);
 
+            case 'reindent':
+                if (empty($params['file']))
+                {
+                    return PBStatus::Error('No file name given');
+                }
+                if (!$this->project::isFileNameOK($params['file']))
+                {
+                    return PBStatus::Error('Bad file name given');
+                }
+                return $this->reindentFile($params['file']);
+
             case 'downloadZipExport':
                 $this->downloadZipExport();
                 return PBStatus::OK; // unreachable
@@ -214,7 +225,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
         }
         $fileList = implode(' ', $files);
         chdir($this->projFolder . 'src');
-        exec("ctags -u --fields=FnNktSZ --c-kinds=+defgpstuvxml --language-force=Lua --output-format=json {$fileList}", $tagList, $retval);
+        exec("ctags -u --fields=FnNktSZ --c-kinds=+defgpstuvxml --language-force=Python --output-format=json {$fileList}", $tagList, $retval);
         if ($retval === 0 && is_array($tagList))
         {
             $tagsObject = [];
@@ -235,7 +246,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
 
     private function getSDKCtags()
     {
-        // TODO
+        // TODO: https://docs.ctags.io/en/latest/man/ctags-lang-python.7.html?highlight=python
         return '';
     }
 
@@ -246,7 +257,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
             return PBStatus::Error('This file already exists');
         }
 
-        $content = (!empty($content)) ? $content : '-- Your code here';
+        $content = (!empty($content)) ? $content : '# Your code here';
         return parent::addFile($fileName, $content);
     }
 
@@ -255,7 +266,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
      */
     private function downloadZipExport()
     {
-        /** @var lua_nspireProject $thisProject */
+        /** @var python_nspireProject $thisProject */
         $thisProject = &$this->project;
 
         chdir($this->projFolder);
@@ -321,10 +332,37 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
             return [];
         }
 
-        // TODO
-        return [];
+        chdir($this->projFolder . 'src');
+        exec("pylint -j0 --disable=I,R,C --output-format=json {$src_file}", $analysis, $retval);
+        if (is_array($analysis))
+        {
+            array_map('trim', $analysis);
+            return json_decode($this->cleanLog(implode(' ', $analysis)));
+        }
 
         return PBStatus::Error('Could not get analysis');
+    }
+
+    private function reindentFile($src_file)
+    {
+        if (preg_match('/\.py$/i', $src_file) !== 1)
+        {
+            return PBStatus::Error('Re-indenting only works on python code');
+        }
+        $this->createProjectDirectoryIfNeeded();
+
+        if (!(chdir($this->projFolder) && is_readable('src/' . $src_file)))
+        {
+            return PBStatus::Error("Couldn't read the input file");
+        }
+        //exec("TODO", $out, $retval);
+        $retval = 0;
+        if ($retval === 0)
+        {
+            $output = @file_get_contents('src/' . $src_file);
+            return ($output !== false) ? $output : null;
+        }
+        return PBStatus::Error("Error while re-indenting the file ($retval)");
     }
 
     public function setSettings(array $params = [])
@@ -341,7 +379,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
     {
         $currFile = $this->project->getCurrentFile();
         $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = self::TEMPLATE_LUA_FILE_PATH;
+        $templateFile = self::TEMPLATE_PY_FILE_PATH;
         $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
@@ -353,7 +391,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
     {
         $currFile = $this->project->getCurrentFile();
         $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = self::TEMPLATE_LUA_FILE_PATH;
+        $templateFile = self::TEMPLATE_PY_FILE_PATH;
         $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
         return (int)filemtime($whichSource);
     }

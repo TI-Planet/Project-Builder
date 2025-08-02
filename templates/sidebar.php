@@ -89,8 +89,9 @@ function genSidebar()
                           <li><a href="/pb/?new=1&amp;type=native_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE C/C++</a></li>
                           <li><a href="/pb/?new=1&amp;type=python_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE Python</a></li>
                           <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=basic_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE TI-Basic</a></li>
+                          <li><hr style="margin: 2px"></li>
                           <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=lua_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire Lua</a></li>
-                          <li class="disabled" title="Soon!" data-toggle="tooltip" data-placement="right"><a href="#" class="disabled" disabled>TI-Nspire Python</a></li>
+                          <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=python_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire CX II Python</a></li>
                         </ul>
                       </div>
                       <b>My projects:</b>

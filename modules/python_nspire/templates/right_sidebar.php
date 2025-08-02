@@ -1,3 +1,4 @@
+<?php
 /*
  * Part of TI-Planet's Project Builder
  * (C) Adrien "Adriweb" Bertrand
@@ -13,20 +14,16 @@
  * GNU General Public License for more details.
  */
 
-#statusbar_left, #cemu_notice {
-    background-color: #3b3e40 !important;
+/* This content will be included and displayed.
+   This page should not be called directly. */
+if (!isset($pm))
+{
+    die('Ahem ahem');
 }
+/** @var \ProjectBuilder\python_nspireProject $currProject */
 
-#codeOutline {
-    background-color: #3c3f41;
-}
+?>
+    <link rel="stylesheet" href="<?= $modulePath ?>css/right_sidebar.css">
 
-div.filelist .nav-tabs>li>a, #codeOutlineFilter {
-    border: 1px solid #999;
-    background-color: #2b2b2b;
-}
-
-div.filelist .nav-tabs>li.active.tabover > a {
-    border-bottom: 1px #2b2b2b solid !important;
-    color: #999;
-}
+    <div id="emu_container" class="unselectable">
+    </div>

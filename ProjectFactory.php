@@ -21,7 +21,7 @@ require_once 'Project.class.php';
 abstract class ProjectFactory
 {
     // TODO : probably build that list from the DB
-    public static array $projectTypes = [ 'native_eZ80', 'python_eZ80', 'basic_eZ80', 'lua_nspire' ];
+    public static array $projectTypes = [ 'native_eZ80', 'python_eZ80', 'basic_eZ80', 'lua_nspire', 'python_nspire' ];
 
     /* TODO : Also move the load/create from DB stuff into this class ? */
 
