@@ -39,6 +39,8 @@ $.fn.extend({
                             reader.onload = (event) => { options.onDrop(file, event.target.result, i === files.length - 1, files.length); };
                             if (/\.(png|bmp)$/.test(file.name)) {
                                 reader.readAsDataURL(file);
+                            } else if (/.+\.8[23x]p$/i.test(file.name)) {
+                                reader.readAsArrayBuffer(file)
                             } else {
                                 reader.readAsText(file);
                             }

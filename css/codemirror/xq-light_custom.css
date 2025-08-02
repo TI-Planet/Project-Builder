@@ -29,6 +29,7 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-variable { color: black; }
 .cm-s-xq-light span.cm-variable-2 { color: green; }
 .cm-s-xq-light span.cm-variable-3 { color: darkorange; }
+.cm-s-xq-light span.cm-variable-3-bold { color: darkorange; font-weight: bold; }
 .cm-s-xq-light span.cm-basicvar-rw, .cm-s-xq-light span.cm-basicvar-ro { color: black; font-weight: bold; }
 .cm-s-xq-light span.cm-basicvar-ro { background-color: #B6B6FF33 }
 .cm-s-xq-light span.cm-basicvar-ro.cm-overlay { background-color: yellow;}
@@ -38,7 +39,7 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-operator { color: #00c; }
 .cm-s-xq-light span.cm-operator-2 { color: #9200cc; }
 .cm-s-xq-light span.cm-comment { color: #0080FF; font-style: italic; }
-.cm-s-xq-light span.cm-string, .cm-s-xq-light span.cm-asm-string { color: #c22; }
+.cm-s-xq-light span.cm-string, .cm-s-xq-light span.cm-menu, .cm-s-xq-light span.cm-asm-string { color: #c22; }
 .cm-s-xq-light span.cm-meta { color: darkgreen; }
 .cm-s-xq-light span.cm-ans { color: maroon; font-weight: bold; }
 .cm-s-xq-light span.cm-qualifier { color: grey; }
@@ -59,7 +60,7 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-asm-preproc { color: #606060 }
 .cm-s-xq-light span.cm-asm-data { color: #7F007F; font-weight: bold }
 .cm-s-xq-light span.cm-asm-fasmg { color: #242F8A; font-weight: bold }
-.cm-s-xq-light span.cm-asm-label { font-weight: bold }
+.cm-s-xq-light span.cm-asm-label, .cm-s-xq-light span.cm-prgmname { font-weight: bold }
 
 .cm-s-xq-light .CodeMirror-activeline-background { background: #F1F7FF; }
 .cm-s-xq-light .CodeMirror-matchingbracket { outline:1px solid lightgrey;color:black !important;background:lightyellow; }

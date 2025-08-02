@@ -341,10 +341,7 @@ function makePythonAppVar()
         alert('tivars_lib not ready?!');
         return;
     }
-    const pyAppVar = TIVarsLib.TIVarFile.createNew(TIVarsLib.TIVarType.createFromName("PythonAppVar"),
-        proj.prgmName,
-        TIVarsLib.TIModel.createFromName('83PCEEP'));
-
+    const pyAppVar = TIVarsLib.TIVarFile.createNew("PythonAppVar", proj.prgmName, '83PCEEP');
     pyAppVar.setContentFromString(editor.getValue());
     const filePath = pyAppVar.saveVarToFile("", proj.prgmName);
     const file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
