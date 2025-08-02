@@ -38,7 +38,7 @@ if (!isset($pm))
         let progressNotifMsg = '';
         const progressCallback = (name) => {
             inviteNotif && inviteNotif.close();
-            if (isValidFileName(name) || isValidGfxImageFileName(name))
+            if (isValidFileName(name) || isValidFileNameForBinary(name) || isValidGfxImageFileName(name))
             {
                 lastOKName = name;
                 progressNotifMsg += `${name}, `;
@@ -55,10 +55,10 @@ if (!isset($pm))
             setTimeout( () => { progressNotif && progressNotif.close(); }, 1500);
         };
         $("#editorContainer, #leftSidebar").filedrop({
-            onDrop: (file, str, isLast, numFiles) => {
+            onDrop: (file, content, isLast, numFiles) => {
                 if (file.size < 1024*1024)
                 {
-                    createFileWithContent(file.name, str, isLast ? endCallback : progressCallback, isLast, numFiles);
+                    createFileWithContent(file.name, content, isLast ? endCallback : progressCallback, isLast, numFiles);
                 } else {
                     const escapedName = $('<div/>').text(file.name).html();
                     showNotification("warning", "A file was not imported", `The file ${escapedName} looks a bit too big... Max = 1 MB`, isLast ? endCallback : null, 5000);
@@ -67,7 +67,7 @@ if (!isset($pm))
             onEnter: (event) => {
                 if (!inviteNotif)
                 {
-                    inviteNotif = showNotification("info", "File import", "Drop source code files here to import them into the project");
+                    inviteNotif = showNotification("info", "File import", "Drop .8xp/.bas files here to import them into the project");
                     inviteNotif.$ele[0].addEventListener("dragenter", () => { inviteNotif.$ele.hide(); inviteNotif.close() }, false);
                 }
             }

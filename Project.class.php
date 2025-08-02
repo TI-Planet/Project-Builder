@@ -224,6 +224,7 @@ abstract class Project
     abstract public function setInternalName($internalName);
     abstract public function setCurrentFile($name);
     abstract public function getCurrentFile();
+    abstract public static function isFileNameOK($fileName = '');
     abstract public function isCurrentFileEditable();
     abstract public function isCurrentFileRenamable();
     abstract public function isCurrentFileDeletable();

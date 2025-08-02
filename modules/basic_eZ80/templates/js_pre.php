@@ -39,6 +39,7 @@ require_once 'utils.php';
         show_right_sidebar: true,
         show_bottom_tools: true,
         show_code_outline: true,
+        show_hex_viewer: false,
         autocomplete_delay: 800
     };
     user = {
@@ -57,6 +58,7 @@ require_once 'utils.php';
     <script type="module">
         import TIVarsLib from '<?= cacheBusterPath("./modules/_shared/TIVarsLib.js") ?>';
         window.TIVarsLib = await TIVarsLib();
+        setTimeout(function() { if (refreshHexViewerContents) refreshHexViewerContents(); }, 1);
     </script>
 <?php } ?>
 
@@ -66,6 +68,7 @@ require_once 'utils.php';
     function goToFile(newfile)
     {
         incrementActivityIndicatorCounterAndShow();
+        const wasBuildAndRunButtonEnabled = !!$("#buildRunButton").length && !$("#buildRunButton").hasClass("disabled");
         const wasReadOnly = editor.isReadOnly();
         const editorContainer = $('#editorContainer');
         editorContainer.css('pointer-events', 'none');
@@ -73,6 +76,7 @@ require_once 'utils.php';
             editorContainer.css('pointer-events', 'auto');
             editor.setOption("readOnly", wasReadOnly);
             decrementActivityIndicatorCounterAndHide();
+            wasBuildAndRunButtonEnabled && $("#buildRunButton").removeClass("disabled").attr("disabled", false);
         };
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         $.get(newURL, (data) =>

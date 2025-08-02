@@ -33,6 +33,7 @@ function loadProjConfig()
         if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
         if (typeof conf.show_bottom_tools !== "undefined") { proj.show_bottom_tools = conf.show_bottom_tools; }
         if (typeof conf.show_code_outline !== "undefined") { proj.show_code_outline = conf.show_code_outline; }
+        if (typeof conf.show_hex_viewer !== "undefined") { proj.show_hex_viewer = conf.show_hex_viewer; }
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
         if (typeof conf.autocomplete_delay !== "undefined") { proj.autocomplete_delay = conf.autocomplete_delay; }
     }
@@ -58,6 +59,9 @@ function editorPostSetupAlways()
     $(".hasTooltip, [data-toggle='tooltip']").tooltip({container: 'body'});
     if (editor.getMode().name !== 'yaml') {
         toggleOutline(proj.show_code_outline, true);
+    }
+    if (editor.getMode().name === 'tibasic') {
+        toggleHexViewer(proj.show_hex_viewer, true);
     }
 }
 
@@ -214,11 +218,17 @@ function toggleBottomTools(delay)
     document.getElementById("bottomToolsToggle").onclick = null;
 
     const codeOutline = $("#codeOutline");
+    const hexViewer = $("#hexViewer");
     const bottomTools = $("#bottomTools");
 
     const needOutlineToggle = delay > 0 && codeOutline.is(":visible");
+    const needHexViewerToggle = delay > 0 && hexViewer.is(":visible");
+
     if (needOutlineToggle && !bottomTools.is(":visible")) {
         codeOutline.hide();
+    }
+    if (needHexViewerToggle && !bottomTools.is(":visible")) {
+        hexViewer.hide();
     }
 
     bottomTools.slideToggle(delay, "swing", () => {
@@ -233,6 +243,10 @@ function toggleBottomTools(delay)
         if (needOutlineToggle) {
             recalcOutlineSize();
             codeOutline.show();
+        }
+        if (needHexViewerToggle) {
+            recalcHexViewerSize();
+            hexViewer.show();
         }
     });
 }

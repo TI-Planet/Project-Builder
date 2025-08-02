@@ -238,7 +238,7 @@ final class basic_eZ80ProjectBackend extends PHPBasedBackend
      */
     private function downloadZipExport()
     {
-        /** @var native_eZ80Project $thisProject */
+        /** @var basic_eZ80Project $thisProject */
         $thisProject = &$this->project;
 
         chdir($this->projFolder);

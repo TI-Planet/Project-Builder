@@ -159,6 +159,8 @@ function saveFile(callback)
     }
     globalSaveFileRetryCount = 0;
     stripTrailingSpaces();
+    if (refreshHexViewerContents)
+        refreshHexViewerContents();
     _saveFile_impl(callback);
 }
 
@@ -167,11 +169,44 @@ function isValidFileName(name)
     return name === 'icon.png' || /^[A-Z0-9]+\.bas$/i.test(name);
 }
 
+function isValidFileNameForBinary(name)
+{
+    return /.+\.8[23x]p$/i.test(name);
+}
+
 function createFileWithContent(name, content, cb, isLast, numFiles)
 {
     const escapedName = $('<div/>').text(name).html();
-    if (isValidFileName(name))
+    if (isValidFileName(name) || isValidFileNameForBinary(name))
     {
+        // deal with 8xp
+        if (isValidFileNameForBinary(name)) {
+            if (!TIVarsLib) {
+                alert('tivars_lib not ready?!');
+                return;
+            }
+            TIVarsLib.FS.writeFile(name, new Uint8Array(content));
+            const options = new TIVarsLib.options_t();
+            options.set("prettify", true);
+            content = TIVarsLib.TIVarFile.loadFromFile(name).getReadableContent(options);
+            TIVarsLib.FS.unlink(name);
+            if (!content.length) {
+                alert('Program appears to be empty or invalid');
+                return;
+            } else if (content.startsWith('[Error] This is a squished ASM program')) {
+                alert('[Error] This is a squished ASM program, cannot import it!');
+                return;
+            }
+            name = `SRC${proj.files.length + 1}.bas`;
+
+            // If the current file is empty (or just the placeholer), just drop the new content into it.
+            const editorContent = editor.getValue().trim();
+            if (editorContent.length === 0 || editorContent === 'Disp "HELLO WORLD!') {
+                editor.setValue(content);
+                return;
+            }
+        }
+
         if (proj.files.indexOf(name) === -1)
         {
             if (name === "icon.png") {
@@ -269,6 +304,8 @@ function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 function getCtags(scope, cb)
 {
     if (scope === undefined) { scope = proj.currFile; }
+    console.log("TODO: Ctags ti-basic.");
+/*
     ajaxAction("getCtags", `scope=${scope}`, (allCtags) => {
         const list = [];
         Object.keys(allCtags).map( (tagFile) =>
@@ -285,6 +322,22 @@ function getCtags(scope, cb)
             cb();
         }
     });
+ */
+    setTimeout(function() {
+        const list = [];
+        for (let i= 0; i<editor.lineCount(); i++) {
+            editor.getLineTokens(i).forEach((o) => {
+                if (o.type === 'label' || o.type === 'menu') {
+                    list.push({ k: o.type, n: o.string, l: i+1 });
+                }
+            });
+        }
+        ctags = list;
+        dispCodeOutline(list);
+        if (typeof(cb) === "function") {
+            cb();
+        }
+    }, 1);
 }
 
 function getSDKCtags()
@@ -336,11 +389,9 @@ function makeBasicPrgm()
             prgmSource += cleanedLine + '\n';
         }
     }
+    prgmSource = prgmSource.trimEnd()
 
-    const prgm = TIVarsLib.TIVarFile.createNew(TIVarsLib.TIVarType.createFromName("Program"),
-                                               proj.prgmName,
-                                               TIVarsLib.TIModel.createFromName('84+CE'));
-
+    const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
     prgm.setContentFromString(prgmSource);
     const filePath = prgm.saveVarToFile("", proj.prgmName);
     const file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
@@ -375,13 +426,17 @@ function transferToEmuAndRun()
             $("#buildRunButton").removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
         }
         window.emul_file_load_done_extcb = function() {
+            console.log(`[PB] launching on CEmu: prgm${proj.prgmName} ...`);
+            setTimeout(() => { sendKey(0xDA); }, 100); // prgm
+            setTimeout(() => { sendStringKeyPress(proj.prgmName); }, 800);
+            setTimeout(() => { sendKey(0x05); }, 500 + 300 * proj.prgmName.length); // Enter
             setTimeout(() => { $("#buildRunButton").removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden"); }, 2500);
             window.emul_file_load_error_extcb = window.emul_file_load_done_extcb = null;
         }
         $("#buildRunButton").addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
         pauseEmul(false);
         const file = makeBasicPrgm();
-        fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xv`, false);
+        fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
     } else {
         showNotification("danger", "The emulator isn't ready yet", "Did you load a ROM?", null, 10000);
     }
@@ -427,6 +482,7 @@ function sendSettings()
 window.addEventListener('resize', () => {
     $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75*($(document).height()))+'px');
     refreshOutlineSize();
+    refreshHexViewerSize();
 });
 
 window.addEventListener('keydown', (event) => {

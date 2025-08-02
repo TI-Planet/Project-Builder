@@ -90,7 +90,61 @@ div.filelist li span.glyphicon-trash {
     right: 0;
 }
 
-#codeOutline {
+div.CodeMirror.hasHexViewer div.CodeMirror-code span.markFromToken {
+    box-shadow: 0 0 5px 2px #ff7f7f;
+    background-color: #ff7f7f;
+}
+
+#hexViewer:before {
+    content: "Tokenized program (hex):";
+    display: block;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    margin: -2px 0 1px 2px;
+}
+
+#detokHoverText {
+    position: absolute;
+    z-index: 99999;
+    background-color: white;
+    font-family: monospace;
+    right: 1px;
+    top: 1px;
+    width: 199px;
+    line-height: 20px;
+    padding: 2px;
+}
+
+#hexViewer {
+    overflow-wrap: break-word;
+    padding: 5px 2px 5px 6px;
+    line-height: 20px;
+    font-family: monospace;
+    color: black;
+    overflow-y: scroll !important;
+    cursor: pointer;
+}
+#hexViewer div.twoByteWrapper {
+    display: inline;
+    outline: 1px black dotted;
+}
+#hexViewer span.hexCode {
+    margin: 0 0 0 1px;
+    padding: 0 2px 0 2px;
+    word-break: keep-all;
+    text-wrap: nowrap;
+}
+#hexViewer > :is(span,div):is([data-byteoffset='0'],[data-byteoffset='1']) {
+    color: grey;
+    pointer-events: none;
+}
+#hexViewer > :is(span,div):not(:is([data-byteoffset='0'],[data-byteoffset='1'])):hover,
+#hexViewer > div.twoByteWrapper:hover {
+    background-color: #c2ddff;
+}
+
+#codeOutline, #hexViewer {
     width: 201px;
     background: #f0f0f0;
     border: 1px solid grey;

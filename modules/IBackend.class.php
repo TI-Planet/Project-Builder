@@ -140,6 +140,37 @@ abstract class IBackend
 
         switch ($params['action'])
         {
+            case 'getSrcFileContent':
+                if (!($this->project->getAuthorID() === $user->getID() || $user->isModeratorOrMore() || $this->project->isMultiuser()))
+                {
+                    return PBStatus::Error('Unauthorized');
+                }
+                if (empty($params['fileName']) || !$this->project::isFileNameOK($params['fileName']))
+                {
+                    return PBStatus::Error('No/Bad fileName parameter given');
+                }
+                if (!in_array($params['fileName'], $this->getAvailableSrcFiles()))
+                {
+                    return PBStatus::Error('No such source file');
+                }
+                $filePath = $this->projFolder . 'src/' . $params['fileName'];
+                return file_get_contents($filePath);
+
+            case 'getAllSrcFilesContent':
+                if (!($this->project->getAuthorID() === $user->getID() || $user->isModeratorOrMore() || $this->project->isMultiuser()))
+                {
+                    return PBStatus::Error('Unauthorized');
+                }
+                $data = [];
+                $ignoredFile = $params['except'] ?? '';
+                foreach ($this->getAvailableSrcFiles() as $srcFileName)
+                {
+                    if ($srcFileName === $ignoredFile) { continue; }
+                    $filePath = $this->projFolder . 'src/' . $srcFileName;
+                    $data[$srcFileName] = @file_get_contents($filePath);
+                }
+                return $data;
+
             case 'deleteProj':
                 if (!($this->project->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
                 {

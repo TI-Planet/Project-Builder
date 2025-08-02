@@ -153,6 +153,7 @@ function do_cm_custom()
                     break;
                 case 'prototype':
                 case 'macro':
+                case 'menu':
                     lblClass = 'warning';
                     break;
                 case 'enumerator':
@@ -203,14 +204,30 @@ function do_cm_custom()
         document.getElementById("codeOutlineList").style.height = finalListHeight + "px";
     };
 
+    recalcHexViewerSize = () => {
+        const finalHeight = document.querySelector("div.firepad").offsetHeight;
+        document.getElementById("hexViewer").style.height = finalHeight + "px";
+    };
+
     refreshOutlineSize = () => {
         const codeOutline = document.getElementById("codeOutline");
-        if (codeOutline)
+        if (codeOutline && $(codeOutline).is(":visible"))
         {
             codeOutline.style.display = "none";
             recalcOutlineSize();
             codeOutline.style.display = "block";
             recalcOutlineSize(); // because of the rendered height being first incorrect...
+        }
+    };
+
+    refreshHexViewerSize = () => {
+        const hexViewer = document.getElementById("hexViewer");
+        if (hexViewer && $(hexViewer).is(":visible"))
+        {
+            hexViewer.style.display = "none";
+            recalcHexViewerSize();
+            hexViewer.style.display = "block";
+            recalcHexViewerSize(); // because of the rendered height being first incorrect...
         }
     };
 
@@ -243,6 +260,131 @@ function do_cm_custom()
         outline.toggle();
         $("div.CodeMirror").toggleClass("hasOutline");
         proj.show_code_outline = outline.is(":visible");
+        if (!auto) { saveProjConfig(); }
+    };
+
+    let prgmForHexViewer = null;
+    let previousTokenMark = null;
+    const detokHoverText = document.getElementById('detokHoverText');
+    const hexViewer = $("#hexViewer");
+
+    function hexViewer_getPosInfo(byte, byteOffset)
+    {
+        const detok = TIVarsLib.TH_Tokenized_oneTokenBytesToString(byte);
+        document.getElementById('detokHoverTextByte').innerText = `${Number(byte).toString(16).toUpperCase().padStart(byte > 0xFF ? 4 : 2, '0')}: `;
+        document.getElementById('detokHoverTextStr').innerText = detok;
+        const pos = TIVarsLib.TH_Tokenized_getPosInfoAtOffsetFromHexStr(hexViewer.data('hex'), byteOffset);
+        if (previousTokenMark) { previousTokenMark.clear(); previousTokenMark = null; }
+        if (pos.line+1 > editor.lineCount()) { return null; }
+        if (pos.line === 0 && pos.column === 0 && pos.len === 0) { return null; }
+        if (pos.len === 0 && pos.column > 0) { pos.len = 1; pos.column = pos.column-1; }
+
+        // Adjust pos info for pretty source
+        for (let i=0; i<=pos.line; i++) {
+            let cleanedLine = "";
+            editor.getLineTokens(i).forEach((o) => { if (o.type !== 'comment') { cleanedLine += o.string; } });
+            if (cleanedLine.trim().length) {
+                if (i === pos.line) {
+                    pos.column += (cleanedLine.length - cleanedLine.trimStart().length);
+                }
+            } else {
+                pos.line++;
+            }
+        }
+
+        return pos;
+    }
+
+    hexViewer.on("mouseover", () => {
+        const codeOutlineStyle = window.getComputedStyle(document.getElementById('codeOutline'));
+        const codeOutlineIsVisible = codeOutlineStyle.display !== 'none';
+        detokHoverText.style.display = 'block';
+        detokHoverText.style.right = codeOutlineIsVisible ? codeOutlineStyle.width : "1px";
+    });
+    hexViewer.on("mouseout", () => { detokHoverText.style.display = 'none'; });
+    hexViewer.on("mouseover", "div[data-twobytes],>span.hexCode[data-byte]", function(e) {
+        const tar = e.currentTarget;
+        const byte = tar.dataset.twobytes ?? tar.dataset.byte;
+        const byteOffset = tar.dataset.byteoffset;
+        const pos = hexViewer_getPosInfo(byte, byteOffset);
+        if (!pos) { return; }
+        previousTokenMark = editor.doc.markText({ line: pos.line, ch: pos.column }, { line: pos.line, ch: pos.column+pos.len }, { className: "markFromToken" });
+    }).on("mouseout", "div[data-twobytes],>span.hexCode[data-byte]", function() {
+        if (previousTokenMark) { previousTokenMark.clear(); previousTokenMark = null; }
+    });
+    hexViewer.on("click", "div[data-twobytes],>span.hexCode[data-byte]", function(e) {
+        const tar = e.currentTarget;
+        const byte = tar.dataset.twobytes ?? tar.dataset.byte;
+        const byteOffset = tar.dataset.byteoffset;
+        const pos = hexViewer_getPosInfo(byte, byteOffset);
+        const info = editor.getScrollInfo();
+        const after = editor.charCoords({ line: pos.line + 1, ch: pos.column }, "local").top;
+        editor.scrollTo(null, after - info.clientHeight - 5);
+        editor.scrollTo(null, after - info.clientHeight + 5);
+    });
+    refreshHexViewerContents = () => {
+        if (hexViewer && hexViewer.is(":visible") && typeof(TIVarsLib) !== 'undefined') {
+            hexViewer.empty();
+            if (!prgmForHexViewer) {
+                prgmForHexViewer = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName);
+            }
+            let prgmSource = "";
+            for (let i=0; i<editor.lineCount(); i++) {
+                let cleanedLine = "";
+                editor.getLineTokens(i).forEach((o) => { if (o.type !== 'comment') { cleanedLine += o.string; } });
+                cleanedLine = cleanedLine.trimStart();
+                if (cleanedLine.length) {
+                    prgmSource += cleanedLine + '\n';
+                }
+            }
+            prgmSource = prgmSource.trimEnd()
+            prgmForHexViewer.setContentFromString(prgmSource);
+            const hexStr = prgmForHexViewer.getRawContentHexStr().toUpperCase();
+            if (hexStr.length) {
+                hexViewer.data('hex', hexStr);
+                const firstByteOf2BytesTokens = [ '5C', '5D', '5E', '60', '61', '62', '63', '7E', 'AA', 'BB', 'EF' ];
+                for (let i=0; i<hexStr.length-1; i+=2) {
+                    const byteOffset = i / 2;
+                    let customClass = '';
+                    let sub1 = hexStr.substring(i, i+2);
+                    let sub2 = null;
+                    if (firstByteOf2BytesTokens.includes(sub1)) {
+                        sub2 = hexStr.substring(i+2, i+4);
+                        customClass = 'twoByte';
+                        i += 2;
+                    }
+                    let html = '';
+                    if (sub2) { html += `<div class="twoByteWrapper" data-twobytes="${Number("0x"+sub1+sub2)}" data-byteoffset="${byteOffset}">`; }
+                    html += `<span class="hexCode ${customClass} firstByte" data-byte="${Number("0x"+sub1)}" data-byteoffset="${byteOffset}">${sub1}</span>`;
+                    if (sub2) {
+                        html += `<span class="hexCode twoByte secondByte">${sub2}</span></div>`;
+                    }
+                    hexViewer.append(html);
+                }
+            }
+        }
+    };
+
+    toggleHexViewer = (show, auto) =>
+    {
+        if (auto === undefined) { auto = false; }
+
+        recalcHexViewerSize();
+
+        const hexViewer = $("#hexViewer");
+        if (hexViewer.is(":visible"))
+        {
+            if (typeof(show) === "boolean" && show) { return; }
+            $("#hexViewerToggleButton").css('background-color', 'white');
+        } else {
+            if (typeof(show) === "boolean" && !show) { return; }
+            $("#hexViewerToggleButton").css('background-color', '#CACBC7');
+        }
+
+        hexViewer.toggle();
+        refreshHexViewerContents();
+        $("div.CodeMirror").toggleClass("hasHexViewer");
+        proj.show_hex_viewer = hexViewer.is(":visible");
         if (!auto) { saveProjConfig(); }
     };
 
@@ -350,9 +492,9 @@ function do_cm_custom()
         let i = 0;
         const editorLine = editor.getCursor().line;
         editor.eachLine( (line) => {
-            if (i !== editorLine && !line.text.includes('"') && /\s+$/.test(line.text))
+            if (i !== editorLine && /^\s+$/.test(line.text))
             {
-                editor.replaceRange(line.text.replace(/\s+$/, ""), {line: i, ch: 0}, {line: i});
+                editor.replaceRange(line.text.replace(/^\s+$/, ""), {line: i, ch: 0}, {line: i});
             }
             i++;
         });
@@ -370,10 +512,7 @@ function do_cm_custom()
             return;
         }
 
-        const prgm = TIVarsLib.TIVarFile.createNew(TIVarsLib.TIVarType.createFromName("Program"),
-                                                   proj.prgmName,
-                                                   TIVarsLib.TIModel.createFromName('84+CE'));
-
+        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
         prgm.setContentFromString(prgmSource);
 
         const options = new TIVarsLib.options_t();

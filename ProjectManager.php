@@ -225,7 +225,7 @@ final class ProjectManager
                 }
 
                 // Special case for a few actions, which only need to have read-only access minimum
-                if (isset($params['action']) && in_array($params['action'], [ 'downloadZipExport', 'getCtags', 'getBuildLog', 'getCheckLog', 'download' ], true))
+                if (isset($params['action']) && in_array($params['action'], [ 'downloadZipExport', 'getCtags', 'getBuildLog', 'getCheckLog', 'download', 'getSrcFileContent', 'getAllSrcFilesContent' ], true))
                 {
                     if ($this->currentUserIsProjOwnerOrStaff() || $this->currentProject->isMultiuser())
                     {

@@ -318,11 +318,17 @@ div.CodeMirror {
 div.CodeMirror div.CodeMirror-lines {
     line-height: 15px;
 }
-div.CodeMirror.hasOutline {
+div.CodeMirror.hasOutline,
+div.CodeMirror.hasHexViewer {
     border-bottom-right-radius: 0;
 }
-div.CodeMirror.hasOutline, div.CodeMirror.hasOutline ~ a.powered-by-firepad {
+div.CodeMirror.hasOutline, div.CodeMirror.hasOutline ~ a.powered-by-firepad,
+div.CodeMirror.hasHexViewer, div.CodeMirror.hasHexViewer ~ a.powered-by-firepad {
     margin-right: 200px;
+}
+div.CodeMirror.hasOutline.hasHexViewer, div.CodeMirror.hasOutline.hasHexViewer ~ a.powered-by-firepad,
+div.CodeMirror.hasOutline.hasHexViewer, div.CodeMirror.hasOutline.hasHexViewer ~ a.powered-by-firepad {
+    margin-right: 400px;
 }
 div.CodeMirror pre {
     font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
@@ -338,6 +344,10 @@ div.CodeMirror pre {
 pre.inline-lint-msg {
     visibility: hidden;
     height: 0;
+}
+
+pre.inline-lint-msg:empty {
+    width: 18px;
 }
 
 .inlineTooltip {
