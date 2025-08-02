@@ -225,6 +225,10 @@ else
 
         extraParams=$(jq -r ".clangArgs | select (.!=null)" config.json 2>/dev/null)
         description=$(jq -r ".description | select (.!=null)" config.json 2>/dev/null)
+        compressionMode=$(jq -r ".compressionMode | select (.!=null)" config.json 2>/dev/null)
+        ltoEnabled=$(jq -r ".ltoEnabled | select (.!=null)" config.json 2>/dev/null)
+        archived8xp=$(jq -r ".archived8xp | select (.!=null)" config.json 2>/dev/null)
+
         if test -z "$extraParams"
         then
               extraCflagsParam=""
@@ -232,6 +236,28 @@ else
               extraCflagsParam="CFLAGS=\"${extraParams}\" CXXFLAGS=\"${extraParams}\""
         fi
 
+        if test -z "$compressionMode"
+        then
+              compressionParam=""
+        elif [[ "$compressionMode" == "none" ]]; then
+              compressionParam="COMPRESSED=NO"
+        else
+              compressionParam="COMPRESSED_MODE=${compressionMode}"
+        fi
+
+        if test -z "$ltoEnabled"
+        then
+              ltoEnabledParam=""
+        else
+              ltoEnabledParam="LTO=${ltoEnabled}"
+        fi
+
+        if test -z "$archived8xp"
+        then
+              archivedParam=""
+        else
+              archivedParam="ARCHIVED=${archived8xp}"
+        fi
         # TODO: Replace "SAFELAUNCH" by something to make it safer than just launching it directly (for instance, in a chroot etc.)
 
         chrootedProjectDir="/home/pbbot/debchroot/projectbuilder/projects/${id}"
@@ -240,7 +266,7 @@ else
         if [[ -d src/gfx/ ]] && [[ -s src/gfx/convimg.yaml ]] && [[ ! -f src/gfx/.gfxbuilt ]]; then
           SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile version gfx && touch src/gfx/.gfxbuilt" >> ${logFile} 2>&1
         fi
-        SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} version all " >> ${logFile} 2>&1
+        SAFELAUNCH sh -c ". /home/.bashrc && cd /projectbuilder/projects/${id} && timeout 30 make -f ../../modules/native_eZ80/internal/toolchain/makefile DESCRIPTION='\"${description}\"' NAME=${prgmName} ${extraCflagsParam} ${compressionParam} ${ltoEnabledParam} ${archivedParam} version all " >> ${logFile} 2>&1
         buildret=$?
         for folder in bin obj; do [[ -d "${chrootedProjectDir}/${folder}" ]] && cp -Ra "${chrootedProjectDir}/${folder}" "${projectsdir}/${id}/"; done
         [[ -d "${chrootedProjectDir}/src/gfx" ]] && rm -rf "${projectsdir}/${id}/src/gfx" && cp -Ra "${chrootedProjectDir}/src/gfx/" "${projectsdir}/${id}/src/"

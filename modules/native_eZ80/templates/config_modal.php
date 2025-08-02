@@ -79,17 +79,78 @@ $currProjectSettings = $currProject->getSettings();
                             </div>
                         </div>
 
-                        <h4>Compiler options</h4>
+                        <h4>Makefile options</h4>
                         <div class="form-group">
                             <label class="col-sm-1 control-label"></label>
                             <div class="col-sm-11">
-                                Clang extra args (<tt>-Wall -Oz</tt> etc.)
+                                Clang compiler extra args (<tt>-Wall -Oz</tt> etc.)
                                 <div class="radio-inline" style="width: 100%; padding-left: 0;">
                                     <label style="width: 100%;">
                                         <input class="form-control" type="text" pattern="^(?:(?:(?:-(?:[wWDO]|std))[\w=+-]* *)|(?:-[mf][\w+-]* *))*$" name="clangArgs" value=<?= json_encode((string)$currProjectSettings->clangArgs) ?>>
                                     </label>
                                 </div>
                                 <br/>
+                                <br/>
+
+                                8xp compression mode
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="compressionMode" value="zx7" <?= (!isset($currProjectSettings->compressionMode) || $currProjectSettings->compressionMode === 'zx7') ? 'checked' : '' ?>>
+                                        <b>zx7</b> (default)
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="compressionMode" value="zx0" <?= (isset($currProjectSettings->compressionMode) && $currProjectSettings->compressionMode === 'zx0') ? 'checked' : '' ?>>
+                                        <b>zx0</b> (generally slower but better compression)
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="compressionMode" value="auto" <?= (isset($currProjectSettings->compressionMode) && $currProjectSettings->compressionMode === 'auto') ? 'checked' : '' ?>>
+                                        <b>Automatic</b> (tries both and uses the smallest)
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="compressionMode" value="none" <?= (isset($currProjectSettings->compressionMode) && $currProjectSettings->compressionMode === 'none') ? 'checked' : '' ?>>
+                                        <b>None</b> (disables compression entirely)
+                                    </label>
+                                </div>
+                                <br/>
+
+                                LTO (link-time optimization for smaller output)
+                                <div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input type="radio" name="ltoEnabled" value="YES" <?= (!isset($currProjectSettings->ltoEnabled) || $currProjectSettings->ltoEnabled === 'YES') ? 'checked' : '' ?>>
+                                            <b>Yes</b> (default)
+                                        </label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input type="radio" name="ltoEnabled" value="NO" <?= (isset($currProjectSettings->ltoEnabled) && $currProjectSettings->ltoEnabled === 'NO') ? 'checked' : '' ?>>
+                                            <b>No</b>
+                                        </label>
+                                    </div>
+                                </div>
+                                <br/>
+
+                                Archived 8xp (in Flash instead of RAM)
+                                <div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input type="radio" name="archived8xp" value="YES" <?= (!isset($currProjectSettings->archived8xp) || $currProjectSettings->archived8xp === 'YES') ? 'checked' : '' ?>>
+                                            <b>Yes</b> (default)
+                                        </label>
+                                    </div>
+                                    <div class="radio-inline">
+                                        <label>
+                                            <input type="radio" name="archived8xp" value="NO" <?= (isset($currProjectSettings->archived8xp) && $currProjectSettings->archived8xp === 'NO') ? 'checked' : '' ?>>
+                                            <b>No</b>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

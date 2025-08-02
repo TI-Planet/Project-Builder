@@ -6,6 +6,8 @@ NAME         ?= DEMO
 ICON         ?= icon.png
 DESCRIPTION  ?= "CE C SDK Demo"
 COMPRESSED   ?= YES
+COMPRESSED_MODE ?= zx0
+LTO          ?= YES
 ARCHIVED     ?= YES
 
 # ----------------------------

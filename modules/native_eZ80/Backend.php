@@ -32,7 +32,10 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $this->settings = (!empty((array)$settingsFromJsonOK)) ? $settingsFromJsonOK : (object)[
             'outputFormat' => 'program', // forced for now
             'clangArgs'    => '-Oz -W -Wall -Wwrite-strings -Wno-unknown-pragmas -Wno-incompatible-library-redeclaration -Wno-main-return-type',
-            'description'  => ''
+            'description'  => '',
+            'compressionMode' => 'zx7',
+            'ltoEnabled'   => 'YES',
+            'archived8xp'  => 'YES',
         ];
 
         $this->projPrgmExtension = $this->settings->outputFormat === 'program' ? '8xp' : '8xv';
@@ -619,6 +622,32 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $makefileStr = str_replace(['NAME         ?= DEMO',                  'DESCRIPTION  ?= "CE C SDK Demo"'],
                                    ["NAME         ?= {$this->projPrgmName}", "DESCRIPTION  ?= \"{$this->project->getName()}\""],
                                    $makefileStr);
+        if (!empty($this->settings->clangArgs ?? null)) {
+            $makefileStr = str_replace(['CFLAGS   ?= -Oz -W -Wall -Wextra -Wwrite-strings', 'CXXFLAGS ?= -Oz -W -Wall -Wextra -Wwrite-strings'],
+                                       ['CFLAGS   ?= '.$this->settings->clangArgs, 'CXXFLAGS ?= '.$this->settings->clangArgs],
+                                       $makefileStr);
+        }
+        if (!empty($this->settings->compressionMode ?? null)) {
+            if ($this->settings->compressionMode === 'none') {
+                $makefileStr = str_replace('COMPRESSED   ?= YES',
+                                           'COMPRESSED   ?= NO',
+                                           $makefileStr);
+            } else {
+                $makefileStr = str_replace('COMPRESSED_MODE ?= zx0',
+                                           'COMPRESSED_MODE ?= '.$this->settings->compressionMode,
+                                           $makefileStr);
+            }
+        }
+        if (!empty($this->settings->ltoEnabled ?? null)) {
+            $makefileStr = str_replace('LTO          ?= YES',
+                                       'LTO          ?= '.$this->settings->ltoEnabled,
+                                       $makefileStr);
+        }
+        if (!empty($this->settings->archived8xp ?? null)) {
+            $makefileStr = str_replace('ARCHIVED     ?= YES',
+                                       'ARCHIVED     ?= '.$this->settings->archived8xp,
+                                       $makefileStr);
+        }
         $zip->addFromString($zipFileName . '/Makefile', $makefileStr);
 
         $zip->close();
@@ -723,6 +752,9 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             'outputFormat' => '/^(program|appvar)$/',
             'clangArgs'    => '/^(?:(?:(?:-(?:[gwWDO]|std))[\w=+-]* *)|(?:-[mf][\w+-]* *))*$/',
             'description'  => '~^[\w ._+\-*/<>,:()]{0,25}$~',
+            'compressionMode' => '/^(zx0|zx7|auto|none)$/',
+            'ltoEnabled'   => '/^(YES|NO)$/',
+            'archived8xp'  => '/^(YES|NO)$/',
         ];
 
         foreach ($params as $name => $value)
