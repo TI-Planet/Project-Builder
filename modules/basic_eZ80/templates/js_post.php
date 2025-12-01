@@ -37,6 +37,7 @@ require_once 'utils.php';
         /* CodeMirror init */
         CodeMirror.commands.autocomplete = function(cm) { cm.showHint({ hint: CodeMirror.hint.any_and_ctags }); };
 
+        const toggleComment = () => { editor.execCommand('toggleComment') }
         editor = CodeMirror.fromTextArea(textarea, {
             lineNumbers: true,
             styleActiveLine: true,
@@ -49,7 +50,7 @@ require_once 'utils.php';
             dragDrop: false,
             mode: 'text/x-tibasic',
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            extraKeys: {"Ctrl-Space": "autocomplete"},
+            extraKeys: {"Ctrl-Space": "autocomplete", 'Ctrl-/': toggleComment, 'Cmd-/': toggleComment },
             highlightSelectionMatches: {showToken: /\w/},
             theme: 'xq-light',
             readOnly: <?= $currProject->canUserEditCurrentFile($currUser) ? 'false' : 'true' ?>

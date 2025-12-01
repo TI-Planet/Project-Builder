@@ -278,6 +278,9 @@ function showKeybindings()
     const orderedKM = {};
     Object.keys(keymap).sort().forEach( (key) => { orderedKM[key] = keymap[key]; });
 
+    const commentKey = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? 'Cmd-/' : 'Ctrl-/';
+    orderedKM[commentKey] = '(Un)Comment selected lines';
+
     const modal = $("#keybindingsModal");
     let keymapHTML = '';
     Object.keys(orderedKM).forEach( (key) => {
