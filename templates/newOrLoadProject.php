@@ -30,7 +30,12 @@ if (!isset($pm))
     if (!in_array($projType, \ProjectBuilder\ProjectFactory::$projectTypes, true)) {
         $projType = 'native_eZ80';
     }
-    $proj = $pm->createNewProject($projType, '', $projType === 'native_eZ80' ? 'CPRGMCE' : ($projType === 'python_eZ80' ? 'PYSCRIPT' : ($projType === 'python_nspire' ? 'MyScript' : 'MYPRGM')));
+    $internalName = $projType === 'native_eZ80' ? 'CPRGMCE'
+                 : ($projType === 'python_eZ80' ? 'PYSCRIPT'
+                 : ($projType === 'python_nspire' ? 'MyScript'
+                 : ($projType === 'bbcode' ? 'Article'
+                 : 'MYPRGM')));
+    $proj = $pm->createNewProject($projType, '', $internalName);
     if ($proj !== null)
     {
         $url = '/pb/?id=' . $proj->getPID();

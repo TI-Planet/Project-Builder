@@ -466,6 +466,11 @@ final class ProjectManager
                 return null;
             }
 
+            // for now, bbcode is only for mods+
+            if ($res->type === 'bbcode' && !$this->currentUser->isModeratorOrMore()) {
+                die('No');
+            }
+
             return ProjectFactory::create($db_id, $projectID, $projAuthor, $res->type, $res->name, $res->internal_name, $multiuser, $multi_readwrite, $chatEnabled, $projCTime, $projUTime);
         }
 

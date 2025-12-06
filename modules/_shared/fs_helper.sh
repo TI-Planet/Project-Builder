@@ -96,11 +96,12 @@ else
         templateDirName="template"
         if [[ "$3" == "python_eZ80" ]] || [[ "$3" == "python_nspire" ]]; then templateDirName="template_py"; fi
         if [[ "$3" == "lua_nspire" ]]; then templateDirName="template_lua"; fi
+        if [[ "$3" == "bbcode" ]]; then templateDirName="template_bbcode"; fi
         cp -Lrp "${projectsdir}/${templateDirName}" "${projectsdir}/${id}" || exit 3
         rm -rf "${projectsdir}/${id}/src/gfx/" # we don't want any gfx at first
         touch "${projectsdir}/${id}/config.json"
-        find "${projectsdir}/${id}/" -type f -regex '.*\.\(bas\|py\|c\|cpp\|h\|hpp\|lua\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
-        if [[ "$3" == "python_eZ80" ]] || [[ "$3" == "python_nspire" ]] || [[ "$3" == "basic_eZ80" ]] || [[ "$3" == "lua_nspire" ]]
+        find "${projectsdir}/${id}/" -type f -regex '.*\.\(bbcode\|bas\|py\|c\|cpp\|h\|hpp\|lua\|asm\|inc\|json\)' -exec chmod 666 {} \; # let www-data write
+        if [[ "$3" == "python_eZ80" ]] || [[ "$3" == "python_nspire" ]] || [[ "$3" == "basic_eZ80" ]] || [[ "$3" == "lua_nspire" ]] || [[ "$3" == "bbcode" ]]
         then
           chmod -R ugo+rw "${projectsdir}/${id}" # let www-data write
           chmod 777 "${projectsdir}/${id}/src/" # let www-data write

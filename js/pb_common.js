@@ -50,17 +50,19 @@ function loadProjConfig()
 
 function editorPostSetupAlways()
 {
-    if (proj.show_bottom_tools === false) {
+    const editorMode = editor.getMode().name;
+
+    if (proj.show_bottom_tools === false && editorMode !== 'bbcode') {
         toggleBottomTools(0);
     }
     if (!proj.cursors) {
         proj.cursors = {};
     }
     $(".hasTooltip, [data-toggle='tooltip']").tooltip({container: 'body'});
-    if (editor.getMode().name !== 'yaml') {
+    if (editorMode !== 'yaml' && editorMode !== 'bbcode') {
         toggleOutline(proj.show_code_outline, true);
     }
-    if (editor.getMode().name === 'tibasic') {
+    if (editorMode === 'tibasic') {
         toggleHexViewer(proj.show_hex_viewer, true);
     }
 }
@@ -269,7 +271,7 @@ function showKeybindings()
     let i;
     let keymap = window.CodeMirror.keyMap[window.CodeMirror.defaults.keyMap];
 
-    const newBindingsKeys = Object.keys(editor.state.keyMaps[0]);
+    const newBindingsKeys = Object.keys(editor.state.keyMaps[0] ?? {});
     for (i=0; i<newBindingsKeys.length; i++) {
         keymap[newBindingsKeys[i]] = editor.state.keyMaps[0][newBindingsKeys[i]].name;
     }

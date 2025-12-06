@@ -91,7 +91,13 @@ function genSidebar()
                           <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=basic_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE TI-Basic</a></li>
                           <li><hr style="margin: 2px"></li>
                           <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=lua_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire Lua</a></li>
-                          <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=python_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire CX II Python</a></li>
+                          <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=python_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire CX II Python</a></li>';
+    if ($currUser->isModeratorOrMore()) {
+        $content .= '
+                          <li><hr style="margin: 2px"></li>
+                          <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=bbcode&amp;csrf_token=' . $currUser->getSID() . '">BBCode</a></li>';
+    }
+    $content .= '
                         </ul>
                       </div>
                       <b>My projects:</b>

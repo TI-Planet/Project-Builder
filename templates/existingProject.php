@@ -30,6 +30,10 @@ $modulePath = 'modules/' . $currProject->getType() . '/';
 $templatePath = $modulePath . 'templates/';
 $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES);
 
+if ($currProject->getType() === 'bbcode' && !$currUser->isModeratorOrMore()) {
+    die('No');
+}
+
 ?><!DOCTYPE html>
 <html>
 <head>
