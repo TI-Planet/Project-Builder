@@ -72,7 +72,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
 
     <div id="rightSidebar">
         <div id="rightSidebarContent">
-            <?php include $templatePath . 'right_sidebar.php'; ?>
+            <?php @include $templatePath . 'right_sidebar.php'; ?>
         </div>
     </div>
     <div id="rightSidebarToggle" class="sidebarToggle" onclick="toggleRightSidebar();"></div>
@@ -84,11 +84,11 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
         </h3>
         <?php require $templatePath . 'body.php'; ?>
     </div>
-    <?php require $templatePath . 'config_modal.php'; ?>
+    <?php @include $templatePath . 'config_modal.php'; ?>
 
 </div>
 
-<?php include $templatePath . 'js_post.php'; ?>
+<?php @include $templatePath . 'js_post.php'; ?>
 
     <script>
         <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
@@ -102,7 +102,7 @@ $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES)
         loadProjConfig();
     </script>
 
-<?php include $templatePath . 'js_afterConfInit.php'; ?>
+<?php @include $templatePath . 'js_afterConfInit.php'; ?>
 
 </body>
 </html>
