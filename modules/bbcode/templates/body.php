@@ -17,9 +17,19 @@ if (!isset($pm)) { die('Ahem ahem'); }
     <?php } ?>
 </div>
 
+<form id="postForm" action="ActionHandler.php" method="POST">
+    <input type="hidden" name="id" value="<?= $projectID ?>">
+    <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile() ?>">
+    <input type="hidden" name="prgmName" id="prgmNameInput" value="Article">
+    <input type="hidden" name="action" value="download" id="actionInput">
+    <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
+</form>
+
 <div id="bbcodeSplitContainer" style="height: calc(100% - 70px); margin-top:10px; display: flex; flex-direction: row; align-items: stretch;">
     <div id="bbcodeEditorPane" style="height: 100%; min-width: 200px; flex: 0 0 50%; padding-right: 2px;">
+        <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
         <textarea id="codearea"></textarea>
+        <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
     </div>
     <div id="bbcodeSplitter" title="Drag to resize" style="width: 5px; cursor: col-resize; background: #ffdd8e; outline: 1px solid #d2af05; border-radius: 4px; margin: 0 5px; padding: 2px; height: 40px; position: relative; top: calc(50% - 35px);" role="separator"></div>
     <div id="bbcodePreviewPane" style="height: 100%; min-width: 200px; flex: 1 1 50%; padding-left: 2px; padding-right: 5px;">

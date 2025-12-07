@@ -23,7 +23,7 @@ require_once 'utils.php';
         id: '<?= $currUser->getID() ?>',
         name: '<?= $currUser->getName() ?>',
         avatar: '<?= $currUser->getAvatarURL() ?>',
-        firebase_token: ''
+        firebase_token: '<?= $currProject->isMultiuser() ? $currUser->getOrGenerateFirebaseToken() : '' ?>'
     };
 </script>
 
@@ -72,3 +72,15 @@ require_once 'utils.php';
 <script src="<?= cacheBusterPath('js/codemirror/jump-to-line.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/diff_match_patch.js"') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/merge.js') ?>"></script>
+
+<?php
+if ($currProject->isMulti_ReadWrite())
+{
+    echo "<script src='js/firebase.js'></script>\n";
+    if ($currProject->isChatEnabled()) {
+        echo "<link rel='stylesheet' href='css/firechat.min.css'/>\n";
+        echo "<script src='js/firechat.min.js'></script>\n";
+    }
+    echo "<script src='js/firepad.min.js'></script>\n";
+    echo "<script src='/pb/js/codemirror/firepad-userlist.js'></script>";
+}

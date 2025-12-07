@@ -74,9 +74,31 @@ const _saveFile_impl = (callback) =>
     });
 }
 
+globalSaveFileRetryCount = 0;
 function saveFile(callback)
 {
-    if (!document.getElementById('saveButton') || document.getElementById('saveButton').classList.contains('hide')) { if (typeof callback === 'function') callback(); return; }
+    proj.cursors[proj.currFile] = JSON.stringify(editor.getCursor());
+    saveProjConfig();
+    if (proj.is_multi)
+    {
+        if (!globalSyncOK || globalSaveFileRetryCount >= 3)
+        {
+            showNotification("warning", "Syncing failed", "Saving now may overwrite changes and data may be lost. Please try again later (and make a local backup)", null, 999999);
+            globalSaveFileRetryCount = 0;
+            return;
+        }
+        if ((new Date).getTime() - lastChangeTS > 30000)
+        {
+            typeof(tryFirepadSync) !== "undefined" && tryFirepadSync();
+            lastChangeTS = (new Date).getTime();
+            console.log("Current session is old, trying to sync with Firepad... Retry count == " + globalSaveFileRetryCount);
+            globalSaveFileRetryCount++;
+            setTimeout(function(){ saveFile(callback); }, 200);
+            return;
+        }
+    }
+    globalSaveFileRetryCount = 0;
+
     _saveFile_impl(callback);
 }
 
