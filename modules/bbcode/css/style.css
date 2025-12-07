@@ -14,5 +14,9 @@
  */
 
 div.CodeMirror {
-    height: calc(100% - 10px) !important;
+    height: 100%;
+}
+
+#rightSidebar, #rightSidebarToggle {
+    display: none !important;
 }

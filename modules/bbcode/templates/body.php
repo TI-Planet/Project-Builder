@@ -17,12 +17,13 @@ if (!isset($pm)) { die('Ahem ahem'); }
     <?php } ?>
 </div>
 
-<div class="row" style="height: 100%; margin-top:10px;">
-    <div class="col-md-6" style="height: 100%; padding-right: 5px;">
+<div id="bbcodeSplitContainer" style="height: calc(100% - 70px); margin-top:10px; display: flex; flex-direction: row; align-items: stretch;">
+    <div id="bbcodeEditorPane" style="height: 100%; min-width: 200px; flex: 0 0 50%; padding-right: 2px;">
         <textarea id="codearea"></textarea>
     </div>
-    <div class="col-md-6" style="height: 100%; padding-left: 5px;">
-        <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: calc(100% - 15px); padding: 10px 0; background: #fff; height: calc(100% - 10px); overflow: scroll; position: absolute;">
+    <div id="bbcodeSplitter" title="Drag to resize" style="width: 5px; cursor: col-resize; background: #ffdd8e; outline: 1px solid #d2af05; border-radius: 4px; margin: 0 5px; padding: 2px; height: 40px; position: relative; top: calc(50% - 35px);" role="separator"></div>
+    <div id="bbcodePreviewPane" style="height: 100%; min-width: 200px; flex: 1 1 50%; padding-left: 2px; padding-right: 5px;">
+        <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: 100%; padding: 10px 0; background: #fff; height: 100%; overflow: auto; position: relative;">
             <style>
                 @scope {
                     <?php echo file_get_contents("https://tiplanet.org/forum/style.php?id=1&lang=fr&v=2"); ?>
@@ -35,5 +36,4 @@ if (!isset($pm)) { die('Ahem ahem'); }
             </div>
         </div>
     </div>
-    <div class="clearfix"></div>
 </div>

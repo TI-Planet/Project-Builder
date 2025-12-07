@@ -20,6 +20,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
         const toggleComment = () => { editor.execCommand('toggleComment') }
         editor = CodeMirror.fromTextArea(textarea, {
             lineNumbers: true,
+            lineWrapping: true,
             styleActiveLine: true,
             matchBrackets: true,
             indentWithTabs: false,
@@ -70,4 +71,42 @@ if (!isset($pm)) { die('Ahem ahem'); }
     // Initialize immediately on template load
     init_post_js_1();
     init_post_js_2();
+
+    // Resizable vertical split between editor and preview
+    (function(){
+        const container = document.getElementById('bbcodeSplitContainer');
+        const editorPane = document.getElementById('bbcodeEditorPane');
+        const previewPane = document.getElementById('bbcodePreviewPane');
+        const splitter = document.getElementById('bbcodeSplitter');
+        if (!container || !editorPane || !previewPane || !splitter) { return; }
+
+        const storageKey = `bbcode_split_${(window.proj && proj.pid) ? proj.pid : 'default'}`;
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+            const pct = Math.max(15, Math.min(85, parseFloat(saved)));
+            editorPane.style.flex = `0 0 ${pct}%`;
+            previewPane.style.flex = '1 1 auto';
+        }
+
+        let dragging = false;
+        const applyAt = (clientX) => {
+            const rect = container.getBoundingClientRect();
+            const relX = clientX - rect.left;
+            const pct = Math.max(15, Math.min(85, (relX / rect.width) * 100));
+            editorPane.style.flex = `0 0 ${pct}%`;
+            previewPane.style.flex = '1 1 auto';
+            localStorage.setItem(storageKey, pct.toFixed(2));
+        };
+
+        const onMouseMove = (e) => { if (dragging) { e.preventDefault(); applyAt(e.clientX); } };
+        const onTouchMove = (e) => { if (dragging && e.touches && e.touches[0]) { e.preventDefault(); applyAt(e.touches[0].clientX); } };
+        const stopDrag = () => { dragging = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+
+        splitter.addEventListener('mousedown', (e) => { dragging = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; e.preventDefault(); });
+        splitter.addEventListener('touchstart', () => { dragging = true; document.body.style.userSelect = 'none'; });
+        window.addEventListener('mouseup', stopDrag);
+        window.addEventListener('touchend', stopDrag);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+    })();
 </script>
