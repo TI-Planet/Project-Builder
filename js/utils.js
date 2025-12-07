@@ -218,8 +218,7 @@ function showNotification(notifType, title, message, endCallback, delay)
 /*******************/
 
 // The PB needs a reasonable screen size, warn mobile users
-const isMobile = navigator.userAgent.match(/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i);
-if (isMobile || screen.width<1024 || screen.height < 550)
+if ((window.currPbProjType?.endsWith('eZ80')) && (window.pbIsMobile || screen.width<1024 || screen.height < 550))
 {
     function dispMobile()
     {

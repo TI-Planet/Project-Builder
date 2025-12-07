@@ -26,3 +26,31 @@ function cacheBusterPath($filepath = '')
     }
     return $filepath . '?t=' . filemtime($fs_path);
 }
+
+if (!function_exists('str_starts_with')) {
+    function str_starts_with($haystack, $needle) {
+        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+    function str_ends_with($haystack, $needle) {
+        return $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle;
+    }
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
+function pb_is_mobile() {
+    if (($_SERVER['HTTP_SEC_CH_UA_MOBILE'] ?? '') === '?1') {
+        return true;
+    }
+    $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    if (empty($ua)) {
+        return false;
+    }
+    foreach ([ 'Mobile', 'Android', 'Silk/', 'Kindle', 'BlackBerry', 'Opera Mini', 'Opera Mobi' ] as $keyword) {
+        if (str_contains($ua, $keyword)) {
+            return true;
+        }
+    }
+    return false;
+}

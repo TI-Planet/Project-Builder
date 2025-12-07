@@ -20,8 +20,8 @@ require_once 'utils.php';
 require_once 'PBStatus.class.php';
 require_once 'ProjectManager.php';
 
-$projectID = (isset($_GET['id']) && !empty($_GET['id'])) ? $_GET['id'] : null;
-$fileName = (isset($_GET['file']) && !empty($_GET['file'])) ? $_GET['file'] : null;
+$projectID = (!empty($_GET['id'])) ? $_GET['id'] : null;
+$fileName = (!empty($_GET['file'])) ? $_GET['file'] : null;
 
 $pm = new ProjectManager($projectID, ['id' => $projectID, 'file' => $fileName]);
 
@@ -34,8 +34,8 @@ if ($pm->getCurrentUser()->getID() !== 1381) {
 */
 
 // The PB needs a reasonable screen size, warn the mobile users
-$isMobile = preg_match('/(android|avantgo|iphone|ipod|blackberry|iemobile|bolt|bo‌​ost|cricket|docomo|fone|hiptop|mini|opera mini|kitkat|mobi|palm|phone|pie|webos|wos)/i', $_SERVER['HTTP_USER_AGENT']);
-if ($isMobile === 1)
+
+if (pb_is_mobile() && $projectID && $pm->hasValidCurrentProject() && str_contains($pm->getCurrentProject()->getType(), 'eZ80'))
 {
     echo "<!DOCTYPE html>
     <head>
@@ -103,7 +103,7 @@ if ($projectID !== null)
 
     if ($wantNew) {
         /******** CSRF Token stuff ********/
-        if (isset($_GET['csrf_token']) && !empty($_GET['csrf_token']))
+        if (!empty($_GET['csrf_token']))
         {
             if ($_GET['csrf_token'] !== $pm->getCurrentUser()->getSID())
             {

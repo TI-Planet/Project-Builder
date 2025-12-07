@@ -51,6 +51,10 @@ if ($currProject->getType() === 'bbcode' && !$currUser->isModeratorOrMore()) {
 
     <link rel="stylesheet" data-href="css/dark.css" class="darkThemeLink">
 
+    <script><?php
+        echo "window.currPbProjType = '{$currProject->getType()}';\n";
+        echo "window.pbIsMobile = " . (pb_is_mobile() ? 'true' : 'false') . ";";
+    ?></script>
     <script src="<?= cacheBusterPath('js/utils.js') ?>"></script>
     <script src="<?= cacheBusterPath('js/localforage.min.js') ?>"></script>
 
