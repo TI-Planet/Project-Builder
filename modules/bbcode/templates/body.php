@@ -6,7 +6,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
 
 <textarea id="fakeContainer" style="display:none" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
-<div class="filelist">
+<div class="toolbar" style="display: flex; justify-content: space-between;">
     <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled>
             <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
@@ -15,6 +15,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
     <?php } else { ?>
         <button id="saveButton" class="btn btn-primary btn-sm hide invisible"></button>
     <?php } ?>
+    <span style="padding: 4px"><b>BBCode processing time:</b> <span id="bbcodeRenderTime">?</span></span>
 </div>
 
 <form id="postForm" action="ActionHandler.php" method="POST">

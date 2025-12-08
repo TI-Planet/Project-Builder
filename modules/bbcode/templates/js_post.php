@@ -44,6 +44,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
         if (!src.length) { return; }
         ajaxAction('preview_bbcode', `source=${encodeURIComponent(src)}`, (resp) => {
             document.getElementById('bbcodePreviewContent').innerHTML = (resp && resp.html) ? resp.html : '';
+            document.getElementById('bbcodeRenderTime').textContent = (resp && resp.renderTime) ? (resp.renderTime + 'ms') : '?';
         }, () => {}, null);
     };
     const updatePreview = debounce(_updatePreviewImpl, 400);
