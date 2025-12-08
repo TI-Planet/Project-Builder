@@ -112,6 +112,7 @@ final class bbcodeProjectBackend extends PHPBasedBackend
 
         generate_text_for_storage($text, $uid, $bitfield, $flags, true, true, true);
         $html = generate_text_for_display($text, $uid, $bitfield, $flags);
+        $html = str_replace('"/data/web/vhosts/tiplanet.org/ROOT/', '"/', $html);
 
         return [ 'html' => $html ];
     }

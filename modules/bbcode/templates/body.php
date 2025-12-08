@@ -36,12 +36,31 @@ if (!isset($pm)) { die('Ahem ahem'); }
         <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: 100%; padding: 10px 0; background: #fff; height: 100%; overflow: auto; position: relative;">
             <style>
                 @scope {
+                    #previewFakeBody {
+                        font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+                        background-color: #7d8b8c;
+                        color: #525252;
+                        font-size: 10px;
+                    }
+                    .bg2 {
+                        background-image: url(/forum/styles/prosilver/theme/images/spacer_transparent2.png);
+                        background-repeat: repeat;
+                    }
+                    .postbody .content img {
+                        border-radius: 2px;
+                    }
                     <?php echo file_get_contents("https://tiplanet.org/forum/style.php?id=1&lang=fr&v=2"); ?>
                 }
             </style>
-            <div class="post bg2">
-                <div class="content">
-                    <div id="bbcodePreviewContent"></div>
+            <div id="previewFakeBody">
+                <div class="post bg2">
+                    <div class="inner">
+                        <div class="postbody" style="width: 100% !important;">
+                            <div class="content">
+                                <div id="bbcodePreviewContent"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
