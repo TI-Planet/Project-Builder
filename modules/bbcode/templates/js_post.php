@@ -39,12 +39,178 @@ if (!isset($pm)) { die('Ahem ahem'); }
         savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
     }
 
+    // Basic BBCode analyzer: produces stats and errors for user feedback
+    const analyzeBBCode = (src) => {
+        const result = {
+            totalTags: 0,
+            opened: 0,
+            closed: 0,
+            selfClosed: 0,
+            errors: [],
+            warnings: [],
+            lines: (src.match(/\n/g) || []).length + 1,
+            length: src.length,
+        };
+
+        const selfClosing = new Set(['*']);
+        const balancedLikely = new Set(['b','i','u','s','url','img','quote','code','list','color','size','center','left','right','table','tr','td','th','spoiler','indent','align']);
+        const tagRe = /\[(\/)?([a-zA-Z*]+)(?:=([^\]\n]*))?(\s*\/)?\]/g; // [tag], [tag=...], [/tag], [tag /]
+
+        const stack = [];
+        let m;
+        let inCode = false; // ignore parsing inside [code]...[/code]
+
+        const posToLineCol = (idx) => {
+            let line = 1, col = 1;
+            for (let i = 0; i < idx && i < src.length; i++) {
+                if (src.charCodeAt(i) === 10) { line++; col = 1; } else { col++; }
+            }
+            return { line, col };
+        };
+
+        while ((m = tagRe.exec(src)) !== null) {
+            const full = m[0];
+            const isClosing = !!m[1];
+            const rawName = m[2] || '';
+            const trailingSlash = !!(m[4] && m[4].trim().length);
+            const name = rawName.toLowerCase();
+            const idx = m.index;
+
+            // Count totals
+            result.totalTags++;
+
+            // Handle [code] sections: toggle when encountering open/close
+            if (!isClosing && name === 'code' && !trailingSlash) {
+                stack.push({ name, index: idx });
+                result.opened++;
+                inCode = true;
+                continue;
+            }
+            if (isClosing && name === 'code') {
+                // find last code in stack
+                let foundAt = -1;
+                for (let i = stack.length - 1; i >= 0; i--) { if (stack[i].name === 'code') { foundAt = i; break; } }
+                if (foundAt === -1) {
+                    const { line, col } = posToLineCol(idx);
+                    result.errors.push({ type: 'orphanClosing', message: `Closing [/code] without an opening [code]`, line, col });
+                } else {
+                    stack.splice(foundAt, 1);
+                    result.closed++;
+                }
+                inCode = false;
+                continue;
+            }
+
+            if (inCode) { continue; }
+
+            const isSelfClosing = selfClosing.has(name) || (!isClosing && trailingSlash);
+
+            if (!isClosing) {
+                if (isSelfClosing) {
+                    result.selfClosed++;
+                } else {
+                    stack.push({ name, index: idx });
+                    result.opened++;
+                }
+            } else {
+                // closing tag
+                if (stack.length === 0) {
+                    const { line, col } = posToLineCol(idx);
+                    result.errors.push({ type: 'orphanClosing', message: `Closing [/${name}] without an opening [${name}]`, line, col });
+                } else {
+                    const top = stack[stack.length - 1];
+                    if (top.name === name) {
+                        stack.pop();
+                        result.closed++;
+                    } else {
+                        // Search for matching open deeper in the stack
+                        let foundAt = -1;
+                        for (let i = stack.length - 1; i >= 0; i--) {
+                            if (stack[i].name === name) { foundAt = i; break; }
+                        }
+                        const { line, col } = posToLineCol(idx);
+                        if (foundAt === -1) {
+                            result.errors.push({ type: 'mismatch', message: `Closing [/${name}] does not match the last opened [${top.name}]`, line, col });
+                        } else {
+                            // Unclosed tags between foundAt and top
+                            for (let i = stack.length - 1; i > foundAt; i--) {
+                                const unclosed = stack[i];
+                                const p = posToLineCol(unclosed.index);
+                                result.errors.push({ type: 'prematureClose', message: `Tag [${unclosed.name}] was not closed before closing [/${name}]`, line: p.line, col: p.col });
+                            }
+                            stack.splice(foundAt, 1);
+                            result.closed++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Remaining unclosed tags
+        for (const t of stack) {
+            if (!balancedLikely.has(t.name)) { continue; }
+            const p = posToLineCol(t.index);
+            result.errors.push({ type: 'unclosed', message: `Tag [${t.name}] opened here is not closed`, line: p.line, col: p.col });
+        }
+
+        // Prepare HTML
+        const errorItems = result.errors.map(e => `<li><span style="color:#b00;">${e.message}</span> <span style="opacity:.7;">(line ${e.line}, col ${e.col})</span></li>`).join('');
+        const warnItems = result.warnings.map(e => `<li>${e}</li>`).join('');
+        const statusColor = result.errors.length ? '#b00' : '#2b7a0b';
+        const statusText = result.errors.length ? `${result.errors.length} error${result.errors.length>1?'s':''} detected` : 'No BBCode structural issues detected';
+
+        const html = `
+            <div id="bbcodeAnalysis" style="font:13px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+                <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+                    <strong>BBCode analysis</strong>
+                    <span style="color:${statusColor}">${statusText}</span>
+                    <span style="opacity:.8">Lines: ${result.lines}</span>
+                    <span style="opacity:.8">Chars: ${result.length}</span>
+                    <span style="opacity:.8">Tags: ${result.totalTags} (open: ${result.opened}, closed: ${result.closed}, self: ${result.selfClosed})</span>
+                </div>
+                ${warnItems ? `<ul style="margin:6px 0 0 18px;color:#a60;">${warnItems}</ul>` : ''}
+                ${errorItems ? `<ul style="margin:6px 0 0 18px;">${result.errors.map(e => `
+                    <li>
+                        <span style="color:#b00;">${e.message}</span>
+                        <a href="#" class="bbcode-jump" data-line="${e.line}" data-col="${e.col}" style="margin-left:6px; text-decoration: underline; color: #06c;">
+                            (line ${e.line}, col ${e.col})
+                        </a>
+                    </li>`).join('')}</ul>` : ''}
+            </div>`;
+
+        return { ...result, html };
+    };
+
     const _updatePreviewImpl = () => {
         const src = editor.getValue().trim();
         if (!src.length) { return; }
         ajaxAction('preview_bbcode', `source=${encodeURIComponent(src)}`, (resp) => {
             document.getElementById('bbcodePreviewContent').innerHTML = (resp && resp.html) ? resp.html : '';
             document.getElementById('bbcodeRenderTime').textContent = (resp && resp.renderTime) ? (resp.renderTime + 'ms') : '?';
+
+            // Run analysis locally and render it in a dedicated dock below the preview
+            try {
+                const analysis = analyzeBBCode(src);
+                const dock = document.getElementById('bbcodeAnalysisDock');
+                if (dock) {
+                    dock.innerHTML = analysis.html;
+                    // Wire click-to-jump handlers
+                    dock.querySelectorAll('.bbcode-jump').forEach((a) => {
+                        a.addEventListener('click', (ev) => {
+                            ev.preventDefault();
+                            const line = Math.max(0, parseInt(a.getAttribute('data-line') || '1', 10) - 1);
+                            const ch = Math.max(0, parseInt(a.getAttribute('data-col') || '1', 10) - 1);
+                            try {
+                                editor.focus();
+                                editor.setCursor({ line, ch });
+                                editor.scrollIntoView({ line, ch }, 100);
+                            } catch (_) { /* noop */ }
+                        });
+                    });
+                }
+            } catch(e) {
+                // Best-effort: ignore analysis errors
+            }
         }, () => {}, null);
     };
     const updatePreview = debounce(_updatePreviewImpl, 400);

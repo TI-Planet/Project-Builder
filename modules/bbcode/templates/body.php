@@ -33,8 +33,8 @@ if (!isset($pm)) { die('Ahem ahem'); }
         <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
     </div>
     <div id="bbcodeSplitter" title="Drag to resize" style="width: 5px; cursor: col-resize; background: #ffdd8e; outline: 1px solid #d2af05; border-radius: 4px; margin: 0 5px; padding: 2px; height: 40px; position: relative; top: calc(50% - 35px);" role="separator"></div>
-    <div id="bbcodePreviewPane" style="height: 100%; min-width: 200px; flex: 1 1 50%; padding-left: 2px; padding-right: 5px;">
-        <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: 100%; padding: 10px 0; background: #fff; height: 100%; overflow: auto; position: relative;">
+    <div id="bbcodePreviewPane" style="height: 100%; min-width: 200px; flex: 1 1 50%; padding-left: 2px; padding-right: 5px; display:flex; flex-direction: column;">
+        <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: 100%; padding: 10px 0; background: #fff; flex: 1 1 auto; overflow: auto; position: relative;">
             <style>
                 @scope {
                     #previewFakeBody {
@@ -65,5 +65,6 @@ if (!isset($pm)) { die('Ahem ahem'); }
                 </div>
             </div>
         </div>
+        <div id="bbcodeAnalysisDock" style="margin-top:6px; border: 1px solid #666; border-radius: 4px; background:#f8f9fa; padding: 6px; min-height: 15%; max-height: 35%; overflow: auto;"></div>
     </div>
 </div>
