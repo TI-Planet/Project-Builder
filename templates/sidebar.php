@@ -159,7 +159,8 @@ function genSidebar()
                                       the community\'s <a href="https://github.com/CE-Programming/toolchain" target="_blank">CE toolchain</a>,
                                       <a href="https://github.com/CE-Programming/CEmu" target="_blank">CEmu</a>,
                                       <a href="https://github.com/jacobly0/llvm-project" target="_blank" title="' . $llvmGitSHA . '">LLVM (e)z80</a>,
-                                      <a href="https://github.com/adriweb/tivars_lib_cpp" target="_blank">tivars_lib_cpp</a>...
+                                      <a href="https://github.com/adriweb/tivars_lib_cpp" target="_blank">tivars_lib_cpp</a>,
+                                      <a href="https://github.com/TI-Toolkit/tokens" target="_blank">tokens</a>&amp;<a href="https://github.com/TI-Toolkit/tokens-wiki" target="_blank">tokens wiki</a>...
                                 </div>
                             </div>
                             <div class="modal-footer">

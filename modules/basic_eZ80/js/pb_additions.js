@@ -22,6 +22,7 @@ var build_check  = [];
 var code_analysis = [];
 var ctags = [];
 var sdk_ctags = [];
+var tokens_json = null;
 var lastSavedSource = '';
 
 function applyPrgmNameChange(name)
@@ -353,6 +354,27 @@ function getSDKCtags()
             });
         });
         sdk_ctags = list;
+    });
+}
+
+function getTokensJSON()
+{
+    const tokDataByName = {};
+    const tokBytesByAccessibleName = {};
+
+    fetch('/pb/modules/basic_eZ80/js/tokens.json').then(res => res.json()).then(json => {
+        for (const [bytes, data] of Object.entries(json)) {
+            data.bytes = bytes;
+            tokDataByName[data.name] = data;
+            if ('accessibleName' in data) {
+                tokBytesByAccessibleName[data.accessibleName] = bytes;
+            }
+        }
+        window.tokens_json = {
+            byName: tokDataByName,
+            byAccessibleName: tokBytesByAccessibleName,
+            byBytes: json
+        };
     });
 }
 

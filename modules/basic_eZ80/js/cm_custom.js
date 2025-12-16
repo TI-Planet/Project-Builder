@@ -605,110 +605,219 @@ function do_cm_custom()
                         clearTooltip();
                     }
                 }
+            } else {
+                if (editor.state.currentTooltip) {
+                    const url = editor.state.currentTooltip.dataset?.doclink ?? null;
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                }
             }
         }
     });
 
 
     highlightedWordMouseLeaveHandler = evt => {
+        clearTooltip();
+        if (!editor.currentHighlightedWord) { return; }
         editor.currentHighlightedWord.style.textDecoration = "initial";
         editor.currentHighlightedWord.style.backgroundColor = "initial";
         editor.currentHighlightedWord.style.cursor = "initial";
-        clearTooltip();
     };
 
     myMouseOverHandler = evt => {
         if (evt.ctrlKey || evt.metaKey)
         {
             const target = evt.target;
-            const targetText = target.innerText.trim();
-            if (target.innerText !== "asm" && target.className.includes("cm-basicvar"))
+            if (editor.currentHighlightedWord === target) {
+                return;
+            }
+
+            if (target.className.includes("cm-keyword") ||
+                target.className.includes("cm-basiccmd") ||
+                target.className.includes("cm-basicvar") ||
+                target.className.includes("cm-variable-3"))
             {
                 editor.currentHighlightedWord = target;
                 target.style.textDecoration = "underline";
-                target.style.backgroundColor = "lightcyan";
+                target.style.backgroundColor = target.className.includes("cm-basicvar") ? "lightcyan" : "lightpink";
                 target.style.cursor = "pointer";
-                target.addEventListener("mouseleave", highlightedWordMouseLeaveHandler);
-                const hoverPos = editor.coordsChar({left: evt.pageX, top: evt.pageY});
+                target.addEventListener("mouseleave", () => {
+                    if (!editor.currentHighlightedWord) { return; }
+                    editor.currentHighlightedWord.style.textDecoration = "initial";
+                    editor.currentHighlightedWord.style.backgroundColor = "initial";
+                    editor.currentHighlightedWord.style.cursor = "initial";
+                    // highlightedWordMouseLeaveHandler()
+                });
+            } else {
+                highlightedWordMouseLeaveHandler();
+                return;
+            }
+
+            const targetText = target.innerText.trim();
+            const hoverPos = editor.coordsChar({left: evt.pageX, top: evt.pageY});
+            const wordRange = editor.findWordAt(hoverPos);
+            {
+                const LH = editor.getLineHandle(wordRange.head.line);
+                const LH_cb = function(cm, changeObj) {
+                    const charPos = changeObj.from.ch;
+                    if (charPos >= wordRange.anchor.ch && charPos <= wordRange.head.ch)
+                    {
+                        LH.off("change", LH_cb);
+                        highlightedWordMouseLeaveHandler();
+                    }
+                };
+                LH.on("change", LH_cb);
+            }
+            let word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+            if (word !== targetText)
+            {
+                const clickElementRect = target.getBoundingClientRect();
+                const hoverPos = editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top});
                 const wordRange = editor.findWordAt(hoverPos);
-                {
-                    const LH = editor.getLineHandle(wordRange.head.line);
-                    const LH_cb = function(cm, changeObj) {
-                        const charPos = changeObj.from.ch;
-                        if (charPos >= wordRange.anchor.ch && charPos <= wordRange.head.ch)
-                        {
-                            LH.off("change", LH_cb);
-                            highlightedWordMouseLeaveHandler();
-                        }
-                    };
-                    LH.on("change", LH_cb);
-                }
-                let word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+                word = editor.getRange(wordRange.anchor, wordRange.head).trim();
+            }
+
+            word ??= targetText;
+
+            if (!word.length) {
+                return;
+            }
+
+            if (target.className.includes("cm-basicvar"))
+            {
                 if (word !== targetText)
                 {
-                    const clickElementRect = target.getBoundingClientRect();
-                    const hoverPos = editor.coordsChar({left: clickElementRect.left, top: clickElementRect.top});
-                    const wordRange = editor.findWordAt(hoverPos);
-                    word = editor.getRange(wordRange.anchor, wordRange.head).trim();
-                    if (word !== targetText)
+                    return;
+                }
+
+                const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
+                let lineNumOfFirstDef;
+
+                // Try from file ctags first
+                let lineDefFromCtags = window.ctags.filter( (val) => val.n === word ).map( (val) => val.l );
+                if (lineDefFromCtags.length) {
+                    lineNumOfFirstDef = { line: parseInt(lineDefFromCtags[0])-1 }; // cm format
+                }
+                else
+                {
+                    // Then try from sdk ctags
+                    if (word.length >= 4)
                     {
-                        return;
+                        const defFromSDK = window.sdk_ctags.filter( (tag) => wordRegexp.test(tag.n) ).map( (val) => {
+                            const retType = (val.r && !val.r.startsWith("__anon")) ? (val.r + ' ') : '';
+                            const name    = val.n ? val.n : '';
+                            const args    = val.a ? val.a : '';
+                            const kind    =   (val.k === 'enumerator') ? 'enum value'
+                                            : (val.k === 'prototype')  ? 'function'
+                                            :  val.k;
+                            const comment =  `# ${kind} from ${val.file}, line ${val.l}`;
+                            return comment + `\n${retType}${name}${args}`;
+                        });
+
+                        if (defFromSDK.length) {
+                            makeTempTooltip(defFromSDK[0], target.getBoundingClientRect(), true);
+                            return;
+                        }
+                    }
+
+                    // Otherwise try from any word in the file
+                    const searchRes = editor.getValue().search(wordRegexp);
+                    if (searchRes > -1) {
+                        lineNumOfFirstDef = editor.posFromIndex(searchRes);
                     }
                 }
-                if (word.length > 0)
+
+                if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
                 {
-                    const wordRegexp = new RegExp(`\\b${escapeRegExp(word)}\\b`);
-                    let lineNumOfFirstDef;
-
-                    // Try from file ctags first
-                    let lineDefFromCtags = window.ctags.filter( (val) => val.n === word ).map( (val) => val.l );
-                    if (lineDefFromCtags.length) {
-                        lineNumOfFirstDef = { line: parseInt(lineDefFromCtags[0])-1 }; // cm format
+                    let whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
+                    const commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
+                    if (commentsAbove.length) {
+                        whatToShow = commentsAbove.join("\n") + "\n" + whatToShow;
                     }
-                    else
-                    {
-                        // Then try from sdk ctags
-                        if (word.length >= 4)
+                    const commentsBelow = getCommentsBelowLine(lineNumOfFirstDef.line);
+                    if (commentsBelow.length) {
+                        whatToShow += "\n" + commentsBelow.join("\n");
+                    }
+                    if (whatToShow.length) {
+                        makeTempTooltip(whatToShow, target.getBoundingClientRect(), true);
+                    }
+                }
+            } else {
+                // temp tooltip here for matching information of the token, if found in window.tokens_json
+                try {
+                    if (window.tokens_json) {
+                        const byBytes = window.tokens_json.byBytes || {};
+                        const byName = window.tokens_json.byName || {};
+                        const byAccessibleName = window.tokens_json.byAccessibleName || {};
+
+                        // Attempt multiple resolutions: by name or accessibleName
+                        let token = null;
+
+                        for (const wordToSearch of [ word, `${word} `, `${word}(` ])
                         {
-                            const defFromSDK = window.sdk_ctags.filter( (tag) => wordRegexp.test(tag.n) ).map( (val) => {
-                                const retType = (val.r && !val.r.startsWith("__anon")) ? (val.r + ' ') : '';
-                                const name    = val.n ? val.n : '';
-                                const args    = val.a ? val.a : '';
-                                const kind    =   (val.k === 'enumerator') ? 'enum value'
-                                                : (val.k === 'prototype')  ? 'function'
-                                                :  val.k;
-                                const comment =  `# ${kind} from ${val.file}, line ${val.l}`;
-                                return comment + `\n${retType}${name}${args}`;
-                            });
-
-                            if (defFromSDK.length) {
-                                makeTempTooltip(defFromSDK[0], target.getBoundingClientRect(), true);
-                                return;
+                            // by exact name first
+                            if (byName[wordToSearch]) {
+                                token = byName[wordToSearch];
                             }
+                            // by accessible name -> bytes -> data
+                            if (!token && byAccessibleName[wordToSearch] && byBytes[byAccessibleName[wordToSearch]]) {
+                                token = byBytes[byAccessibleName[wordToSearch]];
+                            }
+                            if (token) { break; }
                         }
 
-                        // Otherwise try from any word in the file
-                        const searchRes = editor.getValue().search(wordRegexp);
-                        if (searchRes > -1) {
-                            lineNumOfFirstDef = editor.posFromIndex(searchRes);
-                        }
-                    }
+                        console.log('word', word);
+                        console.log('token', token);
 
-                    if (lineNumOfFirstDef && lineNumOfFirstDef.line >= 0 && lineNumOfFirstDef.line !== wordRange.head.line)
-                    {
-                        let whatToShow = editor.getLine(lineNumOfFirstDef.line).trim();
-                        const commentsAbove = getCommentsAboveLine(lineNumOfFirstDef.line);
-                        if (commentsAbove.length) {
-                            whatToShow = commentsAbove.join("\n") + "\n" + whatToShow;
-                        }
-                        const commentsBelow = getCommentsBelowLine(lineNumOfFirstDef.line);
-                        if (commentsBelow.length) {
-                            whatToShow += "\n" + commentsBelow.join("\n");
-                        }
-                        if (whatToShow.length) {
-                            makeTempTooltip(whatToShow, target.getBoundingClientRect(), true);
+                        if (token) {
+                            // Build a concise info text
+                            const lines = [];
+                            // Title line
+                            lines.push(`<div style="display: flex; justify-content: space-between; align-items: center; line-height: 16px">`)
+                            lines.push(`<big style="background-color: lightgrey; padding: 2px; border-radius: 4px;"><b><tt>${token.name || word}</tt></b></big>`);
+                            if (token.bytes) {
+                                lines.push('<span><b>Bytes</b>: <tt>' + token.bytes.substring(2) + '</tt></span>');
+                            }
+                            lines.push('</div>')
+
+                            lines.push('<hr style="margin: 0">');
+
+                            if (token.accessibleName && token.accessibleName !== token.name) {
+                                lines.push('<b>Accessible</b>: ' + token.accessibleName);
+                            }
+
+                            // Iterate over all syntax blocks, if any
+                            if (Array.isArray(token.syntaxes) && token.syntaxes.length) {
+                                token.syntaxes.forEach((s, index) => {
+                                    if (index > 0) {
+                                        lines.push('<hr style="margin: 0">');
+                                    }
+                                    lines.push('<div style="line-height: 18px; margin-top: -15px;">');
+                                    if (s.description && s.description.length) {
+                                        lines.push('<span>' + s.description + '</span>');
+                                    }
+                                    if (s.syntax && s.syntax !== token.name) {
+                                        lines.push('<b>Syntax</b>: <code><tt>' + s.syntax + '</tt></code>');
+                                    }
+                                    if (s.location && Array.isArray(s.location) && s.location.length) {
+                                        lines.push('<b>Location</b>: <tt>' + s.location.join(' ➔ ') + '</tt>');
+                                    }
+                                    if (s.comment && s.comment.length) {
+                                        lines.push('<hr>');
+                                        lines.push('# ' + s.comment);
+                                    }
+                                    lines.push('</div>');
+                                });
+                            }
+
+                            const content = lines.join('\n');
+                            const tooltip = makeTempTooltip(content, target.getBoundingClientRect(), false, null, true);
+                            tooltip.dataset.doclink = 'https://ti-toolkit.github.io/tokens-wiki/tokens/' + token.bytes + '.html';
                         }
                     }
+                } catch (e) {
+                    // Ignore errors in token tooltip resolution
                 }
             }
         }
@@ -742,19 +851,26 @@ function do_cm_custom()
         editor.state.currentTooltip = null;
     };
 
-    const makeTempTooltip = (content, where, highlight) => {
+    const makeTempTooltip = (content, where, highlight, mode = null, isHTML = false) => {
         if (editor.state.currentTooltip)  {
             remove(editor.state.currentTooltip);
         }
         const lines = content.split(/\r\n|\r|\n/).length;
         const deltaY = (lines > 1) ? 14*lines : 8;
-        editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - deltaY, content);
+        editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - deltaY, content, isHTML);
+        if (isHTML) {
+            editor.state.currentTooltip.style.top = `${where.top - editor.state.currentTooltip.getBoundingClientRect().height + 5}px`;
+            editor.state.currentTooltip.style.fontFamily = 'sans-serif';
+            editor.state.currentTooltip.style.padding = '8px';
+            editor.state.currentTooltip.style.lineHeight = '5px';
+            editor.state.currentTooltip.style.maxWidth = '600px';
+        }
         if (highlight)
         {
             editor.state.currentTooltip.innerHTML = '';
             CodeMirror(editor.state.currentTooltip, {
                 value: content,
-                mode: 'text/x-tibasic',
+                mode: mode ?? 'text/x-tibasic',
                 lineNumbers: false,
                 readOnly: true,
                 theme: 'xq-light'
@@ -762,6 +878,8 @@ function do_cm_custom()
         }
         editor.on('blur', clearTooltip);
         editor.on('scroll', clearTooltip);
+
+        return editor.state.currentTooltip;
     }
 
 }

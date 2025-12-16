@@ -143,15 +143,14 @@ function ajaxGetArrayBuffer(url, params, callbackOK)
     xhr.send(params);
 }
 
-function elt(tagname, cls /*, ... elts*/)
+function elt(tagname, cls, isHTML, content)
 {
     const e = document.createElement(tagname);
     if (cls) e.className = cls;
-    for (let i = 2; i < arguments.length; ++i) {
-        let elt = arguments[i];
-        if (typeof elt == "string")
-            elt = document.createTextNode(elt);
-        e.appendChild(elt);
+    if (isHTML) {
+        e.innerHTML = content;
+    } else {
+        e.appendChild( document.createTextNode(content));
     }
     return e;
 }
@@ -160,8 +159,8 @@ function remove(node) {
     node && node.parentNode && node.parentNode.removeChild(node);
 }
 
-function makeTooltip(x, y, content) {
-    const node = elt("div", "inlineTooltip", content);
+function makeTooltip(x, y, content, isHTML = false) {
+    const node = elt("div", "inlineTooltip", isHTML, content);
     node.style.left = `${x}px`;
     node.style.top = `${y}px`;
     document.body.appendChild(node);

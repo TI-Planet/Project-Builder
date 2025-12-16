@@ -200,6 +200,10 @@ require_once 'utils.php';
         {
             getSDKCtags();
         }
+        if (!window.tokens_json)
+        {
+            getTokensJSON();
+        }
         <?php } ?>
     }
     init_post_js_2(false);
