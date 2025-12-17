@@ -187,6 +187,8 @@ if (!isset($pm)) { die('Ahem ahem'); }
         ajaxAction('preview_bbcode', `source=${encodeURIComponent(src)}`, (resp) => {
             document.getElementById('bbcodePreviewContent').innerHTML = (resp && resp.html) ? resp.html : '';
             document.getElementById('bbcodeRenderTime').textContent = (resp && resp.renderTime) ? (resp.renderTime + 'ms') : '?';
+            window.do_mathJax && do_mathJax();
+            window.do_highlight_codes && do_highlight_codes();
 
             // Run analysis locally and render it in a dedicated dock below the preview
             try {

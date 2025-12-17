@@ -91,11 +91,7 @@ final class bbcodeProjectBackend extends PHPBasedBackend
 
     private function renderBBCodePreview($text)
     {
-        if (!defined('IN_PHPBB')) {
-            define('IN_PHPBB', true);
-        }
-        $phpEx = 'php';
-        $phpbb_root_path = '/data/web/vhosts/tiplanet.org/ROOT/forum/';
+        global $phpbb_root_path;
         require_once $phpbb_root_path . 'common.php';
         require_once $phpbb_root_path . 'includes/functions_content.php';
 

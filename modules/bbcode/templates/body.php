@@ -34,7 +34,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
     </div>
     <div id="bbcodeSplitter" title="Drag to resize" style="width: 5px; cursor: col-resize; background: #ffdd8e; outline: 1px solid #d2af05; border-radius: 4px; margin: 0 5px; padding: 2px; height: 40px; position: relative; top: calc(50% - 35px);" role="separator"></div>
     <div id="bbcodePreviewPane" style="height: 100%; min-width: 200px; flex: 1 1 50%; padding-left: 2px; padding-right: 5px; display:flex; flex-direction: column;">
-        <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: 100%; padding: 10px 0; background: #fff; flex: 1 1 auto; overflow: auto; position: relative;">
+        <div id="bbcodePreview" style="border: 1px solid #666; border-radius: 0 0 5px 5px; width: 100%; padding: 10px 0; background: #f1f2f2; flex: 1 1 auto; overflow: auto; position: relative;">
             <style>
                 @scope {
                     #previewFakeBody {
@@ -43,14 +43,17 @@ if (!isset($pm)) { die('Ahem ahem'); }
                         color: #525252;
                         font-size: 10px;
                     }
-                    .bg2 {
-                        background-image: url(/forum/styles/prosilver/theme/images/spacer_transparent2.png);
-                        background-repeat: repeat;
-                    }
                     .postbody .content img {
                         border-radius: 2px;
                     }
-                    <?php echo file_get_contents("https://tiplanet.org/forum/style.php?id=1&lang=fr&v=2"); ?>
+                    .latexcode {
+                        display:inline-block;
+                    }
+                    <?php
+                        echo file_get_contents("https://tiplanet.org/forum/style.php?id=1&lang=fr&v=2");
+                        echo "\n";
+                        echo file_get_contents($phpbb_root_path . "/css/highlight_style.css");
+                    ?>
                 }
             </style>
             <div id="previewFakeBody">

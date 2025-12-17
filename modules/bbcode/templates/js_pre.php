@@ -73,6 +73,24 @@ require_once 'utils.php';
 <script src="<?= cacheBusterPath('js/codemirror/diff_match_patch.js"') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/merge.js') ?>"></script>
 
+<script src="/forum/js/highlighter.min.js"></script>
+<script type="text/javascript">
+    hljs.configure({"useBR":true});
+    function do_highlight_codes() {
+        $(document).ready(function(){
+            $(".codebox dd code, code.inline").each( function(i, e){ hljs.highlightBlock(e); } );
+            $("code.hljs:not(.inline)").each(function(){var n=$(this);if("true"!=n.attr("data-lines-done")){var e=n.attr("class").replace("hljs","").trim().split(/\s+/),t=""===e[0]?e[1]:e.length>1&&""!==e[e.length-1]?"<span title='("+e[1]+" ?)'>"+e[0]+"</span>":e[0],a=n.parent().siblings().eq(0)[0];a&&a.innerHTML&&(a.innerHTML=a.innerHTML.replace("Code: ","Code "+(t?t:'')+" :  "));var l=n.html().split("<br>");l.forEach(function(n,e){l[e]='<span class="hljs-comment line-number" data-line="'+(e+1)+'"></span>'+n}),n.html(l.join("<br>")),n.attr("data-lines-done","true")}});
+        });
+    }
+    do_highlight_codes();
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: {inlineMath: [['$mathjax$','$mathjax$']]} });
+    MathJax.Hub.Register.StartupHook("End Jax",function() { return MathJax.Hub.setRenderer('NativeMML'); });
+</script>
+<script type="text/javascript" src="/forum/js/mathjax_loader_new.js?v=2"></script>
+
 <?php
 if ($currProject->isMulti_ReadWrite())
 {
