@@ -71,11 +71,8 @@ final class bbcodeProjectBackend extends PHPBasedBackend
                 {
                     return PBStatus::Error('No source provided');
                 }
-                if ($params['source'] !== strip_tags($params['source']))
-                {
-                    return PBStatus::Error('BBCode source contains HTML tags, please remove them');
-                }
-                return $this->renderBBCodePreview($params['source']);
+                $strippedSource = strip_tags($params['source']);
+                return $this->renderBBCodePreview($strippedSource);
         }
 
         return PBStatus::Error('Unknown action');
