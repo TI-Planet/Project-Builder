@@ -68,6 +68,6 @@ if (!isset($pm)) { die('Ahem ahem'); }
                 </div>
             </div>
         </div>
-        <div id="bbcodeAnalysisDock" style="margin-top:6px; border: 1px solid #666; border-radius: 4px; background:#f8f9fa; padding: 6px; min-height: 15%; max-height: 35%; overflow: auto;"></div>
+        <div id="bbcodeAnalysisDock" style="margin-top:6px; border: 1px solid #666; border-radius: 4px; background:#f8f9fa; padding: 6px; min-height: 75px; max-height: 300px; overflow: auto;"></div>
     </div>
 </div>

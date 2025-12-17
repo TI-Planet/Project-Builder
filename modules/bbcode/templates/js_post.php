@@ -196,6 +196,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
                 const dock = document.getElementById('bbcodeAnalysisDock');
                 if (dock) {
                     dock.innerHTML = analysis.html;
+                    dock.style.minHeight = dock.style.maxHeight = Math.min(300, Math.max(75, $("#bbcodeAnalysis").height())) + 'px';
                     // Wire click-to-jump handlers
                     dock.querySelectorAll('.bbcode-jump').forEach((a) => {
                         a.addEventListener('click', (ev) => {
