@@ -464,6 +464,38 @@ function transferToEmuAndRun()
     }
 }
 
+async function transferToCalc()
+{
+    const button = $("#buildUsbButton");
+    if (button.hasClass("disabled")) {
+        return;
+    }
+    if (!navigator.usb || !self.isSecureContext) {
+        alert("WebUSB is not available. Use a compatible browser (Chrome/Edge).");
+        button.addClass("disabled").attr("disabled", true);
+        return;
+    }
+    const file = makeBasicPrgm();
+    if (!file) {
+        return;
+    }
+    button.addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
+    try {
+        if (!window.pbWebUsbTransfer) {
+            throw new Error("WebUSB transfer helper not loaded");
+        }
+        const result = await window.pbWebUsbTransfer.sendFileBytes(file, `${proj.prgmName}.8xp`);
+        if (result === 0) {
+            showNotification("success", "Transfer complete", `Sent ${proj.prgmName}.8xp to the calculator`);
+        } else {
+            showNotification("danger", "Transfer failed", `Calculator returned error ${result}`);
+        }
+    } catch (err) {
+        showNotification("danger", "Transfer failed", err.message || err);
+    }
+    button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
+}
+
 function makeGfx(callback)
 {
     // todo: make image appvars from images

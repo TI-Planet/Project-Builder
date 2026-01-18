@@ -50,6 +50,8 @@ require_once 'utils.php';
 </script>
 
 <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
+<script src="<?= cacheBusterPath("./modules/_shared/webusb_test.js") ?>"></script>
+<script src="<?= cacheBusterPath("./modules/_shared/webusb_transfer.js") ?>"></script>
 <?php if (!$pm->currentUserIsProjOwnerOrStaff() && !$currProject->isMulti_ReadWrite()) { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
 <?php } ?>

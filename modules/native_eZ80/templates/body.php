@@ -116,7 +116,8 @@ if (!isset($pm))
                 <li class="hasTooltip" data-placement="right" title="Download all the project's files in a .zip archive"><a onclick="$('#zipDlForm').submit(); return false">Download project as .zip</a></li>
             </ul>
         </div>
-        <button id="buildRunButton" class="btn btn-primary btn-sm disabled" disabled onclick="buildAndRunInEmu(); return false" title="Build and run the program in the emulator"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Test in emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="buildUsbButton" class="btn btn-primary btn-sm" onclick="buildAndTransferToCalc(); return false" title="Build and send to a connected calculator (WebUSB)"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to calculator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="buildRunButton" class="btn btn-primary btn-sm disabled" disabled onclick="buildAndRunInEmu(); return false" title="Build and run the program in the emulator"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div id="buildTimestampContainer" class="hidden"><b>Latest build</b>: <span id="buildTimestamp"></span></div>
     </div>
 

@@ -2,6 +2,9 @@ order allow,deny
 
 <Files ~ "\.(css|js|wasm|html?)$">
    allow from all
+   # Required headers for SharedArrayBuffer
+   Header always set Cross-Origin-Opener-Policy "same-origin"
+   Header always set Cross-Origin-Embedder-Policy "require-corp"
 </Files>
 
 Deny from all

@@ -91,7 +91,8 @@ if (!isset($pm))
                 <li><a onclick="$('#zipDlForm').submit(); return false">Download project (.zip) with all sources</a></li>
             </ul>
         </div>
-        <button id="transferButton" class="btn btn-primary btn-sm hasTooltip disabled" disabled title="Can't run it yet, however" onclick="transferToEmu(); return false"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Transfer to emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="buildUsbButton" class="btn btn-primary btn-sm" onclick="transferToCalc(); return false" title="Send the AppVar to a connected calculator (WebUSB)"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to calculator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <button id="transferButton" class="btn btn-primary btn-sm hasTooltip disabled" disabled title="Can't run it yet, however" onclick="transferToEmu(); return false"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
     </div>
 
     <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>
@@ -115,4 +116,3 @@ if (!isset($pm))
             </div>
         </div>
     </div>
-
