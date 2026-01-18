@@ -188,8 +188,8 @@ if (!isset($pm))
         <span class="copyright">Emulation powered by CEmu (see <a href="https://github.com/CE-Programming/CEmu" target="_blank">on GitHub</a>)</span>
     </div>
 
-    <script type="text/javascript" src="https://cdn.webrtc-experiment.com/screenshot.js"></script>
-    <script type="text/javascript" src="https://cdn.webrtc-experiment.com/RecordRTC.min.js"></script>
+    <script src="<?= cacheBusterPath("./modules/_shared/RecordRTC_screenshot.min.js") ?>"></script>
+    <script src="<?= cacheBusterPath("./modules/_shared/RecordRTC.min.js") ?>"></script>
     <script type="text/javascript">
         const recorder = new CanvasRecorder(document.getElementById('emu_canvas'), { disableLogs: true });
         const btn_start = document.getElementById('record_btn_start');
