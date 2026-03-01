@@ -54,4 +54,43 @@ class DBHelper_PDO implements IDBHelper
     {
         return $this->dbConn->lastInsertId();
     }
+
+    public function beginTransaction()
+    {
+        $this->lastErrCode = null;
+        try
+        {
+            return $this->dbConn->beginTransaction();
+        } catch (\PDOException $e)
+        {
+            $this->lastErrCode = $e->getCode();
+            return false;
+        }
+    }
+
+    public function commit()
+    {
+        $this->lastErrCode = null;
+        try
+        {
+            return $this->dbConn->commit();
+        } catch (\PDOException $e)
+        {
+            $this->lastErrCode = $e->getCode();
+            return false;
+        }
+    }
+
+    public function rollBack()
+    {
+        $this->lastErrCode = null;
+        try
+        {
+            return $this->dbConn->rollBack();
+        } catch (\PDOException $e)
+        {
+            $this->lastErrCode = $e->getCode();
+            return false;
+        }
+    }
 }

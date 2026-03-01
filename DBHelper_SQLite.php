@@ -92,4 +92,43 @@ class DBHelper_SQLite implements IDBHelper
     {
         return $this->dbConn->lastInsertRowID();
     }
+
+    public function beginTransaction()
+    {
+        $this->lastErrCode = null;
+        try
+        {
+            return $this->dbConn->exec('BEGIN IMMEDIATE TRANSACTION');
+        } catch (\SQLiteException $e)
+        {
+            $this->lastErrCode = $e->getCode();
+            return false;
+        }
+    }
+
+    public function commit()
+    {
+        $this->lastErrCode = null;
+        try
+        {
+            return $this->dbConn->exec('COMMIT');
+        } catch (\SQLiteException $e)
+        {
+            $this->lastErrCode = $e->getCode();
+            return false;
+        }
+    }
+
+    public function rollBack()
+    {
+        $this->lastErrCode = null;
+        try
+        {
+            return $this->dbConn->exec('ROLLBACK');
+        } catch (\SQLiteException $e)
+        {
+            $this->lastErrCode = $e->getCode();
+            return false;
+        }
+    }
 }

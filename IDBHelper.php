@@ -87,6 +87,21 @@ interface IDBHelper
      * @return int|null
      */
     public function getLastErrCode();
+
+    /**
+     * @return bool
+     */
+    public function beginTransaction();
+
+    /**
+     * @return bool
+     */
+    public function commit();
+
+    /**
+     * @return bool
+     */
+    public function rollBack();
 }
 
 /**
