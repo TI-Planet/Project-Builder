@@ -71,6 +71,7 @@ require_once 'utils.php';
 
         <?php if ($currProject->isMulti_ReadWrite()) { ?>
 
+        window.Firebase?.INTERNAL?.forceWebSockets();
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
         firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
             if (error) { // possibly expired token, etc.
