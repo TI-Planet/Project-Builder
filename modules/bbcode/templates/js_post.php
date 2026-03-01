@@ -225,7 +225,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
         const editorContainer = $('#editorContainer');
         const saveBtn = document.getElementById('saveButton');
 
-        <?php if ($currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserHasLiveCollabEditAccess()) { ?>
 
         window.Firebase?.INTERNAL?.forceWebSockets();
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
@@ -354,7 +354,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
     init_post_js_1();
     init_post_js_2();
 
-    <?php if ($currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) { ?>
+    <?php if ($pm->currentUserHasLiveCollabEditAccess() && $currProject->isChatEnabled()) { ?>
 
     function init_chat()
     {

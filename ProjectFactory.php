@@ -37,10 +37,12 @@ abstract class ProjectFactory
      * @param          $chatEnabled
      * @param          $cTime
      * @param          $uTime
+     * @param bool     $isReadWriteCustom
+     * @param array    $readWriteAllowedUserIDs
      * @return null|Project
      * @throws \Exception
      */
-    public static function create($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime)
+    public static function create($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
     {
         if (!in_array($type, self::$projectTypes, true))
         {
@@ -55,7 +57,7 @@ abstract class ProjectFactory
             // There's a custom class (server-side)
             require_once $customIncludePath;
             try {
-                return new $customFullClassName($db_id, $pid, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime);
+                return new $customFullClassName($db_id, $pid, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom, $readWriteAllowedUserIDs);
             } catch (\Exception $e)
             {
                 echo $e->getMessage();

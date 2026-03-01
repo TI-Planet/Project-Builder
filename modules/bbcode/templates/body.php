@@ -7,7 +7,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
 <textarea id="fakeContainer" style="display:none" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
 <div class="toolbar" style="display: flex; justify-content: space-between;">
-    <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+    <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled>
             <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
             Save <span class="loadingicon hidden"><span class="glyphicon glyphicon-refresh spinning"></span></span>
@@ -28,9 +28,9 @@ if (!isset($pm)) { die('Ahem ahem'); }
 
 <div id="bbcodeSplitContainer" style="height: calc(100% - 70px); margin-top:10px; display: flex; flex-direction: row; align-items: stretch;">
     <div id="bbcodeEditorPane" style="height: 100%; min-width: 200px; flex: 0 0 50%; padding-right: 2px;">
-        <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
+        <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '<div class="firepad">'; } ?>
         <textarea id="codearea"></textarea>
-        <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
+        <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '</div>'; } ?>
     </div>
     <div id="bbcodeSplitter" title="Drag to resize" style="width: 5px; cursor: col-resize; background: #ffdd8e; outline: 1px solid #d2af05; border-radius: 4px; margin: 0 5px; padding: 2px; height: 40px; position: relative; top: calc(50% - 35px);" role="separator"></div>
     <div id="bbcodePreviewPane" style="height: 100%; min-width: 200px; flex: 1 1 50%; padding-left: 2px; padding-right: 5px; display:flex; flex-direction: column;">

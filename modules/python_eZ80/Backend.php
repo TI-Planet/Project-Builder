@@ -146,7 +146,7 @@ final class python_eZ80ProjectBackend extends PHPBasedBackend
                 return PBStatus::OK;
 
             case 'deleteCurrentFile':
-                if (!($thisProject->isMulti_ReadWrite() || $thisProject->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
+                if (!$thisProject->canUserWriteProject($user))
                 {
                     return PBStatus::Error('Unauthorized');
                 }

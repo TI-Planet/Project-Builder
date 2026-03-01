@@ -99,7 +99,7 @@ if ($currProject->getType() === 'bbcode' && !$currUser->isModeratorOrMore()) {
 <?php @include $templatePath . 'js_post.php'; ?>
 
     <script>
-        <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
         window.onbeforeunload = function() {
             if (!savedSinceLastChange)
             {

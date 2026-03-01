@@ -26,7 +26,7 @@ if (!isset($pm))
     proj.files = <?php echo json_encode($currProject->getAvailableSrcFiles()); ?>;
 </script>
 
-<?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+<?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
 <script src="<?= cacheBusterPath('js/jquery.filedrop.js') ?>"></script>
 <script>
     $(function(){

@@ -94,7 +94,7 @@ final class basic_eZ80ProjectBackend extends PHPBasedBackend
                 return $this->addFile($params['fileName']);
 
             case 'deleteCurrentFile':
-                if (!($thisProject->isMulti_ReadWrite() || $thisProject->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
+                if (!$thisProject->canUserWriteProject($user))
                 {
                     return PBStatus::Error('Unauthorized');
                 }

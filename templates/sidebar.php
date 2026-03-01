@@ -51,7 +51,7 @@ function genSidebar()
         $content .= '<u>Type</u>: ' . $currProject->getType();
         $content .= '<br/><u>Created</u>: ' . "<script>var d = new Date({$currProject->getCreatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
         $content .= '<br/><u>Updated</u>: ' . "<script>var d = new Date({$currProject->getUpdatedTstamp()}*1000); document.write(d.toLocaleDateString()+' '+d.toLocaleTimeString());</script>";
-        $content .= '<br/><u>Shared</u>: ' . ($currProject->isMultiuser() ? ('Yes (' . ($currProject->isMulti_ReadWrite() ? 'Read/Write' : 'Read only') . ')') : 'No. Share: ');
+        $content .= '<br/><u>Shared</u>: ' . ($currProject->isMultiuser() ? ('Yes (' . ($currProject->isMulti_ReadWrite() ? ($currProject->isMulti_ReadWrite_CustomRestricted() ? 'Read/Write...' : 'Read/Write') : 'Read only') . ')') : 'No. Share: ');
         if ($currProject->getAuthorID() === $currUser->getID())
         {
             if ($currProject->isMultiuser()) {
@@ -123,7 +123,7 @@ function genSidebar()
     }
     $content .= '</div>';
 
-    if ($currProject && $currProject->isMultiuser() && $currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) {
+    if ($currProject && $pm->currentUserHasLiveCollabEditAccess() && $currProject->isChatEnabled()) {
         $content .= '<div id="firechat-wrapper"></div>';
     }
 

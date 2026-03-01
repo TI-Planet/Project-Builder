@@ -39,6 +39,8 @@ abstract class Project
     protected string $internalName;
     protected bool $multiuser;
     protected bool $multi_readwrite;
+    protected bool $multi_readwrite_custom;
+    protected array $multi_readwrite_allowed_userids;
     protected bool $chatEnabled;
     protected int $createdTstamp;
     protected int $updatedTstamp;
@@ -47,7 +49,7 @@ abstract class Project
     protected string $currentFile;
 
     // This is protected since only children classes extending it will call it.
-    protected function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime)
+    protected function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
     {
         if (!is_int($db_id))
         {
@@ -77,6 +79,10 @@ abstract class Project
         {
             throw new \InvalidArgumentException('chatEnabled must be a boolean');
         }
+        if (!is_bool($isReadWriteCustom))
+        {
+            throw new \InvalidArgumentException('isReadWriteCustom must be a boolean');
+        }
         if (!is_int($cTime) || strlen((string)$cTime) !== 10)
         {
             throw new \InvalidArgumentException('Creation timestamp must be an unix timestamp (10 digits unsigned int)');
@@ -92,8 +98,12 @@ abstract class Project
         $this->type = $type;
         $this->name = $name;
         $this->internalName = $internalName;
-        $this->multiuser = $multiuser;
-        $this->multi_readwrite = $multiuser && $wantReadWrite;
+        $this->multiuser = false;
+        $this->multi_readwrite = false;
+        $this->multi_readwrite_custom = false;
+        $this->multi_readwrite_allowed_userids = [];
+        $this->setMultiuser($multiuser, $wantReadWrite, $isReadWriteCustom);
+        $this->setMultiReadWriteAllowedUserIDs($readWriteAllowedUserIDs);
         $this->chatEnabled = $chatEnabled;
         $this->createdTstamp = $cTime;
         $this->updatedTstamp = $uTime;
@@ -181,6 +191,16 @@ abstract class Project
         return $this->multi_readwrite;
     }
 
+    final public function isMulti_ReadWrite_CustomRestricted()
+    {
+        return $this->multi_readwrite && $this->multi_readwrite_custom;
+    }
+
+    final public function getMulti_ReadWriteAllowedUserIDs()
+    {
+        return $this->multi_readwrite_allowed_userids;
+    }
+
     final public function isChatEnabled()
     {
         return $this->chatEnabled;
@@ -231,23 +251,53 @@ abstract class Project
 
     public function canUserEditCurrentFile(UserInfo $user)
     {
-        return $this->isCurrentFileEditable() && ($user->isModeratorOrMore() || $this->getAuthorID() === $user->getID() || ($this->isMultiuser() && $this->isMulti_ReadWrite()));
+        return $this->isCurrentFileEditable() && $this->canUserWriteProject($user);
     }
 
-    /**
-     * @param boolean $multiuser
-     * @param boolean $wantReadWrite
-     * @return bool
-     */
-    final public function setMultiuser($multiuser, $wantReadWrite)
+    public function canUserWriteProject(UserInfo $user)
     {
-        if (is_bool($multiuser) && is_bool($wantReadWrite))
+        if ($user->isModeratorOrMore() || $this->getAuthorID() === $user->getID())
         {
-            $this->multiuser = $multiuser;
-            $this->multi_readwrite = $multiuser && $wantReadWrite;
             return true;
         }
-        return false;
+        if (!($this->isMultiuser() && $this->isMulti_ReadWrite()))
+        {
+            return false;
+        }
+        if (!$this->isMulti_ReadWrite_CustomRestricted())
+        {
+            return true;
+        }
+
+        return in_array($user->getID(), $this->multi_readwrite_allowed_userids, true);
+    }
+
+    final public function setMultiReadWriteAllowedUserIDs(array $userIDs)
+    {
+        $tmp = [];
+        foreach ($userIDs as $userID)
+        {
+            if (is_int($userID) || (is_string($userID) && preg_match('/^\d+$/', $userID) === 1))
+            {
+                $uid = (int)$userID;
+                if ($uid > 1) {
+                    $tmp[$uid] = true;
+                }
+            }
+        }
+        ksort($tmp, SORT_NUMERIC);
+        $this->multi_readwrite_allowed_userids = array_map('intval', array_keys($tmp));
+    }
+
+    final public function setMultiuser(bool $multiuser, bool $wantReadWrite, bool $isReadWriteCustom)
+    {
+        $this->multiuser = $multiuser;
+        $this->multi_readwrite = $multiuser && $wantReadWrite;
+        $this->multi_readwrite_custom = $this->multi_readwrite && $isReadWriteCustom;
+        if (!$this->multi_readwrite_custom)
+        {
+            $this->multi_readwrite_allowed_userids = [];
+        }
     }
 
     /**

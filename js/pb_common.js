@@ -37,6 +37,10 @@ function loadProjConfig()
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
         if (typeof conf.autocomplete_delay !== "undefined") { proj.autocomplete_delay = conf.autocomplete_delay; }
     }
+
+    $(document).on("change", "#settingsForm input[name='sharingMode']", refreshSharingModeFormVisibility);
+    refreshSharingModeFormVisibility();
+
     editorPostSetup();
 
     if (typeof editor === "object")
@@ -87,6 +91,17 @@ function saveProjConfig()
     localStorage.setItem(`config_${proj.pid}`, JSON.stringify(proj));
 }
 
+function refreshSharingModeFormVisibility()
+{
+    const isCustom = $("#settingsForm input[name='sharingMode']:checked").val() === "custom";
+    const customRWAllowedUsersBlock = $("#customRWAllowedUsersBlock");
+    if (!customRWAllowedUsersBlock.length) {
+        return;
+    }
+    customRWAllowedUsersBlock.toggle(isCustom);
+    $("#allowedRWUserIDs").prop("disabled", !isCustom);
+}
+
 function forkProject(doConfirm)
 {
     if (typeof doConfirm !== "boolean") {
@@ -108,9 +123,9 @@ function forkProject(doConfirm)
 
 function enableMultiUserRW()
 {
-    saveFile(() => {
-        ajaxAction("enableMultiRW", "", () => { window.location.reload(); } );
-    });
+    $("#settingsForm input[name='sharingMode'][value='custom']").prop("checked", true).trigger("change");
+    refreshSharingModeFormVisibility();
+    $("#settingsModal").modal();
 }
 
 function enableMultiUserRO()

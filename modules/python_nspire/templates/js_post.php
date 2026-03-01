@@ -69,7 +69,7 @@ require_once 'utils.php';
     {
         const editorContainer = $('#editorContainer');
 
-        <?php if ($currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserHasLiveCollabEditAccess()) { ?>
 
         window.Firebase?.INTERNAL?.forceWebSockets();
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
@@ -205,7 +205,7 @@ require_once 'utils.php';
     }
     init_post_js_2(false);
 
-    <?php if ($currProject->isMulti_ReadWrite() && $currProject->isChatEnabled()) { ?>
+    <?php if ($pm->currentUserHasLiveCollabEditAccess() && $currProject->isChatEnabled()) { ?>
 
     function init_chat()
     {

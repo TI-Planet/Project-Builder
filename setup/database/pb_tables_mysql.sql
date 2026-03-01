@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `pb_projects` (
   `internal_name` varchar(30) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `multiuser` tinyint(1) NOT NULL DEFAULT '0',
   `multi_readwrite` tinyint(1) NOT NULL DEFAULT '0',
+  `multi_rw_custom` tinyint(1) NOT NULL DEFAULT '0',
   `chat_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `created` int(10) unsigned NOT NULL,
   `updated` int(10) unsigned NOT NULL,
@@ -77,6 +78,14 @@ ALTER TABLE `pb_logs`
 --
 ALTER TABLE `pb_projects`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `randkey` (`author`,`created`,`randkey`), ADD KEY `author` (`author`), ADD KEY `type` (`type`), ADD KEY `fork_of` (`fork_of`), ADD KEY `deleted` (`deleted`);
+
+CREATE TABLE IF NOT EXISTS `pb_project_rw_acl` (
+`proj_id` mediumint(8) unsigned NOT NULL,
+  `user_id` mediumint(8) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+
+ALTER TABLE `pb_project_rw_acl`
+ ADD PRIMARY KEY (`proj_id`,`user_id`), ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `pb_tokens`
@@ -118,6 +127,12 @@ ADD CONSTRAINT `pb_logs_ibfk_1` FOREIGN KEY (`proj_id`) REFERENCES `pb_projects`
 --
 ALTER TABLE `pb_projects`
 ADD CONSTRAINT `pb_projects_ibfk_1` FOREIGN KEY (`fork_of`) REFERENCES `pb_projects` (`id`);
+
+--
+-- Constraints for table `pb_project_rw_acl`
+--
+ALTER TABLE `pb_project_rw_acl`
+ADD CONSTRAINT `pb_project_rw_acl_ibfk_1` FOREIGN KEY (`proj_id`) REFERENCES `pb_projects` (`id`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

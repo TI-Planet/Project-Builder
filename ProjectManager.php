@@ -115,6 +115,18 @@ final class ProjectManager
         return $this->currentProject->getAuthorID() === $this->currentUser->getID() || $this->currentUser->isModeratorOrMore();
     }
 
+    public function currentUserCanWriteCurrentProject()
+    {
+        return $this->currentProject !== null && $this->currentProject->canUserWriteProject($this->currentUser);
+    }
+
+    public function currentUserHasLiveCollabEditAccess()
+    {
+        return $this->currentProject !== null
+            && $this->currentProject->isMulti_ReadWrite()
+            && $this->currentProject->canUserWriteProject($this->currentUser);
+    }
+
     /**
      * @param int $limit
      * @return array
@@ -148,10 +160,10 @@ final class ProjectManager
 
         $fork_of = ($isForkOfCurrent && $this->hasValidCurrentProject() ? $this->currentProject->getDBID() : null);
 
-        $ok = $this->pmdb->execQuery('INSERT INTO `pb_projects` (`randkey`, `author`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `chat_enabled`, `created`, `updated`, `fork_of`)
-                                         VALUES ( :rk , :aut , :type , :pname , :iname , :mu , :murw , :chat , :crea , :upd , :forkof )',
+        $ok = $this->pmdb->execQuery('INSERT INTO `pb_projects` (`randkey`, `author`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `multi_rw_custom`, `chat_enabled`, `created`, `updated`, `fork_of`)
+                                         VALUES ( :rk , :aut , :type , :pname , :iname , :mu , :murw , :murwc , :chat , :crea , :upd , :forkof )',
                                     [ 'rk' => $randKey, 'aut' => $author->getID(), 'type' => $type, 'pname' => $name, 'iname' => $internalName,
-                                      'mu' => 0, 'murw' => 0, 'chat' => 0, 'crea' => $now, 'upd' => $now, 'forkof' => $fork_of ]);
+                                      'mu' => 0, 'murw' => 0, 'murwc' => 0, 'chat' => 0, 'crea' => $now, 'upd' => $now, 'forkof' => $fork_of ]);
         if ($ok === false)
         {
             $this->lastError = 'Error creating the project in the DB';
@@ -236,7 +248,7 @@ final class ProjectManager
                 }
 
                 // From here on, need special permissions
-                if (!($this->currentUserIsProjOwnerOrStaff() || $this->currentProject->isMulti_ReadWrite()))
+                if (!$this->currentUserCanWriteCurrentProject())
                 {
                     return ($this->lastError = ($params['action'] ?? 'action') . ' unauthorized');
                 }
@@ -318,26 +330,24 @@ final class ProjectManager
             {
                 case 'disableMulti':
                 case 'enableMultiRO':
-                case 'enableMultiRW':
                     // Don't allow anyone but the project owner (or staff) to change the shared status
                     if (!$this->currentUserIsProjOwnerOrStaff())
                     {
                         $this->lastError = 'Unauthorized';
                         return false;
                     }
-                    $wantMultiUser = $params['action'] === 'enableMultiRO' || $params['action'] === 'enableMultiRW';
-                    $wantReadWrite = $wantMultiUser && $params['action'] === 'enableMultiRW';
-                    if ($this->currentProject->setMultiuser($wantMultiUser, $wantReadWrite))
+                    $wantMultiUser = $params['action'] === 'enableMultiRO';
+                    $this->currentProject->setMultiuser($wantMultiUser, false, false);
+                    $ok = $this->pmdb->execQuery('UPDATE `pb_projects` SET `multiuser` = :mu , `multi_readwrite` = :murw, `multi_rw_custom` = :murwc WHERE `id` = :id ',
+                                                [ 'mu' => (int)$wantMultiUser, 'murw' => 0, 'murwc' => 0, 'id' => $this->currentProject->getDBID() ] );
+                    if ($ok)
                     {
-                        $ok = $this->pmdb->execQuery('UPDATE `pb_projects` SET `multiuser` = :mu , `multi_readwrite` = :murw WHERE `id` = :id ',
-                                                    [ 'mu' => (int)$wantMultiUser, 'murw' => (int)$wantReadWrite, 'id' => $this->currentProject->getDBID() ] );
-                        unset($params['action']);
-                        $this->lastError = $ok ? $this->lastError : 'Error updating the sharing status in the DB';
-                        return $ok;
+                        $this->currentProject->setMultiReadWriteAllowedUserIDs([]);
+                        $this->setReadWriteAllowedUserIDsForProject($this->currentProject->getDBID(), []);
                     }
-
-                $this->lastError = 'Error changing the sharing status';
-                return false;
+                    unset($params['action']);
+                    $this->lastError = $ok ? $this->lastError : 'Error updating the sharing status';
+                    return $ok;
 
                 case 'refreshFirebaseToken':
                     unset($params['action']);
@@ -412,25 +422,162 @@ final class ProjectManager
                     if (isset($params['sharingMode']))
                     {
                         $val = $params['sharingMode'];
-                        $wantMultiUser = $val === 'publicRO' || $val === 'publicRW';
-                        $wantReadWrite = $wantMultiUser && $val === 'publicRW';
-                        if ($this->currentProject->setMultiuser($wantMultiUser, $wantReadWrite))
+                        $wantMultiUser = false;
+                        $wantReadWrite = false;
+                        $wantCustomReadWrite = false;
+                        $allowedRWUserIDs = [];
+
+                        switch ($val)
                         {
-                            $ok = $this->pmdb->execQuery('UPDATE `pb_projects` SET `multiuser` = :mu , `multi_readwrite` = :murw WHERE `id` = :id ',
-                                                         [ 'mu' => (int)$wantMultiUser, 'murw' => (int)$wantReadWrite, 'id' => $this->currentProject->getDBID() ] );
-                            $this->lastError = $ok ? $this->lastError : 'Error updating the sharing status in the DB';
-                        } else {
-                            $this->lastError = 'Error changing the sharing status';
+                            case 'private':
+                                break;
+
+                            case 'publicRO':
+                                $wantMultiUser = true;
+                                break;
+
+                            case 'publicRW':
+                                $wantMultiUser = true;
+                                $wantReadWrite = true;
+                                break;
+
+                            case 'custom':
+                                $wantMultiUser = true;
+                                $wantReadWrite = true;
+                                $wantCustomReadWrite = true;
+                                $allowedRWUserIDs = $this->parseAllowedReadWriteUserIDs($params['allowedRWUserIDs'] ?? '');
+                                if ($allowedRWUserIDs === null)
+                                {
+                                    return false;
+                                }
+                                break;
+
+                            default:
+                                $this->lastError = 'Error - invalid value for sharing mode';
+                                return false;
+                        }
+
+                        $this->currentProject->setMultiuser($wantMultiUser, $wantReadWrite, $wantCustomReadWrite);
+                        if (!$this->pmdb->execQuery('UPDATE `pb_projects` SET `multiuser` = :mu , `multi_readwrite` = :murw, `multi_rw_custom` = :murwc WHERE `id` = :id ',
+                            [ 'mu' => (int)$wantMultiUser, 'murw' => (int)$wantReadWrite, 'murwc' => (int)$wantCustomReadWrite, 'id' => $this->currentProject->getDBID() ] ))
+                        {
+                            $this->lastError = 'Error updating the sharing status in the DB';
                             return false;
                         }
+
+                        if (!$this->setReadWriteAllowedUserIDsForProject($this->currentProject->getDBID(), $wantCustomReadWrite ? $allowedRWUserIDs : []))
+                        {
+                            $this->lastError = 'Error updating the custom write access list in the DB';
+                            return false;
+                        }
+                        $this->currentProject->setMultiReadWriteAllowedUserIDs($allowedRWUserIDs);
                     }
-                    unset($params['id'], $params['sharingMode'], $params['chatEnabled'], $params['csrf_token']);
+                    unset($params['id'], $params['sharingMode'], $params['allowedRWUserIDs'], $params['chatEnabled'], $params['csrf_token']);
                     break;
             }
             // TODO : handle more global action cases ?
         }
 
         return true;
+    }
+
+    private function parseAllowedReadWriteUserIDs($rawIDs)
+    {
+        if (!is_string($rawIDs))
+        {
+            $this->lastError = 'Invalid value for allowed user IDs';
+            return null;
+        }
+
+        $tmp = [];
+        $parts = preg_split('/[\s,;]+/', trim($rawIDs), -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($parts as $part)
+        {
+            if (preg_match('/^\d+$/', $part) !== 1)
+            {
+                $this->lastError = "Invalid user ID in custom list: {$part}";
+                return null;
+            }
+            $uid = (int)$part;
+            if ($uid <= 1)
+            {
+                $this->lastError = "Invalid user ID in custom list: {$part}";
+                return null;
+            }
+            $tmp[$uid] = true;
+        }
+
+        $ids = array_map('intval', array_keys($tmp));
+        sort($ids, SORT_NUMERIC);
+        if (count($ids) === 0)
+        {
+            $this->lastError = 'Custom read+write mode needs at least one allowed user ID';
+            return null;
+        }
+        if (count($ids) > 100)
+        {
+            $this->lastError = 'Custom read+write mode supports up to 100 allowed user IDs';
+            return null;
+        }
+
+        return $ids;
+    }
+
+    private function getReadWriteAllowedUserIDsForProject($projectDBID)
+    {
+        $res = $this->pmdb->getQueryResults('SELECT `user_id`
+                                               FROM `pb_project_rw_acl`
+                                              WHERE `proj_id` = :pid
+                                           ORDER BY `user_id` ASC ',
+                                           [ 'pid' => (int)$projectDBID ]);
+
+        $ids = [];
+        foreach ($res as $row)
+        {
+            $uid = (int)$row->user_id;
+            if ($uid > 1) {
+                $ids[$uid] = true;
+            }
+        }
+
+        $ids = array_map('intval', array_keys($ids));
+        sort($ids, SORT_NUMERIC);
+        return $ids;
+    }
+
+    private function setReadWriteAllowedUserIDsForProject($projectDBID, array $userIDs)
+    {
+        if (!$this->pmdb->beginTransaction())
+        {
+            return false;
+        }
+
+        $ok = $this->pmdb->execQuery('DELETE FROM `pb_project_rw_acl` WHERE `proj_id` = :pid ',
+                                     [ 'pid' => (int)$projectDBID ]);
+        if ($ok !== false)
+        {
+            foreach ($userIDs as $uid)
+            {
+                $ok = $this->pmdb->execQuery('INSERT INTO `pb_project_rw_acl` (`proj_id`, `user_id`) VALUES (:pid, :uid) ',
+                                             [ 'pid' => (int)$projectDBID, 'uid' => (int)$uid ]);
+                if ($ok === false)
+                {
+                    break;
+                }
+            }
+        }
+
+        if ($ok)
+        {
+            $ok = $this->pmdb->commit();
+            if ($ok)
+            {
+                return true;
+            }
+        }
+
+        $this->pmdb->rollBack();
+        return false;
     }
 
     /**
@@ -445,7 +592,7 @@ final class ProjectManager
             return null;
         }
 
-        $res = $this->pmdb->getQueryResults('SELECT `id`, `author`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `chat_enabled`, `created`, `updated`
+        $res = $this->pmdb->getQueryResults('SELECT `id`, `author`, `type`, `name`, `internal_name`, `multiuser`, `multi_readwrite`, `multi_rw_custom`, `chat_enabled`, `created`, `updated`
                                                FROM `pb_projects`
                                               WHERE `pid` = :pid AND `deleted` IS NULL ',
                                            [ 'pid' => $projectID ]);
@@ -457,11 +604,14 @@ final class ProjectManager
             $db_id = (int)$res->id;
             $multiuser = $res->multiuser === '1';
             $multi_readwrite = $res->multi_readwrite === '1';
+            $multi_readwrite_custom = $res->multi_rw_custom === '1';
             $chatEnabled = $res->chat_enabled === '1';
             $projCTime = (int)$res->created;
             $projUTime = (int)$res->updated;
+            $multi_readwrite_allowed_userids = $multi_readwrite_custom ? $this->getReadWriteAllowedUserIDsForProject($db_id) : [];
 
-            // TODO : finer permission check (multi user -> if user is allowed)
+            // Multiuser projects remain readable by anyone with the link.
+            // Write permissions are enforced later through canUserWriteProject().
             if (!$multiuser && $projAuthor->getID() !== $this->currentUser->getID()) {
                 return null;
             }
@@ -471,7 +621,7 @@ final class ProjectManager
                 die('No');
             }
 
-            return ProjectFactory::create($db_id, $projectID, $projAuthor, $res->type, $res->name, $res->internal_name, $multiuser, $multi_readwrite, $chatEnabled, $projCTime, $projUTime);
+            return ProjectFactory::create($db_id, $projectID, $projAuthor, $res->type, $res->name, $res->internal_name, $multiuser, $multi_readwrite, $chatEnabled, $projCTime, $projUTime, $multi_readwrite_custom, $multi_readwrite_allowed_userids);
         }
 
         return null;

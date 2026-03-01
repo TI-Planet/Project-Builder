@@ -189,7 +189,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 return $this->addIconFile($params['icon']);
 
             case 'deleteCurrentFile':
-                if (!($thisProject->isMulti_ReadWrite() || $thisProject->getAuthorID() === $user->getID() || $user->isModeratorOrMore()))
+                if (!$thisProject->canUserWriteProject($user))
                 {
                     return PBStatus::Error('Unauthorized');
                 }

@@ -46,14 +46,14 @@ require_once 'utils.php';
         id: '<?= $currUser->getID() ?>',
         name: '<?= $currUser->getName() ?>',
         avatar: '<?= $currUser->getAvatarURL() ?>',
-        firebase_token: '<?= $currProject->isMultiuser() ? $currUser->getOrGenerateFirebaseToken() : '' ?>'
+        firebase_token: '<?= $pm->currentUserHasLiveCollabEditAccess() ? $currUser->getOrGenerateFirebaseToken() : '' ?>'
     };
 </script>
 
 <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
 <script src="<?= cacheBusterPath("./modules/_shared/webusb_test.js") ?>"></script>
 <script src="<?= cacheBusterPath("./modules/_shared/webusb_transfer.js") ?>"></script>
-<?php if (!$pm->currentUserIsProjOwnerOrStaff() && !$currProject->isMulti_ReadWrite()) { ?>
+<?php if (!$pm->currentUserCanWriteCurrentProject()) { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
 <?php } else { ?>
     <script src="<?= cacheBusterPath("js/FileSaver.min.js") ?>"></script>
@@ -127,7 +127,7 @@ require_once 'utils.php';
 <script src="<?= cacheBusterPath('js/codemirror/merge.js') ?>"></script>
 
 <?php
-if ($currProject->isMulti_ReadWrite())
+if ($pm->currentUserHasLiveCollabEditAccess())
 {
     echo "<script src='js/firebase.js'></script>\n";
     if ($currProject->isChatEnabled()) {

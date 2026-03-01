@@ -28,7 +28,7 @@ if (!isset($pm))
     <div class="filelist">
         <ul class="nav nav-tabs">
             <?= $currProject->getFileListHTML() ?>
-            <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
+            <?php if ($pm->currentUserCanWriteCurrentProject())
             {
                 if (count($currProject->getAvailableSrcFiles()) > 1 && $currProject->isCurrentFileDeletable())
                 {
@@ -75,12 +75,12 @@ if (!isset($pm))
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
 
-    <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
+    <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '<div class="firepad">'; } ?>
     <textarea id="codearea"></textarea>
-    <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
+    <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '</div>'; } ?>
 
     <div class='subfirepad'>
-        <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <div class="btn-group">
             <button id="buildButton" class="btn btn-primary btn-sm" onclick="buildAndGetLog(); return false" title="Compile, assemble, and link"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Build <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>

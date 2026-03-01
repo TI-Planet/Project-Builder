@@ -28,7 +28,7 @@ if (!isset($pm))
     <div class="filelist">
         <ul class="nav nav-tabs">
             <?= $currProject->getFileListHTML() ?>
-            <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite())
+            <?php if ($pm->currentUserCanWriteCurrentProject())
             {
                 if (count($currProject->getAvailableSrcFiles()) > 1 && $currProject->isCurrentFileDeletable())
                 {
@@ -66,14 +66,14 @@ if (!isset($pm))
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
 
-    <?php if (!$currProject->isMulti_ReadWrite()) { echo '<div class="firepad">'; } ?>
+    <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '<div class="firepad">'; } ?>
     <div id="hexViewer" style="display:none"></div>
     <div id="detokHoverText"><span id="detokHoverTextByte"></span><span id="detokHoverTextStr"></span></div>
     <textarea id="codearea"></textarea>
-    <?php if (!$currProject->isMulti_ReadWrite()) { echo '</div>'; } ?>
+    <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '</div>'; } ?>
 
     <div class='subfirepad'>
-        <?php if ($pm->currentUserIsProjOwnerOrStaff() || $currProject->isMulti_ReadWrite()) { ?>
+        <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <?php } else { ?>
             <button id="saveButton" class="btn btn-primary btn-sm hide invisible"></button>

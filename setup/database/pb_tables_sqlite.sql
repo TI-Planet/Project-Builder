@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `pb_projects` (
   `internal_name` varchar(30) NOT NULL,
   `multiuser` tinyint(1) NOT NULL DEFAULT '0',
   `multi_readwrite` tinyint(1) NOT NULL DEFAULT '0',
+  `multi_rw_custom` tinyint(1) NOT NULL DEFAULT '0',
   `chat_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `created` UNSIGNED INTEGER NOT NULL,
   `updated` UNSIGNED INTEGER NOT NULL,
@@ -18,6 +19,13 @@ CREATE INDEX pb_projects_author_idx ON `pb_projects`(`author`);
 CREATE INDEX pb_projects_type_idx ON `pb_projects`(`type`);
 CREATE INDEX pb_projects_fork_of_idx ON `pb_projects`(`fork_of`);
 CREATE INDEX pb_projects_deleted_idx ON `pb_projects`(`deleted`);
+
+CREATE TABLE IF NOT EXISTS `pb_project_rw_acl` (
+`proj_id` UNSIGNED INTEGER NOT NULL REFERENCES `pb_projects`(`id`) ON DELETE CASCADE,
+  `user_id` UNSIGNED INTEGER NOT NULL,
+  PRIMARY KEY (`proj_id`, `user_id`)
+);
+CREATE INDEX pb_project_rw_acl_uid_idx ON `pb_project_rw_acl`(`user_id`);
 
 CREATE TABLE IF NOT EXISTS `pb_tokens` (
 `id` UNSIGNED INTEGER PRIMARY KEY NOT NULL,

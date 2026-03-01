@@ -46,21 +46,29 @@ $currProjectSettings = $currProject->getSettings();
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="sharingMode" value="publicRO" <?= $currProject->isMultiuser() ? 'checked' : '' ?>>
+                                        <input type="radio" name="sharingMode" value="publicRO" <?= ($currProject->isMultiuser() && !$currProject->isMulti_ReadWrite()) ? 'checked' : '' ?>>
                                         <b>Public read-only</b> - Anyone can read project files, but cannot edit them
                                     </label>
                                 </div>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="sharingMode" value="publicRW" <?= $currProject->isMulti_ReadWrite() ? 'checked' : '' ?>>
+                                        <input type="radio" name="sharingMode" value="publicRW" <?= ($currProject->isMulti_ReadWrite() && !$currProject->isMulti_ReadWrite_CustomRestricted()) ? 'checked' : '' ?>>
                                         <b>Public read+write</b> - Anyone can read and edit project files
                                     </label>
                                 </div>
-                                <div class="radio disabled text-muted" title="Not available yet ; soon!">
+                                <div class="radio">
                                     <label>
-                                        <input type="radio" name="sharingMode" value="custom" disabled>
-                                        <b>Custom...</b> - Choose exactly who can read/write or not
+                                        <input type="radio" name="sharingMode" value="custom" <?= $currProject->isMulti_ReadWrite_CustomRestricted() ? 'checked' : '' ?>>
+                                        <b>Custom read+write</b> - Only listed TI-Planet users can edit (project remains readable-only to others with the link)
                                     </label>
+                                </div>
+                                <div id="customRWAllowedUsersBlock" style="margin-left: 20px; display: <?= $currProject->isMulti_ReadWrite_CustomRestricted() ? 'block' : 'none' ?>;">
+                                    Allowed TI-Planet user IDs (comma, space or newline separated):
+                                    <div class="radio-inline" style="width: 100%; padding-left: 0;">
+                                        <label style="width: 100%;">
+                                            <textarea class="form-control" rows="2" name="allowedRWUserIDs" id="allowedRWUserIDs" placeholder="1234, 5678"><?= htmlentities(implode(', ', $currProject->getMulti_ReadWriteAllowedUserIDs()), ENT_QUOTES) ?></textarea>
+                                        </label>
+                                    </div>
                                 </div>
 
                                 Chat enabled (when shared):
