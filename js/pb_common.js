@@ -251,11 +251,7 @@ function toggleBottomTools(delay)
     bottomTools.slideToggle(delay, "swing", () => {
         proj.show_bottom_tools = bottomTools.is(":visible");
         saveProjConfig();
-        if (proj.show_bottom_tools) {
-            $("#bottomTools").siblings().find(".dropdown-menu").parent().removeClass("dropup");
-        } else {
-            $("#bottomTools").siblings().find(".dropdown-menu").parent().addClass("dropup");
-        }
+        $("div.subfirepad ul.dropdown-menu").parent().toggleClass("dropup", !proj.show_bottom_tools);
         document.getElementById("bottomToolsToggle").onclick = toggleBottomTools;
         if (needOutlineToggle) {
             recalcOutlineSize();
