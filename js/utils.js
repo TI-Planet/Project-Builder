@@ -82,12 +82,145 @@ function escapeRegExp(str)
     }
 }
 
-function ajax(url, params, callbackOK, callbackErr, callbackAlways)
+const SESSION_REFRESH_GUARD_KEY = 'pb_session_refresh_ts';
+const SESSION_REFRESH_GUARD_WINDOW_MS = 15000;
+const CSRF_REFRESH_ACTION = 'refreshCSRFToken';
+
+let csrfTokenRefreshInProgress = false;
+let csrfTokenRefreshCallbacks = [];
+
+function shouldAutoRefreshAfterUnauthorized()
 {
+    const now = Date.now();
+    const lastRefreshTs = parseInt(sessionStorage.getItem(SESSION_REFRESH_GUARD_KEY), 10);
+    if (!isNaN(lastRefreshTs) && ((now - lastRefreshTs) < SESSION_REFRESH_GUARD_WINDOW_MS)) {
+        return false;
+    }
+    sessionStorage.setItem(SESSION_REFRESH_GUARD_KEY, `${now}`);
+    return true;
+}
+
+function clearSessionRefreshGuard()
+{
+    sessionStorage.removeItem(SESSION_REFRESH_GUARD_KEY);
+}
+
+function setCSRFToken(newToken)
+{
+    window['CSRFToken'] = newToken;
+    const tokenFields = document.querySelectorAll('input[name="csrf_token"]');
+    for (let i = 0; i < tokenFields.length; i++)
+    {
+        tokenFields[i].value = newToken;
+    }
+
+    for (const link of document.querySelectorAll('a[href*="csrf_token="]'))
+    {
+        const href = link.getAttribute('href');
+        if (typeof href === "string" && href.length > 0)
+        {
+            link.setAttribute('href', href.replace(/([?&]csrf_token=)[^&#]*/g, `$1${encodeURIComponent(newToken)}`));
+        }
+    }
+}
+
+function getProjectIDFromParams(params)
+{
+    if (window.proj && typeof window.proj.pid === "string" && window.proj.pid.length > 0) {
+        return window.proj.pid;
+    }
+    const match = (params || '').match(/(?:^|&)id=([^&]+)/);
+    return match && match[1] ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : null;
+}
+
+function refreshCSRFToken(params, callbackDone)
+{
+    const projectID = getProjectIDFromParams(params);
+    if (!projectID)
+    {
+        callbackDone(false, 'No project ID');
+        return;
+    }
+
+    csrfTokenRefreshCallbacks.push(callbackDone);
+    if (csrfTokenRefreshInProgress) {
+        return;
+    }
+    csrfTokenRefreshInProgress = true;
+
+    const finishRefresh = (ok, errMsg) => {
+        const callbacks = csrfTokenRefreshCallbacks.slice();
+        csrfTokenRefreshCallbacks = [];
+        csrfTokenRefreshInProgress = false;
+        for (let i = 0; i < callbacks.length; i++)
+        {
+            callbacks[i](ok, errMsg);
+        }
+    };
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'ActionHandler.php', true);
+    xhr.timeout = 10000;
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState !== XMLHttpRequest.DONE) {
+            return;
+        }
+
+        let errMsg = 'Unable to refresh the current session token.';
+        try
+        {
+            const resp = JSON.parse(xhr.responseText);
+            if (xhr.status === 200 && resp && typeof resp.csrf_token === "string" && resp.csrf_token.length > 0)
+            {
+                setCSRFToken(resp.csrf_token);
+                clearSessionRefreshGuard();
+                finishRefresh(true, null);
+                return;
+            }
+            if (typeof resp === "string" && resp.length > 0) {
+                errMsg = resp;
+            }
+        } catch (e)
+        {
+            if (xhr.responseText && xhr.responseText.length > 0) {
+                errMsg = xhr.responseText;
+            }
+        }
+        finishRefresh(false, errMsg);
+    };
+    xhr.ontimeout = () => {
+        finishRefresh(false, 'Token refresh timed out.');
+    };
+    xhr.send(`id=${encodeURIComponent(projectID)}&action=${CSRF_REFRESH_ACTION}`);
+}
+
+function handleUnauthorizedFallback(respText, callbackErr)
+{
+    if (shouldAutoRefreshAfterUnauthorized())
+    {
+        showNotification("warning", "Session expired", "Could not refresh your session token. Reloading...");
+        window.onbeforeunload = null;
+        setTimeout(() => { window.location.reload(); }, 400);
+    } else {
+        showNotification("danger", "Not authenticated", "Please log in again on TI-Planet and reload this page.");
+        if (typeof callbackErr === "function") {
+            callbackErr(respText);
+        }
+    }
+}
+
+function ajax(url, params, callbackOK, callbackErr, callbackAlways, allowCSRFRefresh)
+{
+    if (allowCSRFRefresh === undefined) {
+        allowCSRFRefresh = true;
+    }
+    const requestParams = params || '';
+
     incrementActivityIndicatorCounterAndShow();
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
-    xhr.timeout = params && params.includes("build") ? 60000 : 10000;
+    xhr.timeout = requestParams.includes("build") ? 60000 : 10000;
     xhr.ontimeout = decrementActivityIndicatorCounterAndHide;
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = () => {
@@ -96,13 +229,32 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
             let respText = xhr.responseText;
             try { respText = JSON.parse(respText); } catch(e) { console.log('XHR Error: could not parse the reponse as JSON'); }
             decrementActivityIndicatorCounterAndHide();
+
+            if (xhr.status === 401 && allowCSRFRefresh && /ActionHandler\.php(?:$|\?)/.test(url))
+            {
+                refreshCSRFToken(requestParams, (ok) => {
+                    if (ok) {
+                        ajax(url, requestParams, callbackOK, callbackErr, callbackAlways, false);
+                    } else {
+                        if (typeof callbackAlways === "function") {
+                            callbackAlways(respText);
+                        }
+                        handleUnauthorizedFallback(respText, callbackErr);
+                    }
+                });
+                return;
+            }
+
             if (typeof callbackAlways === "function") {
                 callbackAlways(respText);
             }
             if (xhr.status === 200) {
+                clearSessionRefreshGuard();
                 if (typeof callbackOK === "function") {
                     callbackOK(respText);
                 }
+            } else if (xhr.status === 401) {
+                handleUnauthorizedFallback(respText, callbackErr);
             } else {
                 showNotification("danger", "Oops... :(", respText.length ? respText : "Internet issue?");
                 if (typeof callbackErr === "function") {
@@ -112,8 +264,7 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways)
         }
     };
 
-    params += `&csrf_token=${window['CSRFToken']}`;
-    xhr.send(params);
+    xhr.send(`${requestParams}&csrf_token=${encodeURIComponent(window['CSRFToken'] || '')}`);
 }
 
 function ajaxAction(action, extraParams, callbackOK, callbackErr, callbackAlways)
@@ -121,8 +272,13 @@ function ajaxAction(action, extraParams, callbackOK, callbackErr, callbackAlways
     ajax("ActionHandler.php", `id=${proj.pid}&action=${action}&${extraParams}`, callbackOK, callbackErr, callbackAlways);
 }
 
-function ajaxGetArrayBuffer(url, params, callbackOK)
+function ajaxGetArrayBuffer(url, params, callbackOK, allowCSRFRefresh)
 {
+    if (allowCSRFRefresh === undefined) {
+        allowCSRFRefresh = true;
+    }
+    const requestParams = params || '';
+
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -130,8 +286,21 @@ function ajaxGetArrayBuffer(url, params, callbackOK)
 
     xhr.onload = function(e) {
         if (this.status == 200) {
+            clearSessionRefreshGuard();
             if (typeof callbackOK === "function") {
                 callbackOK(this.response);
+            }
+        } else if (this.status === 401) {
+            if (allowCSRFRefresh && /ActionHandler\.php(?:$|\?)/.test(url)) {
+                refreshCSRFToken(requestParams, (ok) => {
+                    if (ok) {
+                        ajaxGetArrayBuffer(url, requestParams, callbackOK, false);
+                    } else {
+                        handleUnauthorizedFallback('', null);
+                    }
+                });
+            } else {
+                handleUnauthorizedFallback('', null);
             }
         } else {
             console.log("Error XHR arraybuffer: ", this);
@@ -139,8 +308,7 @@ function ajaxGetArrayBuffer(url, params, callbackOK)
         }
     };
 
-    params += `&csrf_token=${window['CSRFToken']}`;
-    xhr.send(params);
+    xhr.send(`${requestParams}&csrf_token=${encodeURIComponent(window['CSRFToken'] || '')}`);
 }
 
 function elt(tagname, cls, isHTML, content)

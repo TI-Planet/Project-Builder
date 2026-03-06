@@ -34,6 +34,23 @@ if (!empty($_POST['id']))
         }
         */
 
+        // Special case: refresh the CSRF token from the current phpBB session
+        // without requiring the previous CSRF token value.
+        if ($_POST['action'] === 'refreshCSRFToken')
+        {
+            if ($pm->getCurrentUser()->isAnonymous())
+            {
+                header('HTTP/1.0 401 Unauthorized');
+                die(json_encode(PBStatus::Error("Your session isn't recognized - please [re]login.")));
+            }
+            if (!$pm->hasValidCurrentProject())
+            {
+                header('HTTP/1.0 400 Bad request');
+                die(json_encode(PBStatus::Error('This project does not exist or you do not have access to it')));
+            }
+            die(json_encode([ 'csrf_token' => $pm->getCurrentUser()->getSID() ]));
+        }
+
         /******** CSRF Token stuff ********/
         if (!empty($_POST['csrf_token']))
         {
