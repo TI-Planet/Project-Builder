@@ -84,7 +84,6 @@ function escapeRegExp(str)
 
 const SESSION_REFRESH_GUARD_KEY = 'pb_session_refresh_ts';
 const SESSION_REFRESH_GUARD_WINDOW_MS = 15000;
-const CSRF_REFRESH_ACTION = 'refreshCSRFToken';
 
 let csrfTokenRefreshInProgress = false;
 let csrfTokenRefreshCallbacks = [];
@@ -133,6 +132,58 @@ function getProjectIDFromParams(params)
     return match && match[1] ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : null;
 }
 
+function buildPOSTParams(params, includeCSRFToken)
+{
+    let body = (params || '').replace(/&+$/g, '');
+    if (includeCSRFToken !== false)
+    {
+        body += `${body.length ? '&' : ''}csrf_token=${encodeURIComponent(window['CSRFToken'] || '')}`;
+    }
+    return body;
+}
+
+async function fetchPOST(url, params, timeoutMs, responseType, includeCSRFToken)
+{
+    const abortController = new AbortController();
+    const timeoutID = setTimeout(() => { abortController.abort(); }, timeoutMs);
+    try
+    {
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: buildPOSTParams(params, includeCSRFToken),
+            signal: abortController.signal
+        });
+
+        if (responseType === 'arraybuffer') {
+            return { ok: true, status: response.status, body: await response.arrayBuffer() };
+        }
+
+        const rawText = await response.text();
+        let body = rawText;
+        try {
+            body = JSON.parse(rawText);
+        } catch (e) {
+            console.log('XHR Error: could not parse the reponse as JSON');
+        }
+        return { ok: true, status: response.status, body: body };
+    } catch (e)
+    {
+        if (e.name === 'AbortError') {
+            return { ok: false, status: 0, body: '', timedOut: true };
+        }
+        console.log('Fetch Error:', e);
+        return { ok: false, status: 0, body: '' };
+    } finally
+    {
+        clearTimeout(timeoutID);
+    }
+}
+
 function refreshCSRFToken(params, callbackDone)
 {
     const projectID = getProjectIDFromParams(params);
@@ -158,41 +209,22 @@ function refreshCSRFToken(params, callbackDone)
         }
     };
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'ActionHandler.php', true);
-    xhr.timeout = 10000;
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState !== XMLHttpRequest.DONE) {
+    fetchPOST('ActionHandler.php', `id=${encodeURIComponent(projectID)}&action=refreshCSRFToken`, 10000, 'text', false).then((resp) => {
+        let errMsg = 'Unable to refresh the current session token.';
+        if (resp.ok && resp.status === 200 && resp.body && typeof resp.body.csrf_token === "string" && resp.body.csrf_token.length > 0)
+        {
+            setCSRFToken(resp.body.csrf_token);
+            clearSessionRefreshGuard();
+            finishRefresh(true, null);
             return;
         }
-
-        let errMsg = 'Unable to refresh the current session token.';
-        try
-        {
-            const resp = JSON.parse(xhr.responseText);
-            if (xhr.status === 200 && resp && typeof resp.csrf_token === "string" && resp.csrf_token.length > 0)
-            {
-                setCSRFToken(resp.csrf_token);
-                clearSessionRefreshGuard();
-                finishRefresh(true, null);
-                return;
-            }
-            if (typeof resp === "string" && resp.length > 0) {
-                errMsg = resp;
-            }
-        } catch (e)
-        {
-            if (xhr.responseText && xhr.responseText.length > 0) {
-                errMsg = xhr.responseText;
-            }
+        if (resp.timedOut) {
+            errMsg = 'Token refresh timed out.';
+        } else if (typeof resp.body === "string" && resp.body.length > 0) {
+            errMsg = resp.body;
         }
         finishRefresh(false, errMsg);
-    };
-    xhr.ontimeout = () => {
-        finishRefresh(false, 'Token refresh timed out.');
-    };
-    xhr.send(`id=${encodeURIComponent(projectID)}&action=${CSRF_REFRESH_ACTION}`);
+    });
 }
 
 function handleUnauthorizedFallback(respText, callbackErr)
@@ -216,55 +248,45 @@ function ajax(url, params, callbackOK, callbackErr, callbackAlways, allowCSRFRef
         allowCSRFRefresh = true;
     }
     const requestParams = params || '';
+    const timeoutMs = requestParams.includes("build") ? 60000 : 10000;
 
     incrementActivityIndicatorCounterAndShow();
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.timeout = requestParams.includes("build") ? 60000 : 10000;
-    xhr.ontimeout = decrementActivityIndicatorCounterAndHide;
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE)
+
+    fetchPOST(url, requestParams, timeoutMs, 'text', true).then((resp) => {
+        decrementActivityIndicatorCounterAndHide();
+
+        if (resp.status === 401 && allowCSRFRefresh && /ActionHandler\.php(?:$|\?)/.test(url))
         {
-            let respText = xhr.responseText;
-            try { respText = JSON.parse(respText); } catch(e) { console.log('XHR Error: could not parse the reponse as JSON'); }
-            decrementActivityIndicatorCounterAndHide();
-
-            if (xhr.status === 401 && allowCSRFRefresh && /ActionHandler\.php(?:$|\?)/.test(url))
-            {
-                refreshCSRFToken(requestParams, (ok) => {
-                    if (ok) {
-                        ajax(url, requestParams, callbackOK, callbackErr, callbackAlways, false);
-                    } else {
-                        if (typeof callbackAlways === "function") {
-                            callbackAlways(respText);
-                        }
-                        handleUnauthorizedFallback(respText, callbackErr);
+            refreshCSRFToken(requestParams, (ok) => {
+                if (ok) {
+                    ajax(url, requestParams, callbackOK, callbackErr, callbackAlways, false);
+                } else {
+                    if (typeof callbackAlways === "function") {
+                        callbackAlways(resp.body);
                     }
-                });
-                return;
-            }
+                    handleUnauthorizedFallback(resp.body, callbackErr);
+                }
+            });
+            return;
+        }
 
-            if (typeof callbackAlways === "function") {
-                callbackAlways(respText);
+        if (typeof callbackAlways === "function") {
+            callbackAlways(resp.body);
+        }
+        if (resp.status === 200) {
+            clearSessionRefreshGuard();
+            if (typeof callbackOK === "function") {
+                callbackOK(resp.body);
             }
-            if (xhr.status === 200) {
-                clearSessionRefreshGuard();
-                if (typeof callbackOK === "function") {
-                    callbackOK(respText);
-                }
-            } else if (xhr.status === 401) {
-                handleUnauthorizedFallback(respText, callbackErr);
-            } else {
-                showNotification("danger", "Oops... :(", respText.length ? respText : "Internet issue?");
-                if (typeof callbackErr === "function") {
-                    callbackErr(respText);
-                }
+        } else if (resp.status === 401) {
+            handleUnauthorizedFallback(resp.body, callbackErr);
+        } else {
+            showNotification("danger", "Oops... :(", resp.body.length ? resp.body : "Internet issue?");
+            if (typeof callbackErr === "function") {
+                callbackErr(resp.body);
             }
         }
-    };
-
-    xhr.send(`${requestParams}&csrf_token=${encodeURIComponent(window['CSRFToken'] || '')}`);
+    });
 }
 
 function ajaxAction(action, extraParams, callbackOK, callbackErr, callbackAlways)
@@ -279,18 +301,13 @@ function ajaxGetArrayBuffer(url, params, callbackOK, allowCSRFRefresh)
     }
     const requestParams = params || '';
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.responseType = 'arraybuffer';
-
-    xhr.onload = function(e) {
-        if (this.status == 200) {
+    fetchPOST(url, requestParams, 10000, 'arraybuffer', true).then((resp) => {
+        if (resp.status === 200) {
             clearSessionRefreshGuard();
             if (typeof callbackOK === "function") {
-                callbackOK(this.response);
+                callbackOK(resp.body);
             }
-        } else if (this.status === 401) {
+        } else if (resp.status === 401) {
             if (allowCSRFRefresh && /ActionHandler\.php(?:$|\?)/.test(url)) {
                 refreshCSRFToken(requestParams, (ok) => {
                     if (ok) {
@@ -303,12 +320,10 @@ function ajaxGetArrayBuffer(url, params, callbackOK, allowCSRFRefresh)
                 handleUnauthorizedFallback('', null);
             }
         } else {
-            console.log("Error XHR arraybuffer: ", this);
+            console.log("Error fetch arraybuffer: ", resp);
             showNotification("danger", "Oops... :(", "Error trying to load the file in the emulator...");
         }
-    };
-
-    xhr.send(`${requestParams}&csrf_token=${encodeURIComponent(window['CSRFToken'] || '')}`);
+    });
 }
 
 function elt(tagname, cls, isHTML, content)
