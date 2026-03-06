@@ -105,7 +105,7 @@ if ($projectID !== null)
         /******** CSRF Token stuff ********/
         if (!empty($_GET['csrf_token']))
         {
-            if ($_GET['csrf_token'] !== $pm->getCurrentUser()->getSID())
+            if (!hash_equals($pm->getCurrentUser()->getSID(), (string)$_GET['csrf_token']))
             {
                 header('HTTP/1.0 401 Unauthorized');
                 die(json_encode(PBStatus::Error('Your session has expired - please re-login.')));

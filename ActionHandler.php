@@ -54,7 +54,7 @@ if (!empty($_POST['id']))
         /******** CSRF Token stuff ********/
         if (!empty($_POST['csrf_token']))
         {
-            if ($_POST['csrf_token'] !== $pm->getCurrentUser()->getSID())
+            if (!hash_equals($pm->getCurrentUser()->getSID(), (string)$_POST['csrf_token']))
             {
                 header('HTTP/1.0 401 Unauthorized');
                 die(json_encode(PBStatus::Error('Your session has expired - please re-login.')));
