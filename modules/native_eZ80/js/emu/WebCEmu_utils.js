@@ -2,6 +2,10 @@ window.initWebCEmuUtils = function() {
 
 window.emul_is_inited = false;
 window.emul_is_paused = false;
+window.emul_file_transfer_in_progress = false;
+window.emul_pause_requested_during_transfer = false;
+window.emul_pause_requested_during_transfer_hidden = false;
+window.emul_was_paused_before_transfer = false;
 
 const emuContainer = document.getElementById("emu_container");
 const transferProgressIndicator = document.getElementById("emuTransferProgress");
@@ -16,8 +20,19 @@ initFuncs = function()
     resetEmul = CEmu['cwrap']('emu_reset', 'void', []);
 }
 
-pauseEmul = function(paused)
+pauseEmul = function(paused, force)
 {
+    force = force === true;
+    if (paused && emul_file_transfer_in_progress && !force) {
+        emul_pause_requested_during_transfer = true;
+        emul_pause_requested_during_transfer_hidden = document.hidden === true;
+        console.log("[CEmu] pauseEmul(true, false) called while file transfer is in progress. May pause after transfer is done.");
+        return;
+    }
+    if (!paused) {
+        emul_pause_requested_during_transfer = false;
+        emul_pause_requested_during_transfer_hidden = false;
+    }
     emul_is_paused = paused;
     document.getElementById('emu_playpause_btn').className = paused ? 'btn btn-success btn-sm' : 'btn btn-default btn-sm';
     document.getElementById('pauseButtonIcon').className = paused ? 'glyphicon glyphicon-play' : 'glyphicon glyphicon-pause';
@@ -118,8 +133,12 @@ fileLoaded = function(event, filename, isAutoloadedROM)
                     transferProgressIndicator.value = "0";
                     transferProgressIndicator.parentElement.style.display = 'block';
                 }
+                emul_file_transfer_in_progress = true;
+                emul_pause_requested_during_transfer = false;
+                emul_pause_requested_during_transfer_hidden = false;
+                emul_was_paused_before_transfer = emul_is_paused;
                 if (emul_is_paused) {
-                    pauseEmul(false);
+                    pauseEmul(false, true);
                 }
                 if (CEmu['_emsc_set_main_loop_timing']) CEmu['_emsc_set_main_loop_timing'](0, 0); // EM_TIMING_SETTIMEOUT, as fast as possible.
                 set_file_to_send(filename);
@@ -170,12 +189,21 @@ transferProgressCallback = function(val, max)
     if (window.emul_file_load_progress_extcb) emul_file_load_progress_extcb(val, max);
     if (val === 1 && max === 1) {
         console.log("[CEmu] file transfer done.");
+        const shouldPauseAfterTransfer = emul_was_paused_before_transfer ||
+            (emul_pause_requested_during_transfer && (!emul_pause_requested_during_transfer_hidden || document.hidden));
+        emul_file_transfer_in_progress = false;
+        emul_pause_requested_during_transfer = false;
+        emul_pause_requested_during_transfer_hidden = false;
+        emul_was_paused_before_transfer = false;
         if (CEmu['_emsc_set_main_loop_timing']) CEmu['_emsc_set_main_loop_timing'](0, 1000/60); // EM_TIMING_SETTIMEOUT, 60fps.
         if (window.emul_file_load_done_extcb) emul_file_load_done_extcb();
         if (transferProgressIndicator) transferProgressIndicator.parentElement.style.display = 'none';
         if (emuContainer) {
             emuContainer.style.opacity = '1';
             emuContainer.style.pointerEvents = 'initial';
+        }
+        if (shouldPauseAfterTransfer && !emul_is_paused) {
+            pauseEmul(true, true);
         }
     } else {
         if (transferProgressIndicator) transferProgressIndicator.value = (val*100/max).toFixed(0);
@@ -185,12 +213,21 @@ transferProgressCallback = function(val, max)
 transferErrorCallback = function()
 {
     console.log("[CEmu] error during file transfer");
+    const shouldPauseAfterTransfer = emul_was_paused_before_transfer ||
+        (emul_pause_requested_during_transfer && (!emul_pause_requested_during_transfer_hidden || document.hidden));
+    emul_file_transfer_in_progress = false;
+    emul_pause_requested_during_transfer = false;
+    emul_pause_requested_during_transfer_hidden = false;
+    emul_was_paused_before_transfer = false;
     if (CEmu['_emsc_set_main_loop_timing']) CEmu['_emsc_set_main_loop_timing'](0, 1000/60); // EM_TIMING_SETTIMEOUT, 60fps.
     if (window.emul_file_load_error_extcb) emul_file_load_error_extcb();
     if (transferProgressIndicator) transferProgressIndicator.parentElement.style.display = 'none';
     if (emuContainer) {
         emuContainer.style.opacity = '1';
         emuContainer.style.pointerEvents = 'initial';
+    }
+    if (shouldPauseAfterTransfer && !emul_is_paused) {
+        pauseEmul(true, true);
     }
 }
 
