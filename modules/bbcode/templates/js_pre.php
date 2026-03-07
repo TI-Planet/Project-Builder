@@ -36,10 +36,18 @@ require_once 'utils.php';
     function goToFile(newfile)
     {
         const newURL = `?id=${proj.pid}&file=${newfile}`;
-        $.get(newURL, (data) =>
+        fetchGET(newURL, 10000).then((resp) =>
         {
+            const nextEditorHTML = resp.ok ? extractEditorContainerHTML(resp.body, '#codearea') : null;
+            if (!nextEditorHTML) {
+                fallbackToFullPageNavigation(isForumLoginRedirectURL(resp.url) ? resp.url : newURL,
+                    isForumLoginRedirectURL(resp.url)
+                        ? "Your TI-Planet session expired. Redirecting to login..."
+                        : "The file view could not be refreshed automatically. Reloading this file normally...");
+                return;
+            }
             const editorContainer = $('#editorContainer');
-            editorContainer.empty().append($(data).find('#editorContainer').children());
+            editorContainer.empty().html(nextEditorHTML);
             proj.currFile = newfile;
             init_post_js_1();
             init_post_js_2();

@@ -88,15 +88,24 @@ require_once 'utils.php';
             decrementActivityIndicatorCounterAndHide();
         };
         const newURL = `?id=${proj.pid}&file=${newfile}`;
-        $.get(newURL, (data) =>
+        fetchGET(newURL, 10000).then((resp) =>
         {
+            const nextEditorHTML = resp.ok ? extractEditorContainerHTML(resp.body, '#codearea') : null;
+            if (!nextEditorHTML) {
+                cbEnd();
+                fallbackToFullPageNavigation(isForumLoginRedirectURL(resp.url) ? resp.url : newURL,
+                    isForumLoginRedirectURL(resp.url)
+                        ? "Your TI-Planet session expired. Redirecting to login..."
+                        : "The file view could not be refreshed automatically. Reloading this file normally...");
+                return;
+            }
             editor.setOption("readOnly", true);
             proj.cursors[proj.currFile] = JSON.stringify(editor.getCursor());
             saveProjConfig();
             window.history.pushState(null, "", newURL);
             const oldConsoleContent = $("#consoletextarea").val();
             typeof(removeMyselfFromFirepad) === "function" && removeMyselfFromFirepad();
-            editorContainer.empty().append($(data).find('#editorContainer').children());
+            editorContainer.empty().html(nextEditorHTML);
             $("#consoletextarea").val(oldConsoleContent);
             $(".firepad-userlist").remove();
             proj.currFile = newfile;
@@ -104,7 +113,7 @@ require_once 'utils.php';
             do_cm_custom();
             init_post_js_2(true, cbEnd);
             editorPostSetupAlways();
-        }).fail( cbEnd );
+        });
     }
 </script>
 

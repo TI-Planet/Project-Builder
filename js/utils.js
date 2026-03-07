@@ -184,6 +184,73 @@ async function fetchPOST(url, params, timeoutMs, responseType, includeCSRFToken)
     }
 }
 
+async function fetchGET(url, timeoutMs)
+{
+    const abortController = new AbortController();
+    const timeoutID = setTimeout(() => { abortController.abort(); }, timeoutMs);
+    try
+    {
+        const response = await fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            signal: abortController.signal
+        });
+
+        return {
+            ok: true,
+            status: response.status,
+            body: await response.text(),
+            url: response.url,
+            redirected: response.redirected
+        };
+    } catch (e)
+    {
+        if (e.name === 'AbortError') {
+            return { ok: false, status: 0, body: '', url: url, redirected: false, timedOut: true };
+        }
+        console.log('Fetch Error:', e);
+        return { ok: false, status: 0, body: '', url: url, redirected: false };
+    } finally
+    {
+        clearTimeout(timeoutID);
+    }
+}
+
+function extractEditorContainerHTML(rawHTML, requiredSelector)
+{
+    try
+    {
+        const doc = new DOMParser().parseFromString(rawHTML, 'text/html');
+        const editorContainer = doc.querySelector('#editorContainer');
+        if (!editorContainer) {
+            return null;
+        }
+        if (requiredSelector && !editorContainer.querySelector(requiredSelector)) {
+            return null;
+        }
+        return editorContainer.innerHTML;
+    } catch (e)
+    {
+        console.log('HTML Parse Error:', e);
+        return null;
+    }
+}
+
+function isForumLoginRedirectURL(url)
+{
+    return typeof url === "string" && /\/forum\/ucp\.php\?mode=login\b/.test(url);
+}
+
+function fallbackToFullPageNavigation(url, message)
+{
+    showNotification("warning", "Refreshing editor", message || "Reloading this file normally...");
+    window.onbeforeunload = null;
+    setTimeout(() => { window.location.assign(url); }, 1000);
+}
+
 function refreshCSRFToken(params, callbackDone)
 {
     const projectID = getProjectIDFromParams(params);
