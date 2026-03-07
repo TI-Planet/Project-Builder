@@ -112,3 +112,17 @@ window.addEventListener('keydown', (event) => {
         }
     }
 });
+
+function sendSettings()
+{
+    const formData = $("#settingsForm").serialize();
+    ajaxAction("setSettings", formData, () =>
+    {
+        $("#settingsModal").modal('hide');
+        showNotification("success", "OK", "Settings saved successfully. You can reload the page if needed", null, 5000);
+    }, (err) =>
+    {
+        $("#settingsModal").modal('hide');
+        showNotification("danger", "Error", err, null, 50000);
+    });
+}
