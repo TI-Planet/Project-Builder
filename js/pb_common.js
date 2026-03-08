@@ -66,7 +66,7 @@ function editorPostSetupAlways()
     if (editorMode !== 'yaml' && editorMode !== 'bbcode') {
         toggleOutline(proj.show_code_outline, true);
     }
-    if (editorMode === 'tibasic') {
+    if (!proj.is_multi && editorMode === 'tibasic') {
         toggleHexViewer(proj.show_hex_viewer, true);
     }
 }
@@ -238,13 +238,15 @@ function toggleBottomTools(delay)
     const hexViewer = $("#hexViewer");
     const bottomTools = $("#bottomTools");
 
+    const hexViewerVisible = hexViewer.is(":visible");
+
     const needOutlineToggle = delay > 0 && codeOutline.is(":visible");
-    const needHexViewerToggle = delay > 0 && hexViewer.is(":visible");
+    const needHexViewerToggle = delay > 0 && hexViewerVisible;
 
     if (needOutlineToggle && !bottomTools.is(":visible")) {
         codeOutline.hide();
     }
-    if (needHexViewerToggle && !bottomTools.is(":visible")) {
+    if (hexViewerVisible && needHexViewerToggle && !bottomTools.is(":visible")) {
         hexViewer.hide();
     }
 
@@ -259,7 +261,7 @@ function toggleBottomTools(delay)
         }
         if (needHexViewerToggle) {
             recalcHexViewerSize();
-            hexViewer.show();
+            hexViewerVisible && hexViewer.show();
         }
     });
 }

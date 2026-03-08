@@ -198,15 +198,21 @@ function do_cm_custom()
     };
 
     recalcOutlineSize = () => {
-        const finalHeight = document.querySelector("div.firepad").offsetHeight;
-        document.getElementById("codeOutline").style.height = finalHeight + "px";
+        const codeOutline = document.getElementById("codeOutline");
+        const divFirepad = document.querySelector("div.firepad");
+        if (!codeOutline || !divFirepad) { return; }
+        const finalHeight = divFirepad.offsetHeight;
+        codeOutline.style.height = finalHeight + "px";
         const finalListHeight = finalHeight - document.getElementById("codeOutlineFilter").offsetHeight - 2;
         document.getElementById("codeOutlineList").style.height = finalListHeight + "px";
     };
 
     recalcHexViewerSize = () => {
-        const finalHeight = document.querySelector("div.firepad").offsetHeight;
-        document.getElementById("hexViewer").style.height = finalHeight + "px";
+        const hexViewer = document.getElementById("hexViewer");
+        const divFirepad = document.querySelector("div.firepad");
+        if (!hexViewer || !divFirepad) { return; }
+        const finalHeight = divFirepad.offsetHeight;
+        hexViewer.style.height = finalHeight + "px";
     };
 
     refreshOutlineSize = () => {

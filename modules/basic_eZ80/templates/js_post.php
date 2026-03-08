@@ -155,6 +155,10 @@ require_once 'utils.php';
                 savedSinceLastChange = true;
                 lastChangeTS = (new Date).getTime();
                 document.getElementById('saveButton').disabled = true;
+
+                $("#hexViewer,#detokHoverText").appendTo($("#codeOutline").parent())
+                toggleOutline(proj.show_code_outline, true);
+                toggleHexViewer(proj.show_hex_viewer, true);
               });
             });
 
