@@ -16,6 +16,9 @@
 /* Code from Firepad, modified by Adrien "Adriweb" Bertrand */
 
 var FirepadUserList = (function() {
+  var DEFAULT_AVATAR_URL = 'https://tiplanet.org/images/pp-blank-thumb.png';
+  var avatarUrlPromiseCache = { };
+
   function FirepadUserList(ref, place, userId, userName, userAvatar) {
     if (!(this instanceof FirepadUserList)) { return new FirepadUserList(ref, place, userId, userName, userAvatar); }
 
@@ -25,7 +28,7 @@ var FirepadUserList = (function() {
     this.firebaseCallbacks_ = [];
 
     this.displayName_ = userName || 'Guest';
-    this.displayAvatar_ = userAvatar || 'https://tiplanet.org/images/pp-blank-thumb.png';
+    this.displayAvatar_ = userAvatar || DEFAULT_AVATAR_URL;
 
     var self = this;
     this.firebaseOn_(ref.root().child('.info/connected'), 'value', function(s) {
@@ -66,7 +69,7 @@ var FirepadUserList = (function() {
     var myUserRef = this.ref_.child(this.userId_);
 
     var avatarDiv = elt('div', null, { 'class': 'firepad-userlist-color-indicator' });
-    avatarDiv.style.backgroundImage = 'url("' + this.displayAvatar_ + '")';
+    applyAvatarBackgroundImage(avatarDiv, this.displayAvatar_);
     this.firebaseOn_(myUserRef.child('color'), 'value', function(colorSnapshot) {
       var color = colorSnapshot.val();
       if (typeof color === 'string' && color.match(/^#[a-fA-F0-9]{3,6}$/)) {
@@ -108,10 +111,10 @@ var FirepadUserList = (function() {
         color = "#ffb"
       }
 
-      var avatar = userSnapshot.child('avatar').val() || 'https://tiplanet.org/images/pp-blank-thumb.png';
+      var avatar = userSnapshot.child('avatar').val() || DEFAULT_AVATAR_URL;
       var avatarDiv = elt('div', null, { 'class': 'firepad-userlist-color-indicator' });
       avatarDiv.style.boxShadow = '0 0 2px 2px ' + color;
-      avatarDiv.style.backgroundImage = 'url("' + avatar + '")';
+      applyAvatarBackgroundImage(avatarDiv, avatar);
       avatarDiv.setAttribute('data-toggle', 'tooltip');
       avatarDiv.setAttribute('data-original-title', name || 'Guest');
 
@@ -182,6 +185,65 @@ var FirepadUserList = (function() {
     }
     this.firebaseCallbacks_ = [];
   };
+
+  function applyAvatarBackgroundImage(element, avatarUrl) {
+    var effectiveAvatarUrl = avatarUrl || DEFAULT_AVATAR_URL;
+    var requestId = (parseInt(element.getAttribute('data-avatar-request-id') || '0', 10) || 0) + 1;
+    element.setAttribute('data-avatar-request-id', requestId);
+
+    setBackgroundImage(element, DEFAULT_AVATAR_URL);
+    resolveAvatarUrl(effectiveAvatarUrl).then(function(resolvedUrl) {
+      if (element.getAttribute('data-avatar-request-id') !== String(requestId)) {
+        return;
+      }
+      setBackgroundImage(element, resolvedUrl || DEFAULT_AVATAR_URL);
+    });
+  }
+
+  function resolveAvatarUrl(avatarUrl) {
+    if (!avatarUrl) {
+      return Promise.resolve(DEFAULT_AVATAR_URL);
+    }
+
+    if (isSameOriginUrl(avatarUrl)) {
+      return Promise.resolve(avatarUrl);
+    }
+
+    if (!avatarUrlPromiseCache[avatarUrl]) {
+      avatarUrlPromiseCache[avatarUrl] = fetch(avatarUrl, {
+        mode: 'cors',
+        credentials: 'omit',
+        cache: 'force-cache'
+      }).then(function(response) {
+        if (!response.ok) {
+          throw new Error('avatar fetch failed');
+        }
+        return response.blob();
+      }).then(function(blob) {
+        return URL.createObjectURL(blob);
+      }).catch(function() {
+        return DEFAULT_AVATAR_URL;
+      });
+    }
+
+    return avatarUrlPromiseCache[avatarUrl];
+  }
+
+  function isSameOriginUrl(avatarUrl) {
+    try {
+      return new URL(avatarUrl, window.location.href).origin === window.location.origin;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  function setBackgroundImage(element, avatarUrl) {
+    element.style.backgroundImage = `url("${escapeCssUrl(avatarUrl)}")`;
+  }
+
+  function escapeCssUrl(url) {
+    return String(url).replace(/["\\\n\r\f]/g, (ch) => '\\' + ch);
+  }
 
 
   /** DOM helpers */
