@@ -24,14 +24,15 @@ if (!isset($pm))
 require_once 'utils.php';
 
 /** @var \ProjectBuilder\python_nspireProject $currProject */
+$jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
 ?>
 <script>
     proj = {
         pid: '<?= $projectID ?>',
-        name: '<?= $currProject->getName() ?>',
-        prgmName: '<?= $currProject->getInternalName() ?>',
-        currFile: '<?= $currProject->getCurrentFile() ?>',
+        name: <?= json_encode($currProject->getName(), $jsonFlags) ?>,
+        prgmName: <?= json_encode($currProject->getInternalName(), $jsonFlags) ?>,
+        currFile: <?= json_encode($currProject->getCurrentFile(), $jsonFlags) ?>,
         updated: <?= $currProject->getUpdatedTstamp() ?>,
         is_multi: <?= $currProject->isMultiuser() ? 'true' : 'false' ?>,
         use_dark: false,
@@ -43,8 +44,8 @@ require_once 'utils.php';
     };
     user = {
         id: '<?= $currUser->getID() ?>',
-        name: '<?= $currUser->getName() ?>',
-        avatar: '<?= $currUser->getAvatarURL() ?>',
+        name: <?= json_encode($currUser->getName(), $jsonFlags) ?>,
+        avatar: <?= json_encode($currUser->getAvatarURL(), $jsonFlags) ?>,
         firebase_token: '<?= $pm->currentUserHasLiveCollabEditAccess() ? $currUser->getOrGenerateFirebaseToken() : '' ?>'
     };
 </script>
