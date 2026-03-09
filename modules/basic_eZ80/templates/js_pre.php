@@ -121,19 +121,19 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
 <script src="<?= cacheBusterPath('js/codemirror/show-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/anyword-ctags-hint.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/brace-fold.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/closebrackets.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/closebrackets.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/comment-fold.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/foldcode.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/foldcode.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/foldgutter.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/matchbrackets.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/matchbrackets.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/search.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/searchcursor.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/searchcursor.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/match-highlighter.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/annotatescrollbar.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/annotatescrollbar.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/matchesonscrollbar.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/trailingspace.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/trailingspace.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/jump-to-line.js') ?>"></script>
-<script src="<?= cacheBusterPath('js/codemirror/diff_match_patch.js"') ?>"></script>
+<script src="<?= cacheBusterPath('js/codemirror/diff_match_patch.js') ?>"></script>
 <script src="<?= cacheBusterPath('js/codemirror/merge.js') ?>"></script>
 
 <?php
@@ -147,4 +147,3 @@ if ($pm->currentUserHasLiveCollabEditAccess())
     echo "<script src='js/firepad.min.js'></script>\n";
     echo "<script src='/pb/js/codemirror/firepad-userlist.js'></script>";
 }
-
