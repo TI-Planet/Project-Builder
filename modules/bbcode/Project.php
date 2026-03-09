@@ -58,11 +58,6 @@ final class bbcodeProject extends Project
         return $this->currentFile;
     }
 
-    public function getIconURL()
-    {
-        return Project::PROJECT_ICON_URL_FALLBACK;
-    }
-
     /**
      * @return string[]
      */

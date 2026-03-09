@@ -25,6 +25,7 @@ namespace ProjectBuilder;
  */
 abstract class IBackend
 {
+    private const STORED_FS_ROOT = '/home/pbbot/pbprojects';
     const doUserAction_Unhandled_Action = -100;
 
     protected Project $project;
@@ -44,6 +45,12 @@ abstract class IBackend
         $this->projFolder = $projFolder;
         $this->hasFolderinFS = is_dir($projFolder);
         $this->settings = (object)[];
+    }
+
+    public static function getWebPublicIconURL(string $projID)
+    {
+        return is_readable(self::STORED_FS_ROOT . "/{$projID}/icon.png") ? "/pb/projects/{$projID}/icon.png"
+                                                                         : Project::PROJECT_ICON_URL_FALLBACK;
     }
 
     private function callFSHelperWithAction($action = '')

@@ -173,7 +173,10 @@ abstract class Project
     /**
      * @return string
      */
-    abstract public function getIconURL();
+    final public function getIconURL()
+    {
+        return IBackend::getWebPublicIconURL($this->pid);
+    }
 
     /**
      * @return boolean

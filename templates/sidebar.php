@@ -112,11 +112,12 @@ function genSidebar()
         {
             $projID = "{$currUser->getID()}_{$project->created}_{$project->randkey}";
             $projectInternalNameHTML = htmlentities($project->internal_name, ENT_QUOTES);
+            $projectIconURL = IBackend::getWebPublicIconURL($projID);
             if ($currProject && (int)$project->id !== $currProject->getDBID())
             {
-                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <a href='/pb/?id={$projID}'>{$projectInternalNameHTML}</a> <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><img src='{$projectIconURL}' alt=''/> <a href='/pb/?id={$projID}'>{$projectInternalNameHTML}</a> <small><i>({$project->type})</i></small></li>";
             } else {
-                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <span id='prgmNameSpanInList'>{$projectInternalNameHTML}</span> <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><img src='{$projectIconURL}' alt=''/> <span id='prgmNameSpanInList'>{$projectInternalNameHTML}</span> <small><i>({$project->type})</i></small></li>";
             }
         }
         $content .= '</ul>';

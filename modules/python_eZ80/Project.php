@@ -105,15 +105,6 @@ final class python_eZ80Project extends Project
     }
 
     /**
-     * @return string
-     */
-    public function getIconURL()
-    {
-        return $this->backend->hasIconFile() ? ('/pb/projects/' . $this->getPID() . '/icon.png')
-                                             : Project::PROJECT_ICON_URL_FALLBACK;
-    }
-
-    /**
      * @return string[]
      */
     public function getAvailableSrcFiles()
