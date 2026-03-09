@@ -25,6 +25,7 @@ function genSidebar()
     $currUser = $pm->getCurrentUser();
     $currProject = $pm->getCurrentProject();
     $currProjectAuthor = $currProject->getAuthor();
+    $currProjectInternalNameHTML = htmlentities($currProject->getInternalName(), ENT_QUOTES);
 
     $isUserAuthorOfProject = $currProject->getAuthorID() === $currUser->getID();
 
@@ -40,7 +41,7 @@ function genSidebar()
         $content .= '<div class="sidebarListHeader"><b>Current project:</b></div>';
         $content .= '<div id="currentProject">';
         $content .= '<div id="prgmIconContainer"><img id="prgmIconImg" alt="" class="hasTooltip" title="Drag\'n\'drop a 16x16 icon.png file to change the project icon" src="' . $currProject->getIconURL() . '" /></div>';
-        $content .= '<div id="prgmNameContainer"><span class="fieldSubContainer" onclick="changePrgmName(); return false;" title="Edit name"><span id="prgmNameSpan">' . $currProject->getInternalName() . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> <span class="glyphicon glyphicon-pencil inlineEditPencil"></span></span></div>';
+        $content .= '<div id="prgmNameContainer"><span class="fieldSubContainer" onclick="changePrgmName(); return false;" title="Edit name"><span id="prgmNameSpan">' . $currProjectInternalNameHTML . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> <span class="glyphicon glyphicon-pencil inlineEditPencil"></span></span></div>';
 
         // Turns out name is Description and internal name is Name.
         $content .= '<u title="Description">Desc</u>: <span id="projectNameContainer" class="fieldSubContainer" onclick="changeProjectName(); return false;" title="Edit description"><span id="projectNameSpan">' . htmlentities($currProject->getName(), ENT_QUOTES) . '</span><span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span> <span class="glyphicon glyphicon-pencil inlineEditPencil"></span></span><br/>';
@@ -110,11 +111,12 @@ function genSidebar()
         foreach ($userProjects as $project)
         {
             $projID = "{$currUser->getID()}_{$project->created}_{$project->randkey}";
+            $projectInternalNameHTML = htmlentities($project->internal_name, ENT_QUOTES);
             if ($currProject && (int)$project->id !== $currProject->getDBID())
             {
-                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <a href='/pb/?id={$projID}'>{$project->internal_name}</a> <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <a href='/pb/?id={$projID}'>{$projectInternalNameHTML}</a> <small><i>({$project->type})</i></small></li>";
             } else {
-                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <span id='prgmNameSpanInList'>{$project->internal_name}</span> <small><i>({$project->type})</i></small></li>";
+                $content .= "<li><img src='/pb/projects/{$projID}/icon.png' alt=''/> <span id='prgmNameSpanInList'>{$projectInternalNameHTML}</span> <small><i>({$project->type})</i></small></li>";
             }
         }
         $content .= '</ul>';
