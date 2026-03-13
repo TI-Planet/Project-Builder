@@ -42,7 +42,7 @@ CodeMirror.defineSimpleMode("tibasic", {
             token: "basiccmd"
         },
         {
-            regex: /(a\+b𝑖|AUTO|AxesOff|AxesOn |BackgroundOff|BackgroundOn |CENTER|CLASSIC|Clear Entries|ClockOff|ClockOn|ClrAllLists|ClrDraw|Connected|CoordOff|CoordOn|Copy Line|Cut Line|DARKGRAY|DEC|Degree|DependAsk|DependAuto|DetectAsymOff|DetectAsymOn|DiagnosticOff|DiagnosticOn|DispTable|Dot|Dot-Thick|Dot-Thin|Eng|ExecLib|Execute Program|ExprOff|ExprOn|Float|FRAC|FRAC-APPROX|Full|Func|G-T|GarbageCollect|GRAY|GREEN|GridDot |GridLine |GridOff|GridOn|Horiz|IndpntAsk|IndpntAuto|Insert Comment Above|Insert Line Above|LabelOff|LabelOn|LEFT|MATHPRINT|n⁄d|Normal|Param|Paste Line Below|PlotsOff |PlotsOn |Pmt_Bgn|Pmt_End|Polar|PolarGC|PrintScreen|Quartiles Setting…|QuickPlot&Fit-EQ|Quit Editor|Radian|re\^θ𝑖|Real|RectGC|RED|RIGHT|Sci|Seq|SEQ\(𝒏\)|SEQ\(𝒏\+1\)|SEQ\(𝒏\+2\)|Sequential|Simul|STATWIZARD OFF|STATWIZARD ON|Thick|Thin|Time|Trace|Un⁄d|Undo Clear|uvAxes|uwAxes|vwAxes|Web|ZBox|ZDecimal|ZFrac1⁄10|ZFrac1⁄2|ZFrac1⁄3|ZFrac1⁄4|ZFrac1⁄5|ZFrac1⁄8|ZInteger|Zoom In|Zoom Out|ZoomFit|ZoomRcl|ZoomStat|ZoomSto|ZPrevious|ZQuadrant1|ZSquare|ZStandard|ZTrig)/,
+            regex: /(a\+b𝑖|AUTO|AxesOff|AxesOn |BackgroundOff|BackgroundOn |CENTER|CLASSIC|Clear Entries|ClockOff|ClockOn|ClrAllLists|ClrDraw|Connected|CoordOff|CoordOn|Copy Line|Cut Line|DARKGRAY|DEC|Degree|DependAsk|DependAuto|DetectAsymOff|DetectAsymOn|DiagnosticOff|DiagnosticOn|DispTable|Dot|Dot-Thick|Dot-Thin|Eng|ExecLib|Execute Program|ExprOff|ExprOn|Float|FRAC|FRAC-APPROX|Full|Func|G-T|GarbageCollect|GRAY|GREEN|GridDot |GridLine |GridOff|GridOn|Horiz|IndpntAsk|IndpntAuto|Insert Comment Above|Insert Line Above|LabelOff|LabelOn|LEFT|MATHPRINT|n⁄d|Normal|Param|Paste Line Below|PlotsOff |PlotsOn |Pmt_Bgn|Pmt_End|Polar|PolarGC|PrintScreen|Quartiles Setting…|QuickPlot&Fit-EQ|Quit Editor|Radian|re\^θ𝑖|Real|RectGC|RED|RIGHT|Sci|Seq|SEQ\(𝑛\)|SEQ\(𝑛\+1\)|SEQ\(𝑛\+2\)|Sequential|Simul|STATWIZARD OFF|STATWIZARD ON|Thick|Thin|Time|Trace|Un⁄d|Undo Clear|uvAxes|uwAxes|vwAxes|Web|ZBox|ZDecimal|ZFrac1⁄10|ZFrac1⁄2|ZFrac1⁄3|ZFrac1⁄4|ZFrac1⁄5|ZFrac1⁄8|ZInteger|Zoom In|Zoom Out|ZoomFit|ZoomRcl|ZoomStat|ZoomSto|ZPrevious|ZQuadrant1|ZSquare|ZStandard|ZTrig)/,
             token: "basicaction"
         },
         {
@@ -54,11 +54,11 @@ CodeMirror.defineSimpleMode("tibasic", {
             token: "basicvar-rw"
         },
         {
-            regex: /(GDB[0-9]|(?:Image|Pic)[0-9]|[XY][₁₂₃₄₅₆]ᴛ|r[₁₂₃₄₅₆]|Str[0-9]|L[₁₂₃₄₅₆]|\[[A-J]\]|Y[₁₂₃₄₅₆₇₈₉₀]|∆Tbl|∆[XY]|FV|TMP|PV|𝗡|𝒏Max|𝒏Min|TblInput|TblStart|Tmax|Tmin|TraceStep|Tstep|YFact|Ymax|Ymin|Yscl|Z𝒏Max|Z𝒏Min|ZPlotStart|ZPlotStep|ZTmax|ZTmin|ZTstep|Zu\(𝒏Min\)|Zv\(𝒏Min\)|Zw\(𝒏Min\)|ZXmax|ZXmin|ZXres|ZXscl|ZYmax|ZYmin|ZYscl|Zθmax|Zθmin|Zθstep|θMax|θMin|θstep|XFact|Xmax|Xmin|Xres|Xscl)/,
+            regex: /(GDB[0-9]|(?:Image|Pic)[0-9]|[XY][₁₂₃₄₅₆]ᴛ|r[₁₂₃₄₅₆]|Str[0-9]|L[₁₂₃₄₅₆]|\[[A-J]\]|Y[₁₂₃₄₅₆₇₈₉₀]|∆Tbl|∆[XY]|FV|TMP|PV|𝗡|𝒏Max|𝒏Min|TblInput|TblStart|Tmax|Tmin|TraceStep|Tstep|YFact|Ymax|Ymin|Yscl|Z𝒏Max|Z𝒏Min|ZPlotStart|ZPlotStep|ZTmax|ZTmin|ZTstep|Zu\(𝑛Min\)|Zv\(𝑛Min\)|Zw\(𝑛Min\)|ZXmax|ZXmin|ZXres|ZXscl|ZYmax|ZYmin|ZYscl|Zθmax|Zθmin|Zθstep|θMax|θMin|θstep|XFact|Xmax|Xmin|Xres|Xscl)/,
             token: "basicvar-rw"
         },
         {
-            regex: /(n[₁₂]?|p̂[₁₂]?|Q[₁₃]|[rR]²|𝒏|RegEQ|Sx[₁₂]|Sxp|tvm_FV|tvm_I%|tvm_𝗡|tvm_Pmt|tvm_PV|u\(𝒏-[12]\)|u\(𝒏\)|u\(𝒏\+1\)|lower|upper|v\(𝒏-[12]\)|v\(𝒏\)|v\(𝒏\+1\)|w\(𝒏-[12]\)|w\(𝒏\)|w\(𝒏\+1\)|[xy][₁₂₃]|x̄[₁₂₃]|x̄|ȳ|Σ[xy]²?|σ[xy]|Σxy|χ²)/,
+            regex: /(n[₁₂]?|p̂[₁₂]?|Q[₁₃]|[rR]²|𝒏|RegEQ|Sx[₁₂]|Sxp|tvm_FV|tvm_I%|tvm_𝗡|tvm_Pmt|tvm_PV|u\(𝑛-[12]\)|u\(𝑛\)|u\(𝑛\+1\)|lower|upper|v\(𝑛-[12]\)|v\(𝑛\)|v\(𝑛\+1\)|w\(𝑛-[12]\)|w\(𝑛\)|w\(𝑛\+1\)|[xy][₁₂₃]|x̄[₁₂₃]|x̄|ȳ|Σ[xy]²?|σ[xy]|Σxy|χ²)/,
             token: "basicvar-ro"
         },
         {
