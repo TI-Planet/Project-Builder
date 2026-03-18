@@ -168,10 +168,10 @@ final class native_eZ80Project extends Project
                                     {
                                         $gfxImageFile = substr($gfxImageFile, 4);
                                         echo "<li class='menu-item dropdown dropdown-submenu'>
-                                                <a href='#' style='padding-left: 10px;'><span class='gfxImgPreviewSpan'><img alt='preview' title='preview' src='/pb/projects/" . $this->getPID() . "/src/gfx/${gfxImageFile}'/></span> {$gfxImageFile}</a>
+                                                <a href='#' style='padding-left: 10px;'><span class='gfxImgPreviewSpan'><img alt='preview' title='preview' src='/pb/projects/" . $this->getPID() . "/src/gfx/{$gfxImageFile}'/></span> {$gfxImageFile}</a>
                                                 <ul class='dropdown-menu'>
                                                     <li class='menu-item'><a href='#' onclick='proj.currFile = \"gfx/{$gfxImageFile}\"; deleteCurrentFile(); return false;'><span class='glyphicon glyphicon-trash' style='top: 2px; left: -1px;'></span> Delete image</a></li>
-                                                    <li class='menu-item'><a href='/pb/projects/" . $this->getPID() . "/src/gfx/${gfxImageFile}' target='_blank' download><span class='glyphicon glyphicon-download' style='top: 2px; left: -1px;'></span> Download image</a></li>
+                                                    <li class='menu-item'><a href='/pb/projects/" . $this->getPID() . "/src/gfx/{$gfxImageFile}' target='_blank' download><span class='glyphicon glyphicon-download' style='top: 2px; left: -1px;'></span> Download image</a></li>
                                                 </ul>
                                               </li>\n";
                                     }
