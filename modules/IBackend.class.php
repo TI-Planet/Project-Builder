@@ -134,12 +134,6 @@ abstract class IBackend
 
     final protected function handleGlobalProjectAction(UserInfo $user, array $params)
     {
-        // Until we decide what to do...
-        if ($user->isAnonymous())
-        {
-            die('Not yet open to non-logged-in TI-Planet members');
-        }
-
         if (empty($params['action']))
         {
             return PBStatus::Error('No action parameter given');

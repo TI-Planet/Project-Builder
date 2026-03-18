@@ -131,7 +131,7 @@ final class python_eZ80Project extends Project
     /**
      * @return string
      */
-    public function getFileListHTML()
+    public function getFileListHTML($allowRename = true)
     {
         $fileListHTML = '';
         $filesCount = count($this->availableSrcFiles);
@@ -226,7 +226,7 @@ final class python_eZ80Project extends Project
             if ($file === $this->currentFile)
             {
                 $fileListHTML .= "<li class='active tabover {$counterpartClass}";
-                if ($this->isCurrentFileRenamable())
+                if ($allowRename && $this->isCurrentFileRenamable())
                 {
                     $fileListHTML .= " renamableFile '><a title='Click to rename' data-toggle='tooltip' data-placement='bottom' id='currentFileTab' href='#' onclick='renameFile(\"{$file}\"); return false;'>";
                 } else {

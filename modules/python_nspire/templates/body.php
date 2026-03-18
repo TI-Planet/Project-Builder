@@ -21,13 +21,15 @@ if (!isset($pm))
     die('Ahem ahem');
 }
 
-/** @var \ProjectBuilder\python_nspireProject $currProject */ ?>
+/** @var \ProjectBuilder\python_nspireProject $currProject */
+$isAnonymousViewer = $currUser->isAnonymous();
+?>
 
     <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
     <div class="filelist">
         <ul class="nav nav-tabs">
-            <?= $currProject->getFileListHTML() ?>
+            <?= $currProject->getFileListHTML($pm->currentUserCanWriteCurrentProject()) ?>
             <?php if ($pm->currentUserCanWriteCurrentProject())
             {
                 if (count($currProject->getAvailableSrcFiles()) > 1 && $currProject->isCurrentFileDeletable())
@@ -50,6 +52,7 @@ if (!isset($pm))
         </ul>
     </div>
 
+    <?php if (!$isAnonymousViewer) { ?>
     <form id="postForm" action="ActionHandler.php" method="POST">
         <input type="hidden" name="id" value="<?= $projectID ?>">
         <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile() ?>">
@@ -63,6 +66,7 @@ if (!isset($pm))
         <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
+    <?php } ?>
 
     <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '<div class="firepad">'; } ?>
     <textarea id="codearea"></textarea>
@@ -74,6 +78,7 @@ if (!isset($pm))
         <?php } else { ?>
             <button id="saveButton" class="btn btn-primary btn-sm hide invisible"></button>
         <?php } ?>
+        <?php if (!$isAnonymousViewer) { ?>
         <div class="btn-group">
             <button id="builddlButton" class="btn btn-primary btn-sm" onclick="downloadTnsFile(); return false" title="Convert this code to a tns file"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download program (.tns) <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
             <button id="zipDlCaretButton" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -87,6 +92,7 @@ if (!isset($pm))
             </ul>
         </div>
         <button id="transferButton" class="btn btn-primary btn-sm hasTooltip disabled" disabled title="Can't run it yet, however" onclick="transferToEmu(); return false"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Transfer to emulator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <?php } ?>
     </div>
 
     <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>
@@ -110,4 +116,3 @@ if (!isset($pm))
             </div>
         </div>
     </div>
-

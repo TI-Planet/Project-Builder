@@ -2,6 +2,7 @@
 /* This content will be included and displayed. */
 if (!isset($pm)) { die('Ahem ahem'); }
 /** @var \ProjectBuilder\bbcodeProject $currProject */
+$isAnonymousViewer = $currUser->isAnonymous();
 ?>
 
 <textarea id="fakeContainer" style="display:none" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
@@ -18,6 +19,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
     <span style="padding: 4px"><b>BBCode processing time:</b> <span id="bbcodeRenderTime">?</span></span>
 </div>
 
+<?php if (!$isAnonymousViewer) { ?>
 <form id="postForm" action="ActionHandler.php" method="POST">
     <input type="hidden" name="id" value="<?= $projectID ?>">
     <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile() ?>">
@@ -25,6 +27,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
     <input type="hidden" name="action" value="download" id="actionInput">
     <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
 </form>
+<?php } ?>
 
 <div id="bbcodeSplitContainer" style="height: calc(100% - 70px); margin-top:10px; display: flex; flex-direction: row; align-items: stretch;">
     <div id="bbcodeEditorPane" style="height: 100%; min-width: 200px; flex: 0 0 50%; padding-right: 2px;">

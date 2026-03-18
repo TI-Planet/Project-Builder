@@ -21,13 +21,15 @@ if (!isset($pm))
     die('Ahem ahem');
 }
 
-/** @var \ProjectBuilder\basic_eZ80Project $currProject */ ?>
+/** @var \ProjectBuilder\basic_eZ80Project $currProject */
+$isAnonymousViewer = $currUser->isAnonymous();
+?>
 
     <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
     <div class="filelist">
         <ul class="nav nav-tabs">
-            <?= $currProject->getFileListHTML() ?>
+            <?= $currProject->getFileListHTML($pm->currentUserCanWriteCurrentProject()) ?>
             <?php if ($pm->currentUserCanWriteCurrentProject())
             {
                 if (count($currProject->getAvailableSrcFiles()) > 1 && $currProject->isCurrentFileDeletable())
@@ -52,6 +54,7 @@ if (!isset($pm))
         </ul>
     </div>
 
+    <?php if (!$isAnonymousViewer) { ?>
     <form id="postForm" action="ActionHandler.php" method="POST">
         <input type="hidden" name="id" value="<?= $projectID ?>">
         <input type="hidden" name="file" id="currFileInput" value="<?= $currProject->getCurrentFile() ?>">
@@ -65,6 +68,7 @@ if (!isset($pm))
         <input type="hidden" name="action" value="downloadZipExport" id="actionInput2">
         <input type="hidden" name="csrf_token" value="<?= $currUser->getSID() ?>">
     </form>
+    <?php } ?>
 
     <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '<div class="firepad">'; } ?>
     <div id="hexViewer" style="display:none"></div>
@@ -78,6 +82,7 @@ if (!isset($pm))
         <?php } else { ?>
             <button id="saveButton" class="btn btn-primary btn-sm hide invisible"></button>
         <?php } ?>
+        <?php if (!$isAnonymousViewer) { ?>
         <div class="btn-group">
             <button id="builddlButton" class="btn btn-primary btn-sm" onclick="downloadBasicPrgm(); return false" title="Convert this code to a program (8xp file)"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download program (.8xp) <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
             <button id="zipDlCaretButton" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -92,6 +97,7 @@ if (!isset($pm))
         </div>
         <button id="buildUsbButton" class="btn btn-primary btn-sm" onclick="transferToCalc(); return false" title="Send the program to a connected calculator (WebUSB)"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to calculator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
         <button id="buildRunButton" class="btn btn-primary btn-sm disabled" disabled onclick="transferToEmuAndRun(); return false"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to emulator and run <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
+        <?php } ?>
     </div>
 
     <div id="bottomToolsToggle" onclick="toggleBottomTools();"></div>

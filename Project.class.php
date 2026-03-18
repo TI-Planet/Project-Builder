@@ -259,6 +259,10 @@ abstract class Project
 
     public function canUserWriteProject(UserInfo $user)
     {
+        if ($user->isAnonymous())
+        {
+            return false;
+        }
         if ($user->isModeratorOrMore() || $this->getAuthorID() === $user->getID())
         {
             return true;

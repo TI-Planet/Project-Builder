@@ -22,6 +22,7 @@ require_once 'ProjectManager.php';
 
 $projectID = (!empty($_GET['id'])) ? $_GET['id'] : null;
 $fileName = (!empty($_GET['file'])) ? $_GET['file'] : null;
+$wantNew = isset($_GET['new']) && (int)$_GET['new'] === 1;
 
 $pm = new ProjectManager($projectID, ['id' => $projectID, 'file' => $fileName]);
 
@@ -32,6 +33,42 @@ if ($pm->getCurrentUser()->getID() !== 1381) {
     die("Maintenance in progress, please come back soon!");
 }
 */
+
+if ($pm->getCurrentUser()->isBot())
+{
+    if ($projectID !== null)
+    {
+        if ($pm->hasValidCurrentProject())
+        {
+            require 'templates/botProjectMetadata.php';
+        } else {
+            require 'templates/noSuchProject.php';
+        }
+        die();
+    }
+
+    $content = "<!DOCTYPE html>
+    <head>
+<meta charset=\"utf-8\">
+    <title>TI-Planet | Online Project Builder</title>
+    <style>
+        html{height:100%;overflow:hidden;}
+        body{height:100%;margin:8px;font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;background-color:#ededed;}
+    </style>
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" />
+</head>
+<body style='height:100%;margin:8px;font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;background-color:#ededed;'>
+Since its beginning, TI-Planet has promoted programming, especially on TI calculators, through many news, program features and reviews, tutorials, contests etc.<br/>
+We are now proud to launch, in beta, a new online platform (online so as to be more easily accessible), to push even further this programming promotional effort. This online tool is called the \"Project Builder\" (PB).<br/>
+<br/>
+<h2>What's the \"Project Builder\"?</h2>
+Simply put, it's a \"subsite\" of TI-Planet, that offers a simplified interface through a set of tools (\"modules\"), such as an IDE, for creating, by oneself or with other people, content like programs, for calculators.</br>
+The main module right now is the C IDE (editor, compiler, emulator...) targetting the TI-83 Premium CE and 84 Plus CE calculators.<br><br/>
+More info: <a href='https://tiplanet.org/forum/viewtopic.php?f=41&amp;t=18118'>https://tiplanet.org/forum/viewtopic.php?f=41&amp;t=18118</a>
+</body>
+</html>";
+    die($content);
+}
 
 // The PB needs a reasonable screen size, warn the mobile users
 
@@ -56,34 +93,7 @@ if (pb_is_mobile() && $projectID && $pm->hasValidCurrentProject() && str_contain
     die();
 }
 
-// Don't do much with bots for now...
-if ($pm->getCurrentUser()->isBot())
-{
-    $content = "<!DOCTYPE html>
-    <head>
-<meta charset=\"utf-8\">
-    <title>TI-Planet | Online Project Builder</title>
-    <style>
-        html{height:100%;overflow:hidden;}
-        body{height:100%;margin:8px;font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;background-color:#ededed;}
-    </style>
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\" />
-</head>
-<body style='height:100%;margin:8px;font-family:\"Helvetica Neue\",Helvetica,Arial,sans-serif;background-color:#ededed;'>
-Since its beginning, TI-Planet has promoted programming, especially on TI calculators, through many news, program features and reviews, tutorials, contests etc.<br/>
-We are now proud to launch, in beta, a new online platform (online so as to be more easily accessible), to push even further this programming promotional effort. This online tool is called the \"Project Builder\" (PB).<br/>
-<br/>
-<h2>What's the \"Project Builder\"?</h2>
-Simply put, it's a \"subsite\" of TI-Planet, that offers a simplified interface through a set of tools (\"modules\"), such as an IDE, for creating, by oneself or with other people, content like programs, for calculators.</br>
-The main module right now is the C IDE (editor, compiler, emulator...) targetting the TI-83 Premium CE and 84 Plus CE calculators.<br><br/>
-More info: <a href='https://tiplanet.org/forum/viewtopic.php?f=41&amp;t=18118'>https://tiplanet.org/forum/viewtopic.php?f=41&amp;t=18118</a>
-</body>
-</html>";
-    die($content);
-}
-
-// Until we decide what to do...
-if ($pm->getCurrentUser()->isAnonymous())
+if ($pm->getCurrentUser()->isAnonymous() && ($projectID === null || $wantNew))
 {
     $url = '/forum/ucp.php?mode=login&redirect=' . urlencode($_SERVER['REQUEST_URI']);
     header('Location: ' . $url);
@@ -99,8 +109,6 @@ if ($projectID !== null)
         require 'templates/noSuchProject.php';
     }
 } else {
-    $wantNew = isset($_GET['new']) && (int)$_GET['new'] === 1;
-
     if ($wantNew) {
         /******** CSRF Token stuff ********/
         if (!empty($_GET['csrf_token']))

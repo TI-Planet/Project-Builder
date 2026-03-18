@@ -34,15 +34,16 @@ if (!empty($_POST['id']))
         }
         */
 
+        if ($pm->getCurrentUser()->isBot())
+        {
+            header('HTTP/1.0 403 Forbidden');
+            die(json_encode(PBStatus::Error('Forbidden')));
+        }
+
         // Special case: refresh the CSRF token from the current phpBB session
         // without requiring the previous CSRF token value.
         if ($_POST['action'] === 'refreshCSRFToken')
         {
-            if ($pm->getCurrentUser()->isAnonymous())
-            {
-                header('HTTP/1.0 401 Unauthorized');
-                die(json_encode(PBStatus::Error("Your session isn't recognized - please [re]login.")));
-            }
             if (!$pm->hasValidCurrentProject())
             {
                 header('HTTP/1.0 400 Bad request');

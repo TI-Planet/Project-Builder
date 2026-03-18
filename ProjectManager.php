@@ -35,6 +35,24 @@ final class ProjectManager
     private ?Project $currentProject;
     private ?string $lastError;
 
+    private const ANONYMOUS_READ_ONLY_ACTIONS = [
+        'getCtags',
+        'getBuildLog',
+        'getCheckLog',
+        'getSrcFileContent',
+        'getAllSrcFilesContent',
+    ];
+
+    private const AUTHENTICATED_READ_ONLY_ACTIONS = [
+        'downloadZipExport',
+        'getCtags',
+        'getBuildLog',
+        'getCheckLog',
+        'download',
+        'getSrcFileContent',
+        'getAllSrcFilesContent',
+    ];
+
     private function initFromConfig()
     {
         global $PB_CONFIG;
@@ -154,6 +172,12 @@ final class ProjectManager
      */
     public function createNewProject($type, $name, $internalName, $isForkOfCurrent = false)
     {
+        if ($this->currentUser->isAnonymous())
+        {
+            $this->lastError = 'Unauthorized';
+            return null;
+        }
+
         $randKey = str_pad(substr(bin2hex(openssl_random_pseudo_bytes(5)), 0, 10), 10, '0', STR_PAD_LEFT);
         $author = $this->currentUser;
         $now = time();
@@ -206,6 +230,11 @@ final class ProjectManager
 
                 if (isset($params['action']) && $params['action'] === 'fork')
                 {
+                    if ($this->currentUser->isAnonymous())
+                    {
+                        return ($this->lastError = 'Unauthorized');
+                    }
+
                     // Fork can be done by the author, or others as long as the project is at least multiuser
                     if ($this->currentUserIsProjOwnerOrStaff() || $this->currentProject->isMultiuser())
                     {
@@ -236,8 +265,9 @@ final class ProjectManager
                     }
                 }
 
-                // Special case for a few actions, which only need to have read-only access minimum
-                if (isset($params['action']) && in_array($params['action'], [ 'downloadZipExport', 'getCtags', 'getBuildLog', 'getCheckLog', 'download', 'getSrcFileContent', 'getAllSrcFilesContent' ], true))
+                // Special case for a few actions, which only need to have read-only access minimum.
+                // Anonymous viewers get a stricter subset with no expected DB/FS side effects.
+                if (isset($params['action']) && $this->isReadOnlyActionAllowed($params['action']))
                 {
                     if ($this->currentUserIsProjOwnerOrStaff() || $this->currentProject->isMultiuser())
                     {
@@ -521,6 +551,20 @@ final class ProjectManager
         }
 
         return $ids;
+    }
+
+    private function isReadOnlyActionAllowed($action)
+    {
+        if (!is_string($action) || $action === '')
+        {
+            return false;
+        }
+
+        $allowedActions = $this->currentUser->isAnonymous()
+            ? self::ANONYMOUS_READ_ONLY_ACTIONS
+            : self::AUTHENTICATED_READ_ONLY_ACTIONS;
+
+        return in_array($action, $allowedActions, true);
     }
 
     private function getReadWriteAllowedUserIDsForProject($projectDBID)
