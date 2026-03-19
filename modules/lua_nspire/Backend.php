@@ -134,7 +134,7 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
                 {
                     return PBStatus::Error('Current file not editable');
                 }
-                return $this->saveSource($params['source']);
+                return $this->saveSource($params['source'], $params['baseSourceHash'] ?? null);
 
             case 'getAnalysis':
                 if (empty($params['file']))
@@ -303,15 +303,35 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
         die('Internal error creating the .zip file... Retry?');
     }
 
-    private function saveSource($source)
+    private function saveSource($source, $baseSourceHash = null)
     {
         if (mb_strlen($source) > 1024*1024)
         {
             return PBStatus::Error("Couldn't save such a big content (Max = 1 MB)");
         }
-        $this->createProjectDirectoryIfNeeded();
-        $ok = file_put_contents($this->projFolder . 'src/' . $this->project->getCurrentFile(), $source);
-        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Couldn't save source to current file");
+        $status = $this->createProjectDirectoryIfNeeded();
+        if ($status !== PBStatus::OK)
+        {
+            return $status;
+        }
+
+        $filePath = $this->projFolder . 'src/' . $this->project->getCurrentFile();
+        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, self::TEMPLATE_LUA_FILE_PATH);
+        if ($validation !== true)
+        {
+            return $validation;
+        }
+
+        if (!$this->atomicWriteTextFile($filePath, $source))
+        {
+            return PBStatus::Error("Couldn't save source to current file");
+        }
+
+        return [
+            'ok' => true,
+            'source_hash' => hash('sha256', $source),
+            'mtime' => (int)@filemtime($filePath),
+        ];
     }
 
     private function getAnalysis($src_file)
@@ -356,6 +376,13 @@ final class lua_nspireProjectBackend extends PHPBasedBackend
         $templateFile = self::TEMPLATE_LUA_FILE_PATH;
         $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
         return (int)filemtime($whichSource);
+    }
+
+    public function getCurrentFileSourceHash()
+    {
+        $currFile = $this->project->getCurrentFile();
+        $sourceFile = $this->projFolder . 'src/' . $currFile;
+        return $this->getTextFileHashWithFallback($sourceFile, self::TEMPLATE_LUA_FILE_PATH) ?? '';
     }
 
     /**

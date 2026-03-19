@@ -233,7 +233,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                 {
                     return PBStatus::Error('Current file not editable');
                 }
-                return $this->saveSource($params['source']);
+                return $this->saveSource($params['source'], $params['baseSourceHash'] ?? null);
 
             case 'clean':
                 return $this->clean();
@@ -670,7 +670,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         die('Internal error creating the .zip file... Retry?');
     }
 
-    private function saveSource($source)
+    private function saveSource($source, $baseSourceHash = null)
     {
         if (mb_strlen($source) > 1024*1024)
         {
@@ -680,10 +680,32 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         {
             return PBStatus::Error("Invalid character in convimg.yaml file. Make sure to have only simple file names and no paths!");
         }
-        $this->createProjectDirectoryIfNeeded();
+        $status = $this->createProjectDirectoryIfNeeded();
+        if ($status !== PBStatus::OK)
+        {
+            return $status;
+        }
+
+        $currFile = $this->project->getCurrentFile();
+        $filePath = $this->projFolder . 'src/' . $currFile;
+        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
+        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, $templateFile);
+        if ($validation !== true)
+        {
+            return $validation;
+        }
+
         $this->deleteBaseProjectFile('output_llvm_build.txt');
-        $ok = file_put_contents($this->projFolder . 'src/' . $this->project->getCurrentFile(), $source);
-        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Couldn't save source to current file");
+        if (!$this->atomicWriteTextFile($filePath, $source))
+        {
+            return PBStatus::Error("Couldn't save source to current file");
+        }
+
+        return [
+            'ok' => true,
+            'source_hash' => hash('sha256', $source),
+            'mtime' => (int)@filemtime($filePath),
+        ];
     }
 
     private function llvm($src_file)
@@ -799,6 +821,14 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
         $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
         return (int)filemtime($whichSource);
+    }
+
+    public function getCurrentFileSourceHash()
+    {
+        $currFile = $this->project->getCurrentFile();
+        $sourceFile = $this->projFolder . 'src/' . $currFile;
+        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
+        return $this->getTextFileHashWithFallback($sourceFile, $templateFile) ?? '';
     }
 
     /**

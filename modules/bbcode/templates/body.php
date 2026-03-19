@@ -5,7 +5,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
 $isAnonymousViewer = $currUser->isAnonymous();
 ?>
 
-<textarea id="fakeContainer" style="display:none" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
+<textarea id="fakeContainer" style="display:none" data-mtime="<?= $currProject->getCurrentFileMtime() ?>" data-source-hash="<?= $currProject->getCurrentFileSourceHash() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
 <div class="toolbar" style="display: flex; justify-content: space-between;">
     <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>

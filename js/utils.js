@@ -239,6 +239,63 @@ function extractEditorContainerHTML(rawHTML, requiredSelector)
     }
 }
 
+let editorNavigationRequestSeq = 0;
+let editorRuntimeSessionSeq = 0;
+let activeRealtimeEditorCleanup = null;
+
+function beginEditorNavigationRequest()
+{
+    editorNavigationRequestSeq += 1;
+    return editorNavigationRequestSeq;
+}
+
+function isCurrentEditorNavigationRequest(seq)
+{
+    return seq === editorNavigationRequestSeq;
+}
+
+function beginEditorRuntimeSession()
+{
+    editorRuntimeSessionSeq += 1;
+    if (typeof activeRealtimeEditorCleanup === "function")
+    {
+        try {
+            activeRealtimeEditorCleanup();
+        } catch (e) {
+            console.log('Realtime cleanup error:', e);
+        }
+    }
+    activeRealtimeEditorCleanup = null;
+    return editorRuntimeSessionSeq;
+}
+
+function isCurrentEditorRuntimeSession(seq)
+{
+    return seq === editorRuntimeSessionSeq;
+}
+
+function registerRealtimeEditorCleanup(cleanup)
+{
+    activeRealtimeEditorCleanup = (typeof cleanup === "function") ? cleanup : null;
+}
+
+function updateLoadedFileSnapshot(source, sourceHash, mtime)
+{
+    if (typeof fakeContainer === "undefined" || !fakeContainer) {
+        return;
+    }
+    if ('value' in fakeContainer) {
+        fakeContainer.value = source;
+    }
+    fakeContainer.textContent = source;
+    if (typeof sourceHash === "string" && sourceHash.length > 0) {
+        fakeContainer.dataset.sourceHash = sourceHash;
+    }
+    if (mtime !== undefined && mtime !== null && `${mtime}`.length > 0) {
+        fakeContainer.dataset.mtime = `${mtime}`;
+    }
+}
+
 function isForumLoginRedirectURL(url)
 {
     return typeof url === "string" && /\/forum\/ucp\.php\?mode=login\b/.test(url);

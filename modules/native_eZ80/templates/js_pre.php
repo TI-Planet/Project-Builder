@@ -62,6 +62,8 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
 
     function goToFile(newfile)
     {
+        const navRequestSeq = beginEditorNavigationRequest();
+        beginEditorRuntimeSession();
         incrementActivityIndicatorCounterAndShow();
         const wasBuildAndRunButtonEnabled = !!$("#buildRunButton").length && !$("#buildRunButton").hasClass("disabled");
         const wasReadOnly = editor.isReadOnly();
@@ -76,6 +78,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         fetchGET(newURL, 10000).then((resp) =>
         {
+            if (!isCurrentEditorNavigationRequest(navRequestSeq)) {
+                return;
+            }
             const nextEditorHTML = resp.ok ? extractEditorContainerHTML(resp.body, '#codearea') : null;
             if (!nextEditorHTML) {
                 cbEnd();

@@ -114,9 +114,10 @@ const _saveFile_impl = (callback) =>
         removeClass(saveButton.children[1], "hidden");
         saveButton.disabled = true;
 
-        ajaxAction("save", `file=${proj.currFile}&source=${encodeURIComponent(currSource)}`, () => {
+        ajaxAction("save", `file=${proj.currFile}&source=${encodeURIComponent(currSource)}&baseSourceHash=${encodeURIComponent(fakeContainer?.dataset?.sourceHash || '')}`, (saveResp) => {
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
+            updateLoadedFileSnapshot(currSource, saveResp && saveResp.source_hash, saveResp && saveResp.mtime);
             getAnalysisLogAndUpdateHintsMaybe(true);
             getCtags(proj.currFile, () => { filterOutline($("#codeOutlineFilter").val()); });
             if (typeof callback === "function") callback();

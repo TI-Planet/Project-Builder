@@ -68,12 +68,17 @@ require_once 'utils.php';
     function init_post_js_2(isChangingTab, cbDone)
     {
         const editorContainer = $('#editorContainer');
+        const editorRuntimeSession = beginEditorRuntimeSession();
+        const isActiveRuntimeSession = () => isCurrentEditorRuntimeSession(editorRuntimeSession);
 
         <?php if ($pm->currentUserHasLiveCollabEditAccess()) { ?>
 
         window.Firebase?.INTERNAL?.forceWebSockets();
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
         firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
+            if (!isActiveRuntimeSession()) {
+                return;
+            }
             if (error) { // possibly expired token, etc.
                 window.onunload = window.onbeforeunload = null;
                 showNotification("danger", "Shared-project session expired or invalid - it will be regenerated now",
@@ -95,45 +100,66 @@ require_once 'utils.php';
         let firepad = null;
         let firepadUserList = null;
 
+        function disposeFirepadBindings()
+        {
+            if (firepadUserList !== null) {
+                firepadUserList.dispose();
+                firepadUserList = null;
+            }
+            if (firepad !== null) {
+                firepad.dispose();
+                firepad = null;
+            }
+        }
+        registerRealtimeEditorCleanup(disposeFirepadBindings);
+
         window.removeMyselfFromFirepad = function()
         {
-            if (proj.is_multi && typeof(firepad) !== "undefined") {
-                firepad.firebaseAdapter_.userRef_.remove();
+            if (proj.is_multi) {
+                disposeFirepadBindings();
             }
         };
 
         window.tryFirepadSync = function()
         {
+            if (!isActiveRuntimeSession() || firepad === null) {
+                return;
+            }
             firepad.client_.updateCursor();
             firepad.client_.sendCursor(firepad.client_.cursor);
         };
 
         function createOrResetFirepad()
         {
-            if (firepad !== null)
-            {
-                firepad.dispose(); firepad = null;
-            }
-            if (firepadUserList !== null) {
-                firepadUserList.dispose(); firepadUserList = null;
-            }
+            disposeFirepadBindings();
             firepad = Firepad.fromCodeMirror(firepadRef, editor, { userId: user.id, userColor: `#${Math.floor(Math.random()*0xFFFFFF).toString(16)}` });
             firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), user.id, user.name, user.avatar);
 
             firepad.on('ready', () => {
+              if (!isActiveRuntimeSession()) { return; }
               firepadRef.child("history").orderByKey().limitToLast(1).once('value', (s) => {
+                if (!isActiveRuntimeSession()) { return; }
                 const revSnaps = s.val() || { foo: { t: -1 } };
                 const lastRev = revSnaps[Object.keys(revSnaps)[0]]; // first (and only)
                 const fileMTime_firepad  = (lastRev.t/1000)|0;
                 const fileMTime_tiplanet = fakeContainer.dataset.mtime|0;
-                const firepadIsOld = fileMTime_tiplanet > fileMTime_firepad;
+                const serverSource = fakeContainer.value || fakeContainer.textContent || '';
+                const liveSource = editor.getValue();
+                const firepadIsOlderThanServer = fileMTime_tiplanet > fileMTime_firepad;
 
-                if (firepadIsOld || firepad.isHistoryEmpty())
+                if (firepad.isHistoryEmpty())
                 {
-                    firepad.setText(fakeContainer.textContent);
-                    lastSavedSource = fakeContainer.textContent;
+                    firepad.setText(serverSource);
+                    lastSavedSource = serverSource;
+                } else if (liveSource === serverSource) {
+                    lastSavedSource = liveSource;
+                } else if (firepadIsOlderThanServer) {
+                    globalSyncOK = false;
+                    lastSavedSource = liveSource;
+                    showNotification("warning", "Shared copy diverged",
+                        "The live collaborative copy differs from the saved server copy. To avoid overwriting content, automatic server-to-live replacement was skipped. Reload and merge before saving.", null, 999999);
                 } else {
-                    lastSavedSource = editor.getValue();
+                    lastSavedSource = liveSource;
                 }
 
                 if (typeof(cbDone) === "function") { cbDone(); }
@@ -161,6 +187,7 @@ require_once 'utils.php';
             let syncStatusTimeoutID = null;
             firepad.on('synced', (isSynced) =>
             {
+                if (!isActiveRuntimeSession()) { return; }
                 clearTimeout(syncStatusTimeoutID); // some basic debouncing...
                 if (isSynced === false)
                 {

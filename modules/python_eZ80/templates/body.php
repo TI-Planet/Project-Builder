@@ -25,7 +25,7 @@ if (!isset($pm))
 $isAnonymousViewer = $currUser->isAnonymous();
 ?>
 
-    <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
+    <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>" data-source-hash="<?= $currProject->getCurrentFileSourceHash() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
     <div class="filelist">
         <ul class="nav nav-tabs">

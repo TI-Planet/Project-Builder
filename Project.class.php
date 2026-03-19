@@ -197,6 +197,14 @@ abstract class Project
     }
 
     /**
+     * @return string
+     */
+    public function getCurrentFileSourceHash()
+    {
+        return $this->backend->getCurrentFileSourceHash();
+    }
+
+    /**
      * @return boolean
      */
     final public function isMultiuser()

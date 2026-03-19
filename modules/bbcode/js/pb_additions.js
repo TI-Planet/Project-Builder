@@ -64,9 +64,10 @@ const _saveFile_impl = (callback) =>
     const currSource = editor.getValue();
     if (currSource === lastSavedSource) { if (typeof callback === 'function') callback(); return; }
     removeClass(saveButton.querySelector('span.loadingicon'), 'hidden');
-    ajaxAction("save", `source=${encodeURIComponent(currSource)}`, () => {
+    ajaxAction("save", `source=${encodeURIComponent(currSource)}&baseSourceHash=${encodeURIComponent(fakeContainer?.dataset?.sourceHash || '')}`, (saveResp) => {
         addClass(saveButton.querySelector('span.loadingicon'), 'hidden');
         savedSinceLastChange = true; lastSavedSource = currSource; proj.updated = (new Date).getTime(); saveProjConfig();
+        updateLoadedFileSnapshot(currSource, saveResp && saveResp.source_hash, saveResp && saveResp.mtime);
         if (typeof callback === 'function') callback();
     }, () => {
         addClass(saveButton.querySelector('span.loadingicon'), 'hidden');

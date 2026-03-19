@@ -36,9 +36,14 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
 <script>
     function goToFile(newfile)
     {
+        const navRequestSeq = beginEditorNavigationRequest();
+        beginEditorRuntimeSession();
         const newURL = `?id=${proj.pid}&file=${newfile}`;
         fetchGET(newURL, 10000).then((resp) =>
         {
+            if (!isCurrentEditorNavigationRequest(navRequestSeq)) {
+                return;
+            }
             const nextEditorHTML = resp.ok ? extractEditorContainerHTML(resp.body, '#codearea') : null;
             if (!nextEditorHTML) {
                 fallbackToFullPageNavigation(isForumLoginRedirectURL(resp.url) ? resp.url : newURL,

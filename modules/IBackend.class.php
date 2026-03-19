@@ -82,6 +82,100 @@ abstract class IBackend
         return PBStatus::OK;
     }
 
+    final protected function readTextFileIfReadable(string $path)
+    {
+        if (!is_readable($path))
+        {
+            return null;
+        }
+        $content = @file_get_contents($path);
+        return ($content !== false) ? $content : null;
+    }
+
+    final protected function getTextFileContentsWithFallback(string $path, string $fallbackPath = '')
+    {
+        $content = $this->readTextFileIfReadable($path);
+        if ($content !== null)
+        {
+            return $content;
+        }
+        if ($fallbackPath !== '')
+        {
+            return $this->readTextFileIfReadable($fallbackPath);
+        }
+        return null;
+    }
+
+    final protected function getTextFileHashWithFallback(string $path, string $fallbackPath = '')
+    {
+        $content = $this->getTextFileContentsWithFallback($path, $fallbackPath);
+        return ($content !== null) ? hash('sha256', $content) : null;
+    }
+
+    final protected function validateExpectedFileHash($expectedHash, string $path, string $fallbackPath = '')
+    {
+        if (!is_string($expectedHash) || $expectedHash === '')
+        {
+            return true;
+        }
+
+        $expectedHash = strtolower(trim($expectedHash));
+        if (preg_match('/^[a-f0-9]{64}$/', $expectedHash) !== 1)
+        {
+            return PBStatus::Error('Bad base source hash');
+        }
+
+        $currentHash = $this->getTextFileHashWithFallback($path, $fallbackPath);
+        if ($currentHash === null)
+        {
+            return PBStatus::Error("Couldn't validate the current server file before saving");
+        }
+
+        if (!hash_equals($currentHash, $expectedHash))
+        {
+            return PBStatus::Error('This file changed on the server since you opened it. Reload and merge before saving again.');
+        }
+
+        return true;
+    }
+
+    final protected function atomicWriteTextFile(string $path, string $content)
+    {
+        $dir = dirname($path);
+        if (!is_dir($dir))
+        {
+            return false;
+        }
+
+        $tmpPath = @tempnam($dir, basename($path) . '.tmp.');
+        if ($tmpPath === false)
+        {
+            return false;
+        }
+
+        $bytesWritten = @file_put_contents($tmpPath, $content, LOCK_EX);
+        if ($bytesWritten === false)
+        {
+            @unlink($tmpPath);
+            return false;
+        }
+
+        if (file_exists($path))
+        {
+            @chmod($tmpPath, fileperms($path) & 0777);
+        }
+
+        $renamed = @rename($tmpPath, $path);
+        if (!$renamed)
+        {
+            @unlink($tmpPath);
+            return false;
+        }
+
+        clearstatcache(true, $path);
+        return true;
+    }
+
     final protected function forkProject($newID)
     {
         $this->createProjectDirectoryIfNeeded();
@@ -124,6 +218,7 @@ abstract class IBackend
     abstract protected function deleteCurrentFile();
     abstract public function getCurrentFileSourceHTML();
     abstract public function getCurrentFileMtime();
+    abstract public function getCurrentFileSourceHash();
 
     final public function getSettings() { return $this->settings; }
     abstract protected function setSettings(array $params = []);
