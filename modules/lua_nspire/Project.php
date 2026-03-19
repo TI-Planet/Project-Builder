@@ -26,8 +26,6 @@ final class lua_nspireProject extends Project
     const REGEXP_GOOD_FILE_PATTERN = "/^([A-Z0-9]+)\\.lua$/i";
     const TEMPLATE_FILE            = 'PRGM.lua';
 
-    private lua_nspireProjectBackend $backend;
-
     private array $availableSrcFiles;
 
     public function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
@@ -133,23 +131,6 @@ final class lua_nspireProject extends Project
         }
         return $fileListHTML;
     }
-
-    /**
-     * @return string
-     */
-    public function getCurrentFileSourceHTML()
-    {
-        return $this->backend->getCurrentFileSourceHTML();
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurrentFileMtime()
-    {
-        return $this->backend->getCurrentFileMtime();
-    }
-
 
     /****************************************************/
     // Setters

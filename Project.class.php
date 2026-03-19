@@ -22,6 +22,7 @@ ini_set('display_errors', 'Off');
 
 require_once 'PBStatus.class.php';
 require_once 'ProjectFactory.php';
+require_once 'modules/IBackend.class.php';
 
 abstract class Project
 {
@@ -47,6 +48,7 @@ abstract class Project
 
     protected string $projDirectory;
     protected string $currentFile;
+    protected IBackend $backend;
 
     // This is protected since only children classes extending it will call it.
     protected function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
@@ -176,6 +178,22 @@ abstract class Project
     final public function getIconURL()
     {
         return IBackend::getWebPublicIconURL($this->pid);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentFileSourceHTML()
+    {
+        return $this->backend->getCurrentFileSourceHTML();
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentFileMtime()
+    {
+        return $this->backend->getCurrentFileMtime();
     }
 
     /**

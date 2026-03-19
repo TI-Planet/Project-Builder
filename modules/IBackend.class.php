@@ -122,6 +122,8 @@ abstract class IBackend
     abstract protected function addIconFile($icon);
     abstract protected function renameFile($oldName, $newName);
     abstract protected function deleteCurrentFile();
+    abstract public function getCurrentFileSourceHTML();
+    abstract public function getCurrentFileMtime();
 
     final public function getSettings() { return $this->settings; }
     abstract protected function setSettings(array $params = []);

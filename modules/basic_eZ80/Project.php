@@ -26,8 +26,6 @@ final class basic_eZ80Project extends Project
     const REGEXP_GOOD_FILE_PATTERN = "/^([A-Z0-9]+)\\.bas$/i";
     const TEMPLATE_FILE            = 'PRGM.bas';
 
-    private basic_eZ80ProjectBackend $backend;
-
     private array $availableSrcFiles;
 
     public function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
@@ -133,23 +131,6 @@ final class basic_eZ80Project extends Project
         }
         return $fileListHTML;
     }
-
-    /**
-     * @return string
-     */
-    public function getCurrentFileSourceHTML()
-    {
-        return $this->backend->getCurrentFileSourceHTML();
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurrentFileMtime()
-    {
-        return $this->backend->getCurrentFileMtime();
-    }
-
 
     /****************************************************/
     // Setters

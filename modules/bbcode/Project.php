@@ -24,8 +24,6 @@ final class bbcodeProject extends Project
     const REGEXP_GOOD_FILE_PATTERN = "/^([A-Za-z0-9_\-]{1,25})\\.bbcode$/";
     const TEMPLATE_FILE            = 'Article.bbcode';
 
-    private bbcodeProjectBackend $backend;
-
     private array $availableSrcFiles;
 
     public function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
@@ -77,16 +75,6 @@ final class bbcodeProject extends Project
     public function doUserAction(UserInfo $user, array $params = [])
     {
         return $this->backend->doUserAction($user, $params);
-    }
-
-    public function getCurrentFileSourceHTML()
-    {
-        return $this->backend->getCurrentFileSourceHTML();
-    }
-
-    public function getCurrentFileMtime()
-    {
-        return $this->backend->getCurrentFileMtime();
     }
 
     /****************************************************/

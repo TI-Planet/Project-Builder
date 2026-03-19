@@ -28,8 +28,6 @@ final class python_eZ80Project extends Project
 
     const REGEXP_GOOD_IMAGE_FILE_PATTERN = "/^([a-z0-9_]+)\\.(png|bmp)$/i";
 
-    private python_eZ80ProjectBackend $backend;
-
     private array $availableSrcFiles;
     private array $availableBinFiles;
     private array $availableGfxImageFiles;
@@ -239,23 +237,6 @@ final class python_eZ80Project extends Project
         }
         return $fileListHTML;
     }
-
-    /**
-     * @return string
-     */
-    public function getCurrentFileSourceHTML()
-    {
-        return $this->backend->getCurrentFileSourceHTML();
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurrentFileMtime()
-    {
-        return $this->backend->getCurrentFileMtime();
-    }
-
 
     /****************************************************/
     // Setters
