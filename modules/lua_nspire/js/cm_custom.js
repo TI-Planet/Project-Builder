@@ -361,10 +361,6 @@ function do_cm_custom()
         });
     };
 
-    reindent = () => {
-        alert('not done yet');
-    };
-
     // Will get called as needed
     setupAutocompletionAutoDisplayDelay = () =>
     {

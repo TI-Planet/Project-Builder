@@ -358,17 +358,6 @@ function do_cm_custom()
         });
     };
 
-    reindent = () => {
-        const reindentButton = document.getElementById('reindentButton');
-        reindentButton.onclick = (e) => { e.preventDefault(); return false };
-        saveFile(() => {
-            ajaxAction("reindent", `file=${proj.currFile}`, (txt) => {
-                txt && smartReplaceEditorContent(txt);
-                saveFile( () => { reindentButton.onclick = (e) => { reindent(); return false }; } );
-            });
-        });
-    };
-
     // Will get called as needed
     setupAutocompletionAutoDisplayDelay = () =>
     {
