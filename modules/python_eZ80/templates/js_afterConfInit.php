@@ -38,7 +38,7 @@ if (!isset($pm))
         let progressNotifMsg = '';
         const progressCallback = (name) => {
             inviteNotif && inviteNotif.close();
-            if (isValidFileName(name) || isValidGfxImageFileName(name))
+            if (isValidFileName(name))
             {
                 lastOKName = name;
                 progressNotifMsg += `${name}, `;
@@ -67,7 +67,7 @@ if (!isset($pm))
             onEnter: (event) => {
                 if (!inviteNotif)
                 {
-                    inviteNotif = showNotification("info", "File import", "Drop source code files, a 16x16 icon.png file for the project icon, or image files for gfx resources, to import them into the project");
+                    inviteNotif = showNotification("info", "File import", "Drop source code files to import them into the project");
                     inviteNotif.$ele[0].addEventListener("dragenter", () => { inviteNotif.$ele.hide(); inviteNotif.close() }, false);
                 }
             }

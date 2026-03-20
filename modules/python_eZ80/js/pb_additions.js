@@ -164,61 +164,28 @@ function saveFile(callback)
 
 function isValidFileName(name)
 {
-    return name === 'icon.png' || /^[a-zA-Z0-9_]+\.py$/i.test(name);
-}
-
-function isValidGfxImageFileName(name)
-{
-    return /^(gfx\/)?[a-zA-Z0-9_]+\.(png|bmp)$/i.test(name);
+    return /^[a-zA-Z0-9_]+\.py$/i.test(name);
 }
 
 function createFileWithContent(name, content, cb, isLast, numFiles)
 {
     const escapedName = $('<div/>').text(name).html();
-    if (isValidFileName(name) || isValidGfxImageFileName(name))
+    if (isValidFileName(name))
     {
         if (proj.files.indexOf(name) === -1)
         {
-            if (name === "icon.png") {
-                const iconCheck = new Image();
-                iconCheck.src = content;
-                iconCheck.onload = () => {
-                    if (iconCheck.width !== 16 && iconCheck.height !== 16) {
-                        showNotification("danger", 'Invalid icon dimenstions', 'Make sure the icon PNG file is 16x16 px and try again');
-                        cb(name);
-                        return;
-                    }
-                    content = content.replace('data:image/png;base64,', '');
-                    ajaxAction("addIconFile", `icon=${encodeURIComponent(content)}`, () =>
-                    {
-                        document.getElementById('prgmIconImg').src = `/pb/projects/${proj.pid}/icon.png`;
-                        showNotification("success", 'Icon added', 'The project icon has been set successfully');
-                        cb(name, isLast && numFiles > 1);
-                    }, () => { showNotification("danger", 'Oops?', 'An error happened - make sure the icon PNG file is 16x16 px, and retry?'); cb(name); });
-                };
-            } else if (isValidGfxImageFileName(name)) {
-                content = content.replace(/^data:image\/(png|bmp);base64,/, '');
-                ajaxAction("addGfxImage", `fileName=${name}&content=${encodeURIComponent(content)}`, () =>
-                {
-                    proj.files = proj.files.concat([name]);
-                    saveProjConfig();
-                    showNotification("success", 'Image added', 'The file is available in the gfx folder');
-                    cb(name, isLast && numFiles > 1);
-                }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
-            } else {
-                ajaxAction("addFile", `fileName=${name}`, () =>
-                {
-                    proj.files = proj.files.concat([name]);
-                    saveProjConfig();
-                    ajaxAction("save", `file=${name}&source=${encodeURIComponent(content)}`, null, null, () => { cb(name, true) });
-                }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
-            }
+            ajaxAction("addFile", `fileName=${name}`, () =>
+            {
+                proj.files = proj.files.concat([name]);
+                saveProjConfig();
+                ajaxAction("save", `file=${name}&source=${encodeURIComponent(content)}`, null, null, () => { cb(name, true) });
+            }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
         } else {
             showNotification("warning", "File not imported", `'${escapedName}' already exists in the project`, null, 10000);
             if (typeof(cb) === "function") { cb(name); }
         }
     } else {
-        showNotification("warning", "File not imported", `'${escapedName}' is not a valid name (Could be icon.png, or: Chars: a-z,A-Z,0-9,_ Extension: py)`, null, 10000);
+        showNotification("warning", "File not imported", `'${escapedName}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extension: py)`, null, 10000);
         if (typeof(cb) === "function") { cb(name); }
     }
 }
@@ -227,7 +194,7 @@ function deleteCurrentFile()
 {
     if (window.confirm("Do you really want to delete this file?"))
     {
-        if (proj.currFile && (isValidFileName(proj.currFile) || isValidGfxImageFileName(proj.currFile)))
+        if (proj.currFile && isValidFileName(proj.currFile))
         {
             ajaxAction("deleteCurrentFile", `file=${proj.currFile}`, () => {
                 const idx = proj.files.indexOf(proj.currFile);
@@ -410,14 +377,6 @@ async function transferToCalc()
         showNotification("danger", "Transfer failed", err.message || err);
     }
     button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
-}
-
-function makeGfx(callback)
-{
-    // todo: make image appvars from images
-    if (typeof callback === "function") {
-        callback();
-    }
 }
 
 function parseAnalysisLog(log)
