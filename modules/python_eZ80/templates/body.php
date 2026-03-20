@@ -75,11 +75,6 @@ $isAnonymousViewer = $currUser->isAnonymous();
     <div class='subfirepad'>
         <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
-        <div class="btn-group">
-            <ul class="dropdown-menu">
-                <li class="hasTooltip <?php if(!$currProject->hasGfxFiles()) { echo 'disabled'; } ?>" data-placement="right" title="(Re)build gfx resources"><a onclick="makeGfx(); return false">(Re)build gfx resources</a></li>
-            </ul>
-        </div>
         <?php } else { ?>
             <button id="saveButton" class="btn btn-primary btn-sm hide invisible"></button>
         <?php } ?>

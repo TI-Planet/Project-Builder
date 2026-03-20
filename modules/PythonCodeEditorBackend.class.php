@@ -16,19 +16,19 @@
 
 namespace ProjectBuilder;
 
-require_once __DIR__ . '/../CodeEditorBackend.class.php';
+require_once __DIR__ . '/CodeEditorBackend.class.php';
 
-final class lua_nspireProjectBackend extends CodeEditorBackend
+abstract class PythonCodeEditorBackend extends CodeEditorBackend
 {
-    private const TEMPLATE_LUA_FILE_PATH = __DIR__ . '/../../projects/template_lua/src/PRGM.lua';
+    protected const TEMPLATE_PY_FILE_PATH = __DIR__ . '/../projects/template_py/src/script.py';
 
-    public function __construct(lua_nspireProject $project, $projFolder)
+    final protected function getCtags(array $files)
     {
-        parent::__construct($project, $projFolder, self::TEMPLATE_LUA_FILE_PATH, 'tns', '-- Your code here');
+        return $this->getJsonCtagsForLanguage($files, 'Python');
     }
 
-    protected function getCtags(array $files)
+    final protected function getAnalysis($src_file)
     {
-        return $this->getJsonCtagsForLanguage($files, 'Lua');
+        return $this->getPylintAnalysis($src_file);
     }
 }

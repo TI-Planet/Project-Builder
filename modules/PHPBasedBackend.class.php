@@ -20,6 +20,45 @@ require_once 'IBackend.class.php';
 
 abstract class PHPBasedBackend extends IBackend
 {
+    protected string $templateFilePath;
+
+    protected function __construct(Project $project, $projFolder, string $templateFilePath = '')
+    {
+        parent::__construct($project, $projFolder);
+        $this->templateFilePath = $templateFilePath;
+    }
+
+    public function getAvailableSrcFiles()
+    {
+        $projectClass = get_class($this->project);
+        $availableFiles = array_filter(
+            array_map('basename', glob($this->projFolder . 'src/*.*') ?: []),
+            static function($file) use ($projectClass) { return $projectClass::isFileNameOK($file); }
+        );
+        sort($availableFiles);
+        return $availableFiles;
+    }
+
+    public function getCurrentFileSourceHTML()
+    {
+        $sourceFile = $this->getCurrentProjectSourceFilePath();
+        $whichSource = $this->getExistingFilePathWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile());
+        return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
+    }
+
+    public function getCurrentFileMtime()
+    {
+        $sourceFile = $this->getCurrentProjectSourceFilePath();
+        $whichSource = $this->getExistingFilePathWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile());
+        return (int)filemtime($whichSource);
+    }
+
+    public function getCurrentFileSourceHash()
+    {
+        $sourceFile = $this->getCurrentProjectSourceFilePath();
+        return $this->getTextFileHashWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile()) ?? '';
+    }
+
     protected function addFile($fileName, $content = '')
     {
         $status = $this->createProjectDirectoryIfNeeded();
@@ -61,5 +100,15 @@ abstract class PHPBasedBackend extends IBackend
             return $ok ? PBStatus::OK : PBStatus::Error("File couldn't be deleted (ret = {$ret})");
         }
         return PBStatus::OK;
+    }
+
+    protected function addIconFile($icon)
+    {
+        return PBStatus::OK;
+    }
+
+    protected function getTemplateFilePathForCurrentFile()
+    {
+        return $this->templateFilePath;
     }
 }

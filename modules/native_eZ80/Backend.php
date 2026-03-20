@@ -436,7 +436,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         return $log;
     }
 
-    private function getCtags(array $files)
+    protected function getCtags(array $files)
     {
         if (!$this->hasFolderinFS) {
             return '';
@@ -462,7 +462,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         return '';
     }
 
-    private function getSDKCtags()
+    protected function getSDKCtags()
     {
         $cacheFile = __DIR__ . '/internal/sdk_ctags.json';
         if (is_readable($cacheFile) && filemtime($cacheFile) > time()-24*60*60) {
@@ -686,10 +686,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
             return $status;
         }
 
-        $currFile = $this->project->getCurrentFile();
-        $filePath = $this->projFolder . 'src/' . $currFile;
-        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
-        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, $templateFile);
+        $filePath = $this->getCurrentProjectSourceFilePath();
+        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, $this->getTemplateFilePathForCurrentFile());
         if ($validation !== true)
         {
             return $validation;
@@ -715,7 +713,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         return $this->getLLVMCompileOutput($src_file);
     }
 
-    private function getAnalysis($src_file)
+    protected function getAnalysis($src_file)
     {
         if (!$this->hasFolderinFS)
         {
@@ -804,10 +802,8 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
      */
     public function getCurrentFileSourceHTML()
     {
-        $currFile = $this->project->getCurrentFile();
-        $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
+        $sourceFile = $this->getCurrentProjectSourceFilePath();
+        $whichSource = $this->getExistingFilePathWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile());
         return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
     }
 
@@ -816,27 +812,22 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
      */
     public function getCurrentFileMtime()
     {
-        $currFile = $this->project->getCurrentFile();
-        $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
+        $sourceFile = $this->getCurrentProjectSourceFilePath();
+        $whichSource = $this->getExistingFilePathWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile());
         return (int)filemtime($whichSource);
     }
 
     public function getCurrentFileSourceHash()
     {
-        $currFile = $this->project->getCurrentFile();
-        $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = $currFile === 'gfx/convimg.yaml' ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH : self::TEMPLATE_C_FILE_PATH;
-        return $this->getTextFileHashWithFallback($sourceFile, $templateFile) ?? '';
+        $sourceFile = $this->getCurrentProjectSourceFilePath();
+        return $this->getTextFileHashWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile()) ?? '';
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasIconFile()
+    private function getTemplateFilePathForCurrentFile()
     {
-        return file_exists($this->projFolder . 'icon.png');
+        return $this->project->getCurrentFile() === 'gfx/convimg.yaml'
+            ? self::TEMPLATE_CONVIMG_YAML_FILE_PATH
+            : self::TEMPLATE_C_FILE_PATH;
     }
 
 }

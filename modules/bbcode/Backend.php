@@ -24,15 +24,8 @@ final class bbcodeProjectBackend extends PHPBasedBackend
 
     public function __construct(bbcodeProject $project, $projFolder)
     {
-        parent::__construct($project, $projFolder);
+        parent::__construct($project, $projFolder, self::TEMPLATE_FILE_PATH);
         $this->projPrgmExtension = 'bbcode';
-    }
-
-    public function getAvailableSrcFiles()
-    {
-        $availableFiles = array_filter(array_map('basename', glob($this->projFolder . 'src/*.*') ?: []), '\ProjectBuilder\bbcodeProject::isFileNameOK');
-        sort($availableFiles);
-        return $availableFiles;
     }
 
     public function doUserAction(UserInfo $user, array $params)
@@ -130,36 +123,6 @@ final class bbcodeProjectBackend extends PHPBasedBackend
         $renderTime = round((microtime(true) - $startTime) * 1000);
 
         return [ 'html' => $html, 'renderTime' => $renderTime ];
-    }
-
-    public function getCurrentFileSourceHTML()
-    {
-        $currFile = $this->project->getCurrentFile();
-        $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = self::TEMPLATE_FILE_PATH;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
-        return htmlentities(file_get_contents($whichSource), ENT_QUOTES);
-    }
-
-    public function getCurrentFileMtime()
-    {
-        $currFile = $this->project->getCurrentFile();
-        $sourceFile = $this->projFolder . 'src/' . $currFile;
-        $templateFile = self::TEMPLATE_FILE_PATH;
-        $whichSource = file_exists($sourceFile) ? $sourceFile : $templateFile;
-        return (int)@filemtime($whichSource);
-    }
-
-    public function getCurrentFileSourceHash()
-    {
-        $currFile = $this->project->getCurrentFile();
-        $sourceFile = $this->projFolder . 'src/' . $currFile;
-        return $this->getTextFileHashWithFallback($sourceFile, self::TEMPLATE_FILE_PATH) ?? '';
-    }
-
-    protected function addIconFile($icon)
-    {
-        return PBStatus::OK; // no icon
     }
 
     public function setSettings(array $params = [])

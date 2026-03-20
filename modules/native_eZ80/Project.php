@@ -16,7 +16,7 @@
 
 namespace ProjectBuilder;
 
-// TODO: constify projects folder somewhere up the class hierarchy
+require_once __DIR__ . '/../../Project.class.php';
 
 final class native_eZ80Project extends Project
 {
@@ -28,31 +28,15 @@ final class native_eZ80Project extends Project
 
     const REGEXP_GOOD_IMAGE_FILE_PATTERN = "/^([a-z0-9_]+)\\.(png|bmp)$/i";
 
-    private array $availableSrcFiles;
-    private array $availableBinFiles;
-    private array $availableGfxImageFiles;
+    private array $availableBinFiles = [];
+    private array $availableGfxImageFiles = [];
 
     public function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
     {
         parent::__construct($db_id, $pid, $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom, $readWriteAllowedUserIDs);
-
-        require_once 'Backend.php';
-        $this->backend = new native_eZ80ProjectBackend($this, $this->projDirectory);
-
+        $this->initProjectBackend(__DIR__ . '/Backend.php', native_eZ80ProjectBackend::class);
         $this->availableBinFiles = $this->backend->getAvailableBinFiles();
-        $this->availableSrcFiles = $this->backend->getAvailableSrcFiles();
         $this->availableGfxImageFiles = $this->backend->getAvailableGfxImageFiles();
-        if (count($this->availableSrcFiles) === 0)
-        {
-            // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
-            $this->availableSrcFiles = [ self::TEMPLATE_FILE ];
-        }
-        $this->currentFile = $this->availableSrcFiles[0];
-    }
-
-    public static function isPrgmNameOK($fileName = '')
-    {
-        return preg_match('/^[A-Z][A-Z0-9]{0,7}$/', $fileName);
     }
 
     public static function isFileNameOK($fileName = '')
@@ -72,13 +56,11 @@ final class native_eZ80Project extends Project
         return preg_match('/^gfx\/.*\.[ch]$/i', $this->currentFile) !== 1;
     }
 
-    // Not allowed to rename gfx/ files
     public function isCurrentFileRenamable()
     {
         return strpos($this->currentFile, 'gfx/') === false;
     }
 
-    // We don't allow deleting anything in gfx/ unless it's image files.
     public function isCurrentFileDeletable()
     {
         $gfxPos = strpos($this->currentFile, 'gfx/');
@@ -88,26 +70,6 @@ final class native_eZ80Project extends Project
     public function hasGfxFiles()
     {
         return $this->backend->hasGfxFiles();
-    }
-
-    /****************************************************/
-    /* Getters
-    /****************************************************/
-
-    /**
-     * @return string
-     */
-    public function getCurrentFile()
-    {
-        return $this->currentFile;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAvailableSrcFiles()
-    {
-        return $this->availableSrcFiles;
     }
 
     /**
@@ -126,9 +88,6 @@ final class native_eZ80Project extends Project
         return $this->availableGfxImageFiles;
     }
 
-    /**
-     * @return string
-     */
     public function getFileListHTML($allowRename = true)
     {
         $fileListHTML = '';
@@ -207,14 +166,12 @@ final class native_eZ80Project extends Project
                 continue;
             }
 
-            // Group same header and implementation files together
-            // (no margin between tabs)
             $counterpartClass = '';
-            if ($i < $filesCount-1)
+            if ($i < $filesCount - 1)
             {
                 preg_match(self::REGEXP_GOOD_FILE_PATTERN, $file, $matches);
                 [, $nameNoExtCurr, ] = $matches;
-                preg_match(self::REGEXP_GOOD_FILE_PATTERN, $this->availableSrcFiles[$i +1], $matches);
+                preg_match(self::REGEXP_GOOD_FILE_PATTERN, $this->availableSrcFiles[$i + 1], $matches);
                 [, $nameNoExtNext, ] = $matches;
                 if ($nameNoExtCurr === $nameNoExtNext) {
                     $counterpartClass = 'counterpart';
@@ -238,15 +195,6 @@ final class native_eZ80Project extends Project
         return $fileListHTML;
     }
 
-    /****************************************************/
-    // Setters
-    // May return a boolean to inform the caller if it went OK and to proceed accordingly (update DB etc.)
-    /****************************************************/
-
-    /**
-     * @param string $name
-     * @return bool
-     */
     public function setCurrentFile($name)
     {
         if (is_string($name) && ($name === 'gfx/convimg.yaml' || self::isFileNameOK($name) || self::isImageFileNameOK($name)))
@@ -262,55 +210,9 @@ final class native_eZ80Project extends Project
         return false;
     }
 
-    /**
-     * Yes, description is actually the project name.
-     * @param string $name
-     * @return bool
-     */
-    public function setName($name)
-    {
-        if (!parent::setName($name)) {
-            return false;
-        }
-        $newSettings = $this->backend->getSettings();
-        $newSettings->description = $name;
-        return $this->backend->setSettings((array)$newSettings) === PBStatus::OK;
-    }
-
-    /**
-     * @param string $prgmName
-     * @return bool
-     */
-    public function setInternalName($prgmName)
-    {
-        if (is_string($prgmName) && self::isPrgmNameOK($prgmName))
-        {
-            $this->internalName = $prgmName;
-            return true;
-        }
-        return false;
-    }
-
-
-    /****************************************************/
-    /* Public methods
-    /****************************************************/
-
-    public function doUserAction(UserInfo $user, array $params = [])
-    {
-        return $this->backend->doUserAction($user, $params);
-    }
-
-    public function getSettings()
-    {
-        return $this->backend->getSettings();
-    }
-
     public function removeFromAvailableFilesList($file)
     {
-        if (($key = array_search($file, $this->availableSrcFiles, true)) !== false) {
-            unset($this->availableSrcFiles[$key]);
-        }
+        parent::removeFromAvailableFilesList($file);
         if (($key = array_search($file, $this->availableBinFiles, true)) !== false) {
             unset($this->availableBinFiles[$key]);
         }
@@ -318,5 +220,4 @@ final class native_eZ80Project extends Project
             unset($this->availableGfxImageFiles[$key]);
         }
     }
-
 }

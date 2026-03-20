@@ -49,6 +49,7 @@ abstract class Project
     protected string $projDirectory;
     protected string $currentFile;
     protected IBackend $backend;
+    protected array $availableSrcFiles = [];
 
     // This is protected since only children classes extending it will call it.
     protected function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $wantReadWrite, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])
@@ -110,6 +111,14 @@ abstract class Project
         $this->createdTstamp = $cTime;
         $this->updatedTstamp = $uTime;
         $this->projDirectory = __DIR__ . "/../../pbprojects/{$this->pid}/";
+    }
+
+    final protected function initProjectBackend(string $backendPath, string $backendClass)
+    {
+        require_once $backendPath;
+        $backend = new $backendClass($this, $this->projDirectory);
+        $this->initFileBasedProject($backend);
+        return $backend;
     }
 
     /****************************************************/
@@ -256,27 +265,135 @@ abstract class Project
     // May return a boolean to inform the caller if it went OK and to proceed accordingly (update DB etc.)
     /****************************************************/
 
-    /**
-     * @param mixed $name
-     * @return bool
-     */
-    public function setName($name)
+    public function setName(string $name)
     {
-        if (is_string($name) && strlen($name) <= 25 && preg_match('~^[\w ._+\-*/<>,:()]{0,25}$~', $name) === 1)
+        if (strlen($name) > 25 || preg_match('~^[\w ._+\-*/<>,:()]{0,25}$~', $name) !== 1)
         {
-            $this->name = $name;
+            return false;
+        }
+        $this->name = $name;
+        $newSettings = $this->backend->getSettings();
+        $newSettings->description = $name; // Yes, description is actually the project name.
+        return $this->backend->setSettings((array)$newSettings) === PBStatus::OK;
+    }
+
+    // $internalName = program name, really
+    public function setInternalName(string $internalName)
+    {
+        if (preg_match('/^[A-Z][A-Z0-9]{0,7}$/', $internalName) === 1)
+        {
+            $this->internalName = $internalName;
             return true;
         }
         return false;
     }
 
-    abstract public function setInternalName($internalName);
-    abstract public function setCurrentFile($name);
-    abstract public function getCurrentFile();
-    abstract public static function isFileNameOK($fileName = '');
-    abstract public function isCurrentFileEditable();
-    abstract public function isCurrentFileRenamable();
-    abstract public function isCurrentFileDeletable();
+    public static function isFileNameOK($fileName = '')
+    {
+        return preg_match(static::REGEXP_GOOD_FILE_PATTERN, $fileName);
+    }
+
+    final protected function initFileBasedProject(IBackend $backend)
+    {
+        $this->backend = $backend;
+        $this->availableSrcFiles = $this->backend->getAvailableSrcFiles();
+        if (count($this->availableSrcFiles) === 0)
+        {
+            // just to correctly handle things at template creation (ie, there's no directory in the FS until a first save/build)
+            $this->availableSrcFiles = [ static::TEMPLATE_FILE ];
+        }
+        $this->currentFile = $this->availableSrcFiles[0];
+    }
+
+    public function isCurrentFileEditable()
+    {
+        return true;
+    }
+
+    public function isCurrentFileRenamable()
+    {
+        return true;
+    }
+
+    public function isCurrentFileDeletable()
+    {
+        return true;
+    }
+
+    public function setCurrentFile($name)
+    {
+        if (is_string($name) && static::isFileNameOK($name))
+        {
+            if ($name === static::TEMPLATE_FILE || file_exists($this->projDirectory . 'src/' . $name))
+            {
+                $this->currentFile = $name;
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public function getCurrentFile()
+    {
+        return $this->currentFile;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAvailableSrcFiles()
+    {
+        return $this->availableSrcFiles;
+    }
+
+    public function getFileListHTML($allowRename = true)
+    {
+        $fileListHTML = '';
+        $filesCount = count($this->availableSrcFiles);
+
+        foreach ($this->availableSrcFiles as $i => $file)
+        {
+            // Group same header and implementation files together
+            // (no margin between tabs)
+            $counterpartClass = '';
+            if ($i < $filesCount - 1)
+            {
+                preg_match(static::REGEXP_GOOD_FILE_PATTERN, $file, $matches);
+                [, $nameNoExtCurr, ] = $matches;
+                preg_match(static::REGEXP_GOOD_FILE_PATTERN, $this->availableSrcFiles[$i + 1], $matches);
+                [, $nameNoExtNext, ] = $matches;
+                if ($nameNoExtCurr === $nameNoExtNext) {
+                    $counterpartClass = 'counterpart';
+                }
+            }
+
+            if ($file === $this->currentFile)
+            {
+                $fileListHTML .= "<li class='active tabover {$counterpartClass}";
+                if ($allowRename && $this->isCurrentFileRenamable())
+                {
+                    $fileListHTML .= " renamableFile '><a title='Click to rename' data-toggle='tooltip' data-placement='bottom' id='currentFileTab' href='#' onclick='renameFile(\"{$file}\"); return false;'>";
+                } else {
+                    $fileListHTML .= "'><a title='Cannot rename this file' data-toggle='tooltip' data-placement='bottom' id='currentFileTab' href='#'>";
+                }
+                $fileListHTML .= "<span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
+            } else {
+                $fileListHTML .= "<li class='{$counterpartClass}'><a href='#' onclick='saveFile(function() { goToFile(\"{$file}\") });'><span class='filename'>{$file}</span> <span class='fileTabIconContainer'></span></a></li>";
+            }
+        }
+
+        return $fileListHTML;
+    }
+
+    public function removeFromAvailableFilesList($file)
+    {
+        if (($key = array_search($file, $this->availableSrcFiles, true)) !== false) {
+            unset($this->availableSrcFiles[$key]);
+        }
+    }
 
     public function canUserEditCurrentFile(UserInfo $user)
     {
@@ -352,8 +469,14 @@ abstract class Project
     /****************************************************/
     // To override, especially for backend-powered projects
 
-    abstract public function doUserAction(UserInfo $user, array $params = []);
+    public function doUserAction(UserInfo $user, array $params = [])
+    {
+        return $this->backend->doUserAction($user, $params);
+    }
 
-    abstract public function getSettings();
+    public function getSettings()
+    {
+        return $this->backend->getSettings();
+    }
 
 }

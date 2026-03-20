@@ -106,6 +106,16 @@ abstract class IBackend
         return null;
     }
 
+    final protected function getCurrentProjectSourceFilePath()
+    {
+        return $this->projFolder . 'src/' . $this->project->getCurrentFile();
+    }
+
+    final protected function getExistingFilePathWithFallback(string $path, string $fallbackPath = '')
+    {
+        return file_exists($path) ? $path : $fallbackPath;
+    }
+
     final protected function getTextFileHashWithFallback(string $path, string $fallbackPath = '')
     {
         $content = $this->getTextFileContentsWithFallback($path, $fallbackPath);
@@ -222,6 +232,10 @@ abstract class IBackend
 
     final public function getSettings() { return $this->settings; }
     abstract protected function setSettings(array $params = []);
+
+    protected function getCtags(array $files) { return ''; }
+    protected function getSDKCtags() { return ''; }
+    protected function getAnalysis($src_file) { return []; }
 
     /**
      * May die/exit in certain cases (download...)
