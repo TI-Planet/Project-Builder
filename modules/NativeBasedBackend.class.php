@@ -72,8 +72,11 @@ abstract class NativeBasedBackend extends IBackend
             return PBStatus::Error('This file already exists');
         }
         $ret = $this->callNativeHelperWithAction('addfile src/' . $fileName);
-        $ok = file_put_contents($this->projFolder . 'src/' . $fileName, $content);
-        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("File couldn't be created (ret = {$ret})");
+        if (!$this->atomicWriteFile($this->projFolder . 'src/' . $fileName, $content))
+        {
+            return PBStatus::Error("File couldn't be created (ret = {$ret})");
+        }
+        return PBStatus::OK;
     }
 
     protected function addIconFile($iconB64)
@@ -92,8 +95,11 @@ abstract class NativeBasedBackend extends IBackend
             return PBStatus::Error("Couldn't decode icon Base64");
         }
         $ret = $this->callNativeHelperWithAction('addfile icon.png');
-        $ok = file_put_contents($this->projFolder . 'icon.png', $decoded);
-        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("Icon couldn't be saved (ret = {$ret})");
+        if (!$this->atomicWriteFile($this->projFolder . 'icon.png', $decoded))
+        {
+            return PBStatus::Error("Icon couldn't be saved (ret = {$ret})");
+        }
+        return PBStatus::OK;
     }
 
     final protected function renameFile($oldName, $newName)

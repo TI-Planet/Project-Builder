@@ -82,7 +82,7 @@ abstract class IBackend
         return PBStatus::OK;
     }
 
-    final protected function readTextFileIfReadable(string $path)
+    final protected function readFileIfReadable(string $path)
     {
         if (!is_readable($path))
         {
@@ -92,16 +92,16 @@ abstract class IBackend
         return ($content !== false) ? $content : null;
     }
 
-    final protected function getTextFileContentsWithFallback(string $path, string $fallbackPath = '')
+    final protected function getFileContentsWithFallback(string $path, string $fallbackPath = '')
     {
-        $content = $this->readTextFileIfReadable($path);
+        $content = $this->readFileIfReadable($path);
         if ($content !== null)
         {
             return $content;
         }
         if ($fallbackPath !== '')
         {
-            return $this->readTextFileIfReadable($fallbackPath);
+            return $this->readFileIfReadable($fallbackPath);
         }
         return null;
     }
@@ -116,9 +116,9 @@ abstract class IBackend
         return file_exists($path) ? $path : $fallbackPath;
     }
 
-    final protected function getTextFileHashWithFallback(string $path, string $fallbackPath = '')
+    final protected function getFileHashWithFallback(string $path, string $fallbackPath = '')
     {
-        $content = $this->getTextFileContentsWithFallback($path, $fallbackPath);
+        $content = $this->getFileContentsWithFallback($path, $fallbackPath);
         return ($content !== null) ? hash('sha256', $content) : null;
     }
 
@@ -135,7 +135,7 @@ abstract class IBackend
             return PBStatus::Error('Bad base source hash');
         }
 
-        $currentHash = $this->getTextFileHashWithFallback($path, $fallbackPath);
+        $currentHash = $this->getFileHashWithFallback($path, $fallbackPath);
         if ($currentHash === null)
         {
             return PBStatus::Error("Couldn't validate the current server file before saving");
@@ -149,7 +149,7 @@ abstract class IBackend
         return true;
     }
 
-    final protected function atomicWriteTextFile(string $path, string $content)
+    final protected function atomicWriteFile(string $path, string $content)
     {
         $dir = dirname($path);
         if (!is_dir($dir))
@@ -163,8 +163,7 @@ abstract class IBackend
             return false;
         }
 
-        $bytesWritten = @file_put_contents($tmpPath, $content, LOCK_EX);
-        if ($bytesWritten === false)
+        if (@file_put_contents($tmpPath, $content, LOCK_EX) === false)
         {
             @unlink($tmpPath);
             return false;
@@ -175,8 +174,7 @@ abstract class IBackend
             @chmod($tmpPath, fileperms($path) & 0777);
         }
 
-        $renamed = @rename($tmpPath, $path);
-        if (!$renamed)
+        if (!@rename($tmpPath, $path))
         {
             @unlink($tmpPath);
             return false;

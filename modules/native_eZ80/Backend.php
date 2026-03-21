@@ -484,7 +484,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
                     $tagsObject[$tagPath][] = $tag;
                 }
             }
-            file_put_contents($cacheFile, json_encode($tagsObject));
+            $this->atomicWriteFile($cacheFile, json_encode($tagsObject));
             return $tagsObject;
         }
         return '';
@@ -694,7 +694,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
 
         $this->deleteBaseProjectFile('output_llvm_build.txt');
-        if (!$this->atomicWriteTextFile($filePath, $source))
+        if (!$this->atomicWriteFile($filePath, $source))
         {
             return PBStatus::Error("Couldn't save source to current file");
         }
@@ -792,9 +792,11 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
 
         $this->createProjectDirectoryIfNeeded();
-        $ret = file_put_contents($this->projFolder . 'config.json', json_encode($this->settings, JSON_PRETTY_PRINT));
-
-        return ($ret !== false) ? PBStatus::OK : PBStatus::Error('Could not write config file');
+        if (!$this->atomicWriteFile($this->projFolder . 'config.json', json_encode($this->settings, JSON_PRETTY_PRINT)))
+        {
+            return PBStatus::Error('Could not write config file');
+        }
+        return PBStatus::OK;
     }
 
     /**
@@ -820,7 +822,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
     public function getCurrentFileSourceHash()
     {
         $sourceFile = $this->getCurrentProjectSourceFilePath();
-        return $this->getTextFileHashWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile()) ?? '';
+        return $this->getFileHashWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile()) ?? '';
     }
 
     private function getTemplateFilePathForCurrentFile()

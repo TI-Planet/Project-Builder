@@ -324,7 +324,7 @@ abstract class CodeEditorBackend extends PHPBasedBackend
             return $validation;
         }
 
-        if (!$this->atomicWriteTextFile($filePath, $source))
+        if (!$this->atomicWriteFile($filePath, $source))
         {
             return PBStatus::Error("Couldn't save source to current file");
         }

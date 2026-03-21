@@ -56,7 +56,7 @@ abstract class PHPBasedBackend extends IBackend
     public function getCurrentFileSourceHash()
     {
         $sourceFile = $this->getCurrentProjectSourceFilePath();
-        return $this->getTextFileHashWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile()) ?? '';
+        return $this->getFileHashWithFallback($sourceFile, $this->getTemplateFilePathForCurrentFile()) ?? '';
     }
 
     protected function addFile($fileName, $content = '')
@@ -71,8 +71,11 @@ abstract class PHPBasedBackend extends IBackend
         {
             return PBStatus::Error('This file already exists');
         }
-        $ok = file_put_contents($filePath, $content);
-        return ($ok !== false) ? PBStatus::OK : PBStatus::Error("File couldn't be created");
+        if (!$this->atomicWriteFile($filePath, $content))
+        {
+            return PBStatus::Error("File couldn't be created");
+        }
+        return PBStatus::OK;
     }
 
     final protected function renameFile($oldName, $newName)
