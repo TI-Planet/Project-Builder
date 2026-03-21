@@ -119,6 +119,8 @@ const _saveFile_impl = (callback) =>
             savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
             lastSavedSource = currSource;
             updateLoadedFileSnapshot(currSource, saveResp && saveResp.source_hash, saveResp && saveResp.mtime);
+            typeof(publishRealtimeServerSnapshot) === "function" && publishRealtimeServerSnapshot(saveResp && saveResp.source_hash, saveResp && saveResp.mtime);
+            closeCollaborativeSaveNotifications();
             getAnalysisLogAndUpdateHintsMaybe(true);
             getCtags(proj.currFile, () => { filterOutline($("#codeOutlineFilter").val()); });
             if (typeof callback === "function") callback();
@@ -141,25 +143,13 @@ function saveFile(callback)
 {
     proj.cursors[proj.currFile] = JSON.stringify(editor.getCursor());
     saveProjConfig();
-    if (proj.is_multi)
-    {
-        if (!globalSyncOK || globalSaveFileRetryCount >= 3)
-        {
-            showNotification("warning", "Syncing failed", "Saving now may overwrite changes and data may be lost. Please try again later (and make a local backup)", null, 999999);
-            globalSaveFileRetryCount = 0;
-            return;
-        }
-        if ((new Date).getTime() - lastChangeTS > 30000)
-        {
-            typeof(tryFirepadSync) !== "undefined" && tryFirepadSync();
-            lastChangeTS = (new Date).getTime();
-            console.log("Current session is old, trying to sync with Firepad... Retry count == " + globalSaveFileRetryCount);
-            globalSaveFileRetryCount++;
-            setTimeout(function(){ saveFile(callback); }, 200);
-            return;
-        }
+    if (!hasUnsavedEditorSource()) {
+        _saveFile_impl(callback);
+        return;
     }
-    globalSaveFileRetryCount = 0;
+    if (!canProceedWithCollaborativeSave(() => { saveFile(callback); })) {
+        return;
+    }
     stripTrailingSpaces();
     if (refreshHexViewerContents)
         refreshHexViewerContents();

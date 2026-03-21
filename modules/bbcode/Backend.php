@@ -84,7 +84,7 @@ final class bbcodeProjectBackend extends PHPBasedBackend
         }
 
         $filePath = $this->projFolder . 'src/' . $this->project->getCurrentFile();
-        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, self::TEMPLATE_FILE_PATH);
+        $validation = $this->validateExpectedFileHash($baseSourceHash, $source, $filePath, self::TEMPLATE_FILE_PATH);
         if ($validation !== true)
         {
             return $validation;

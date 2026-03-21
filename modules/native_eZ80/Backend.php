@@ -687,7 +687,7 @@ final class native_eZ80ProjectBackend extends NativeBasedBackend
         }
 
         $filePath = $this->getCurrentProjectSourceFilePath();
-        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, $this->getTemplateFilePathForCurrentFile());
+        $validation = $this->validateExpectedFileHash($baseSourceHash, $source, $filePath, $this->getTemplateFilePathForCurrentFile());
         if ($validation !== true)
         {
             return $validation;

@@ -318,7 +318,7 @@ abstract class CodeEditorBackend extends PHPBasedBackend
         }
 
         $filePath = $this->projFolder . 'src/' . $this->project->getCurrentFile();
-        $validation = $this->validateExpectedFileHash($baseSourceHash, $filePath, $this->getTemplateFilePathForCurrentFile());
+        $validation = $this->validateExpectedFileHash($baseSourceHash, $source, $filePath, $this->getTemplateFilePathForCurrentFile());
         if ($validation !== true)
         {
             return $validation;

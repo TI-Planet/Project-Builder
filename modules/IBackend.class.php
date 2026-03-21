@@ -122,9 +122,9 @@ abstract class IBackend
         return ($content !== null) ? hash('sha256', $content) : null;
     }
 
-    final protected function validateExpectedFileHash($expectedHash, string $path, string $fallbackPath = '')
+    final protected function validateExpectedFileHash(string $expectedHash, string $nextContent, string $path, string $fallbackPath)
     {
-        if (!is_string($expectedHash) || $expectedHash === '')
+        if (empty($expectedHash))
         {
             return true;
         }
@@ -136,17 +136,19 @@ abstract class IBackend
         }
 
         $currentHash = $this->getFileHashWithFallback($path, $fallbackPath);
-        if ($currentHash === null)
+
+        if (empty($currentHash))
         {
             return PBStatus::Error("Couldn't validate the current server file before saving");
         }
 
-        if (!hash_equals($currentHash, $expectedHash))
+        if (hash_equals($currentHash, $expectedHash) ||
+            hash_equals($currentHash, hash('sha256', $nextContent)))
         {
-            return PBStatus::Error('This file changed on the server since you opened it. Reload and merge before saving again.');
+            return true;
         }
 
-        return true;
+        return PBStatus::Error('This file changed on the server since you opened it. Reload and merge before saving again.');
     }
 
     final protected function atomicWriteFile(string $path, string $content)

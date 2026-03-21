@@ -329,11 +329,16 @@ if (!isset($pm)) { die('Ahem ahem'); }
 
         window.Firebase?.INTERNAL?.forceWebSockets();
         firebaseRoot = new Firebase('https://glowing-torch-6891.firebaseio.com/pb_tip/');
+        var collabBindings = null;
+        var collabSessionBlockedByAuth = false;
         firebaseRoot.authWithCustomToken(user.firebase_token, (error, authData) => {
             if (!isActiveRuntimeSession()) {
                 return;
             }
             if (error) { // possibly expired token, etc.
+                collabSessionBlockedByAuth = true;
+                collabBindings && collabBindings.setSessionBlocked(true);
+                globalSyncOK = false;
                 window.onunload = window.onbeforeunload = null;
                 showNotification("danger", "Shared-project session expired or invalid - it will be regenerated now",
                     "You might want to backup any unsaved changes...", null, 999999);
@@ -351,107 +356,44 @@ if (!isset($pm)) { die('Ahem ahem'); }
 
         const firepadRef = firebaseRoot.child(`codes/${proj.pid}/${proj.currFile.replace('.', '~')}`);
 
-        let firepad = null;
-        let firepadUserList = null;
+        collabBindings = createCollaborativeFirepadBindings({
+            firepadRef: firepadRef,
+            editor: editor,
+            user: user,
+            userListElement: document.getElementById('userlist'),
+            isActiveRuntimeSession: isActiveRuntimeSession,
+            getServerSource: () => fakeContainer.value || fakeContainer.textContent || '',
+            onHealthy: () => { globalSyncOK = true; },
+            onStalled: (title, message) => {
+                globalSyncOK = false;
+                showNotification("danger", title, message, null, 999999);
+            },
+            onReady: ({ serverSource, liveSource, usedServerSource }) => {
+                lastSavedSource = usedServerSource ? serverSource : liveSource;
 
-        function disposeFirepadBindings()
-        {
-            if (firepadUserList !== null) {
-                firepadUserList.dispose();
-                firepadUserList = null;
-            }
-            if (firepad !== null) {
-                firepad.dispose();
-                firepad = null;
-            }
-        }
-        registerRealtimeEditorCleanup(disposeFirepadBindings);
+                editorContainer.css('pointer-events', 'auto');
 
-        window.removeMyselfFromFirepad = function()
-        {
-            if (proj.is_multi) {
-                disposeFirepadBindings();
-            }
-        };
+                proj.cursors[proj.currFile] && editor.setCursor(JSON.parse(proj.cursors[proj.currFile]));
 
-        window.tryFirepadSync = function()
-        {
-            if (!isActiveRuntimeSession() || firepad === null) {
-                return;
-            }
-            firepad.client_.updateCursor();
-            firepad.client_.sendCursor(firepad.client_.cursor);
-        };
-
-        function createOrResetFirepad()
-        {
-            disposeFirepadBindings();
-            firepad = Firepad.fromCodeMirror(firepadRef, editor, { userId: user.id, userColor: `#${Math.floor(Math.random()*0xFFFFFF).toString(16)}` });
-            firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), user.id, user.name, user.avatar);
-
-            firepad.on('ready', () => {
-                if (!isActiveRuntimeSession()) { return; }
-                firepadRef.child("history").orderByKey().limitToLast(1).once('value', (s) => {
-                    if (!isActiveRuntimeSession()) { return; }
-                    const revSnaps = s.val() || { foo: { t: -1 } };
-                    const lastRev = revSnaps[Object.keys(revSnaps)[0]]; // first (and only)
-                    const fileMTime_firepad  = (lastRev.t/1000)|0;
-                    const fileMTime_tiplanet = fakeContainer.dataset.mtime|0;
-                    const serverSource = fakeContainer.value || fakeContainer.textContent || '';
-                    const liveSource = editor.getValue();
-                    const firepadIsOlderThanServer = fileMTime_tiplanet > fileMTime_firepad;
-
-                    if (firepad.isHistoryEmpty())
-                    {
-                        firepad.setText(serverSource);
-                        lastSavedSource = serverSource;
-                    } else if (liveSource === serverSource) {
-                        lastSavedSource = liveSource;
-                    } else if (firepadIsOlderThanServer) {
-                        globalSyncOK = false;
-                        lastSavedSource = liveSource;
-                        showNotification("warning", "Shared copy diverged",
-                            "The live collaborative copy differs from the saved server copy. To avoid overwriting content, automatic server-to-live replacement was skipped. Reload and merge before saving.", null, 999999);
-                    } else {
-                        lastSavedSource = liveSource;
-                    }
-
-                    editorContainer.css('pointer-events', 'auto');
-
-                    proj.cursors[proj.currFile] && editor.setCursor(JSON.parse(proj.cursors[proj.currFile]));
-
-                    const hashMatches = window.location.hash.match(/#L(\d+)/);
-                    if (hashMatches && hashMatches.length > 1)
-                    {
-                        const lineFromHash = hashMatches.pop();
-                        if (lineFromHash) {
-                            editor.setCursor((+lineFromHash)-1, 0);
-                        }
-                    }
-
-                    savedSinceLastChange = true;
-                    lastChangeTS = (new Date).getTime();
-                    document.getElementById('saveButton').disabled = true;
-                });
-            });
-
-            let syncStatusTimeoutID = null;
-            firepad.on('synced', (isSynced) =>
-            {
-                if (!isActiveRuntimeSession()) { return; }
-                clearTimeout(syncStatusTimeoutID); // some basic debouncing...
-                if (isSynced === false)
+                const hashMatches = window.location.hash.match(/#L(\d+)/);
+                if (hashMatches && hashMatches.length > 1)
                 {
-                    syncStatusTimeoutID = window.setTimeout(() => {
-                        globalSyncOK = false;
-                        showNotification("danger", "The latest changes couldn't be synced to other users, data may get lost",
-                            "Check your internet connectivity and make a local backup...", null, 999999);
-                    }, 5000);
-                } else {
-                    globalSyncOK = true;
+                    const lineFromHash = hashMatches.pop();
+                    if (lineFromHash) {
+                        editor.setCursor((+lineFromHash)-1, 0);
+                    }
                 }
-            });
-        }
+
+                savedSinceLastChange = true;
+                lastChangeTS = (new Date).getTime();
+                document.getElementById('saveButton').disabled = true;
+            }
+        });
+        const createOrResetFirepad = registerCollaborativeFirepadGlobals({
+            getBindings: () => collabBindings,
+            isCollaborative: () => proj.is_multi,
+            isSessionBlocked: () => collabSessionBlockedByAuth
+        });
 
         createOrResetFirepad();
 

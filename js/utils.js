@@ -296,6 +296,383 @@ function updateLoadedFileSnapshot(source, sourceHash, mtime)
     }
 }
 
+function monitorFirepadSyncHealth(firepad, editor, isActiveRuntimeSession, callbacks)
+{
+    const onHealthy = callbacks && typeof callbacks.onHealthy === "function" ? callbacks.onHealthy : function() {};
+    const onStalled = callbacks && typeof callbacks.onStalled === "function" ? callbacks.onStalled : function() {};
+    const canReportHealthy = callbacks && typeof callbacks.canReportHealthy === "function" ? callbacks.canReportHealthy : function() { return true; };
+    const onSyncStateChange = callbacks && typeof callbacks.onSyncStateChange === "function" ? callbacks.onSyncStateChange : function() {};
+    const stallDelayMs = callbacks && Number.isFinite(callbacks.stallDelayMs) ? callbacks.stallDelayMs : 5000;
+    const recentEditGraceMs = callbacks && Number.isFinite(callbacks.recentEditGraceMs) ? callbacks.recentEditGraceMs : 4000;
+    const isActive = typeof isActiveRuntimeSession === "function" ? isActiveRuntimeSession : function() { return true; };
+    let syncStatusTimeoutID = null;
+    let lastEditorActivityTS = Date.now();
+
+    const reportHealthyIfAllowed = () => {
+        if (!isActive()) {
+            return;
+        }
+        if (window.navigator && window.navigator.onLine === false) {
+            return;
+        }
+        if (!canReportHealthy()) {
+            return;
+        }
+        onHealthy();
+    };
+
+    const clearPendingSyncCheck = () => {
+        if (syncStatusTimeoutID !== null) {
+            clearTimeout(syncStatusTimeoutID);
+            syncStatusTimeoutID = null;
+        }
+    };
+
+    const markEditorActivity = () => {
+        lastEditorActivityTS = Date.now();
+        reportHealthyIfAllowed();
+    };
+
+    const handleOnline = () => {
+        clearPendingSyncCheck();
+        reportHealthyIfAllowed();
+    };
+
+    const handleOffline = () => {
+        clearPendingSyncCheck();
+        if (!isActive()) {
+            return;
+        }
+        onStalled(
+            "Collaborative connection lost",
+            "You appear to be offline. Wait for the connection to recover before saving shared changes."
+        );
+    };
+
+    const handleSynced = (isSynced) => {
+        if (!isActive()) {
+            return;
+        }
+
+        clearPendingSyncCheck();
+        onSyncStateChange(isSynced === true);
+        if (isSynced === false)
+        {
+            syncStatusTimeoutID = window.setTimeout(() => {
+                if (!isActive()) {
+                    return;
+                }
+                if ((Date.now() - lastEditorActivityTS) < recentEditGraceMs) {
+                    return;
+                }
+                if (window.navigator && window.navigator.onLine === false)
+                {
+                    handleOffline();
+                    return;
+                }
+                onStalled(
+                    "Collaborative sync stalled",
+                    "Recent shared edits are still waiting for confirmation. Wait a moment before saving. If this persists, make a local backup and reload."
+                );
+            }, stallDelayMs);
+        } else {
+            reportHealthyIfAllowed();
+        }
+    };
+
+    onSyncStateChange(false);
+
+    if (editor && typeof editor.on === "function") {
+        editor.on('change', markEditorActivity);
+    }
+    if (firepad && typeof firepad.on === "function") {
+        firepad.on('synced', handleSynced);
+    }
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+        clearPendingSyncCheck();
+        if (editor && typeof editor.off === "function") {
+            editor.off('change', markEditorActivity);
+        }
+        if (firepad && typeof firepad.off === "function") {
+            firepad.off('synced', handleSynced);
+        }
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+    };
+}
+
+function createRealtimeServerSnapshotBridge(serverSnapshotRef, isActiveRuntimeSession, userId)
+{
+    const isActive = typeof isActiveRuntimeSession === "function" ? isActiveRuntimeSession : function() { return true; };
+    const listener = (snapshot) => {
+        if (!isActive()) {
+            return;
+        }
+        const data = snapshot && typeof snapshot.val === "function" ? snapshot.val() : null;
+        if (!data || typeof data !== "object") {
+            return;
+        }
+        if (typeof fakeContainer === "undefined" || !fakeContainer) {
+            return;
+        }
+        const currentMtime = parseInt(fakeContainer.dataset.mtime || '', 10);
+        const incomingMtime = parseInt((data.mtime !== undefined && data.mtime !== null) ? `${data.mtime}` : '', 10);
+        if (!isNaN(currentMtime) && !isNaN(incomingMtime) && incomingMtime < currentMtime) {
+            return;
+        }
+        if (typeof data.source_hash === "string" && data.source_hash.length > 0) {
+            fakeContainer.dataset.sourceHash = data.source_hash;
+        }
+        if (data.mtime !== undefined && data.mtime !== null && `${data.mtime}`.length > 0) {
+            fakeContainer.dataset.mtime = `${data.mtime}`;
+        }
+    };
+
+    serverSnapshotRef.on('value', listener);
+
+    return {
+        cleanup: () => {
+            serverSnapshotRef.off('value', listener);
+        },
+        publish: (sourceHash, mtime) => {
+            if (!isActive()) {
+                return;
+            }
+            if (typeof sourceHash !== "string" || sourceHash.length === 0) {
+                return;
+            }
+            const payload = {
+                source_hash: sourceHash,
+                saved_at: (window.Firebase && Firebase.ServerValue) ? Firebase.ServerValue.TIMESTAMP : Date.now()
+            };
+            if (mtime !== undefined && mtime !== null && `${mtime}`.length > 0) {
+                payload.mtime = mtime;
+            }
+            if (userId !== undefined && userId !== null && `${userId}`.length > 0) {
+                payload.by = userId;
+            }
+            serverSnapshotRef.set(payload);
+        }
+    };
+}
+
+function createCollaborativeFirepadBindings(options)
+{
+    const firepadRef = options.firepadRef;
+    const editor = options.editor;
+    const user = options.user;
+    const userListElement = options.userListElement;
+    const isActiveRuntimeSession = options.isActiveRuntimeSession;
+    const getServerSource = typeof options.getServerSource === "function" ? options.getServerSource : function() { return ''; };
+    const onReady = typeof options.onReady === "function" ? options.onReady : function() {};
+    const onHealthy = typeof options.onHealthy === "function" ? options.onHealthy : function() {};
+    const onStalled = typeof options.onStalled === "function" ? options.onStalled : function(title, message) {
+        showNotification("danger", title, message, null, 999999);
+    };
+
+    let firepad = null;
+    let firepadUserList = null;
+    let serverSnapshotBridge = null;
+    let cleanupFirepadSyncMonitor = null;
+    let firepadSessionBlocked = false;
+    let firepadIsCurrentlySynced = false;
+
+    const isActive = typeof isActiveRuntimeSession === "function" ? isActiveRuntimeSession : function() { return true; };
+
+    const dispose = () => {
+        if (typeof cleanupFirepadSyncMonitor === "function") {
+            cleanupFirepadSyncMonitor();
+            cleanupFirepadSyncMonitor = null;
+        }
+        if (serverSnapshotBridge !== null) {
+            serverSnapshotBridge.cleanup();
+            serverSnapshotBridge = null;
+        }
+        if (firepadUserList !== null) {
+            firepadUserList.dispose();
+            firepadUserList = null;
+        }
+        if (firepad !== null) {
+            firepad.dispose();
+            firepad = null;
+        }
+    };
+
+    const setSessionBlocked = (blocked) => {
+        firepadSessionBlocked = blocked === true;
+        if (firepadSessionBlocked) {
+            firepadIsCurrentlySynced = false;
+        }
+    };
+
+    const trySync = () => {
+        if (!isActive() || firepad === null) {
+            return;
+        }
+        firepad.client_.updateCursor();
+        firepad.client_.sendCursor(firepad.client_.cursor);
+    };
+
+    const isCurrentlySynced = () => {
+        return firepadSessionBlocked === false && firepadIsCurrentlySynced === true && window.navigator.onLine !== false;
+    };
+
+    const publishServerSnapshot = (sourceHash, mtime) => {
+        if (serverSnapshotBridge !== null) {
+            serverSnapshotBridge.publish(sourceHash, mtime);
+        }
+    };
+
+    const createOrReset = () => {
+        dispose();
+        firepadSessionBlocked = false;
+        firepadIsCurrentlySynced = false;
+        firepad = Firepad.fromCodeMirror(firepadRef, editor, {
+            userId: user.id,
+            userColor: `#${Math.floor(Math.random() * 0xFFFFFF).toString(16)}`
+        });
+        firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), userListElement, user.id, user.name, user.avatar);
+        serverSnapshotBridge = createRealtimeServerSnapshotBridge(firepadRef.child('_serverSnapshot'), isActiveRuntimeSession, user.id);
+        cleanupFirepadSyncMonitor = monitorFirepadSyncHealth(firepad, editor, isActiveRuntimeSession, {
+            canReportHealthy: () => !firepadSessionBlocked,
+            onSyncStateChange: (isSynced) => { firepadIsCurrentlySynced = (isSynced === true); },
+            onHealthy: onHealthy,
+            onStalled: onStalled,
+        });
+
+        firepad.on('ready', () => {
+            if (!isActive()) {
+                return;
+            }
+            firepadRef.child("history").orderByKey().limitToLast(1).once('value', () => {
+                if (!isActive()) {
+                    return;
+                }
+                const serverSource = getServerSource();
+                const liveSource = editor.getValue();
+                const usedServerSource = firepad.isHistoryEmpty();
+                if (usedServerSource) {
+                    firepad.setText(serverSource);
+                }
+                onReady({
+                    firepad: firepad,
+                    firepadRef: firepadRef,
+                    editor: editor,
+                    serverSource: serverSource,
+                    liveSource: liveSource,
+                    usedServerSource: usedServerSource
+                });
+            });
+        });
+    };
+
+    return {
+        createOrReset: createOrReset,
+        dispose: dispose,
+        setSessionBlocked: setSessionBlocked,
+        trySync: trySync,
+        isCurrentlySynced: isCurrentlySynced,
+        publishServerSnapshot: publishServerSnapshot,
+    };
+}
+
+function registerCollaborativeFirepadGlobals(options)
+{
+    const getBindings = typeof options.getBindings === "function" ? options.getBindings : function() { return null; };
+    const isCollaborative = typeof options.isCollaborative === "function" ? options.isCollaborative : function() { return !!(window.proj && proj.is_multi); };
+    const isSessionBlocked = typeof options.isSessionBlocked === "function" ? options.isSessionBlocked : function() { return false; };
+
+    const withBindings = (callback) => {
+        const bindings = getBindings();
+        if (bindings === null || typeof callback !== "function") {
+            return null;
+        }
+        return callback(bindings);
+    };
+
+    registerRealtimeEditorCleanup(() => {
+        withBindings((bindings) => { bindings.dispose(); });
+    });
+
+    window.removeMyselfFromFirepad = function()
+    {
+        if (!isCollaborative()) {
+            return;
+        }
+        withBindings((bindings) => { bindings.dispose(); });
+    };
+
+    window.tryFirepadSync = function()
+    {
+        withBindings((bindings) => { bindings.trySync(); });
+    };
+
+    window.isRealtimeEditorCurrentlySynced = function()
+    {
+        return withBindings((bindings) => bindings.isCurrentlySynced()) === true;
+    };
+
+    window.publishRealtimeServerSnapshot = function(sourceHash, mtime)
+    {
+        withBindings((bindings) => { bindings.publishServerSnapshot(sourceHash, mtime); });
+    };
+
+    return function createOrResetFirepad()
+    {
+        withBindings((bindings) => {
+            bindings.createOrReset();
+            bindings.setSessionBlocked(isSessionBlocked());
+        });
+    };
+}
+
+function canProceedWithCollaborativeSave(retryFn)
+{
+    if (!proj.is_multi) {
+        globalSaveFileRetryCount = 0;
+        return true;
+    }
+
+    if (!globalSyncOK || globalSaveFileRetryCount >= 3)
+    {
+        showNotification("warning", "Syncing failed", "Saving now may overwrite changes and data may be lost. Please try again later (and make a local backup)", null, 999999);
+        globalSaveFileRetryCount = 0;
+        return false;
+    }
+
+    if (typeof isRealtimeEditorCurrentlySynced === "function" && !isRealtimeEditorCurrentlySynced())
+    {
+        typeof(tryFirepadSync) !== "undefined" && tryFirepadSync();
+        globalSaveFileRetryCount++;
+        setTimeout(retryFn, 200);
+        return false;
+    }
+
+    if ((new Date).getTime() - lastChangeTS > 30000)
+    {
+        typeof(tryFirepadSync) !== "undefined" && tryFirepadSync();
+        lastChangeTS = (new Date).getTime();
+        console.log("Current session is old, trying to sync with Firepad... Retry count == " + globalSaveFileRetryCount);
+        globalSaveFileRetryCount++;
+        setTimeout(retryFn, 200);
+        return false;
+    }
+
+    globalSaveFileRetryCount = 0;
+    return true;
+}
+
+function hasUnsavedEditorSource()
+{
+    if (typeof editor === "undefined" || !editor || typeof editor.getValue !== "function") {
+        return false;
+    }
+    return editor.getValue() !== lastSavedSource;
+}
+
 function isForumLoginRedirectURL(url)
 {
     return typeof url === "string" && /\/forum\/ucp\.php\?mode=login\b/.test(url);
@@ -506,19 +883,67 @@ function removeClass(el, className) {
     }
 }
 
+const activeNotifications = [];
+
+function closeNotificationsMatching(predicate)
+{
+    activeNotifications.slice().forEach((entry) => {
+        if (!entry || typeof predicate !== "function" || !predicate(entry)) {
+            return;
+        }
+        if (entry.notify && typeof entry.notify.close === "function") {
+            entry.notify.close();
+        }
+    });
+}
+
+function closeCollaborativeSaveNotifications()
+{
+    closeNotificationsMatching((entry) => {
+        if (!entry || typeof entry.title !== "string") {
+            return false;
+        }
+        if (entry.title === "Syncing failed" || entry.title === "Collaborative sync stalled" || entry.title === "Collaborative connection lost") {
+            return true;
+        }
+        if (entry.title !== "Oops... :(" || typeof entry.message !== "string") {
+            return false;
+        }
+        return entry.message.indexOf("This file changed on the server since you opened it.") !== -1
+            || entry.message.indexOf("Bad base source hash") !== -1;
+    });
+}
+
 function showNotification(notifType, title, message, endCallback, delay)
 {
     if (endCallback === undefined) { endCallback = null; }
     if (delay === undefined) { delay = 2500; }
-    return $.notify({
+    const entry = {
+        type: notifType,
+        title: title,
+        message: message,
+        notify: null,
+    };
+    const wrappedEndCallback = function() {
+        const idx = activeNotifications.indexOf(entry);
+        if (idx !== -1) {
+            activeNotifications.splice(idx, 1);
+        }
+        if (typeof endCallback === "function") {
+            endCallback.apply(this, arguments);
+        }
+    };
+    entry.notify = $.notify({
         title: title,
         message: message
     },{
         type: notifType,
         delay: Math.max(1, delay - 1000),
         placement: { from: "top", align: "center" },
-        onClose: endCallback,
+        onClose: wrappedEndCallback,
     });
+    activeNotifications.push(entry);
+    return entry.notify;
 }
 
 /*******************/
