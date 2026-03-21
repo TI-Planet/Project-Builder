@@ -20,3 +20,23 @@ div.CodeMirror, div.firepad {
 #rightSidebar, #rightSidebarToggle {
     display: none !important;
 }
+
+.CodeMirror .cm-bbcode-inline-bold {
+    font-weight: 700;
+}
+
+.CodeMirror .cm-bbcode-inline-italic {
+    font-style: italic;
+}
+
+.CodeMirror .cm-bbcode-inline-decoration-underline {
+    text-decoration: underline;
+}
+
+.CodeMirror .cm-bbcode-inline-decoration-strikethrough {
+    text-decoration: line-through;
+}
+
+.CodeMirror .cm-bbcode-inline-decoration-both {
+    text-decoration: underline line-through;
+}

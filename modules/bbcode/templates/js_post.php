@@ -8,6 +8,103 @@ if (!isset($pm)) { die('Ahem ahem'); }
     let savedSinceLastChange = true;
     let lastChangeTS = 0;
     let textarea, fakeContainer;
+    let bbcodeInlineStyleMarks = [];
+
+    const clearBBCodeInlineStyleMarks = () => {
+        bbcodeInlineStyleMarks.forEach((mark) => mark.clear());
+        bbcodeInlineStyleMarks = [];
+    };
+
+    const getBBCodeInlineStyleClassName = (activeTags) => {
+        if (activeTags.length === 0) {
+            return '';
+        }
+
+        const tagSet = new Set(activeTags);
+        const classNames = ['cm-bbcode-inline'];
+        if (tagSet.has('b')) { classNames.push('cm-bbcode-inline-bold'); }
+        if (tagSet.has('i')) { classNames.push('cm-bbcode-inline-italic'); }
+        if (tagSet.has('u') && tagSet.has('s')) {
+            classNames.push('cm-bbcode-inline-decoration-both');
+        } else if (tagSet.has('u')) {
+            classNames.push('cm-bbcode-inline-decoration-underline');
+        } else if (tagSet.has('s')) {
+            classNames.push('cm-bbcode-inline-decoration-strikethrough');
+        }
+
+        return classNames.join(' ');
+    };
+
+    const _updateBBCodeInlineStyleMarksImpl = () => {
+        if (!editor) {
+            return;
+        }
+
+        clearBBCodeInlineStyleMarks();
+
+        const src = editor.getValue();
+        if (!src.length) {
+            return;
+        }
+
+        const inlineTags = new Set(['b', 'i', 'u', 's']);
+        const tagRe = /\[(\/)?([a-zA-Z*]+)(?:=[^\]\n]*)?(\s*\/)?\]/g;
+        const stack = [];
+        let inCodeDepth = 0;
+        let lastIndex = 0;
+        let m;
+
+        const addStyledRange = (fromIndex, toIndex) => {
+            if (inCodeDepth > 0 || toIndex <= fromIndex) {
+                return;
+            }
+
+            const className = getBBCodeInlineStyleClassName(stack);
+            if (!className) {
+                return;
+            }
+
+            bbcodeInlineStyleMarks.push(editor.markText(
+                editor.posFromIndex(fromIndex),
+                editor.posFromIndex(toIndex),
+                { className }
+            ));
+        };
+
+        while ((m = tagRe.exec(src)) !== null) {
+            const idx = m.index;
+            addStyledRange(lastIndex, idx);
+
+            const isClosing = !!m[1];
+            const name = (m[2] || '').toLowerCase();
+            const trailingSlash = !!(m[3] && m[3].trim().length);
+
+            if (name === 'code' && !trailingSlash) {
+                if (isClosing) {
+                    inCodeDepth = Math.max(0, inCodeDepth - 1);
+                } else {
+                    inCodeDepth++;
+                }
+            } else if (inlineTags.has(name) && inCodeDepth === 0 && !trailingSlash) {
+                if (isClosing) {
+                    for (let i = stack.length - 1; i >= 0; i--) {
+                        if (stack[i] === name) {
+                            stack.splice(i, 1);
+                            break;
+                        }
+                    }
+                } else {
+                    stack.push(name);
+                }
+            }
+
+            lastIndex = tagRe.lastIndex;
+        }
+
+        addStyledRange(lastIndex, src.length);
+    };
+
+    const updateBBCodeInlineStyleMarks = debounce(_updateBBCodeInlineStyleMarksImpl, 100);
 
     function init_post_js_1()
     {
@@ -36,6 +133,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
             theme: 'xq-light',
             readOnly: <?= $currProject->canUserEditCurrentFile($currUser) ? 'false' : 'true' ?>
         });
+        updateBBCodeInlineStyleMarks();
         savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
     }
 
@@ -344,9 +442,11 @@ if (!isset($pm)) { die('Ahem ahem'); }
         editor.on('change', () => {
             savedSinceLastChange = false;
             if (saveBtn) { saveBtn.disabled = false; }
+            updateBBCodeInlineStyleMarks();
             updatePreview();
         });
         // Show first preview
+        updateBBCodeInlineStyleMarks();
         updatePreview();
     }
 
