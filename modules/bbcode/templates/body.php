@@ -7,7 +7,7 @@ $isAnonymousViewer = $currUser->isAnonymous();
 
 <textarea id="fakeContainer" style="display:none" data-mtime="<?= $currProject->getCurrentFileMtime() ?>" data-source-hash="<?= $currProject->getCurrentFileSourceHash() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
 
-<div class="toolbar" style="display: flex; justify-content: space-between;">
+<div class="toolbar" style="display: flex; align-items: center; justify-content: space-between; padding-right: 5px">
     <?php if ($pm->currentUserCanWriteCurrentProject()) { ?>
         <button id="saveButton" class="btn btn-primary btn-sm" onclick="saveFile(); return false" title="Save source on the server" disabled>
             <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
@@ -16,7 +16,34 @@ $isAnonymousViewer = $currUser->isAnonymous();
     <?php } else { ?>
         <button id="saveButton" class="btn btn-primary btn-sm hide invisible"></button>
     <?php } ?>
-    <span style="padding: 4px"><b>BBCode processing time:</b> <span id="bbcodeRenderTime">?</span></span>
+
+    <div id="bbcodeTagToolbar" class="bbcodeTagToolbar" role="toolbar" aria-label="BBCode tools">
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="wrap" data-bbcode-tag="b" title="Bold"><strong>b</strong></button>
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="wrap" data-bbcode-tag="i" title="Italic"><em>i</em></button>
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="wrap" data-bbcode-tag="u" title="Underline"><span style="text-decoration: underline;">u</span></button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="snippet" data-bbcode-snippet="url" title="Insert link">url</button>
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="snippet" data-bbcode-snippet="img" title="Insert image">img</button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="wrap" data-bbcode-tag="code" title="Code block">code</button>
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="wrap" data-bbcode-tag="quote" title="Quote block">quote</button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="snippet" data-bbcode-snippet="list" title="Bullet list">list</button>
+            <button type="button" class="btn btn-default bbcode-tag-button" data-bbcode-action="snippet" data-bbcode-snippet="table" title="Table">table</button>
+        </div>
+    </div>
+
+    <div class="bbcodePreviewToolbarMeta">
+        <span style="padding: 2px"><b>Render time:</b> <span id="bbcodeRenderTime">?</span></span>
+        <div id="bbcodePreviewLanguageToolbar" class="btn-group btn-group-sm" role="group" aria-label="Preview language">
+            <button type="button" class="btn btn-default bbcode-preview-language-button" data-preview-language-mode="fr" title="Force French preview">🇫🇷 FR</button>
+            <button type="button" class="btn btn-default bbcode-preview-language-button" data-preview-language-mode="en" title="Force English preview">🇺🇸 EN</button>
+        </div>
+    </div>
 </div>
 
 <?php if (!$isAnonymousViewer) { ?>
@@ -29,7 +56,7 @@ $isAnonymousViewer = $currUser->isAnonymous();
 </form>
 <?php } ?>
 
-<div id="bbcodeSplitContainer" style="height: calc(100% - 70px); margin-top:10px; display: flex; flex-direction: row; align-items: stretch;">
+<div id="bbcodeSplitContainer" style="height: calc(100% - 72px); margin-top:10px; display: flex; flex-direction: row; align-items: stretch;">
     <div id="bbcodeEditorPane" style="height: 100%; min-width: 200px; flex: 0 0 50%; padding-right: 2px;">
         <?php if (!$pm->currentUserHasLiveCollabEditAccess()) { echo '<div class="firepad">'; } ?>
         <textarea id="codearea"></textarea>

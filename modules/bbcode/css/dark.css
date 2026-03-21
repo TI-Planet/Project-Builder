@@ -12,3 +12,72 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+.bbcode-tag-button {
+    background: #2c3138;
+    border-color: #4a525e;
+    color: #d7dee8;
+}
+
+.bbcode-tag-button:hover,
+.bbcode-tag-button:focus {
+    background: #39414b;
+    border-color: #657181;
+    color: #f3f6fb;
+}
+
+.bbcode-tag-button.active,
+.bbcode-preview-language-button.active,
+.bbcode-tag-button.active:hover,
+.bbcode-preview-language-button.active:hover,
+.bbcode-tag-button.active:focus,
+.bbcode-preview-language-button.active:focus {
+    background: #5e4a12;
+    border-color: #d1a42c;
+    color: #fff1c7;
+}
+
+.bbcode-preview-linked {
+    outline-color: #d7ae42;
+    background: rgba(215, 174, 66, 0.2);
+    animation-name: bbcodePreviewLinkedPulseDark;
+}
+
+@keyframes bbcodePreviewLinkedPulseDark {
+    0%, 100% {
+        outline-color: rgba(215, 174, 66, 0.78);
+        background-color: rgba(215, 174, 66, 0.14);
+        box-shadow: 0 0 0 0 rgba(215, 174, 66, 0.12);
+    }
+    50% {
+        outline-color: rgba(255, 205, 92, 1);
+        background-color: rgba(215, 174, 66, 0.30);
+        box-shadow: 0 0 0 4px rgba(215, 174, 66, 0.2);
+    }
+}
+
+.CodeMirror .cm-bbcode-active-tag {
+    box-shadow: inset 0 2px 0 rgba(255, 183, 66, 0.7), inset 0 -2px 0 rgba(255, 183, 66, 0.7);
+}
+
+.CodeMirror .cm-bbcode-active-tag-start {
+    box-shadow: inset 2px 0 0 rgba(255, 183, 66, 0.7), inset 0 2px 0 rgba(255, 183, 66, 0.7), inset 0 -2px 0 rgba(255, 183, 66, 0.7);
+}
+
+.CodeMirror .cm-bbcode-active-tag-end {
+    box-shadow: inset -2px 0 0 rgba(255, 183, 66, 0.7), inset 0 2px 0 rgba(255, 183, 66, 0.7), inset 0 -2px 0 rgba(255, 183, 66, 0.7);
+}
+
+.CodeMirror .cm-bbcode-active-tag-open {
+    background: #76610f;
+    color: #fff4c3;
+}
+
+.CodeMirror .cm-bbcode-active-tag-close {
+    background: #803529;
+    color: #ffe2da;
+}
+
+.CodeMirror .cm-bbcode-active-region {
+    background: rgba(255, 183, 66, 0.12);
+}
