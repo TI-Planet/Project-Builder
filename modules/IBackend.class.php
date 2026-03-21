@@ -158,30 +158,37 @@ abstract class IBackend
         }
 
         $tmpPath = @tempnam($dir, basename($path) . '.tmp.');
-        if ($tmpPath === false)
+        if ($tmpPath !== false)
         {
-            return false;
-        }
+            if (@file_put_contents($tmpPath, $content, LOCK_EX) === false)
+            {
+                @unlink($tmpPath);
+                return false;
+            }
 
-        if (@file_put_contents($tmpPath, $content, LOCK_EX) === false)
-        {
+            if (file_exists($path))
+            {
+                @chmod($tmpPath, fileperms($path) & 0777);
+            }
+
+            if (@rename($tmpPath, $path))
+            {
+                clearstatcache(true, $path);
+                return true;
+            }
+
             @unlink($tmpPath);
-            return false;
+            // fallthrough
         }
 
-        if (file_exists($path))
+        // Fallback: direct write (maybe the directory not writable by PHP but the target file is)
+        $ok = @file_put_contents($path, $content, LOCK_EX);
+        if ($ok !== false)
         {
-            @chmod($tmpPath, fileperms($path) & 0777);
+            clearstatcache(true, $path);
         }
 
-        if (!@rename($tmpPath, $path))
-        {
-            @unlink($tmpPath);
-            return false;
-        }
-
-        clearstatcache(true, $path);
-        return true;
+        return $ok !== false;
     }
 
     final protected function forkProject($newID)
