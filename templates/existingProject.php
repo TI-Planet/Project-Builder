@@ -68,7 +68,7 @@ if ($currProject->getType() === 'bbcode') {
 
     <script src="<?= cacheBusterPath('js/pb_common.js') ?>"></script>
 
-    <script src="js/jquery-3.6.4.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-notify.min.js"></script>
 
