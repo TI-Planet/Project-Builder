@@ -30,8 +30,16 @@ $modulePath = 'modules/' . $currProject->getType() . '/';
 $templatePath = $modulePath . 'templates/';
 $currProjNameInTitle = htmlentities($currProject->getInternalName(), ENT_QUOTES);
 
-if ($currProject->getType() === 'bbcode' && !$currUser->isModeratorOrMore()) {
-    die('No');
+// BBCode projects are only available to moderators and above, for now
+// We also don't enforce CORP/COEP there so that images etc. can get dynamically loaded from other domains
+if ($currProject->getType() === 'bbcode') {
+    if (!$currUser->isModeratorOrMore()) {
+        die('BBCode projects are only available to moderators and above, for now');
+    }
+} else {
+    // CORP/COEP headers enforced, which makes SharedArrayBuffer work (used in webtilp stuff)
+    header('Cross-Origin-Opener-Policy: same-origin');
+    header('Cross-Origin-Embedder-Policy: require-corp');
 }
 
 ?><!DOCTYPE html>
