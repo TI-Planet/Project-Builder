@@ -122,7 +122,7 @@ abstract class IBackend
         return ($content !== null) ? hash('sha256', $content) : null;
     }
 
-    final protected function validateExpectedFileHash(string $expectedHash, string $nextContent, string $path, string $fallbackPath)
+    final protected function validateExpectedFileHash(?string $expectedHash, string $nextContent, string $path, string $fallbackPath)
     {
         if (empty($expectedHash))
         {

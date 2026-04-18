@@ -27,7 +27,7 @@ $wantNew = isset($_GET['new']) && (int)$_GET['new'] === 1;
 $pm = new ProjectManager($projectID, ['id' => $projectID, 'file' => $fileName]);
 
 /*
-if ($pm->getCurrentUser()->getID() !== 1381) {
+if (!in_array($pm->getCurrentUser()->getID(), [ 1381, 7681 ])) {
     header( "HTTP/1.1 503 Service Unavailable", true, 503 );
     header( "Retry-After: 3600" );
     die("Maintenance in progress, please come back soon!");
