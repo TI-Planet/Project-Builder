@@ -179,7 +179,8 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
             }
             TIVarsLib.FS.writeFile(name, new Uint8Array(content));
             const options = new TIVarsLib.options_t();
-            options.set("prettify", true);
+            options.set("prettify", false); // we want maximum roundtrippability
+            options.set("reindent", false); // by default, keep it as-is
             content = TIVarsLib.TIVarFile.loadFromFile(name).getReadableContent(options);
             TIVarsLib.FS.unlink(name);
             if (!content.length) {

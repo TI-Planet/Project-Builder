@@ -1,6 +1,6 @@
 <?php
 $codeEditorConfig = [
-    'showReindentButton' => false,
+    'showReformatButton' => false,
     'downloadButtonOnclick' => 'downloadPythonAppVar(); return false',
     'downloadButtonTitle' => 'Convert this script to an appvar (8xv file)',
     'downloadButtonLabel' => 'Download Python AppVar (.8xv)',

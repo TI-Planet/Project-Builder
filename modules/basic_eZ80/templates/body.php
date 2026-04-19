@@ -3,7 +3,7 @@ $codeEditorConfig = [
     'editorUtilityButtonsHtml' => <<<'HTML'
 <li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to toggle the hex viewer"><a id="hexViewerToggleButton" style="color: #337ab7;" href="#" onclick="toggleHexViewer(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>
 HTML,
-    'showReindentButton' => true,
+    'showReformatButton' => true,
     'codeareaPrefixHtml' => <<<'HTML'
 <div id="hexViewer" style="display:none"></div>
 <div id="detokHoverText"><span id="detokHoverTextByte"></span><span id="detokHoverTextStr"></span></div>

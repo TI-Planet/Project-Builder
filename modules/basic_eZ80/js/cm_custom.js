@@ -512,7 +512,7 @@ function do_cm_custom()
         });
     };
 
-    reindent = () => {
+    reformat = () => {
         if (!TIVarsLib) {
             alert('tivars_lib not ready?!');
             return;
@@ -524,15 +524,11 @@ function do_cm_custom()
             return;
         }
 
-        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
-        prgm.setContentFromString(prgmSource);
-
         const options = new TIVarsLib.options_t();
-        options.set("prettify", false);
-        options.set("reindent", true);
-        const reindented = prgm.getReadableContent(options);
-        if (reindented && reindented.length) {
-            editor.setValue(reindented);
+        options.set("prettify", false); // need to roundtrip
+        const reformatted = TIVarsLib.TH_Tokenized_reindentCodeString(prgmSource, options);
+        if (reformatted && reformatted.length) {
+            editor.setValue(reformatted);
         }
     };
 

@@ -6,7 +6,7 @@ if (!isset($pm, $codeEditorConfig))
 
 $isAnonymousViewer = $currUser->isAnonymous();
 $editorUtilityButtonsHtml = $codeEditorConfig['editorUtilityButtonsHtml'] ?? '';
-$showReindentButton = $codeEditorConfig['showReindentButton'] ?? false;
+$showReformatButton = $codeEditorConfig['showReformatButton'] ?? false;
 $codeareaPrefixHtml = $codeEditorConfig['codeareaPrefixHtml'] ?? '';
 $downloadButtonOnclick = $codeEditorConfig['downloadButtonOnclick'];
 $downloadButtonTitle = $codeEditorConfig['downloadButtonTitle'];
@@ -33,9 +33,9 @@ $postDownloadButtonsHtml = $codeEditorConfig['postDownloadButtonsHtml'] ?? '';
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a href="#"><b>Note</b>: this file is read-only</a></li>';
                 }
-                elseif ($showReindentButton)
+                elseif ($showReformatButton)
                 {
-                    echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to re-indent the file"><a id="reindentButton" style="color: #337ab7;" href="#" onclick="reindent(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
+                    echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to re-format the file (indents, prettify...)"><a id="reformatButton" style="color: #337ab7;" href="#" onclick="reformat(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
                 }
             }
             ?>

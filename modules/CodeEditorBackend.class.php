@@ -137,10 +137,10 @@ abstract class CodeEditorBackend extends PHPBasedBackend
                 }
                 return $this->getAnalysis($params['file']);
 
-            case 'reindent':
-                if (!$this->supportsReindent())
+            case 'reformat':
+                if (!$this->supportsReformat())
                 {
-                    return PBStatus::Error('Re-indenting is not supported for this project type');
+                    return PBStatus::Error('Reformatting is not supported for this project type');
                 }
                 if (empty($params['file']))
                 {
@@ -150,7 +150,7 @@ abstract class CodeEditorBackend extends PHPBasedBackend
                 {
                     return PBStatus::Error('Bad file name given');
                 }
-                return $this->reindentFile($params['file']);
+                return $this->reformatFile($params['file']);
 
             case 'downloadZipExport':
                 $this->downloadZipExport();
@@ -343,13 +343,13 @@ abstract class CodeEditorBackend extends PHPBasedBackend
     }
 
     // As in, *in the backend*. It may still support that in the frontend.
-    protected function supportsReindent()
+    protected function supportsReformat()
     {
         return false;
     }
 
-    protected function reindentFile(string $src_file)
+    protected function reformatFile(string $src_file)
     {
-        return PBStatus::Error('Re-indenting is not supported for this project type');
+        return PBStatus::Error('Reformatting is not supported for this project type');
     }
 }
