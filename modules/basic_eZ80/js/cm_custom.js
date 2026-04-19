@@ -293,13 +293,14 @@ function do_cm_custom()
         const detok = TIVarsLib.TH_Tokenized_oneTokenBytesToString(byte);
         document.getElementById('detokHoverTextByte').innerText = `${Number(byte).toString(16).toUpperCase().padStart(byte > 0xFF ? 4 : 2, '0')}: `;
         document.getElementById('detokHoverTextStr').innerText = detok;
-        const pos = TIVarsLib.TH_Tokenized_getPosInfoAtOffsetFromHexStr(hexViewer.data('hex'), byteOffset);
+        const pos = TIVarsLib.TH_Tokenized_getPosInfoAtOffsetInSourceString(cm_getPrgmSourceTrimmed(), byteOffset);
         if (previousTokenMark) { previousTokenMark.clear(); previousTokenMark = null; }
         if (pos.line+1 > editor.lineCount()) { return null; }
         if (pos.line === 0 && pos.column === 0 && pos.len === 0) { return null; }
         if (pos.len === 0 && pos.column > 0) { pos.len = 1; pos.column = pos.column-1; }
 
         // Adjust pos info for pretty source
+        // (Map back from the normalized hex-view source to editor coordinates)
         for (let i=0; i<=pos.line; i++) {
             let cleanedLine = "";
             editor.getLineTokens(i).forEach((o) => { if (o.type !== 'comment') { cleanedLine += o.string; } });
