@@ -274,6 +274,20 @@ function do_cm_custom()
     const detokHoverText = document.getElementById('detokHoverText');
     const hexViewer = $("#hexViewer");
 
+    cm_getPrgmSourceTrimmed = () =>
+    {
+        let prgmSource = "";
+        for (let i=0; i<editor.lineCount(); i++) {
+            let cleanedLine = "";
+            editor.getLineTokens(i).forEach((o) => { if (o.type !== 'comment') { cleanedLine += o.string; } });
+            cleanedLine = cleanedLine.trimStart();
+            if (cleanedLine.length) {
+                prgmSource += cleanedLine + '\n';
+            }
+        }
+        return prgmSource.trimEnd();
+    };
+
     function hexViewer_getPosInfo(byte, byteOffset)
     {
         const detok = TIVarsLib.TH_Tokenized_oneTokenBytesToString(byte);
@@ -334,16 +348,7 @@ function do_cm_custom()
             if (!prgmForHexViewer) {
                 prgmForHexViewer = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName);
             }
-            let prgmSource = "";
-            for (let i=0; i<editor.lineCount(); i++) {
-                let cleanedLine = "";
-                editor.getLineTokens(i).forEach((o) => { if (o.type !== 'comment') { cleanedLine += o.string; } });
-                cleanedLine = cleanedLine.trimStart();
-                if (cleanedLine.length) {
-                    prgmSource += cleanedLine + '\n';
-                }
-            }
-            prgmSource = prgmSource.trimEnd()
+            const prgmSource = cm_getPrgmSourceTrimmed();
             prgmForHexViewer.setContentFromString(prgmSource);
             const hexStr = prgmForHexViewer.getRawContentHexStr().toUpperCase();
             if (hexStr.length) {

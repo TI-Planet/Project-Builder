@@ -393,16 +393,7 @@ function makeBasicPrgm()
         return;
     }
 
-    let prgmSource = "";
-    for(let i=0; i<editor.lineCount(); i++) {
-        let cleanedLine = "";
-        editor.getLineTokens(i).forEach((o) => { if (o.type !== 'comment') { cleanedLine += o.string; } });
-        cleanedLine = cleanedLine.trimStart();
-        if (cleanedLine.length) {
-            prgmSource += cleanedLine + '\n';
-        }
-    }
-    prgmSource = prgmSource.trimEnd()
+    let prgmSource = cm_getPrgmSourceTrimmed();
 
     const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
     prgm.setContentFromString(prgmSource);
