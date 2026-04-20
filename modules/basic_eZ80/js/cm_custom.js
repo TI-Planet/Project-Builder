@@ -18,8 +18,7 @@
 function do_cm_custom()
 {
     let widgets = [];
-    let signatureHelpWidget = null;
-    let signatureHelpLine = null;
+    let signatureHelpNode = null;
 
     const escapeHTML = (str) => String(str ?? '')
         .replace(/&/g, '&amp;')
@@ -29,10 +28,9 @@ function do_cm_custom()
         .replace(/'/g, '&#39;');
 
     const clearSignatureHelp = () => {
-        if (signatureHelpWidget) {
-            signatureHelpWidget.clear();
-            signatureHelpWidget = null;
-            signatureHelpLine = null;
+        if (signatureHelpNode) {
+            signatureHelpNode.remove();
+            signatureHelpNode = null;
         }
     };
 
@@ -170,25 +168,15 @@ function do_cm_custom()
 
         const signatureContainer = document.createElement('div');
         signatureContainer.className = 'basic-signature-help';
-        signatureContainer.style.cssText = 'padding:4px 8px;border:1px solid #d9e2f2;border-radius:4px;background:#f7fbff;color:#2f4054;font-family:sans-serif;font-size:12px;line-height:1.45;';
+        signatureContainer.style.cssText = 'padding:4px 8px;border:1px solid #d9e2f2;border-radius:4px;background-color:#f7fbff;opacity:1;color:#2f4054;font-family:sans-serif;font-size:12px;line-height:1.45;box-shadow:0 2px 6px rgba(0,0,0,0.12);position:relative;z-index:20;';
         signatureContainer.innerHTML = renderHighlightedSignature(syntaxData, signatureContext.argIndex);
         if (syntaxData.description) {
             signatureContainer.innerHTML += `<div style="margin-top:4px;color:#58677a;">${escapeHTML(syntaxData.description)}</div>`;
         }
 
-        const cursorLine = editor.getCursor().line;
-        if (signatureHelpWidget && signatureHelpLine === cursorLine) {
-            signatureHelpWidget.node.innerHTML = signatureContainer.innerHTML;
-            return;
-        }
-
         clearSignatureHelp();
-        signatureHelpWidget = editor.addLineWidget(cursorLine, signatureContainer, {
-            above: true,
-            coverGutter: false,
-            noHScroll: false
-        });
-        signatureHelpLine = cursorLine;
+        signatureHelpNode = signatureContainer;
+        editor.addWidget(editor.getCursor(), signatureHelpNode, false, 'below', 'left');
     };
 
     const clearWidgets = function()

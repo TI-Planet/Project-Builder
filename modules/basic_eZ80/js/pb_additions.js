@@ -27,10 +27,31 @@ var tokens_json = null;
 var tokens_json_promise = null;
 var lastSavedSource = '';
 
+function uniqueStrings(values)
+{
+    return [...new Set(values.filter((value) => typeof(value) === 'string' && value.length > 0))];
+}
+
+function getBasicTokenSourceNames(token)
+{
+    return uniqueStrings([token.name, token.accessibleName].concat(token.nameVariants || []));
+}
+
 function buildTokensJSONIndexes(json)
 {
     const tokDataByName = {};
     const tokBytesByAccessibleName = {};
+    const callTokens = [];
+    const valueTokens = [];
+    const writableStoreTargets = {
+        any: [],
+        scalar: [],
+        string: [],
+        list: [],
+        matrix: [],
+        picture: [],
+        image: []
+    };
 
     for (const [bytes, data] of Object.entries(json)) {
         data.bytes = bytes;
@@ -38,12 +59,41 @@ function buildTokensJSONIndexes(json)
         if ('accessibleName' in data) {
             tokBytesByAccessibleName[data.accessibleName] = bytes;
         }
+
+        getBasicTokenSourceNames(data).forEach((name) => {
+            if (name.endsWith('(')) {
+                callTokens.push({ match: name, token: data });
+            } else if (['variable', 'constant'].includes(data.type)) {
+                valueTokens.push({ match: name, token: data });
+            }
+        });
+
+        const storeTargetGroup = getBasicStoreTargetGroup(data);
+        if (storeTargetGroup) {
+            const completionTag = {
+                n: data.name,
+                k: 'variable',
+                file: data.categories?.[0] || '',
+                bytes: data.bytes,
+                group: storeTargetGroup
+            };
+            writableStoreTargets.any.push(completionTag);
+            writableStoreTargets[storeTargetGroup].push(completionTag);
+        }
     }
+
+    callTokens.sort((a, b) => b.match.length - a.match.length);
+    valueTokens.sort((a, b) => b.match.length - a.match.length);
 
     return {
         byName: tokDataByName,
         byAccessibleName: tokBytesByAccessibleName,
-        byBytes: json
+        byBytes: json,
+        completionData: {
+            callTokens: callTokens,
+            valueTokens: valueTokens,
+            writableStoreTargets: writableStoreTargets
+        }
     };
 }
 
@@ -104,6 +154,42 @@ function getBasicSDKCtagKind(token)
     }
 }
 
+function tokenHasCategory(token, categoryFragment)
+{
+    return (token.categories || []).some((category) => category.includes(categoryFragment));
+}
+
+function getBasicValueGroupFromToken(token)
+{
+    if (tokenHasCategory(token, 'String')) {
+        return 'string';
+    }
+    if (tokenHasCategory(token, 'Matrix')) {
+        return 'matrix';
+    }
+    if (tokenHasCategory(token, 'List')) {
+        return 'list';
+    }
+    if (tokenHasCategory(token, 'Pictures')) {
+        return 'picture';
+    }
+    if (tokenHasCategory(token, 'Images')) {
+        return 'image';
+    }
+    return 'scalar';
+}
+
+function getBasicStoreTargetGroup(token)
+{
+    if (token.type !== 'variable' || token.isAlias) {
+        return null;
+    }
+    if ((token.categories || []).some((category) => category.startsWith('Statistics >'))) {
+        return null;
+    }
+    return getBasicValueGroupFromToken(token);
+}
+
 function shouldExposeTokenAsSDKCtag(token)
 {
     return !token.isAlias && !['delimiter', 'text/symbol only', 'variable'].includes(token.type);
@@ -155,6 +241,132 @@ function buildBasicSDKCtags(tokensJSON)
                 bytes: token.bytes
             };
         });
+}
+
+function getBasicExpressionTypeGroup(expressionText)
+{
+    const expr = (expressionText || '').trim();
+    if (!expr.length || !window.tokens_json?.completionData) {
+        return 'scalar';
+    }
+
+    if (expr.startsWith('"') && expr.endsWith('"') && expr.length >= 2) {
+        return 'string';
+    }
+    if (/^\[\s*\[/.test(expr)) {
+        return 'matrix';
+    }
+
+    let inString = false;
+    const stack = [];
+    let braceDepth = 0;
+    let lastClosedToken = null;
+
+    for (let i = 0; i < expr.length; i++) {
+        const char = expr[i];
+
+        if (!inString && char === '#') {
+            break;
+        }
+        if (char === '"') {
+            inString = !inString;
+            continue;
+        }
+        if (inString) {
+            continue;
+        }
+
+        const remaining = expr.substring(i);
+        const matchedCallToken = window.tokens_json.completionData.callTokens.find((entry) => remaining.startsWith(entry.match));
+        if (matchedCallToken) {
+            stack.push(matchedCallToken.token);
+            i += matchedCallToken.match.length - 1;
+            continue;
+        }
+
+        if (char === '{') {
+            braceDepth++;
+            continue;
+        }
+
+        if (char === '}') {
+            if (braceDepth > 0) {
+                braceDepth--;
+            }
+            continue;
+        }
+
+        if (char === ')' && stack.length) {
+            lastClosedToken = stack.pop();
+        }
+    }
+
+    if (inString) {
+        return 'string';
+    }
+
+    if (braceDepth > 0 || expr.includes('{')) {
+        return 'list';
+    }
+
+    if (stack.length) {
+        return getBasicValueGroupFromToken(stack[stack.length - 1]);
+    }
+
+    const directValueToken = window.tokens_json.completionData.valueTokens.find((entry) => expr.endsWith(entry.match));
+    if (directValueToken) {
+        return getBasicValueGroupFromToken(directValueToken.token);
+    }
+
+    return lastClosedToken ? getBasicValueGroupFromToken(lastClosedToken) : 'scalar';
+}
+
+function getBasicStoreCompletionTagsForGroup(group)
+{
+    if (!window.tokens_json?.completionData) {
+        return [];
+    }
+
+    const writableStoreTargets = window.tokens_json.completionData.writableStoreTargets;
+    switch (group) {
+        case 'string':
+        case 'list':
+        case 'matrix':
+        case 'picture':
+        case 'image':
+            return writableStoreTargets[group] || [];
+        default:
+            return writableStoreTargets.scalar;
+    }
+}
+
+function getEditorCompletionContext(editor, context)
+{
+    if (editor.getMode().name !== 'tibasic') {
+        return null;
+    }
+
+    const linePrefix = context.curLine.substring(0, context.cur.ch);
+    if (/\bGoto\s+[A-Z0-9θ]{0,2}$/u.test(linePrefix)) {
+        return {
+            force: true,
+            skipAnyWord: true,
+            ctags: (window.ctags || []).filter((tag) => tag.k === 'label'),
+            sdkCtags: []
+        };
+    }
+
+    const storeMatch = linePrefix.match(/^(.*?)(?:→|->)\s*([^\s:]*)$/u);
+    if (storeMatch && window.tokens_json?.completionData) {
+        return {
+            force: true,
+            skipAnyWord: true,
+            ctags: [],
+            sdkCtags: getBasicStoreCompletionTagsForGroup(getBasicExpressionTypeGroup(storeMatch[1]))
+        };
+    }
+
+    return null;
 }
 
 function applyPrgmNameChange(name)

@@ -38,16 +38,22 @@
       var end = cur.ch, start = end;
       while (start && word.test(curLine.charAt(start - 1))) --start;
       var curWord = start != end && curLine.slice(start, end);
+      var completionContext = (typeof window.getEditorCompletionContext === "function")
+          ? window.getEditorCompletionContext(editor, {cur: cur, curLine: curLine, start: start, end: end, curWord: curWord, word: word})
+          : null;
+      var shouldComplete = !!curWord || !!completionContext?.force;
+      var upperCaseCurWord = (curWord || "").toUpperCase();
+      var fuzzyRegex = curWord ? new RegExp(curWord.split("").reduce((a, b) => a + '[^' + b + ']*' + b), 'gi') : null;
+      var ctagsSource = (completionContext && Object.prototype.hasOwnProperty.call(completionContext, "ctags")) ? completionContext.ctags : window.ctags;
+      var sdkCtagsSource = (completionContext && Object.prototype.hasOwnProperty.call(completionContext, "sdkCtags")) ? completionContext.sdkCtags : window.sdk_ctags;
 
       var list = options && options.list || [], seen = {};
 
-      if (curWord)
+      if (shouldComplete)
       {
-          const upperCaseCurWord = curWord.toUpperCase();
-
           const isEditorASM = editor.getMode().name === 'z80';
 
-          if (!isEditorASM)
+          if (!isEditorASM && !completionContext?.skipAnyWord && curWord)
           {
               // from anywhere, non fuzzy
               const re = new RegExp(word.source, "gi");
@@ -66,17 +72,17 @@
               }
           }
 
-          const fuzzyRegex = new RegExp(curWord.split("").reduce((a, b) => a + '[^' + b + ']*' + b), 'gi');
+          const tagMatches = (tagName) => !fuzzyRegex || tagName.match(fuzzyRegex);
 
           // from ctags, fuzzy
-          if (typeof(window.ctags) === 'object') {
-              Array.prototype.push.apply(list, window.ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => makeCompletion(val) ));
+          if (typeof(ctagsSource) === 'object') {
+              Array.prototype.push.apply(list, ctagsSource.filter((val) => tagMatches(val.n)).map((val) => makeCompletion(val) ));
           }
           if (!isEditorASM)
           {
               // from sdk_ctags, fuzzy
-              if (typeof(window.sdk_ctags) === 'object' && window.enable_sdk_ctags) {
-                  Array.prototype.push.apply(list, window.sdk_ctags.filter((val) => val.n.match(fuzzyRegex)).map((val) => makeCompletion(val) ));
+              if (typeof(sdkCtagsSource) === 'object' && window.enable_sdk_ctags) {
+                  Array.prototype.push.apply(list, sdkCtagsSource.filter((val) => tagMatches(val.n)).map((val) => makeCompletion(val) ));
               }
           }
           if (isEditorASM)
@@ -113,7 +119,8 @@
           });
 
           // Make matches bold
-          list = list.map( (tag) => {
+          if (curWord) {
+              list = list.map( (tag) => {
               let i, tagCurFrom = 0;
               tag.htmlName = tag.text;
               for (i=0; i<curWord.length; i++)
@@ -126,6 +133,7 @@
               }
               return tag;
           });
+          }
       }
 
       // remove unwanted stuff
