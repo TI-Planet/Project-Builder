@@ -874,21 +874,29 @@ function do_cm_custom()
     });
 
 
-    highlightedWordMouseLeaveHandler = evt => {
+    highlightedWordMouseLeaveHandler = () => {
+        const highlightedWord = editor.currentHighlightedWord;
         clearTooltip();
-        if (!editor.currentHighlightedWord) { return; }
-        editor.currentHighlightedWord.style.textDecoration = "initial";
-        editor.currentHighlightedWord.style.backgroundColor = "initial";
-        editor.currentHighlightedWord.style.cursor = "initial";
+        if (!highlightedWord) { return; }
+        highlightedWord.style.textDecoration = "initial";
+        highlightedWord.style.backgroundColor = "initial";
+        highlightedWord.style.cursor = "initial";
+        highlightedWord.onmouseleave = null;
+        editor.currentHighlightedWord = null;
     };
 
     myMouseOverHandler = evt => {
-        if (evt.ctrlKey || evt.metaKey)
+        if (!(evt.ctrlKey || evt.metaKey)) {
+            highlightedWordMouseLeaveHandler();
+        }
+        else
         {
             const target = evt.target;
             if (editor.currentHighlightedWord === target) {
                 return;
             }
+
+            highlightedWordMouseLeaveHandler();
 
             if (target.className.includes("cm-keyword") ||
                 target.className.includes("cm-basiccmd") ||
@@ -899,15 +907,8 @@ function do_cm_custom()
                 target.style.textDecoration = "underline";
                 target.style.backgroundColor = target.className.includes("cm-basicvar") ? "lightcyan" : "lightpink";
                 target.style.cursor = "pointer";
-                target.addEventListener("mouseleave", () => {
-                    if (!editor.currentHighlightedWord) { return; }
-                    editor.currentHighlightedWord.style.textDecoration = "initial";
-                    editor.currentHighlightedWord.style.backgroundColor = "initial";
-                    editor.currentHighlightedWord.style.cursor = "initial";
-                    // highlightedWordMouseLeaveHandler()
-                });
+                target.onmouseleave = highlightedWordMouseLeaveHandler;
             } else {
-                highlightedWordMouseLeaveHandler();
                 return;
             }
 
@@ -1083,6 +1084,13 @@ function do_cm_custom()
         if (evt.keyCode == 27)
         { // Esc.
             editor.state.currentTooltip && highlightedWordMouseLeaveHandler();
+            clearSignatureHelp();
+        }
+    });
+    document.addEventListener("keyup", (evt) => {
+        evt = evt || window.event;
+        if (evt.key === "Meta" || evt.key === "Control") {
+            highlightedWordMouseLeaveHandler();
         }
     });
 
@@ -1114,6 +1122,7 @@ function do_cm_custom()
         const lines = content.split(/\r\n|\r|\n/).length;
         const deltaY = (lines > 1) ? 14*lines : 8;
         editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - deltaY, content, isHTML);
+        editor.state.currentTooltip.style.pointerEvents = 'none';
         if (isHTML) {
             editor.state.currentTooltip.style.top = `${where.top - editor.state.currentTooltip.getBoundingClientRect().height + 5}px`;
             editor.state.currentTooltip.style.fontFamily = 'sans-serif';
