@@ -36,6 +36,8 @@ function do_cm_custom()
         }
     };
 
+    const isSignatureHelpToken = (token) => ['function', 'dim', 'for'].includes(token?.type);
+
     const getSignatureHelpTokens = () => {
         if (!window.tokens_json?.byBytes) {
             return [];
@@ -46,7 +48,7 @@ function do_cm_custom()
 
         const signatureTokens = [];
         Object.values(window.tokens_json.byBytes).forEach((token) => {
-            if (!Array.isArray(token.syntaxes) || token.syntaxes.length === 0) {
+            if (!isSignatureHelpToken(token) || !Array.isArray(token.syntaxes) || token.syntaxes.length === 0) {
                 return;
             }
             const names = [token.name, token.accessibleName].concat(token.nameVariants || [])
