@@ -27,6 +27,8 @@ function do_cm_custom()
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
+    const formatInlineCodeHTML = (str) => escapeHTML(str).replace(/`([^`]+)`/g, '<code>$1</code>');
+
     const clearSignatureHelp = () => {
         if (signatureHelpNode) {
             signatureHelpNode.remove();
@@ -171,7 +173,7 @@ function do_cm_custom()
         signatureContainer.style.cssText = 'padding:4px 8px;border:1px solid #d9e2f2;border-radius:4px;background-color:#f7fbff;opacity:1;color:#2f4054;font-family:sans-serif;font-size:12px;line-height:1.45;box-shadow:0 2px 6px rgba(0,0,0,0.12);position:relative;z-index:20;';
         signatureContainer.innerHTML = renderHighlightedSignature(syntaxData, signatureContext.argIndex);
         if (syntaxData.description) {
-            signatureContainer.innerHTML += `<div style="margin-top:4px;color:#58677a;">${escapeHTML(syntaxData.description)}</div>`;
+            signatureContainer.innerHTML += `<div style="margin-top:4px;color:#58677a;">${formatInlineCodeHTML(syntaxData.description)}</div>`;
         }
 
         clearSignatureHelp();
@@ -1047,7 +1049,7 @@ function do_cm_custom()
                                     }
                                     lines.push('<div style="line-height: 18px; margin-top: -15px;">');
                                     if (s.description && s.description.length) {
-                                        lines.push('<span>' + s.description + '</span>');
+                                        lines.push('<span>' + formatInlineCodeHTML(s.description) + '</span>');
                                     }
                                     if (s.syntax && s.syntax !== token.name) {
                                         lines.push('<b>Syntax</b>: <code><tt>' + s.syntax + '</tt></code>');
