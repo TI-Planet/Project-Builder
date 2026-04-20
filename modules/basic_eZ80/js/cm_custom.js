@@ -18,6 +18,178 @@
 function do_cm_custom()
 {
     let widgets = [];
+    let signatureHelpWidget = null;
+    let signatureHelpLine = null;
+
+    const escapeHTML = (str) => String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const clearSignatureHelp = () => {
+        if (signatureHelpWidget) {
+            signatureHelpWidget.clear();
+            signatureHelpWidget = null;
+            signatureHelpLine = null;
+        }
+    };
+
+    const getSignatureHelpTokens = () => {
+        if (!window.tokens_json?.byBytes) {
+            return [];
+        }
+        if (editor.state.basicSignatureTokens) {
+            return editor.state.basicSignatureTokens;
+        }
+
+        const signatureTokens = [];
+        Object.values(window.tokens_json.byBytes).forEach((token) => {
+            if (!Array.isArray(token.syntaxes) || token.syntaxes.length === 0) {
+                return;
+            }
+            const names = [token.name, token.accessibleName].concat(token.nameVariants || [])
+                .filter((name) => typeof(name) === 'string' && name.endsWith('('));
+            if (!names.length) {
+                return;
+            }
+            names.forEach((name) => {
+                signatureTokens.push({ match: name, token: token });
+            });
+        });
+
+        signatureTokens.sort((a, b) => b.match.length - a.match.length);
+        editor.state.basicSignatureTokens = signatureTokens;
+        return signatureTokens;
+    };
+
+    const getSignatureContextAtCursor = () => {
+        const signatureTokens = getSignatureHelpTokens();
+        if (!signatureTokens.length) {
+            return null;
+        }
+
+        const cursor = editor.getCursor();
+        const linePrefix = editor.getLine(cursor.line).substring(0, cursor.ch);
+        const stack = [];
+        let inString = false;
+
+        for (let i = 0; i < linePrefix.length; i++) {
+            const char = linePrefix[i];
+
+            if (!inString && char === '#') {
+                break;
+            }
+            if (char === '"') {
+                inString = !inString;
+                continue;
+            }
+            if (inString) {
+                continue;
+            }
+
+            const remaining = linePrefix.substring(i);
+            const matchedSignatureToken = signatureTokens.find((entry) => remaining.startsWith(entry.match));
+            if (matchedSignatureToken) {
+                stack.push({ token: matchedSignatureToken.token, argIndex: 0 });
+                i += matchedSignatureToken.match.length - 1;
+                continue;
+            }
+
+            if (char === ',' && stack.length) {
+                stack[stack.length - 1].argIndex++;
+            } else if (char === ')' && stack.length) {
+                stack.pop();
+            }
+        }
+
+        return stack.length ? stack[stack.length - 1] : null;
+    };
+
+    const chooseSignatureSyntax = (token, activeArgIndex) => {
+        const syntaxes = Array.isArray(token.syntaxes) ? token.syntaxes : [];
+        if (!syntaxes.length) {
+            return null;
+        }
+        return syntaxes.find((syntaxData) => (syntaxData.arguments || []).length > activeArgIndex) || syntaxes[0];
+    };
+
+    const renderHighlightedSignature = (syntaxData, activeArgIndex) => {
+        const syntax = syntaxData?.syntax || '';
+        const argumentsList = Array.isArray(syntaxData?.arguments) ? syntaxData.arguments : [];
+        if (!syntax.length || !argumentsList.length) {
+            return `<code>${escapeHTML(syntax)}</code>`;
+        }
+
+        let html = '';
+        let cursor = 0;
+        let searchFrom = 0;
+
+        argumentsList.forEach((argumentData, argumentIdx) => {
+            const argumentName = argumentData?.[0];
+            if (!argumentName || argumentName === '...') {
+                return;
+            }
+            const foundAt = syntax.indexOf(argumentName, searchFrom);
+            if (foundAt < 0) {
+                return;
+            }
+            html += escapeHTML(syntax.substring(cursor, foundAt));
+            const argHtml = escapeHTML(argumentName);
+            html += (argumentIdx === activeArgIndex)
+                ? `<span style="font-weight:700;text-decoration:underline;">${argHtml}</span>`
+                : `<span>${argHtml}</span>`;
+            cursor = foundAt + argumentName.length;
+            searchFrom = cursor;
+        });
+
+        html += escapeHTML(syntax.substring(cursor));
+        return `<code>${html}</code>`;
+    };
+
+    const updateSignatureHelp = () => {
+        if (!window.tokens_json?.byBytes) {
+            if (typeof ensureTokensJSONLoaded === 'function') {
+                ensureTokensJSONLoaded().then(() => updateSignatureHelp()).catch(() => {});
+            }
+            return;
+        }
+
+        const signatureContext = getSignatureContextAtCursor();
+        if (!signatureContext) {
+            clearSignatureHelp();
+            return;
+        }
+
+        const syntaxData = chooseSignatureSyntax(signatureContext.token, signatureContext.argIndex);
+        if (!syntaxData) {
+            clearSignatureHelp();
+            return;
+        }
+
+        const signatureContainer = document.createElement('div');
+        signatureContainer.className = 'basic-signature-help';
+        signatureContainer.style.cssText = 'padding:4px 8px;border:1px solid #d9e2f2;border-radius:4px;background:#f7fbff;color:#2f4054;font-family:sans-serif;font-size:12px;line-height:1.45;';
+        signatureContainer.innerHTML = renderHighlightedSignature(syntaxData, signatureContext.argIndex);
+        if (syntaxData.description) {
+            signatureContainer.innerHTML += `<div style="margin-top:4px;color:#58677a;">${escapeHTML(syntaxData.description)}</div>`;
+        }
+
+        const cursorLine = editor.getCursor().line;
+        if (signatureHelpWidget && signatureHelpLine === cursorLine) {
+            signatureHelpWidget.node.innerHTML = signatureContainer.innerHTML;
+            return;
+        }
+
+        clearSignatureHelp();
+        signatureHelpWidget = editor.addLineWidget(cursorLine, signatureContainer, {
+            above: true,
+            coverGutter: false,
+            noHScroll: false
+        });
+        signatureHelpLine = cursorLine;
+    };
 
     const clearWidgets = function()
     {
@@ -571,6 +743,11 @@ function do_cm_custom()
         }, proj.autocomplete_delay));
     };
     setupAutocompletionAutoDisplayDelay();
+    const debouncedUpdateSignatureHelp = debounce(updateSignatureHelp, 25);
+    editor.on("cursorActivity", debouncedUpdateSignatureHelp);
+    editor.on("change", debouncedUpdateSignatureHelp);
+    editor.on("blur", clearSignatureHelp);
+    debouncedUpdateSignatureHelp();
 
     editor.on("mousedown", (cm, e) => {
         if (e.ctrlKey || e.metaKey)
