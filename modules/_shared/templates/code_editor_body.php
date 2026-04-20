@@ -7,6 +7,7 @@ if (!isset($pm, $codeEditorConfig))
 $isAnonymousViewer = $currUser->isAnonymous();
 $editorUtilityButtonsHtml = $codeEditorConfig['editorUtilityButtonsHtml'] ?? '';
 $showReformatButton = $codeEditorConfig['showReformatButton'] ?? false;
+$showCanonicalizeButton = $codeEditorConfig['showCanonicalizeButton'] ?? false;
 $codeareaPrefixHtml = $codeEditorConfig['codeareaPrefixHtml'] ?? '';
 $downloadButtonOnclick = $codeEditorConfig['downloadButtonOnclick'];
 $downloadButtonTitle = $codeEditorConfig['downloadButtonTitle'];
@@ -33,9 +34,16 @@ $postDownloadButtonsHtml = $codeEditorConfig['postDownloadButtonsHtml'] ?? '';
                 {
                     echo '<li class="active pull-right" style="margin-right:-2px;margin-left:3px;"><a href="#"><b>Note</b>: this file is read-only</a></li>';
                 }
-                elseif ($showReformatButton)
+                else
                 {
-                    echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to re-format the file (indents, prettify...)"><a id="reformatButton" style="color: #337ab7;" href="#" onclick="reformat(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
+                    if ($showReformatButton)
+                    {
+                        echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to reformat/reindent the file"><a id="reformatButton" style="color: #337ab7;" href="#" onclick="reformat(); return false;"><span class="glyphicon glyphicon-thumbs-up"></span></a></li>';
+                    }
+                    if ($showCanonicalizeButton)
+                    {
+                        echo '<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to canonicalize the code"><a id="canonicalizeButton" style="color: #337ab7;" href="#" onclick="canonicalize(); return false;"><span class="glyphicon glyphicon-ok-sign"></span></a></li>';
+                    }
                 }
             }
             ?>

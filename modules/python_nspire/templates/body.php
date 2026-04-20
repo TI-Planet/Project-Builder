@@ -1,6 +1,7 @@
 <?php
 $codeEditorConfig = [
     'showReformatButton' => false,
+    'showCanonicalizeButton' => false,
     'downloadButtonOnclick' => 'downloadTnsFile(); return false',
     'downloadButtonTitle' => 'Convert this code to a tns file',
     'downloadButtonLabel' => 'Download program (.tns)',

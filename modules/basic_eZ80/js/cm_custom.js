@@ -512,6 +512,30 @@ function do_cm_custom()
         });
     };
 
+    canonicalize = () => {
+        if (!TIVarsLib) {
+            alert('tivars_lib not ready?!');
+            return;
+        }
+
+        // de-indented source
+        const prgmSource = editor.getValue().replace(/^[ \t]+/gm, '');
+        if (!prgmSource || !prgmSource.length) {
+            return;
+        }
+
+        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
+        prgm.setContentFromString(prgmSource);
+
+        const options = new TIVarsLib.options_t();
+        options.set("prettify", false); // need to roundtrip
+        options.set("reindent", false); // the user can trigger that manually later if wanted
+        const reformatted = prgm.getReadableContent(options);
+        if (reformatted && reformatted.length) {
+            editor.setValue(reformatted);
+        }
+    };
+
     reformat = () => {
         if (!TIVarsLib) {
             alert('tivars_lib not ready?!');
