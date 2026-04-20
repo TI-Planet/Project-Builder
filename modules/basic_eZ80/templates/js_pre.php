@@ -62,6 +62,7 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
         import TIVarsLib from '<?= cacheBusterPath("./modules/_shared/TIVarsLib.js") ?>';
         window.TIVarsLib = await TIVarsLib();
         setTimeout(function() { if (refreshHexViewerContents) refreshHexViewerContents(); }, 1);
+        setTimeout(function() { if (updateProgramByteSize) updateProgramByteSize(); }, 1);
     </script>
 <?php } ?>
 

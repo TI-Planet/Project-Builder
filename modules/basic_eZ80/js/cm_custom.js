@@ -430,6 +430,8 @@ function do_cm_custom()
     };
 
     let prgmForHexViewer = null;
+    let prgmHexSnapshot = null;
+    let prgmHexSnapshotSource = null;
     let previousTokenMark = null;
     const detokHoverText = document.getElementById('detokHoverText');
     const hexViewer = $("#hexViewer");
@@ -446,6 +448,43 @@ function do_cm_custom()
             }
         }
         return prgmSource.trimEnd();
+    };
+
+    const getPrgmHexSnapshot = () => {
+        if (typeof TIVarsLib === 'undefined' || !TIVarsLib) {
+            return null;
+        }
+
+        const prgmSource = cm_getPrgmSourceTrimmed();
+        if (!prgmSource.length) {
+            prgmHexSnapshotSource = '';
+            prgmHexSnapshot = { source: '', hexStr: '', rawContentBytes: 0 };
+            return prgmHexSnapshot;
+        }
+
+        if (prgmHexSnapshot && prgmHexSnapshotSource === prgmSource) {
+            return prgmHexSnapshot;
+        }
+
+        if (!prgmForHexViewer) {
+            prgmForHexViewer = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName);
+        }
+
+        try {
+            prgmForHexViewer.setContentFromString(prgmSource);
+            const hexStr = prgmForHexViewer.getRawContentHexStr().toUpperCase();
+            prgmHexSnapshotSource = prgmSource;
+            prgmHexSnapshot = {
+                source: prgmSource,
+                hexStr: hexStr,
+                rawContentBytes: hexStr.length / 2
+            };
+            return prgmHexSnapshot;
+        } catch (e) {
+            prgmHexSnapshotSource = null;
+            prgmHexSnapshot = null;
+            return null;
+        }
     };
 
     function hexViewer_getPosInfo(byte, byteOffset)
@@ -506,12 +545,8 @@ function do_cm_custom()
     refreshHexViewerContents = () => {
         if (hexViewer && hexViewer.is(":visible") && typeof(TIVarsLib) !== 'undefined') {
             hexViewer.empty();
-            if (!prgmForHexViewer) {
-                prgmForHexViewer = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName);
-            }
-            const prgmSource = cm_getPrgmSourceTrimmed();
-            prgmForHexViewer.setContentFromString(prgmSource);
-            const hexStr = prgmForHexViewer.getRawContentHexStr().toUpperCase();
+            const snapshot = getPrgmHexSnapshot();
+            const hexStr = snapshot?.hexStr || '';
             if (hexStr.length) {
                 hexViewer.data('hex', hexStr);
                 const firstByteOf2BytesTokens = [ '5C', '5D', '5E', '60', '61', '62', '63', '7E', 'AA', 'BB', 'EF' ];
@@ -559,6 +594,29 @@ function do_cm_custom()
         proj.show_hex_viewer = hexViewer.is(":visible");
         if (!auto) { saveProjConfig(); }
     };
+
+    updateProgramByteSize = () => {
+        const byteSizeElement = document.getElementById('programByteSize');
+        if (!byteSizeElement) {
+            return;
+        }
+        if (typeof TIVarsLib === 'undefined' || !TIVarsLib) {
+            byteSizeElement.innerText = 'Program bytes: ...';
+            return;
+        }
+
+        const snapshot = getPrgmHexSnapshot();
+        if (!snapshot || !snapshot.source.length) {
+            byteSizeElement.innerText = 'Program bytes: 0';
+            return;
+        }
+
+        byteSizeElement.innerText = `Program bytes: ${snapshot.rawContentBytes}`;
+    };
+
+    const debouncedRefreshHexViewerContents = debounce(refreshHexViewerContents, 75);
+    const debouncedUpdateProgramByteSize = debounce(updateProgramByteSize, 75);
+    debouncedUpdateProgramByteSize();
 
     addIconToFileTab = (filename, errtype) => {
         $(`div.filelist span.filename:contains('${filename}')`).each((idx, el) => {
@@ -1032,6 +1090,8 @@ function do_cm_custom()
         lastChangeTS = (new Date).getTime();
         const saveButton = document.getElementById('saveButton');
         if (saveButton) saveButton.disabled = false;
+        debouncedRefreshHexViewerContents();
+        debouncedUpdateProgramByteSize();
     });
 
     // Tooltips (inspired from Tern)
