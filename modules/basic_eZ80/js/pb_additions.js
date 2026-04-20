@@ -694,8 +694,13 @@ function downloadCurrentFile(name)
 {
     name = (typeof(name) === 'undefined') ? prompt('Name of the file') : proj.currFile;
     if (name === null) { return false; }
+    return downloadTextFile(name, editor.getValue());
+}
+
+function downloadTextFile(name, content)
+{
     const dlLink = document.createElement('a');
-    dlLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(editor.getValue()));
+    dlLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
     dlLink.setAttribute('download', name);
 
     if (document.createEvent) {
@@ -705,6 +710,33 @@ function downloadCurrentFile(name)
     } else {
         dlLink.click();
     }
+
+    return true;
+}
+
+function getAccessibleSourceDownloadName(name)
+{
+    return /\.[^.]+$/.test(name) ? name.replace(/(\.[^.]*)$/, '-accessible$1') : `${name}-accessible`;
+}
+
+function downloadAccessibleCurrentFile(name)
+{
+    name = (typeof(name) === 'undefined') ? prompt('Name of the file') : proj.currFile;
+    if (name === null) { return false; }
+    if (!TIVarsLib) {
+        alert('tivars_lib not ready?!');
+        return false;
+    }
+
+    const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
+    prgm.setContentFromString(cm_getPrgmSourceTrimmed());
+
+    const options = new TIVarsLib.options_t();
+    options.set("accessible", true);
+    options.set("prettify", false);
+    options.set("reindent", false);
+
+    return downloadTextFile(getAccessibleSourceDownloadName(name), prgm.getReadableContent(options));
 }
 
 function makeBasicPrgm()

@@ -13,6 +13,9 @@ HTML,
     'downloadButtonTitle' => 'Convert this code to a program (8xp file)',
     'downloadButtonLabel' => 'Download program (.8xp)',
     'currentSourceDownloadLabel' => 'Download current source file (.bas)',
+    'extraSourceDownloadMenuItemsHtml' => <<<'HTML'
+<li><a onclick="downloadAccessibleCurrentFile(proj.currFile); return false">Download typable/accessible source code version (.bas)</a></li>
+HTML,
     'postDownloadButtonsHtml' => <<<'HTML'
 <button id="buildUsbButton" class="btn btn-primary btn-sm" onclick="transferToCalc(); return false" title="Send the program to a connected calculator (WebUSB)"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to calculator <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>
 <button id="buildRunButton" class="btn btn-primary btn-sm disabled" disabled onclick="transferToEmuAndRun(); return false"><span class="glyphicon glyphicon-share" aria-hidden="true"></span> Send to emulator and run <span class="loadingicon hidden"> <span class="glyphicon glyphicon-refresh spinning"></span></span></button>

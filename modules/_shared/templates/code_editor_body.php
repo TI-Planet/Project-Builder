@@ -13,6 +13,7 @@ $downloadButtonOnclick = $codeEditorConfig['downloadButtonOnclick'];
 $downloadButtonTitle = $codeEditorConfig['downloadButtonTitle'];
 $downloadButtonLabel = $codeEditorConfig['downloadButtonLabel'];
 $currentSourceDownloadLabel = $codeEditorConfig['currentSourceDownloadLabel'];
+$extraSourceDownloadMenuItemsHtml = $codeEditorConfig['extraSourceDownloadMenuItemsHtml'] ?? '';
 $postDownloadButtonsHtml = $codeEditorConfig['postDownloadButtonsHtml'] ?? '';
 ?>
     <textarea id="fakeContainer" style="display:none" title="" data-mtime="<?= $currProject->getCurrentFileMtime() ?>" data-source-hash="<?= $currProject->getCurrentFileSourceHash() ?>"><?= $currProject->getCurrentFileSourceHTML() ?></textarea>
@@ -86,6 +87,7 @@ $postDownloadButtonsHtml = $codeEditorConfig['postDownloadButtonsHtml'] ?? '';
             </button>
             <ul class="dropdown-menu">
                 <li><a onclick="downloadCurrentFile(proj.currFile); return false"><?= $currentSourceDownloadLabel ?></a></li>
+                <?= $extraSourceDownloadMenuItemsHtml ?>
                 <li role="separator" class="divider"></li>
                 <li><a onclick="$('#zipDlForm').submit(); return false">Download project (.zip) with all sources</a></li>
             </ul>
