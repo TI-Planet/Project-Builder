@@ -18,6 +18,10 @@ CodeMirror.defineSimpleMode("tibasic", {
             token: "store"
         },
         {
+            regex: /->/,
+            token: "alt-store"
+        },
+        {
             regex: /(Lbl)( )([A-Z0-9θ]{1,2})(:|$)/,
             token: ["variable-3", null, "label", null]
         },

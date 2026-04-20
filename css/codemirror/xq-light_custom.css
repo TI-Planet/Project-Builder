@@ -50,6 +50,7 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-label { color: #7F007F; font-weight: bold; }
 .cm-s-xq-light span.cm-error { color: #f33; }
 .cm-s-xq-light span.cm-store { color: #db7010; font-weight: bold; font-size: large; vertical-align: top; }
+.cm-s-xq-light span.cm-alt-store { color: #db7010; font-weight: bold; }
 
 .cm-s-xq-light span.cm-asm-var2 { color: #0080c0; }
 .cm-s-xq-light span.cm-asm-var3 { color: brown; }
