@@ -22,8 +22,140 @@ var build_check  = [];
 var code_analysis = [];
 var ctags = [];
 var sdk_ctags = [];
+var enable_sdk_ctags = true;
 var tokens_json = null;
+var tokens_json_promise = null;
 var lastSavedSource = '';
+
+function buildTokensJSONIndexes(json)
+{
+    const tokDataByName = {};
+    const tokBytesByAccessibleName = {};
+
+    for (const [bytes, data] of Object.entries(json)) {
+        data.bytes = bytes;
+        tokDataByName[data.name] = data;
+        if ('accessibleName' in data) {
+            tokBytesByAccessibleName[data.accessibleName] = bytes;
+        }
+    }
+
+    return {
+        byName: tokDataByName,
+        byAccessibleName: tokBytesByAccessibleName,
+        byBytes: json
+    };
+}
+
+function ensureTokensJSONLoaded()
+{
+    if (window.tokens_json) {
+        tokens_json = window.tokens_json;
+        return Promise.resolve(window.tokens_json);
+    }
+    if (tokens_json_promise) {
+        return tokens_json_promise;
+    }
+
+    tokens_json_promise = fetch('/pb/modules/basic_eZ80/js/tokens.json')
+        .then((res) => res.json())
+        .then((json) => {
+            window.tokens_json = buildTokensJSONIndexes(json);
+            tokens_json = window.tokens_json;
+            return window.tokens_json;
+        })
+        .catch((err) => {
+            tokens_json_promise = null;
+            throw err;
+        });
+
+    return tokens_json_promise;
+}
+
+function getBasicSDKCtagKind(token)
+{
+    switch (token.type) {
+        case 'function':
+        case 'userfunction':
+            return 'function';
+        case 'constant':
+            return 'constant';
+        case 'variable':
+            return 'variable';
+        case 'label':
+            return 'label';
+        case 'infix operator':
+        case 'postfix operator':
+        case 'and':
+        case 'dim':
+        case 'for':
+        case 'goto':
+        case 'if':
+        case 'other':
+        case 'store':
+            return 'operator';
+        case 'action':
+        case 'command':
+        case 'basic instruction only':
+        case 'execlib':
+            return 'keyword';
+        default:
+            return 'keyword';
+    }
+}
+
+function shouldExposeTokenAsSDKCtag(token)
+{
+    return !token.isAlias && !['delimiter', 'text/symbol only', 'variable'].includes(token.type);
+}
+
+function getBasicSDKCtagArgs(token)
+{
+    if (!Array.isArray(token.syntaxes) || token.syntaxes.length === 0) {
+        return '';
+    }
+
+    for (const syntaxData of token.syntaxes) {
+        const syntax = syntaxData?.syntax || '';
+        if (!syntax.length) {
+            continue;
+        }
+        for (const nameCandidate of [token.name, token.accessibleName]) {
+            if (nameCandidate && syntax.startsWith(nameCandidate)) {
+                return syntax.substring(nameCandidate.length);
+            }
+        }
+    }
+
+    return '';
+}
+
+function getBasicSDKCtagDescription(token)
+{
+    if (!Array.isArray(token.syntaxes)) {
+        return '';
+    }
+    const descriptions = token.syntaxes.map((syntaxData) => syntaxData?.description?.trim()).filter(Boolean);
+    return descriptions[0] || '';
+}
+
+function buildBasicSDKCtags(tokensJSON)
+{
+    return Object.values(tokensJSON.byBytes)
+        .filter((token) => shouldExposeTokenAsSDKCtag(token))
+        .map((token) => {
+            const location = token.syntaxes?.find((syntaxData) => Array.isArray(syntaxData?.location) && syntaxData.location.length)?.location || [];
+            const category = token.categories?.[0] || '';
+            return {
+                n: token.name,
+                k: getBasicSDKCtagKind(token),
+                a: getBasicSDKCtagArgs(token),
+                d: getBasicSDKCtagDescription(token),
+                file: category || location.join(' > '),
+                bytes: token.bytes
+            };
+        });
+}
 
 function applyPrgmNameChange(name)
 {
@@ -335,39 +467,15 @@ function getCtags(scope, cb)
 
 function getSDKCtags()
 {
-    ajaxAction("getSDKCtags", "", (allCtags) => {
-        const list = [];
-        Object.keys(allCtags).map( (tagFile) =>
-        {
-            allCtags[tagFile].forEach( (tag) =>
-            {
-                tag.file = tagFile;
-                list.push(tag);
-            });
-        });
-        sdk_ctags = list;
+    return ensureTokensJSONLoaded().then((tokensJSON) => {
+        sdk_ctags = buildBasicSDKCtags(tokensJSON);
+        return sdk_ctags;
     });
 }
 
 function getTokensJSON()
 {
-    const tokDataByName = {};
-    const tokBytesByAccessibleName = {};
-
-    fetch('/pb/modules/basic_eZ80/js/tokens.json').then(res => res.json()).then(json => {
-        for (const [bytes, data] of Object.entries(json)) {
-            data.bytes = bytes;
-            tokDataByName[data.name] = data;
-            if ('accessibleName' in data) {
-                tokBytesByAccessibleName[data.accessibleName] = bytes;
-            }
-        }
-        window.tokens_json = {
-            byName: tokDataByName,
-            byAccessibleName: tokBytesByAccessibleName,
-            byBytes: json
-        };
-    });
+    return ensureTokensJSONLoaded();
 }
 
 function downloadCurrentFile(name)

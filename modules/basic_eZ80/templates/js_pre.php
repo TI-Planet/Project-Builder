@@ -41,7 +41,7 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
         show_bottom_tools: true,
         show_code_outline: true,
         show_hex_viewer: false,
-        autocomplete_delay: 800
+        autocomplete_delay: 200
     };
     user = {
         id: '<?= $currUser->getID() ?>',

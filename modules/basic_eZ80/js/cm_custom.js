@@ -799,9 +799,6 @@ function do_cm_custom()
                             if (token) { break; }
                         }
 
-                        console.log('word', word);
-                        console.log('token', token);
-
                         if (token) {
                             // Build a concise info text
                             const lines = [];
