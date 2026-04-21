@@ -39,8 +39,8 @@ function getBasicTokenSourceNames(token)
 
 function buildTokensJSONIndexes(json)
 {
-    const tokDataByName = {};
-    const tokBytesByAccessibleName = {};
+    const tokDataByName = Object.create(null);
+    const tokBytesByAccessibleName = Object.create(null);
     const callTokens = [];
     const valueTokens = [];
     const writableStoreTargets = {

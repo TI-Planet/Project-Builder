@@ -1017,11 +1017,13 @@ function do_cm_custom()
                         for (const wordToSearch of [ word, `${word} `, `${word}(` ])
                         {
                             // by exact name first
-                            if (byName[wordToSearch]) {
+                            if (Object.prototype.hasOwnProperty.call(byName, wordToSearch)) {
                                 token = byName[wordToSearch];
                             }
                             // by accessible name -> bytes -> data
-                            if (!token && byAccessibleName[wordToSearch] && byBytes[byAccessibleName[wordToSearch]]) {
+                            if (!token &&
+                                Object.prototype.hasOwnProperty.call(byAccessibleName, wordToSearch) &&
+                                Object.prototype.hasOwnProperty.call(byBytes, byAccessibleName[wordToSearch])) {
                                 token = byBytes[byAccessibleName[wordToSearch]];
                             }
                             if (token) { break; }
@@ -1032,7 +1034,7 @@ function do_cm_custom()
                             const lines = [];
                             // Title line
                             lines.push(`<div style="display: flex; justify-content: space-between; align-items: center; line-height: 16px">`)
-                            lines.push(`<big style="background-color: lightgrey; padding: 2px; border-radius: 4px;"><b><tt>${token.name || word}</tt></b></big>`);
+                            lines.push(`<big style="background-color: lightgrey; padding: 2px; border-radius: 4px;"><b><tt>${escapeHTML(token.name || word)}</tt></b></big>`);
                             if (token.bytes) {
                                 lines.push('<span><b>Bytes</b>: <tt>' + token.bytes.substring(2) + '</tt></span>');
                             }
@@ -1041,28 +1043,27 @@ function do_cm_custom()
                             lines.push('<hr style="margin: 0">');
 
                             if (token.accessibleName && token.accessibleName !== token.name) {
-                                lines.push('<b>Accessible</b>: ' + token.accessibleName);
+                                lines.push('<div style="margin-top: 6px;"><b>Accessible</b>: <code>' + escapeHTML(token.accessibleName) + '</code></div>');
                             }
 
                             // Iterate over all syntax blocks, if any
                             if (Array.isArray(token.syntaxes) && token.syntaxes.length) {
                                 token.syntaxes.forEach((s, index) => {
                                     if (index > 0) {
-                                        lines.push('<hr style="margin: 0">');
+                                        lines.push('<hr style="margin: 8px 0 6px">');
                                     }
-                                    lines.push('<div style="line-height: 18px; margin-top: -15px;">');
+                                    lines.push('<div style="margin-top: 6px; line-height: 1.4;">');
                                     if (s.description && s.description.length) {
-                                        lines.push('<span>' + formatInlineCodeHTML(s.description) + '</span>');
+                                        lines.push('<div>' + formatInlineCodeHTML(s.description) + '</div>');
                                     }
                                     if (s.syntax && s.syntax !== token.name) {
-                                        lines.push('<b>Syntax</b>: <code><tt>' + s.syntax + '</tt></code>');
+                                        lines.push('<div style="margin-top: 4px;"><b>Syntax</b>: <code><tt>' + escapeHTML(s.syntax) + '</tt></code></div>');
                                     }
                                     if (s.location && Array.isArray(s.location) && s.location.length) {
-                                        lines.push('<b>Location</b>: <tt>' + s.location.join(' ➔ ') + '</tt>');
+                                        lines.push('<div style="margin-top: 4px;"><b>Location</b>: <tt>' + s.location.map((entry) => escapeHTML(entry)).join(' ➔ ') + '</tt></div>');
                                     }
                                     if (s.comment && s.comment.length) {
-                                        lines.push('<hr>');
-                                        lines.push('# ' + s.comment);
+                                        lines.push('<div style="margin-top: 4px; color: #666;"># ' + escapeHTML(s.comment) + '</div>');
                                     }
                                     lines.push('</div>');
                                 });
@@ -1121,16 +1122,17 @@ function do_cm_custom()
         if (editor.state.currentTooltip)  {
             remove(editor.state.currentTooltip);
         }
-        const lines = content.split(/\r\n|\r|\n/).length;
-        const deltaY = (lines > 1) ? 14*lines : 8;
-        editor.state.currentTooltip = makeTooltip(where.left, where.top - where.height - deltaY, content, isHTML);
+        const anchorLeft = where.left + window.pageXOffset;
+        const anchorTop = where.top + window.pageYOffset;
+        const anchorBottom = where.bottom + window.pageYOffset;
+        editor.state.currentTooltip = makeTooltip(anchorLeft, anchorTop, content, isHTML);
         editor.state.currentTooltip.style.pointerEvents = 'none';
         if (isHTML) {
-            editor.state.currentTooltip.style.top = `${where.top - editor.state.currentTooltip.getBoundingClientRect().height + 5}px`;
             editor.state.currentTooltip.style.fontFamily = 'sans-serif';
             editor.state.currentTooltip.style.padding = '8px';
-            editor.state.currentTooltip.style.lineHeight = '5px';
+            editor.state.currentTooltip.style.lineHeight = '1.4';
             editor.state.currentTooltip.style.maxWidth = '600px';
+            editor.state.currentTooltip.style.whiteSpace = 'normal';
         }
         if (highlight)
         {
@@ -1143,6 +1145,13 @@ function do_cm_custom()
                 theme: 'xq-light'
             });
         }
+
+        const tooltipRect = editor.state.currentTooltip.getBoundingClientRect();
+        const topAbove = anchorTop - tooltipRect.height - 6;
+        const topBelow = anchorBottom + 6;
+        editor.state.currentTooltip.style.left = `${anchorLeft}px`;
+        editor.state.currentTooltip.style.top = `${topAbove >= window.pageYOffset + 4 ? topAbove : topBelow}px`;
+
         editor.on('blur', clearTooltip);
         editor.on('scroll', clearTooltip);
 

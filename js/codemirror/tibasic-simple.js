@@ -14,7 +14,7 @@ CodeMirror.defineSimpleMode("tibasic", {
             token: "comment"
         },
         {
-            regex: /→|->/,
+            regex: /→/,
             token: "store"
         },
         {
