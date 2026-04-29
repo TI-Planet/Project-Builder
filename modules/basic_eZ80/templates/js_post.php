@@ -70,6 +70,9 @@ require_once 'utils.php';
         const editorContainer = $('#editorContainer');
         const editorRuntimeSession = beginEditorRuntimeSession();
         const isActiveRuntimeSession = () => isCurrentEditorRuntimeSession(editorRuntimeSession);
+        if (typeof(initBasicExportFormat) === "function") {
+            initBasicExportFormat();
+        }
 
         <?php if ($pm->currentUserHasLiveCollabEditAccess()) { ?>
 

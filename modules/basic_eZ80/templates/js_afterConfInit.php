@@ -67,7 +67,7 @@ if (!isset($pm))
             onEnter: (event) => {
                 if (!inviteNotif)
                 {
-                    inviteNotif = showNotification("info", "File import", "Drop .8xp/.bas files here to import them into the project");
+                    inviteNotif = showNotification("info", "File import", "Drop .8xp/.8xp2/.bas files here to import them into the project");
                     inviteNotif.$ele[0].addEventListener("dragenter", () => { inviteNotif.$ele.hide(); inviteNotif.close() }, false);
                 }
             }

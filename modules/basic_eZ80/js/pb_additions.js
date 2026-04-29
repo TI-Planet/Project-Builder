@@ -26,6 +26,62 @@ var enable_sdk_ctags = true;
 var tokens_json = null;
 var tokens_json_promise = null;
 var lastSavedSource = '';
+var basicExportFormat = '8xp';
+
+function normalizeBasicExportFormat(format)
+{
+    return format === '8xp2' ? '8xp2' : '8xp';
+}
+
+function getBasicExportFormat()
+{
+    return normalizeBasicExportFormat(basicExportFormat);
+}
+
+function setBasicExportFormat(format)
+{
+    basicExportFormat = normalizeBasicExportFormat(format);
+    try {
+        window.localStorage.setItem('pb_basic_ez80_export_format', basicExportFormat);
+    } catch (e) {}
+    const label = document.getElementById('basicExportFormatLabel');
+    if (label) {
+        label.innerText = `.${basicExportFormat}`;
+    }
+    document.querySelectorAll('[data-basic-export-format]').forEach((item) => {
+        const isSelected = item.getAttribute('data-basic-export-format') === basicExportFormat;
+        item.classList.toggle('active', isSelected);
+        const checkmark = item.querySelector('.glyphicon-ok');
+        if (checkmark) {
+            checkmark.style.visibility = isSelected ? 'visible' : 'hidden';
+        }
+    });
+}
+
+function initBasicExportFormat()
+{
+    let storedFormat = '8xp';
+    try {
+        storedFormat = window.localStorage.getItem('pb_basic_ez80_export_format') || storedFormat;
+    } catch (e) {}
+    setBasicExportFormat(storedFormat);
+}
+
+function getTIVarsLibErrorMessage(e)
+{
+    if (typeof TIVarsLib !== 'undefined' && TIVarsLib && typeof TIVarsLib.getExceptionMessage === 'function') {
+        try {
+            const message = TIVarsLib.getExceptionMessage(e);
+            if (Array.isArray(message)) {
+                return message.filter(Boolean).join(': ');
+            }
+            if (message) {
+                return message;
+            }
+        } catch (ignored) {}
+    }
+    return e && e.message ? e.message : String(e);
+}
 
 function uniqueStrings(values)
 {
@@ -507,7 +563,7 @@ function isValidFileName(name)
 
 function isValidFileNameForBinary(name)
 {
-    return /.+\.8[23x]p$/i.test(name);
+    return /.+\.(?:8[23x]p|8xp2)$/i.test(name);
 }
 
 function createFileWithContent(name, content, cb, isLast, numFiles)
@@ -515,7 +571,7 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
     const escapedName = $('<div/>').text(name).html();
     if (isValidFileName(name) || isValidFileNameForBinary(name))
     {
-        // deal with 8xp
+        // deal with calculator var files
         if (isValidFileNameForBinary(name)) {
             if (!TIVarsLib) {
                 alert('tivars_lib not ready?!');
@@ -525,8 +581,18 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
             const options = new TIVarsLib.options_t();
             options.set("prettify", false); // we want maximum roundtrippability
             options.set("reindent", false); // by default, keep it as-is
-            content = TIVarsLib.TIVarFile.loadFromFile(name).getReadableContent(options);
-            TIVarsLib.FS.unlink(name);
+            try {
+                const varFile = TIVarsLib.TIVarFile.loadFromFile(name);
+                if (varFile.isEvoFormat && varFile.isEvoFormat()) {
+                    varFile.convertToModel('84+CE');
+                }
+                content = varFile.getReadableContent(options);
+            } catch (e) {
+                alert(`Unable to import ${name}: ${getTIVarsLibErrorMessage(e)}`);
+                return;
+            } finally {
+                TIVarsLib.FS.unlink(name);
+            }
             if (!content.length) {
                 alert('Program appears to be empty or invalid');
                 return;
@@ -739,35 +805,50 @@ function downloadAccessibleCurrentFile(name)
     return downloadTextFile(getAccessibleSourceDownloadName(name), prgm.getReadableContent(options));
 }
 
-function makeBasicPrgm()
+function makeBasicPrgm(format)
 {
     if (!TIVarsLib) {
         alert('tivars_lib not ready?!');
         return;
     }
 
+    format = normalizeBasicExportFormat(format);
     let prgmSource = cm_getPrgmSourceTrimmed();
 
-    const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
-    prgm.setContentFromString(prgmSource);
-    const filePath = prgm.saveVarToFile("", proj.prgmName);
-    const file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
+    let file;
+    try {
+        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
+        prgm.setContentFromString(prgmSource);
+        if (format === '8xp2') {
+            prgm.convertToModel('84Evo');
+        }
+        const filePath = prgm.saveVarToFile("", proj.prgmName);
+        file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
+    } catch (e) {
+        alert(`Unable to export this program as .${format}: ${getTIVarsLibErrorMessage(e)}`);
+        return;
+    }
     if (!file) {
         alert('Unable to convert the script to a program file - Try a smaller one?');
         return;
     }
-    if (file.byteLength > 65525) {
+    if (format === '8xp' && file.byteLength > 65525) {
         alert('File too big !?');
         return;
     }
     return file;
 }
 
-function downloadBasicPrgm()
+function downloadBasicPrgm(format)
 {
-    const file = makeBasicPrgm();
+    format = normalizeBasicExportFormat(format || getBasicExportFormat());
+    setBasicExportFormat(format);
+    const file = makeBasicPrgm(format);
+    if (!file) {
+        return;
+    }
     const blob = new Blob([file], {type: 'application/octet-stream'});
-    window['saveAs'](blob, `${proj.prgmName}.8xp`);
+    window['saveAs'](blob, `${proj.prgmName}.${format}`);
 }
 
 function transferToEmuAndRun()
@@ -792,7 +873,7 @@ function transferToEmuAndRun()
         }
         $("#buildRunButton").addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
         pauseEmul(false);
-        const file = makeBasicPrgm();
+        const file = makeBasicPrgm('8xp');
         fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
     } else {
         showNotification("danger", "The emulator isn't ready yet", "Did you load a ROM?", null, 10000);
@@ -810,7 +891,7 @@ async function transferToCalc()
         button.addClass("disabled").attr("disabled", true);
         return;
     }
-    const file = makeBasicPrgm();
+    const file = makeBasicPrgm('8xp');
     if (!file) {
         return;
     }

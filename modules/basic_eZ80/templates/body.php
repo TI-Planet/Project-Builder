@@ -10,9 +10,15 @@ HTML,
 <div id="detokHoverText"><span id="detokHoverTextByte"></span><span id="detokHoverTextStr"></span></div>
 HTML,
     'downloadButtonOnclick' => 'downloadBasicPrgm(); return false',
-    'downloadButtonTitle' => 'Convert this code to a program (8xp file)',
-    'downloadButtonLabel' => 'Download program (.8xp)',
+    'downloadButtonTitle' => 'Convert this code to a program file',
+    'downloadButtonLabel' => 'Download program (<span id="basicExportFormatLabel">.8xp</span>)',
     'currentSourceDownloadLabel' => 'Download current source file (.bas)',
+    'preSourceDownloadMenuItemsHtml' => <<<'HTML'
+<li class="dropdown-header">Program download format</li>
+<li data-basic-export-format="8xp"><a onclick="setBasicExportFormat('8xp'); return false"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> .8xp (TI-83/84 CE)</a></li>
+<li data-basic-export-format="8xp2"><a onclick="setBasicExportFormat('8xp2'); return false"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> .8xp2 (TI-84 Evo) <sup><i>Beta</i></sup></a></li>
+<li role="separator" class="divider"></li>
+HTML,
     'extraSourceDownloadMenuItemsHtml' => <<<'HTML'
 <li><a onclick="downloadAccessibleCurrentFile(proj.currFile); return false">Download typable/accessible source code version (.bas)</a></li>
 HTML,

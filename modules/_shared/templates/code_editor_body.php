@@ -13,6 +13,7 @@ $downloadButtonOnclick = $codeEditorConfig['downloadButtonOnclick'];
 $downloadButtonTitle = $codeEditorConfig['downloadButtonTitle'];
 $downloadButtonLabel = $codeEditorConfig['downloadButtonLabel'];
 $currentSourceDownloadLabel = $codeEditorConfig['currentSourceDownloadLabel'];
+$preSourceDownloadMenuItemsHtml = $codeEditorConfig['preSourceDownloadMenuItemsHtml'] ?? '';
 $extraSourceDownloadMenuItemsHtml = $codeEditorConfig['extraSourceDownloadMenuItemsHtml'] ?? '';
 $postDownloadButtonsHtml = $codeEditorConfig['postDownloadButtonsHtml'] ?? '';
 ?>
@@ -86,6 +87,7 @@ $postDownloadButtonsHtml = $codeEditorConfig['postDownloadButtonsHtml'] ?? '';
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
+                <?= $preSourceDownloadMenuItemsHtml ?>
                 <li><a onclick="downloadCurrentFile(proj.currFile); return false"><?= $currentSourceDownloadLabel ?></a></li>
                 <?= $extraSourceDownloadMenuItemsHtml ?>
                 <li role="separator" class="divider"></li>
