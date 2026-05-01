@@ -451,7 +451,7 @@ function do_cm_custom()
                 prgmSource += cleanedLine + '\n';
             }
         }
-        return prgmSource.trimEnd();
+        return prgmSource.endsWith('\n') ? prgmSource.slice(0, -1) : prgmSource;
     };
 
     const getPrgmHexSnapshot = () => {
