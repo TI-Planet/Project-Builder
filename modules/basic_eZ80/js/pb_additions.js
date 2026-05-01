@@ -27,6 +27,51 @@ var tokens_json = null;
 var tokens_json_promise = null;
 var lastSavedSource = '';
 var basicExportFormat = '8xp';
+const basicSignatureHelpStorageKey = 'pb_basic_ez80_signature_help_enabled';
+
+function isBasicSignatureHelpEnabled()
+{
+    try {
+        return window.localStorage.getItem(basicSignatureHelpStorageKey) !== '0';
+    } catch (e) {
+        return true;
+    }
+}
+
+function setBasicSignatureHelpEnabled(enabled)
+{
+    try {
+        window.localStorage.setItem(basicSignatureHelpStorageKey, enabled ? '1' : '0');
+    } catch (e) {}
+    window.dispatchEvent(new CustomEvent('pb-basic-signature-help-setting-change', {
+        detail: { enabled: enabled }
+    }));
+}
+
+function getEditorPreferencesHTML()
+{
+    return `
+        <h4 style="margin-top:0;">Preferences</h4>
+        <div class="checkbox" style="margin-bottom:15px;">
+            <label>
+                <input type="checkbox" id="basicSignatureHelpEnabled">
+                Show automatic signature help popups
+            </label>
+        </div>
+    `;
+}
+
+function setupEditorPreferencesUI(root)
+{
+    const signatureHelpCheckbox = (root || document).querySelector('#basicSignatureHelpEnabled');
+    if (!signatureHelpCheckbox) {
+        return;
+    }
+    signatureHelpCheckbox.checked = isBasicSignatureHelpEnabled();
+    signatureHelpCheckbox.addEventListener('change', () => {
+        setBasicSignatureHelpEnabled(signatureHelpCheckbox.checked);
+    });
+}
 
 function normalizeBasicExportFormat(format)
 {

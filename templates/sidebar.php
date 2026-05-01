@@ -167,7 +167,7 @@ function genSidebar()
                         <div class="modal-content">
                             <div class="modal-header" style="border: 0; padding-bottom: 5px;">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myKeybindingsModalLabel">Editor key bindings</h4>
+                                <h4 class="modal-title" id="myKeybindingsModalLabel">Editor preferences and key bindings</h4>
                             </div>
                             <div class="modal-body" style="border-bottom: 1px #eee solid;">
             

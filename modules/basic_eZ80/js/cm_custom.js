@@ -151,6 +151,11 @@ function do_cm_custom()
     };
 
     const updateSignatureHelp = () => {
+        if (typeof isBasicSignatureHelpEnabled === 'function' && !isBasicSignatureHelpEnabled()) {
+            clearSignatureHelp();
+            return;
+        }
+
         if (!window.tokens_json?.byBytes) {
             if (typeof ensureTokensJSONLoaded === 'function') {
                 ensureTokensJSONLoaded().then(() => updateSignatureHelp()).catch(() => {});
@@ -797,6 +802,13 @@ function do_cm_custom()
     editor.on("cursorActivity", debouncedUpdateSignatureHelp);
     editor.on("change", debouncedUpdateSignatureHelp);
     editor.on("blur", clearSignatureHelp);
+    window.addEventListener('pb-basic-signature-help-setting-change', (event) => {
+        if (event.detail?.enabled) {
+            debouncedUpdateSignatureHelp();
+        } else {
+            clearSignatureHelp();
+        }
+    });
     debouncedUpdateSignatureHelp();
 
     editor.on("mousedown", (cm, e) => {

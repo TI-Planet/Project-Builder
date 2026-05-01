@@ -46,7 +46,7 @@ function loadProjConfig()
     if (typeof editor === "object")
     {
         $("#customExtraSBButton").html('<span class="glyphicon glyphicon-question-sign"></span>')
-            .attr("title", "Editor key bindings & credits")
+            .attr("title", "Editor preferences, key bindings & credits")
             .on("click", showKeybindings)
             .show();
     }
@@ -301,6 +301,10 @@ function showKeybindings()
     Object.keys(orderedKM).forEach( (key) => {
         keymapHTML += key.split("-").map( (txt) => `<span class="calcButton"><tt>${txt}</tt></span>` ).join("") + ` : ${orderedKM[key]}<br/>`;
     });
-    modal.find("div.modal-body").eq(0).html(`<div style='max-height:300px;overflow-y:scroll;'>${keymapHTML}</div>`);
+    const editorPreferencesHTML = (typeof getEditorPreferencesHTML === "function") ? getEditorPreferencesHTML() : '';
+    modal.find("div.modal-body").eq(0).html(`${editorPreferencesHTML}<h4 style="margin-top:0;">Key bindings</h4><div style='max-height:300px;overflow-y:scroll;'>${keymapHTML}</div>`);
+    if (typeof setupEditorPreferencesUI === "function") {
+        setupEditorPreferencesUI(modal[0]);
+    }
     modal.appendTo("body").modal();
 }
