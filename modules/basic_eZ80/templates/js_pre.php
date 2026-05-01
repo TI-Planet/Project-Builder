@@ -60,7 +60,10 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
     <script src="<?= cacheBusterPath("js/FileSaver.min.js") ?>"></script>
     <script type="module">
         import TIVarsLib from '<?= cacheBusterPath("./modules/_shared/TIVarsLib.js") ?>';
-        window.TIVarsLib = await TIVarsLib();
+        const tivarsLibWasmUrl = <?= json_encode(cacheBusterPath("./modules/_shared/TIVarsLib.wasm")) ?>;
+        window.TIVarsLib = await TIVarsLib({
+            locateFile: (path, prefix) => path === 'TIVarsLib.wasm' ? tivarsLibWasmUrl : prefix + path
+        });
         setTimeout(function() { if (refreshHexViewerContents) refreshHexViewerContents(); }, 1);
         setTimeout(function() { if (updateProgramByteSize) updateProgramByteSize(); }, 1);
     </script>
