@@ -865,7 +865,7 @@ function makeBasicPrgm(format)
         const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
         prgm.setContentFromString(prgmSource);
         if (format === '8xp2') {
-            prgm.convertToModel('84Evo');
+            prgm.convertToModel('84Evo', true);
         }
         const filePath = prgm.saveVarToFile("", proj.prgmName);
         file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
