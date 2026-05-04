@@ -20,6 +20,7 @@ var build_output = [];
 var build_check  = [];
 var code_analysis = [];
 var lastSavedSource = '';
+const PB_DARK_THEME_STORAGE_KEY = "pb_use_dark";
 
 function loadProjConfig()
 {
@@ -28,7 +29,6 @@ function loadProjConfig()
     {
         // Overwrite some custom properties
         const conf = JSON.parse(lsConfig);
-        if (typeof conf.use_dark !== "undefined") { proj.use_dark = conf.use_dark; }
         if (typeof conf.show_left_sidebar !== "undefined") { proj.show_left_sidebar = conf.show_left_sidebar; }
         if (typeof conf.show_right_sidebar !== "undefined") { proj.show_right_sidebar = conf.show_right_sidebar; }
         if (typeof conf.show_bottom_tools !== "undefined") { proj.show_bottom_tools = conf.show_bottom_tools; }
@@ -73,9 +73,7 @@ function editorPostSetupAlways()
 
 function editorPostSetup()
 {
-    if (proj.use_dark === true) {
-        toggleDarkTheme();
-    }
+    setDarkTheme(getDarkThemePreference() === true, false);
     if (proj.show_left_sidebar === false) {
         toggleLeftSidebar(0);
     }
@@ -88,7 +86,9 @@ function editorPostSetup()
 function saveProjConfig()
 {
     proj.updated = new Date().getTime();
-    localStorage.setItem(`config_${proj.pid}`, JSON.stringify(proj));
+    const conf = Object.assign({}, proj);
+    delete conf.use_dark;
+    localStorage.setItem(`config_${proj.pid}`, JSON.stringify(conf));
 }
 
 function refreshSharingModeFormVisibility()
@@ -268,12 +268,69 @@ function toggleBottomTools(delay)
 
 function toggleDarkTheme()
 {
+    setDarkTheme(!isDarkThemeEnabled(), true);
+}
+
+function isDarkThemeEnabled()
+{
+    return $(".darkThemeLink").filter((idx, el) => !!$(el).attr("href")).length > 0;
+}
+
+function setDarkTheme(enabled, savePreference)
+{
     $(".darkThemeLink").each((idx, el) => {
         const darkThemeLink = $(el);
-        darkThemeLink.attr("href", darkThemeLink.attr("href") ? "" : darkThemeLink.data("href"));
+        darkThemeLink.attr("href", enabled ? darkThemeLink.data("href") : "");
     });
-    proj.use_dark = !!($(".darkThemeLink").attr('href'));
-    saveProjConfig();
+    proj.use_dark = enabled;
+
+    if (savePreference) {
+        localStorage.setItem(PB_DARK_THEME_STORAGE_KEY, enabled ? "1" : "0");
+    }
+}
+
+function getDarkThemePreference()
+{
+    const storedValue = localStorage.getItem(PB_DARK_THEME_STORAGE_KEY);
+    if (storedValue !== null) {
+        return storedValue === "1" || storedValue === "true";
+    }
+
+    return migrateProjectDarkThemePreference();
+}
+
+function migrateProjectDarkThemePreference()
+{
+    let migratedPreference = null;
+    let latestUpdate = -1;
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || key.indexOf("config_") !== 0) {
+            continue;
+        }
+
+        try {
+            const conf = JSON.parse(localStorage.getItem(key));
+            if (typeof conf.use_dark !== "boolean") {
+                continue;
+            }
+
+            const confUpdated = typeof conf.updated === "number" ? conf.updated : 0;
+            if (confUpdated >= latestUpdate) {
+                migratedPreference = conf.use_dark;
+                latestUpdate = confUpdated;
+            }
+        } catch (e) {
+            // Ignore invalid legacy project config entries.
+        }
+    }
+
+    if (migratedPreference !== null) {
+        localStorage.setItem(PB_DARK_THEME_STORAGE_KEY, migratedPreference ? "1" : "0");
+    }
+
+    return migratedPreference;
 }
 
 /* Adapted from https://gist.github.com/anaran/9198993 */
