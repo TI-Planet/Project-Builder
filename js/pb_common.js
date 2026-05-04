@@ -34,6 +34,7 @@ function loadProjConfig()
         if (typeof conf.show_bottom_tools !== "undefined") { proj.show_bottom_tools = conf.show_bottom_tools; }
         if (typeof conf.show_code_outline !== "undefined") { proj.show_code_outline = conf.show_code_outline; }
         if (typeof conf.show_hex_viewer !== "undefined") { proj.show_hex_viewer = conf.show_hex_viewer; }
+        if (typeof conf.show_token_browser !== "undefined") { proj.show_token_browser = conf.show_token_browser; }
         if (typeof conf.cursors !== "undefined") { proj.cursors = conf.cursors; }
         if (typeof conf.autocomplete_delay !== "undefined") { proj.autocomplete_delay = conf.autocomplete_delay; }
     }
@@ -68,6 +69,9 @@ function editorPostSetupAlways()
     }
     if (!proj.is_multi && editorMode === 'tibasic') {
         toggleHexViewer(proj.show_hex_viewer, true);
+    }
+    if (typeof toggleBasicTokenBrowser === "function" && proj.show_token_browser === true) {
+        toggleBasicTokenBrowser(true, true);
     }
 }
 

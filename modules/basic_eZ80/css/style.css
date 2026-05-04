@@ -95,6 +95,22 @@ div.CodeMirror.hasHexViewer div.CodeMirror-code span.markFromToken {
     background-color: #ff7f7f;
 }
 
+div.CodeMirror.hasTokenBrowser,
+div.CodeMirror.hasTokenBrowser ~ a.powered-by-firepad {
+    margin-right: 250px;
+}
+div.CodeMirror.hasTokenBrowser {
+    border-bottom-right-radius: 0;
+}
+div.CodeMirror.hasOutline.hasTokenBrowser, div.CodeMirror.hasOutline.hasTokenBrowser ~ a.powered-by-firepad,
+div.CodeMirror.hasHexViewer.hasTokenBrowser, div.CodeMirror.hasHexViewer.hasTokenBrowser ~ a.powered-by-firepad {
+    margin-right: 450px;
+}
+div.CodeMirror.hasOutline.hasHexViewer.hasTokenBrowser,
+div.CodeMirror.hasOutline.hasHexViewer.hasTokenBrowser ~ a.powered-by-firepad {
+    margin-right: 650px;
+}
+
 #hexViewer:before {
     content: "Tokenized program (hex):";
     display: block;
@@ -144,7 +160,7 @@ div.CodeMirror.hasHexViewer div.CodeMirror-code span.markFromToken {
     background-color: #c2ddff;
 }
 
-#codeOutline, #hexViewer {
+#codeOutline, #hexViewer, #basicTokenBrowser {
     width: 201px;
     background: #f0f0f0;
     border: 1px solid grey;
@@ -152,6 +168,11 @@ div.CodeMirror.hasHexViewer div.CodeMirror-code span.markFromToken {
     float: right;
     overflow: hidden;
     border-bottom-right-radius: 5px;
+}
+#basicTokenBrowser {
+    width: 251px;
+    font-family: Menlo,Consolas,'Roboto Mono','Droid Sans Mono','Andale Mono',monospace !important;
+    font-size: 9pt;
 }
 #codeOutlineFilter {
     display: inline-block;
@@ -182,6 +203,106 @@ div.CodeMirror.hasHexViewer div.CodeMirror-code span.markFromToken {
     margin-right: 5px;
 }
 
+#basicTokenBrowserToolbar {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+}
+#basicTokenBrowserFilter {
+    flex: 1;
+    min-width: 0;
+    height: 24px;
+    padding: 0 4px;
+    line-height: 15px;
+}
+#basicTokenBrowserCount {
+    padding: 0 5px 2px;
+    color: #666;
+    font-family: sans-serif;
+    font-size: 11px;
+}
+#basicTokenBrowserList {
+    overflow: auto;
+    padding: 0 4px 4px;
+}
+#basicTokenBrowser ul.basicTokenBrowserList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+#basicTokenBrowser .basicTokenBrowserToken {
+    position: relative;
+    margin: 0 0 3px;
+    padding: 3px 4px;
+    border: 1px solid #d5d5d5;
+    background: #fff;
+    cursor: pointer;
+}
+#basicTokenBrowser .basicTokenBrowserToken:hover,
+#basicTokenBrowser .basicTokenBrowserToken:focus {
+    border-color: #7aa7d9;
+    background: #eaf4ff;
+    outline: none;
+}
+#basicTokenBrowser .basicTokenBrowserTokenBytes {
+    display: none;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    max-width: 90px;
+    color: #999;
+    font-size: 10px;
+    line-height: 13px;
+    text-align: right;
+    background: inherit;
+}
+#basicTokenBrowser .basicTokenBrowserToken:hover .basicTokenBrowserTokenBytes,
+#basicTokenBrowser .basicTokenBrowserToken:focus .basicTokenBrowserTokenBytes {
+    display: inline-block;
+}
+#basicTokenBrowser .basicTokenBrowserTokenName {
+    display: inline-block;
+    max-width: calc(100% - 92px);
+    padding: 0 2px;
+    white-space: pre-wrap;
+}
+#basicTokenBrowser .basicTokenBrowserAccessibleName {
+    margin-left: 5px;
+    color: #777;
+    font-size: 11px;
+}
+#basicTokenBrowser .basicTokenBrowserTokenMeta {
+    margin-top: 2px;
+    color: #666;
+    font-family: sans-serif;
+    font-size: 11px;
+    line-height: 1.2;
+}
+#basicTokenBrowser .basicTokenBrowserGroup {
+    margin: 0 0 3px 0;
+}
+#basicTokenBrowser .basicTokenBrowserGroup summary {
+    cursor: pointer;
+    padding: 2px 4px;
+    background: #e4e4e4;
+    border: 1px solid #c0c0c0;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+#basicTokenBrowser .basicTokenBrowserGroup summary span {
+    float: right;
+    color: #777;
+}
+#basicTokenBrowser .basicTokenBrowserGroup .basicTokenBrowserGroup,
+#basicTokenBrowser .basicTokenBrowserGroup .basicTokenBrowserList {
+    margin-left: 9px;
+}
+#basicTokenBrowser .basicTokenBrowserStatus {
+    padding: 8px;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
 /*** Other specific things ***/
 
 #buildTimestampContainer {
@@ -197,4 +318,3 @@ span#buildTimestamp.buildError:before {
     content: '✘ ';
     color: red;
 }
-

@@ -28,6 +28,8 @@ var tokens_json_promise = null;
 var lastSavedSource = '';
 var basicExportFormat = '8xp';
 const basicSignatureHelpStorageKey = 'pb_basic_ez80_signature_help_enabled';
+const basicTokenBrowserModeStorageKey = 'pb_basic_ez80_token_browser_mode';
+let basicTokenBrowserTokens = null;
 
 function isBasicSignatureHelpEnabled()
 {
@@ -801,6 +803,288 @@ function getTokensJSON()
     return ensureTokensJSONLoaded();
 }
 
+function escapeBasicTokenBrowserHTML(value)
+{
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function getBasicTokenBrowserMode()
+{
+    try {
+        return window.localStorage.getItem(basicTokenBrowserModeStorageKey) === 'hierarchical' ? 'hierarchical' : 'alphabetical';
+    } catch (e) {
+        return 'alphabetical';
+    }
+}
+
+function setBasicTokenBrowserMode(mode)
+{
+    mode = mode === 'hierarchical' ? 'hierarchical' : 'alphabetical';
+    try {
+        window.localStorage.setItem(basicTokenBrowserModeStorageKey, mode);
+    } catch (e) {}
+    renderBasicTokenBrowser();
+}
+
+function getBasicTokenSortName(token)
+{
+    return (token.name || token.accessibleName || '').trim().toLocaleLowerCase();
+}
+
+function getBasicTokenBrowserSearchText(token)
+{
+    return [
+        token.name,
+        token.accessibleName,
+        token.type,
+        ...(token.categories || []),
+        ...(token.nameVariants || []),
+        ...((token.syntaxes || []).map((syntaxData) => syntaxData.syntax || ''))
+    ].join('\n').toLocaleLowerCase();
+}
+
+function getBasicTokenBrowserDisplayTokens(tokensJSON)
+{
+    if (basicTokenBrowserTokens) {
+        return basicTokenBrowserTokens;
+    }
+
+    basicTokenBrowserTokens = Object.values(tokensJSON.byBytes)
+        .filter((token) => token.bytes !== '0x00')
+        .slice()
+        .sort((a, b) => {
+            const nameCmp = getBasicTokenSortName(a).localeCompare(getBasicTokenSortName(b));
+            return nameCmp || String(a.bytes).localeCompare(String(b.bytes));
+        });
+
+    return basicTokenBrowserTokens;
+}
+
+function getBasicTokenBrowserTokenHTML(token)
+{
+    const primaryCategory = (token.categories || [])[0] || '';
+    const accessibleName = token.accessibleName && token.accessibleName !== token.name
+        ? `<span class="basicTokenBrowserAccessibleName">${escapeBasicTokenBrowserHTML(token.accessibleName)}</span>`
+        : '';
+    const metaParts = [token.type, primaryCategory].filter(Boolean);
+    const titleParts = [
+        token.name,
+        token.accessibleName ? `Accessible: ${token.accessibleName}` : '',
+        token.bytes ? `Bytes: ${token.bytes}` : '',
+        primaryCategory
+    ].filter(Boolean);
+
+    return `<li class="basicTokenBrowserToken" tabindex="0" data-token-bytes="${escapeBasicTokenBrowserHTML(token.bytes)}" title="${escapeBasicTokenBrowserHTML(titleParts.join('\n'))}">` +
+        `<span class="basicTokenBrowserTokenBytes">${escapeBasicTokenBrowserHTML(token.bytes)}</span>` +
+        `<code class="basicTokenBrowserTokenName">${escapeBasicTokenBrowserHTML(token.name)}</code>` +
+        accessibleName +
+        `<div class="basicTokenBrowserTokenMeta">${escapeBasicTokenBrowserHTML(metaParts.join(' · '))}</div>` +
+        `</li>`;
+}
+
+function renderBasicTokenBrowserAlphabetical(tokens)
+{
+    return `<ul class="basicTokenBrowserList">${tokens.map(getBasicTokenBrowserTokenHTML).join('')}</ul>`;
+}
+
+function addTokenToBasicTokenBrowserTree(tree, categoryPath, token)
+{
+    const parts = categoryPath.split(' > ').map((part) => part.trim()).filter(Boolean);
+    let node = tree;
+    parts.forEach((part) => {
+        if (!node.children[part]) {
+            node.children[part] = { children: Object.create(null), tokens: [] };
+        }
+        node = node.children[part];
+    });
+    node.tokens.push(token);
+}
+
+function renderBasicTokenBrowserTreeNode(node, label, depth, forceOpen)
+{
+    const childNames = Object.keys(node.children).sort((a, b) => a.localeCompare(b));
+    const tokensHTML = node.tokens.length
+        ? `<ul class="basicTokenBrowserList">${node.tokens.map(getBasicTokenBrowserTokenHTML).join('')}</ul>`
+        : '';
+    const childrenHTML = childNames.map((childName) =>
+        renderBasicTokenBrowserTreeNode(node.children[childName], childName, depth + 1, forceOpen)
+    ).join('');
+
+    if (label === null) {
+        return tokensHTML + childrenHTML;
+    }
+
+    const tokenCount = countBasicTokenBrowserTreeTokens(node);
+    return `<details class="basicTokenBrowserGroup basicTokenBrowserDepth${depth}" ${forceOpen || depth === 0 ? 'open' : ''}>` +
+        `<summary>${escapeBasicTokenBrowserHTML(label)} <span>${tokenCount}</span></summary>` +
+        tokensHTML +
+        childrenHTML +
+        `</details>`;
+}
+
+function countBasicTokenBrowserTreeTokens(node)
+{
+    return node.tokens.length + Object.values(node.children).reduce((count, child) => {
+        return count + countBasicTokenBrowserTreeTokens(child);
+    }, 0);
+}
+
+function renderBasicTokenBrowserHierarchical(tokens, forceOpen)
+{
+    const tree = { children: Object.create(null), tokens: [] };
+    tokens.forEach((token) => {
+        const categories = token.categories?.length ? token.categories : ['Uncategorized'];
+        categories.forEach((category) => addTokenToBasicTokenBrowserTree(tree, category, token));
+    });
+    return renderBasicTokenBrowserTreeNode(tree, null, -1, forceOpen);
+}
+
+function renderBasicTokenBrowser()
+{
+    const browser = document.getElementById('basicTokenBrowser');
+    if (!browser) {
+        return;
+    }
+
+    const list = browser.querySelector('#basicTokenBrowserList');
+    if (!list) {
+        return;
+    }
+
+    const mode = getBasicTokenBrowserMode();
+    browser.querySelectorAll('[data-basic-token-browser-mode]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.basicTokenBrowserMode === mode);
+    });
+
+    if (!window.tokens_json?.byBytes) {
+        list.innerHTML = '<div class="basicTokenBrowserStatus">Loading tokens...</div>';
+        ensureTokensJSONLoaded()
+            .then(() => { renderBasicTokenBrowser(); })
+            .catch(() => {
+                list.innerHTML = '<div class="basicTokenBrowserStatus text-danger">Unable to load tokens.</div>';
+            });
+        return;
+    }
+
+    const query = (browser.querySelector('#basicTokenBrowserFilter')?.value || '').trim().toLocaleLowerCase();
+    const tokens = getBasicTokenBrowserDisplayTokens(window.tokens_json)
+        .filter((token) => !query || getBasicTokenBrowserSearchText(token).includes(query));
+
+    browser.querySelector('#basicTokenBrowserCount').innerText = `${tokens.length} token${tokens.length === 1 ? '' : 's'}`;
+    list.innerHTML = mode === 'hierarchical'
+        ? renderBasicTokenBrowserHierarchical(tokens, query.length > 0)
+        : renderBasicTokenBrowserAlphabetical(tokens);
+}
+
+function createBasicTokenBrowserIfNeeded()
+{
+    if (document.getElementById('basicTokenBrowser')) {
+        return true;
+    }
+
+    const firepad = $("div.firepad").eq(0);
+    if (!firepad.length) {
+        return false;
+    }
+
+    firepad.prepend(
+        '<div id="basicTokenBrowser" style="display:none">' +
+            '<div id="basicTokenBrowserToolbar">' +
+                '<input id="basicTokenBrowserFilter" type="text" placeholder="Filter tokens...">' +
+                '<div class="btn-group btn-group-xs" role="group">' +
+                    '<button type="button" class="btn btn-default" data-basic-token-browser-mode="alphabetical" title="Alphabetical">A-Z</button>' +
+                    '<button type="button" class="btn btn-default" data-basic-token-browser-mode="hierarchical" title="Hierarchical">Tree</button>' +
+                '</div>' +
+            '</div>' +
+            '<div id="basicTokenBrowserCount"></div>' +
+            '<div id="basicTokenBrowserList"></div>' +
+        '</div>'
+    );
+
+    $("#basicTokenBrowserFilter").on("input", debounce(renderBasicTokenBrowser, 50));
+    $("#basicTokenBrowser").on("click", "[data-basic-token-browser-mode]", function() {
+        setBasicTokenBrowserMode(this.dataset.basicTokenBrowserMode);
+    });
+    $("#basicTokenBrowser").on("click keydown", ".basicTokenBrowserToken", function(e) {
+        if (e.type === "keydown" && !["Enter", " "].includes(e.key)) {
+            return;
+        }
+        e.preventDefault();
+        insertBasicTokenFromBrowser(this.dataset.tokenBytes);
+    });
+
+    renderBasicTokenBrowser();
+    return true;
+}
+
+function recalcBasicTokenBrowserSize()
+{
+    const browser = document.getElementById("basicTokenBrowser");
+    const divFirepad = document.querySelector("div.firepad");
+    if (!browser || !divFirepad) { return; }
+
+    const finalHeight = divFirepad.offsetHeight;
+    browser.style.height = finalHeight + "px";
+    const toolbarHeight = document.getElementById("basicTokenBrowserToolbar").offsetHeight;
+    const countHeight = document.getElementById("basicTokenBrowserCount").offsetHeight;
+    document.getElementById("basicTokenBrowserList").style.height = `${finalHeight - toolbarHeight - countHeight - 4}px`;
+}
+
+function refreshBasicTokenBrowserSize()
+{
+    const browser = document.getElementById("basicTokenBrowser");
+    if (browser && $(browser).is(":visible")) {
+        browser.style.display = "none";
+        recalcBasicTokenBrowserSize();
+        browser.style.display = "block";
+        recalcBasicTokenBrowserSize();
+    }
+}
+
+function insertBasicTokenFromBrowser(bytes)
+{
+    const token = window.tokens_json?.byBytes?.[bytes];
+    if (!token || typeof editor !== "object" || editor.isReadOnly()) {
+        return;
+    }
+    editor.replaceSelection(token.name || token.accessibleName || '');
+    editor.focus();
+}
+
+function toggleBasicTokenBrowser(show, auto)
+{
+    if (auto === undefined) { auto = false; }
+    if (!createBasicTokenBrowserIfNeeded()) {
+        return;
+    }
+
+    recalcBasicTokenBrowserSize();
+
+    const browser = $("#basicTokenBrowser");
+    if (browser.is(":visible"))
+    {
+        if (typeof(show) === "boolean" && show) { return; }
+        $("#basicTokenBrowserToggleButton").css('background-color', 'white');
+    } else {
+        if (typeof(show) === "boolean" && !show) { return; }
+        $("#basicTokenBrowserToggleButton").css('background-color', '#CACBC7');
+    }
+
+    browser.toggle();
+    $("div.CodeMirror").toggleClass("hasTokenBrowser");
+    proj.show_token_browser = browser.is(":visible");
+    if (proj.show_token_browser) {
+        renderBasicTokenBrowser();
+        recalcBasicTokenBrowserSize();
+    }
+    if (!auto) { saveProjConfig(); }
+}
+
 function downloadCurrentFile(name)
 {
     name = (typeof(name) === 'undefined') ? prompt('Name of the file') : proj.currFile;
@@ -998,6 +1282,7 @@ window.addEventListener('resize', () => {
     $(".CodeMirror-merge, .CodeMirror-merge .CodeMirror").css("height", (.75*($(document).height()))+'px');
     refreshOutlineSize();
     refreshHexViewerSize();
+    refreshBasicTokenBrowserSize();
 });
 
 window.addEventListener('keydown', (event) => {

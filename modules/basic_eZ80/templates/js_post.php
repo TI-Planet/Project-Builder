@@ -142,6 +142,9 @@ require_once 'utils.php';
                 $("#hexViewer,#detokHoverText").appendTo($("#codeOutline").parent())
                 toggleOutline(proj.show_code_outline, true);
                 toggleHexViewer(proj.show_hex_viewer, true);
+                if (typeof(toggleBasicTokenBrowser) === "function" && proj.show_token_browser === true) {
+                    toggleBasicTokenBrowser(true, true);
+                }
             }
         });
         const createOrResetFirepad = registerCollaborativeFirepadGlobals({

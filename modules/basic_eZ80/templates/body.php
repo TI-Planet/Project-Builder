@@ -2,6 +2,7 @@
 $codeEditorConfig = [
     'editorUtilityButtonsHtml' => <<<'HTML'
 <li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to toggle the hex viewer"><a id="hexViewerToggleButton" style="color: #337ab7;" href="#" onclick="toggleHexViewer(); return false;"><span class="glyphicon glyphicon-sunglasses"></span></a></li>
+<li class="active pull-right hasTooltip" style="margin-right:-2px;margin-left:3px;" data-placement="top" title="Click to toggle the token browser"><a id="basicTokenBrowserToggleButton" style="color: #337ab7;" href="#" onclick="toggleBasicTokenBrowser(); return false;"><span class="glyphicon glyphicon-list-alt"></span></a></li>
 HTML,
     'showReformatButton' => true,
     'showCanonicalizeButton' => true,

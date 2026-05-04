@@ -525,10 +525,16 @@ function do_cm_custom()
     }
 
     hexViewer.on("mouseover", () => {
-        const codeOutlineStyle = window.getComputedStyle(document.getElementById('codeOutline'));
-        const codeOutlineIsVisible = codeOutlineStyle.display !== 'none';
+        const rightSidePanelWidth = ['codeOutline', 'basicTokenBrowser'].reduce((width, id) => {
+            const panel = document.getElementById(id);
+            if (!panel) {
+                return width;
+            }
+            const panelStyle = window.getComputedStyle(panel);
+            return panelStyle.display !== 'none' ? width + panel.offsetWidth : width;
+        }, 0);
         detokHoverText.style.display = 'block';
-        detokHoverText.style.right = codeOutlineIsVisible ? codeOutlineStyle.width : "1px";
+        detokHoverText.style.right = rightSidePanelWidth > 0 ? `${rightSidePanelWidth}px` : "1px";
     });
     hexViewer.on("mouseout", () => { detokHoverText.style.display = 'none'; });
     hexViewer.on("mouseover", "div[data-twobytes],>span.hexCode[data-byte]", function(e) {
