@@ -613,9 +613,20 @@ function isValidFileNameForBinary(name)
     return /.+\.(?:8[23x]p|8xp2)$/i.test(name);
 }
 
+function getNextAvailableBasicImportFileName()
+{
+    const existingFiles = new Set((proj.files || []).map((fileName) => fileName.toLowerCase()));
+    let index = 1;
+    let candidate;
+    do {
+        candidate = `SRC${index}.bas`;
+        index++;
+    } while (existingFiles.has(candidate.toLowerCase()));
+    return candidate;
+}
+
 function createFileWithContent(name, content, cb, isLast, numFiles)
 {
-    const escapedName = $('<div/>').text(name).html();
     if (isValidFileName(name) || isValidFileNameForBinary(name))
     {
         // deal with calculator var files
@@ -647,7 +658,7 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
                 alert('[Error] This is a squished ASM program, cannot import it!');
                 return;
             }
-            name = `SRC${proj.files.length + 1}.bas`;
+            name = getNextAvailableBasicImportFileName();
 
             // If the current file is empty (or just the placeholer), just drop the new content into it.
             const editorContent = editor.getValue().trim();
@@ -685,10 +696,12 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
                 }, () => { showNotification("danger", 'Oops?', 'An error happened, retry?'); cb(name) });
             }
         } else {
+            const escapedName = $('<div/>').text(name).html();
             showNotification("warning", "File not imported", `'${escapedName}' already exists in the project`, null, 10000);
             if (typeof(cb) === "function") { cb(name); }
         }
     } else {
+        const escapedName = $('<div/>').text(name).html();
         showNotification("warning", "File not imported", `'${escapedName}' is not a valid name (Chars: A-Z,0-9 Extension: bas)`, null, 10000);
         if (typeof(cb) === "function") { cb(name); }
     }
