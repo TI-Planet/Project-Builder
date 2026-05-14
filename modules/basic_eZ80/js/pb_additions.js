@@ -639,12 +639,19 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
             const options = new TIVarsLib.options_t();
             options.set("prettify", false); // we want maximum roundtrippability
             options.set("reindent", false); // by default, keep it as-is
+            let nameOverride = null;
             try {
                 const varFile = TIVarsLib.TIVarFile.loadFromFile(name);
-                if (varFile.isEvoFormat && varFile.isEvoFormat()) {
-                    varFile.convertToModel('84+CE');
-                }
                 content = varFile.getReadableContent(options);
+                if (varFile.isEvoFormat && varFile.isEvoFormat()) {
+                    const evoJSON = JSON.parse(content);
+                    if (!evoJSON) { throw new Error('Invalid Evo format'); }
+                    if (evoJSON?.typeName !== 'Program') { throw new Error('Not an Evo program'); }
+                    content = evoJSON.code;
+                    if (isValidFileName(evoJSON.name + '.bas')) {
+                        nameOverride = evoJSON.name + '.bas';
+                    }
+                }
             } catch (e) {
                 alert(`Unable to import ${name}: ${getTIVarsLibErrorMessage(e)}`);
                 return;
@@ -658,7 +665,7 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
                 alert('[Error] This is a squished ASM program, cannot import it!');
                 return;
             }
-            name = getNextAvailableBasicImportFileName();
+            name = nameOverride ?? getNextAvailableBasicImportFileName();
 
             // If the current file is empty (or just the placeholer), just drop the new content into it.
             const editorContent = editor.getValue().trim();
@@ -1159,11 +1166,9 @@ function makeBasicPrgm(format)
 
     let file;
     try {
-        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
+        const model = format === '8xp2' ? '84Evo' : '84+CE';
+        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, model);
         prgm.setContentFromString(prgmSource);
-        if (format === '8xp2') {
-            prgm.convertToModel('84Evo', true);
-        }
         const filePath = prgm.saveVarToFile("", proj.prgmName);
         file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
     } catch (e) {
