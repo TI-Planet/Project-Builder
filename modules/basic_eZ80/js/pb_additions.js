@@ -1136,14 +1136,16 @@ function getAccessibleSourceDownloadName(name)
 
 function downloadAccessibleCurrentFile(name)
 {
-    name = (typeof(name) === 'undefined') ? prompt('Name of the file') : proj.currFile;
+    const currPrgmName = proj.currFile.split(".")[0];
+
+    name = (typeof(name) === 'undefined') ? prompt('Name of the file') : currPrgmName;
     if (name === null) { return false; }
     if (!TIVarsLib) {
         alert('tivars_lib not ready?!');
         return false;
     }
 
-    const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, '84+CE');
+    const prgm = TIVarsLib.TIVarFile.createNew("Program", currPrgmName, '84+CE');
     prgm.setContentFromString(cm_getPrgmSourceTrimmed());
 
     const options = new TIVarsLib.options_t();
@@ -1166,10 +1168,11 @@ function makeBasicPrgm(format)
 
     let file;
     try {
+        const currPrgmName = proj.currFile.split(".")[0];
         const model = format === '8xp2' ? '84Evo' : '84+CE';
-        const prgm = TIVarsLib.TIVarFile.createNew("Program", proj.prgmName, model);
+        const prgm = TIVarsLib.TIVarFile.createNew("Program", currPrgmName, model);
         prgm.setContentFromString(prgmSource);
-        const filePath = prgm.saveVarToFile("", proj.prgmName);
+        const filePath = prgm.saveVarToFile("", currPrgmName);
         file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
     } catch (e) {
         alert(`Unable to export this program as .${format}: ${getTIVarsLibErrorMessage(e)}`);
@@ -1194,8 +1197,9 @@ function downloadBasicPrgm(format)
     if (!file) {
         return;
     }
+    const currPrgmName = proj.currFile.split(".")[0];
     const blob = new Blob([file], {type: 'application/octet-stream'});
-    window['saveAs'](blob, `${proj.prgmName}.${format}`);
+    window['saveAs'](blob, `${currPrgmName}.${format}`);
 }
 
 function transferToEmuAndRun()
@@ -1211,17 +1215,19 @@ function transferToEmuAndRun()
             $("#buildRunButton").removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
         }
         window.emul_file_load_done_extcb = function() {
-            console.log(`[PB] launching on CEmu: prgm${proj.prgmName} ...`);
+            const currPrgmName = proj.currFile.split(".")[0];
+            console.log(`[PB] launching on CEmu: prgm${currPrgmName} ...`);
             setTimeout(() => { sendKey(0xDA); }, 100); // prgm
-            setTimeout(() => { sendStringKeyPress(proj.prgmName); }, 800);
-            setTimeout(() => { sendKey(0x05); }, 500 + 300 * proj.prgmName.length); // Enter
+            setTimeout(() => { sendStringKeyPress(currPrgmName); }, 800);
+            setTimeout(() => { sendKey(0x05); }, 500 + 300 * currPrgmName.length); // Enter
             setTimeout(() => { $("#buildRunButton").removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden"); }, 2500);
             window.emul_file_load_error_extcb = window.emul_file_load_done_extcb = null;
         }
         $("#buildRunButton").addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
         pauseEmul(false);
         const file = makeBasicPrgm('8xp');
-        fileLoad(new Blob([file], {type: "application/octet-stream"}), `${proj.prgmName}.8xp`, false);
+        const currPrgmName = proj.currFile.split(".")[0];
+        fileLoad(new Blob([file], {type: "application/octet-stream"}), `${currPrgmName}.8xp`, false);
     } else {
         showNotification("danger", "The emulator isn't ready yet", "Did you load a ROM?", null, 10000);
     }
