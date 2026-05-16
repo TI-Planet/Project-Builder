@@ -38,7 +38,7 @@ if (!isset($pm))
         let progressNotifMsg = '';
         const progressCallback = (name) => {
             inviteNotif && inviteNotif.close();
-            if (isValidFileName(name) || isValidGfxImageFileName(name))
+            if (isValidFileName(name))
             {
                 lastOKName = name;
                 progressNotifMsg += `${name}, `;

@@ -204,7 +204,7 @@ function deleteCurrentFile()
 {
     if (window.confirm("Do you really want to delete this file?"))
     {
-        if (proj.currFile && (isValidFileName(proj.currFile) || isValidGfxImageFileName(proj.currFile)))
+        if (proj.currFile && isValidFileName(proj.currFile))
         {
             ajaxAction("deleteCurrentFile", `file=${proj.currFile}`, () => {
                 const idx = proj.files.indexOf(proj.currFile);
