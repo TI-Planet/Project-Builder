@@ -95,6 +95,22 @@ div.CodeMirror.hasHexViewer div.CodeMirror-code span.markFromToken {
     background-color: #ff7f7f;
 }
 
+div.CodeMirror span.cm-forced-basic-token,
+div.CodeMirror span.cm-raw-basic-token {
+    border-radius: 2px;
+    cursor: help;
+}
+
+div.CodeMirror span.cm-forced-basic-token {
+    background-color: #fff2b8;
+    border-bottom: 1px dotted #9b6a00;
+}
+
+div.CodeMirror span.cm-raw-basic-token {
+    background-color: #dceeff;
+    border-bottom: 1px dotted #3578a8;
+}
+
 div.CodeMirror.hasTokenBrowser,
 div.CodeMirror.hasTokenBrowser ~ a.powered-by-firepad {
     margin-right: 250px;

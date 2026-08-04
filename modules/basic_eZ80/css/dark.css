@@ -54,6 +54,16 @@ div.filelist .nav-tabs>li>a, #codeOutlineFilter, #basicTokenBrowserFilter {
     border-color: #666;
 }
 
+div.CodeMirror span.cm-forced-basic-token {
+    background-color: #594b20;
+    border-bottom-color: #e2b84d;
+}
+
+div.CodeMirror span.cm-raw-basic-token {
+    background-color: #243f59;
+    border-bottom-color: #6db6e8;
+}
+
 div.filelist .nav-tabs>li.active.tabover > a {
     border-bottom: 1px #2b2b2b solid !important;
     color: #999;

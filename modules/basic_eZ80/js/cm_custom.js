@@ -19,6 +19,7 @@ function do_cm_custom()
 {
     let widgets = [];
     let signatureHelpNode = null;
+    let tokenEscapeMarks = [];
 
     const escapeHTML = (str) => String(str ?? '')
         .replace(/&/g, '&amp;')
@@ -28,6 +29,107 @@ function do_cm_custom()
         .replace(/'/g, '&#39;');
 
     const formatInlineCodeHTML = (str) => escapeHTML(str).replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    const clearForcedTokenMarks = () => {
+        tokenEscapeMarks.forEach((mark) => mark.clear());
+        tokenEscapeMarks = [];
+    };
+
+    const isRawTokenEscape = (text) => /^\\x[0-9a-f]{2}$/i.test(text)
+        || /^\\u[0-9a-f]{4}$/i.test(text);
+
+    const advanceSourcePosition = (text, pos) => {
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === '\n') {
+                pos.line++;
+                pos.ch = 0;
+            } else {
+                pos.ch++;
+            }
+        }
+    };
+
+    refreshForcedTokenMarks = () => {
+        clearForcedTokenMarks();
+        if (!window.TIVarsLib || typeof TIVarsLib.TH_Tokenized_scanSourceTokens !== 'function') {
+            return;
+        }
+
+        const scanned = TIVarsLib.TH_Tokenized_scanSourceTokens(editor.getValue(), true);
+        const pos = { line: 0, ch: 0 };
+        try {
+            editor.operation(() => {
+                for (let i = 0; i < scanned.size(); i++) {
+                    const item = scanned.get(i);
+                    const from = { line: pos.line, ch: pos.ch };
+                    advanceSourcePosition(item.text, pos);
+                    const to = { line: pos.line, ch: pos.ch };
+                    let highlightedText = item.text;
+                    let highlightedToken = item.token;
+                    const isRawEscape = item.matched && isRawTokenEscape(item.text);
+                    let isNamedEquationToken = false;
+
+                    /* In equation-bound quoted text, the scanner deliberately emits a token-boundary
+                     * backslash separately from the following max-munched token. Plain strings emit
+                     * a forced named escape as one matched item; that is not the equation case marked
+                     * here. Raw numeric escapes remain self-contained and are always marked. */
+                    if (!isRawEscape && !item.matched && item.text === '\\' && i + 1 < scanned.size()) {
+                        const nextItem = scanned.get(i + 1);
+                        const candidateTo = { line: pos.line, ch: pos.ch };
+                        advanceSourcePosition(nextItem.text, candidateTo);
+                        if (nextItem.matched && !nextItem.text.startsWith('\\')
+                            && from.line === candidateTo.line) {
+                            highlightedText += nextItem.text;
+                            highlightedToken = nextItem.token;
+                            to.line = candidateTo.line;
+                            to.ch = candidateTo.ch;
+                            pos.line = candidateTo.line;
+                            pos.ch = candidateTo.ch;
+                            isNamedEquationToken = true;
+                            i++;
+                        }
+                    }
+
+                    if ((!isRawEscape && !isNamedEquationToken) || from.line !== to.line) {
+                        continue;
+                    }
+
+                    const tokenType = editor.getTokenTypeAt({ line: from.line, ch: from.ch + 1 }) || '';
+                    if (tokenType.split(/\s+/).includes('comment')) {
+                        continue;
+                    }
+
+                    const tokenName = TIVarsLib.TH_Tokenized_oneTokenBytesToString(highlightedToken) || highlightedText.substring(1);
+                    const tokenHex = Number(highlightedToken).toString(16).toUpperCase().padStart(highlightedToken > 0xFF ? 4 : 2, '0');
+                    let warning;
+                    if (/^\\x/i.test(highlightedText)) {
+                        warning = `Legacy calculator token escape: ${highlightedText} (${tokenHex}; ${tokenName}). `
+                            + 'This encodes an 8-bit legacy token value. Evo export warns and converts it through its legacy-token mapping; prefer a named escape when one is available.';
+                    } else if (isRawEscape) {
+                        warning = `16-bit calculator token escape: ${highlightedText} (${tokenHex}; ${tokenName}). `
+                            + 'This encodes an explicit 16-bit token value; prefer a named escape when a readable name is available.';
+                    } else {
+                        warning = `Named calculator token: ${tokenName} (${tokenHex}). `
+                            + 'This quoted text is stored directly in an equation variable, so token max-munching applies; the backslash marks the following calculator token explicitly.';
+                    }
+                    tokenEscapeMarks.push(editor.markText(from, to, {
+                        className: isRawEscape ? 'cm-raw-basic-token' : 'cm-forced-basic-token',
+                        title: warning,
+                        attributes: {
+                            'aria-label': warning,
+                            'data-basic-token-escape': isRawEscape ? 'raw' : 'named',
+                            'data-basic-token-name': tokenName,
+                            'data-basic-token-bytes': tokenHex
+                        }
+                    }));
+                }
+            });
+        } finally {
+            scanned.delete();
+        }
+    };
+
+    const debouncedRefreshForcedTokenMarks = debounce(refreshForcedTokenMarks, 50);
 
     const clearSignatureHelp = () => {
         if (signatureHelpNode) {
@@ -1123,6 +1225,7 @@ function do_cm_custom()
         if (saveButton) saveButton.disabled = false;
         debouncedRefreshHexViewerContents();
         debouncedUpdateProgramByteSize();
+        debouncedRefreshForcedTokenMarks();
     });
 
     // Tooltips (inspired from Tern)

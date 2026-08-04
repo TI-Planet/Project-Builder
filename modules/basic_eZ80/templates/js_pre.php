@@ -67,6 +67,7 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
         });
         setTimeout(function() { if (refreshHexViewerContents) refreshHexViewerContents(); }, 1);
         setTimeout(function() { if (updateProgramByteSize) updateProgramByteSize(); }, 1);
+        setTimeout(function() { if (refreshForcedTokenMarks) refreshForcedTokenMarks(); }, 1);
     </script>
 <?php } ?>
 

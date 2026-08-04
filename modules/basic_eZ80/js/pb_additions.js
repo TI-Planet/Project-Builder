@@ -1072,7 +1072,11 @@ function insertBasicTokenFromBrowser(bytes)
     if (!token || typeof editor !== "object" || editor.isReadOnly()) {
         return;
     }
-    editor.replaceSelection(token.name || token.accessibleName || '');
+    const tokenSource = token.name || token.accessibleName || '';
+    const cursor = editor.getCursor();
+    const tokenType = editor.getTokenTypeAt(cursor) || '';
+    const forceToken = tokenType.split(/\s+/).includes('string');
+    editor.replaceSelection((forceToken ? '\\' : '') + tokenSource);
     editor.focus();
 }
 
@@ -1156,6 +1160,26 @@ function downloadAccessibleCurrentFile(name)
     return downloadTextFile(getAccessibleSourceDownloadName(name), prgm.getReadableContent(options));
 }
 
+function basicSourceHasLegacyByteEscapes(source)
+{
+    if (typeof TIVarsLib.TH_Tokenized_scanSourceTokens !== 'function') {
+        return false;
+    }
+
+    const scanned = TIVarsLib.TH_Tokenized_scanSourceTokens(source, true);
+    try {
+        for (let i = 0; i < scanned.size(); i++) {
+            const item = scanned.get(i);
+            if (item.matched && /^\\x[0-9a-f]{2}$/i.test(item.text)) {
+                return true;
+            }
+        }
+    } finally {
+        scanned.delete();
+    }
+    return false;
+}
+
 function makeBasicPrgm(format)
 {
     if (!TIVarsLib) {
@@ -1165,6 +1189,10 @@ function makeBasicPrgm(format)
 
     format = normalizeBasicExportFormat(format);
     let prgmSource = cm_getPrgmSourceTrimmed();
+    if (format === '8xp2' && basicSourceHasLegacyByteEscapes(prgmSource)
+        && !confirm('This source uses \\xNN legacy 8-bit token escapes. TI-84 Evo programs use 16-bit tokens, so these values must be converted through the legacy-to-Evo mapping and may be ambiguous.\n\nUse named escapes or \\uNNNN when possible. Export the .8xp2 anyway?')) {
+        return;
+    }
 
     let file;
     try {
