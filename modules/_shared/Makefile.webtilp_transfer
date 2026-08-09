@@ -1,0 +1,62 @@
+# Build the compact Project Builder sender against the sibling tilibs checkout.
+
+EMXX ?= em++
+THIS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+REPO_DIR := $(abspath $(THIS_DIR)/../../..)
+TILIBS_DIR ?= $(abspath $(REPO_DIR)/../../tilibs)
+BUILD_DIR := $(TILIBS_DIR)/build-emscripten
+
+LIBTICABLES_DIR := $(TILIBS_DIR)/libticables/trunk
+LIBTICALCS_DIR := $(TILIBS_DIR)/libticalcs/trunk
+LIBTIFILES_DIR := $(TILIBS_DIR)/libtifiles/trunk
+LIBTICONV_DIR := $(TILIBS_DIR)/libticonv/trunk
+LIBUSB_DIR := $(TILIBS_DIR)/libusb
+GLIB_DIR := $(TILIBS_DIR)/glib-emscripten-built
+
+TARGET := $(THIS_DIR)/webtilp_transfer_module.js
+SOURCE := $(THIS_DIR)/webtilp_transfer.cpp
+
+INCLUDES := \
+	-I$(LIBTICABLES_DIR)/src \
+	-I$(LIBTICALCS_DIR)/src \
+	-I$(LIBTIFILES_DIR)/src \
+	-I$(LIBTICONV_DIR)/src \
+	-I$(LIBUSB_DIR)/libusb \
+	-I$(GLIB_DIR)/include/glib-2.0 \
+	-I$(GLIB_DIR)/lib/glib-2.0/include
+
+LIBS := \
+	$(BUILD_DIR)/libticalcs/trunk/libticalcs2.a \
+	$(BUILD_DIR)/libtifiles/trunk/libtifiles2.a \
+	$(BUILD_DIR)/libticables/trunk/libticables2.a \
+	$(BUILD_DIR)/libticonv/trunk/libticonv.a \
+	$(LIBUSB_DIR)/libusb/.libs/libusb-1.0.a \
+	$(GLIB_DIR)/lib/libglib-2.0.a \
+	$(GLIB_DIR)/lib/libz.a \
+	$(GLIB_DIR)/lib/libpcre2-8.a
+
+FLAGS := \
+	-O3 -std=gnu++17 -flto -pthread -Wall -Wextra \
+	-s EXPORTED_RUNTIME_METHODS='["ccall","FS"]' \
+	-s MODULARIZE=1 \
+	-s EXPORT_NAME='PBWebTILPTransferModule' \
+	-s ASYNCIFY=1 \
+	-s ALLOW_MEMORY_GROWTH=1 \
+	-s INITIAL_MEMORY=33554432 \
+	-s STACK_SIZE=5242880 \
+	-s PTHREAD_POOL_SIZE=2 \
+	-s PROXY_TO_PTHREAD=1 \
+	-s FORCE_FILESYSTEM=1 \
+	-s INVOKE_RUN=0 \
+	-s EXIT_RUNTIME=0 \
+	--bind
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCE) $(LIBS)
+	$(EMXX) $(SOURCE) $(INCLUDES) $(LIBS) -o $@ $(FLAGS)
+
+clean:
+	rm -f $(TARGET) $(THIS_DIR)/webtilp_transfer_module.wasm
+
+.PHONY: all clean

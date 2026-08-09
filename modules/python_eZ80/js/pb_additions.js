@@ -295,23 +295,59 @@ function downloadCurrentFile(name)
 
 function makePythonAppVar()
 {
+    const output = makePythonTransferFile('ce');
+    return output ? output.file : undefined;
+}
+
+function getEvoPythonProgramName()
+{
+    let name = String(proj.prgmName || '').toUpperCase().replace(/[^A-Z0-9_]/g, '');
+    if (!/^[A-Z]/.test(name)) {
+        name = `P${name}`;
+    }
+    name = name.slice(0, 7);
+    return /^[A-Z][A-Z0-9_]{0,6}$/.test(name) ? name : 'PYTHON';
+}
+
+function makePythonTransferFile(target)
+{
     if (!TIVarsLib) {
         alert('tivars_lib not ready?!');
         return;
     }
-    const pyAppVar = TIVarsLib.TIVarFile.createNew("PythonAppVar", proj.prgmName, '83PCEEP');
-    pyAppVar.setContentFromString(editor.getValue());
-    const filePath = pyAppVar.saveVarToFile("", proj.prgmName);
-    const file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
+    const isEvo = target === 'evo';
+    const programName = isEvo ? getEvoPythonProgramName() : proj.prgmName;
+    const pyAppVar = TIVarsLib.TIVarFile.createNew("PythonAppVar", programName, isEvo ? '84Evo' : '83PCEEP');
+    let filePath = '';
+    let file;
+    try {
+        pyAppVar.setContentFromString(editor.getValue());
+        filePath = pyAppVar.saveVarToFile("", programName);
+        file = TIVarsLib.FS.readFile(filePath, {encoding: 'binary'});
+    } finally {
+        if (filePath) {
+            try {
+                TIVarsLib.FS.unlink(filePath);
+            } catch (e) {
+                console.warn('[Project Builder] Unable to remove Python conversion file', e);
+            }
+        }
+        if (typeof pyAppVar.delete === 'function') {
+            pyAppVar.delete();
+        }
+    }
     if (!file) {
-        alert('Unable to convert the script to a Python AppVar - Try a smaller one?');
+        alert('Unable to convert the script to a Python program - Try a smaller one?');
         return;
     }
-    if (file.byteLength > 65525) {
+    if (!isEvo && file.byteLength > 65525) {
         alert('File too big !?');
         return;
     }
-    return file;
+    return {
+        file,
+        filename: `${programName}.${isEvo ? '8xpy2' : '8xv'}`
+    };
 }
 
 function downloadPythonAppVar()
@@ -344,30 +380,31 @@ async function transferToCalc()
     if (button.hasClass("disabled")) {
         return;
     }
-    if (!navigator.usb || !self.isSecureContext) {
-        alert("WebUSB is not available. Use a compatible browser (Chrome/Edge).");
-        button.addClass("disabled").attr("disabled", true);
-        return;
-    }
-    const file = makePythonAppVar();
-    if (!file) {
-        return;
-    }
     button.addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
     try {
-        if (!window.pbWebUsbTransfer) {
-            throw new Error("WebUSB transfer helper not loaded");
+        if (!window.pbCalculatorTransfer) {
+            throw new Error("Calculator transfer helper not loaded");
         }
-        const result = await window.pbWebUsbTransfer.sendFileBytes(file, `${proj.prgmName}.8xv`);
-        if (result === 0) {
-            showNotification("success", "Transfer complete", `Sent ${proj.prgmName}.8xv to the calculator`);
+        const {target, model, modelName} = await window.pbCalculatorTransfer.prepareTransfer();
+        const pythonDirectLinkModels = new Set([19, 20, 36]);
+        if (target !== window.pbCalculatorTransfer.targets.evo && !pythonDirectLinkModels.has(model)) {
+            throw new Error(`The connected calculator (${modelName || `model ${model}`}) does not support Python AppVars.`);
+        }
+        const output = makePythonTransferFile(target);
+        if (!output) {
+            return;
+        }
+        const transfer = await window.pbCalculatorTransfer.sendFileBytes(output.file, output.filename);
+        if (transfer.result === 0) {
+            showNotification("success", "Transfer complete", `Sent ${output.filename} to ${modelName || 'the calculator'}`);
         } else {
-            showNotification("danger", "Transfer failed", `Calculator returned error ${result}`);
+            showNotification("danger", "Transfer failed", transfer.error || `Calculator returned error ${transfer.result}`);
         }
     } catch (err) {
         showNotification("danger", "Transfer failed", err.message || err);
+    } finally {
+        button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
     }
-    button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
 }
 
 function parseAnalysisLog(log)

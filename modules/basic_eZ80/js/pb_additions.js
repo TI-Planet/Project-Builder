@@ -1180,7 +1180,24 @@ function basicSourceHasLegacyByteEscapes(source)
     return false;
 }
 
-function makeBasicPrgm(format)
+function getBasicTIVarsModel(calcModel)
+{
+    const models = {
+        13: '84+',
+        18: '84+CSE',
+        19: '83PCE',
+        20: '84+CE',
+        21: '82A',
+        22: '84+T',
+        36: '82AEP',
+        43: '84Evo',
+        44: '84Evo',
+        45: '84Evo'
+    };
+    return models[calcModel] || null;
+}
+
+function makeBasicPrgm(format, targetModel)
 {
     if (!TIVarsLib) {
         alert('tivars_lib not ready?!');
@@ -1197,7 +1214,7 @@ function makeBasicPrgm(format)
     let file;
     try {
         const currPrgmName = proj.currFile.split(".")[0];
-        const model = format === '8xp2' ? '84Evo' : '84+CE';
+        const model = targetModel || (format === '8xp2' ? '84Evo' : '84+CE');
         const prgm = TIVarsLib.TIVarFile.createNew("Program", currPrgmName, model);
         prgm.setContentFromString(prgmSource);
         const filePath = prgm.saveVarToFile("", currPrgmName);
@@ -1267,30 +1284,34 @@ async function transferToCalc()
     if (button.hasClass("disabled")) {
         return;
     }
-    if (!navigator.usb || !self.isSecureContext) {
-        alert("WebUSB is not available. Use a compatible browser (Chrome/Edge).");
-        button.addClass("disabled").attr("disabled", true);
-        return;
-    }
-    const file = makeBasicPrgm('8xp');
-    if (!file) {
-        return;
-    }
     button.addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
     try {
-        if (!window.pbWebUsbTransfer) {
-            throw new Error("WebUSB transfer helper not loaded");
+        if (!window.pbCalculatorTransfer) {
+            throw new Error("Calculator transfer helper not loaded");
         }
-        const result = await window.pbWebUsbTransfer.sendFileBytes(file, `${proj.prgmName}.8xp`);
-        if (result === 0) {
-            showNotification("success", "Transfer complete", `Sent ${proj.prgmName}.8xp to the calculator`);
+        const {target, model, modelName} = await window.pbCalculatorTransfer.prepareTransfer();
+        const format = target === window.pbCalculatorTransfer.targets.evo ? '8xp2' : '8xp';
+        const tivarsModel = getBasicTIVarsModel(model);
+        if (!tivarsModel) {
+            throw new Error(`The connected calculator (${modelName || `model ${model}`}) is not supported by this TI-Basic builder.`);
+        }
+        const file = makeBasicPrgm(format, tivarsModel);
+        if (!file) {
+            return;
+        }
+        const currPrgmName = proj.currFile.split(".")[0];
+        const filename = `${currPrgmName}.${format}`;
+        const transfer = await window.pbCalculatorTransfer.sendFileBytes(file, filename);
+        if (transfer.result === 0) {
+            showNotification("success", "Transfer complete", `Sent ${filename} to ${modelName || 'the calculator'}`);
         } else {
-            showNotification("danger", "Transfer failed", `Calculator returned error ${result}`);
+            showNotification("danger", "Transfer failed", transfer.error || `Calculator returned error ${transfer.result}`);
         }
     } catch (err) {
         showNotification("danger", "Transfer failed", err.message || err);
+    } finally {
+        button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
     }
-    button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
 }
 
 function makeGfx(callback)

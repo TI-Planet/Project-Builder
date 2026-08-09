@@ -322,28 +322,32 @@ async function buildAndTransferToCalc()
     if (button.hasClass("disabled")) {
         return;
     }
-    if (!navigator.usb || !self.isSecureContext) {
-        alert("WebUSB is not available. Use a compatible browser (Chrome/Edge).");
-        button.addClass("disabled").attr("disabled", true);
-        return;
-    }
     buildAndGetLog(() => {
         ajaxGetArrayBuffer("ActionHandler.php", $("#postForm").serialize(), async (file) => {
             button.addClass("disabled").attr("disabled", true).find("span.loadingicon").removeClass("hidden");
             try {
-                if (!window.pbWebUsbTransfer) {
-                    throw new Error("WebUSB transfer helper not loaded");
+                if (!window.pbCalculatorTransfer) {
+                    throw new Error("Calculator transfer helper not loaded");
                 }
-                const result = await window.pbWebUsbTransfer.sendFileBytes(file, `${proj.prgmName}.8xp`);
-                if (result === 0) {
-                    showNotification("success", "Transfer complete", `Sent ${proj.prgmName}.8xp to the calculator`);
+                const {model, modelName} = await window.pbCalculatorTransfer.prepareTransfer({allowEvo: false});
+                if (![19, 20, 36].includes(model)) {
+                    throw new Error(`The connected calculator (${modelName || `model ${model}`}) cannot run CE native programs.`);
+                }
+                const transfer = await window.pbCalculatorTransfer.sendFileBytes(
+                    file,
+                    `${proj.prgmName}.8xp`,
+                    {allowEvo: false}
+                );
+                if (transfer.result === 0) {
+                    showNotification("success", "Transfer complete", `Sent ${proj.prgmName}.8xp to ${modelName || 'the calculator'}`);
                 } else {
-                    showNotification("danger", "Transfer failed", `Calculator returned error ${result}`);
+                    showNotification("danger", "Transfer failed", transfer.error || `Calculator returned error ${transfer.result}`);
                 }
             } catch (err) {
                 showNotification("danger", "Transfer failed", err.message || err);
+            } finally {
+                button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
             }
-            button.removeClass("disabled").attr("disabled", false).find("span.loadingicon").addClass("hidden");
         });
     });
 }
