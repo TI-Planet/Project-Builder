@@ -79,8 +79,30 @@
         });
     }
 
-    async function authorizeCalculator(allowEvo) {
+    async function requestDirectLinkDevice() {
+        if (!navigator.usb) {
+            throw new Error('DirectLink calculator transfer requires WebUSB (Chrome or Edge).');
+        }
+        return navigator.usb.requestDevice({
+            filters: DIRECTLINK_PRODUCT_IDS.map(productId => ({vendorId: TI_VENDOR_ID, productId}))
+        });
+    }
+
+    async function authorizeCalculator(allowEvo, requiredTarget) {
         requireSecureContext();
+
+        if (requiredTarget && ![TARGET_DIRECTLINK, TARGET_EVO].includes(requiredTarget)) {
+            throw new Error(`Unknown calculator target: ${requiredTarget}.`);
+        }
+        if (requiredTarget === TARGET_EVO && !allowEvo) {
+            throw new Error('Evo calculator transfer is not enabled for this file.');
+        }
+        if (requiredTarget === TARGET_EVO) {
+            return {target: TARGET_EVO, device: await requestEvoSerialPort()};
+        }
+        if (requiredTarget === TARGET_DIRECTLINK) {
+            return {target: TARGET_DIRECTLINK, device: await requestDirectLinkDevice()};
+        }
 
         if (navigator.usb) {
             const productIds = allowEvo ? [...DIRECTLINK_PRODUCT_IDS, EVO_PRODUCT_ID] : DIRECTLINK_PRODUCT_IDS;
@@ -104,13 +126,16 @@
 
     async function prepareTransfer(options = {}) {
         const allowEvo = options.allowEvo !== false;
-        if (state.handle && state.target && (allowEvo || state.target === TARGET_DIRECTLINK)) {
+        const requiredTarget = options.target || null;
+        if (state.handle && state.target
+            && (allowEvo || state.target === TARGET_DIRECTLINK)
+            && (!requiredTarget || state.target === requiredTarget)) {
             return {target: state.target, model: state.model, modelName: state.modelName};
         }
 
         // Keep the device picker directly in the button's user gesture. Loading
         // WASM first can consume the transient activation in some browsers.
-        const selection = await authorizeCalculator(allowEvo);
+        const selection = await authorizeCalculator(allowEvo, requiredTarget);
         const module = await initModule();
 
         if (state.resetNeeded || state.handle) {
