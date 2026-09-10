@@ -1,4 +1,6 @@
 # Build the compact Project Builder sender against the sibling tilibs checkout.
+# Rebuild tilibs with build_wasm.sh first, using the same Emscripten SDK and
+# WASM_DEPS_PREFIX for both builds. Run build_wasm_deps.sh if dependencies changed.
 
 EMXX ?= em++
 THIS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -12,6 +14,18 @@ LIBTIFILES_DIR := $(TILIBS_DIR)/libtifiles/trunk
 LIBTICONV_DIR := $(TILIBS_DIR)/libticonv/trunk
 LIBUSB_DIR := $(TILIBS_DIR)/libusb
 GLIB_DIR := $(TILIBS_DIR)/glib-emscripten-built
+WASM_DEPS_PREFIX ?= $(TILIBS_DIR)/wasm-deps
+
+# Match WebTILP's pinned dependency install, retaining the legacy layout fallback.
+ifneq ($(wildcard $(WASM_DEPS_PREFIX)/webtilp-deps.txt),)
+GLIB_DIR := $(WASM_DEPS_PREFIX)
+LIBUSB_INCLUDE_DIR := $(WASM_DEPS_PREFIX)/include/libusb-1.0
+LIBUSB_ARCHIVE := $(WASM_DEPS_PREFIX)/lib/libusb-1.0.a
+else
+LIBUSB_INCLUDE_DIR := $(LIBUSB_DIR)/libusb
+LIBUSB_ARCHIVE := $(LIBUSB_DIR)/libusb/.libs/libusb-1.0.a
+LEGACY_LIBS := $(GLIB_DIR)/lib/libpcre2-8.a
+endif
 
 TARGET := $(THIS_DIR)/webtilp_transfer_module.js
 SOURCE := $(THIS_DIR)/webtilp_transfer.cpp
@@ -21,7 +35,7 @@ INCLUDES := \
 	-I$(LIBTICALCS_DIR)/src \
 	-I$(LIBTIFILES_DIR)/src \
 	-I$(LIBTICONV_DIR)/src \
-	-I$(LIBUSB_DIR)/libusb \
+	-I$(LIBUSB_INCLUDE_DIR) \
 	-I$(GLIB_DIR)/include/glib-2.0 \
 	-I$(GLIB_DIR)/lib/glib-2.0/include
 
@@ -30,10 +44,10 @@ LIBS := \
 	$(BUILD_DIR)/libtifiles/trunk/libtifiles2.a \
 	$(BUILD_DIR)/libticables/trunk/libticables2.a \
 	$(BUILD_DIR)/libticonv/trunk/libticonv.a \
-	$(LIBUSB_DIR)/libusb/.libs/libusb-1.0.a \
+	$(LIBUSB_ARCHIVE) \
 	$(GLIB_DIR)/lib/libglib-2.0.a \
 	$(GLIB_DIR)/lib/libz.a \
-	$(GLIB_DIR)/lib/libpcre2-8.a
+	$(LEGACY_LIBS)
 
 FLAGS := \
 	-O3 -std=gnu++17 -flto -pthread -Wall -Wextra \
@@ -53,7 +67,7 @@ FLAGS := \
 
 all: $(TARGET)
 
-$(TARGET): $(SOURCE) $(LIBS)
+$(TARGET): $(SOURCE) $(LIBS) $(THIS_DIR)/Makefile.webtilp_transfer
 	$(EMXX) $(SOURCE) $(INCLUDES) $(LIBS) -o $@ $(FLAGS)
 
 clean:

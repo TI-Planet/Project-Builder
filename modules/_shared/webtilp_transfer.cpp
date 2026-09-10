@@ -18,6 +18,26 @@ constexpr int kCableReadError = 3;
 constexpr int kCableReadTimeout = 4;
 constexpr int kCableWriteError = 5;
 constexpr int kCableWriteTimeout = 6;
+constexpr unsigned int kEvoPythonScript = 15;
+constexpr unsigned int kEvoPythonModule = 18;
+
+// Keep in sync with WebTILP's evo_python_type_for_os. Unknown versions leave
+// the payload untouched so libticalcs can repack and retry on a DP rejection.
+unsigned int evo_python_type_for_os(const char* version)
+{
+    if (!version) return 0;
+    unsigned int parts[4] = {};
+    for (unsigned int i = 0; i < 4; i++) {
+        if (*version < '0' || *version > '9') return 0;
+        while (*version >= '0' && *version <= '9') {
+            parts[i] = parts[i] * 10 + (*version++ - '0');
+            if (parts[i] > 65535) return 0;
+        }
+        if (i < 3 && *version++ != '.') return 0;
+    }
+    if (*version || parts[0] < 7) return 0;
+    return parts[0] == 7 && parts[1] == 0 ? kEvoPythonScript : kEvoPythonModule;
+}
 
 CableHandle* cable_handle = nullptr;
 CalcHandle* calc_handle = nullptr;
@@ -25,6 +45,7 @@ CalcModel calc_model = CALC_NONE;
 bool calc_attached = false;
 bool calc_ready = false;
 bool libraries_initialized = false;
+unsigned int evo_python_type = 0;
 
 void reset_connection()
 {
@@ -38,6 +59,7 @@ void reset_connection()
     calc_attached = false;
     calc_ready = false;
     calc_model = CALC_NONE;
+    evo_python_type = 0;
 
     if (cable_handle) {
         ticables_cable_close(cable_handle);
@@ -74,6 +96,7 @@ int ensure_calc_attached(CableHandle* cable)
         }
         calc_attached = true;
         calc_ready = false;
+        evo_python_type = 0;
     }
 
     return 0;
@@ -107,7 +130,39 @@ int ensure_calc_ready(CableHandle* cable)
     }
 
     calc_ready = result == 0;
+    if (calc_ready && ticonv_model_is_tievo(calc_model)) {
+        // Optional, once per connection: failure must not prevent a transfer.
+        CalcInfos infos{};
+        if (ticalcs_calc_get_version(calc_handle, &infos) == 0
+            && (infos.mask & INFOS_OS_VERSION)) {
+            evo_python_type = evo_python_type_for_os(infos.os_version);
+        }
+    }
     return result;
+}
+
+void prepare_evo_python_modules(FileContent* content)
+{
+    if (!ticonv_model_is_tievo(calc_model) || !evo_python_type) {
+        return;
+    }
+    for (unsigned int i = 0; i < content->num_entries; i++) {
+        VarEntry* entry = content->entries[i];
+        if (!entry || entry->type == evo_python_type
+            || !tifiles_evo_is_python_module(entry->data, entry->size)) {
+            continue;
+        }
+        uint8_t* converted = nullptr;
+        uint32_t converted_size = 0;
+        if (tifiles_evo_repack_python_module(entry->data, entry->size, &converted, &converted_size) == 0) {
+            // Change only the in-memory transfer entry, never the source file.
+            tifiles_ve_free_data(entry->data);
+            entry->data = converted;
+            entry->size = converted_size;
+            entry->type = static_cast<uint8_t>(evo_python_type);
+            entry->attr = ATTRB_ARCHIVED;
+        }
+    }
 }
 
 } // namespace
@@ -193,6 +248,7 @@ int pb_transfer_send_file(CableHandle* cable, const char* filename)
 
     int result = tifiles_file_read_regular(filename, content);
     if (result == 0) {
+        prepare_evo_python_modules(content);
         result = ticalcs_calc_send_var(calc_handle, MODE_NORMAL, content);
     }
     tifiles_content_delete_regular(content);
