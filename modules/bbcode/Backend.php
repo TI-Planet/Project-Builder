@@ -64,8 +64,7 @@ final class bbcodeProjectBackend extends PHPBasedBackend
                 {
                     return PBStatus::Error('No source provided');
                 }
-                $strippedSource = strip_tags($params['source']);
-                return $this->renderBBCodePreview($strippedSource);
+                return $this->renderBBCodePreview($params['source']);
         }
 
         return PBStatus::Error('Unknown action');
@@ -117,6 +116,9 @@ final class bbcodeProjectBackend extends PHPBasedBackend
         $flags = 0;
 
         $startTime = microtime(true);
+        // generate_text_for_storage expects request_var()-style escaped input.
+        // Preserve literal HTML/comparisons as text, just like forum posts.
+        $text = trim(htmlspecialchars(str_replace(["\r\n", "\r", "\0"], ["\n", "\n", ''], $text), ENT_COMPAT, 'UTF-8'));
         generate_text_for_storage($text, $uid, $bitfield, $flags, true, true, true);
         $html = generate_text_for_display($text, $uid, $bitfield, $flags);
         $html = str_replace('"/data/web/vhosts/tiplanet.org/ROOT/', '"/', $html);

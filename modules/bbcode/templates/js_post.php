@@ -10,10 +10,8 @@ if (!isset($pm)) { die('Ahem ahem'); }
     let textarea, fakeContainer;
     let bbcodeInlineStyleMarks = [];
     const bbcodeInlineTagNames = new Set(['b', 'i', 'u', 's']);
-    let bbcodePreviewLinkedElement = null;
-    let bbcodePreviewSyncingFromEditor = false;
-    let bbcodePreviewSyncingFromPane = false;
-    let bbcodeLastLinkedPreviewQuery = '';
+    let bbcodePreviewSync = null;
+    let bbcodePreviewRequestSequence = 0;
     let bbcodeActivePairMarks = [];
     let bbcodePreviewLanguageMode = 'auto';
     const bbcodeSelfClosingTagNames = new Set(['*']);
@@ -88,6 +86,7 @@ if (!isset($pm)) { die('Ahem ahem'); }
         if (previewContent) {
             previewContent.classList.remove('pb-preview-language-fr', 'pb-preview-language-en');
             previewContent.classList.add(`pb-preview-language-${getResolvedPreviewLanguageMode()}`);
+            if (bbcodePreviewSync) { bbcodePreviewSync.invalidate(); }
         }
 
         const toolbar = document.getElementById('bbcodePreviewLanguageToolbar');
@@ -591,127 +590,19 @@ if (!isset($pm)) { die('Ahem ahem'); }
         cm.showHint({ hint: bbcodeHint, completeSingle: false });
     };
 
-    const normalizePreviewSearchText = (text) => (text || '')
-        .replace(/\[(\/)?([a-zA-Z*]+)(?:=[^\]\n]*)?(\s*\/)?\]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .toLowerCase();
-
-    const clearLinkedPreviewElement = () => {
-        if (bbcodePreviewLinkedElement) {
-            bbcodePreviewLinkedElement.classList.remove('bbcode-preview-linked');
-            bbcodePreviewLinkedElement = null;
-        }
-    };
-
-    const findPreviewLinkQuery = () => {
-        if (!editor) {
-            return '';
-        }
-
-        const doc = editor.getDoc();
-        const selectionText = normalizePreviewSearchText(doc.getSelection());
-        if (selectionText.length >= 4) {
-            return selectionText;
-        }
-
-        const lineText = normalizePreviewSearchText(doc.getLine(doc.getCursor().line));
-        if (lineText.length >= 4) {
-            return lineText;
-        }
-
-        return '';
-    };
-
     const linkEditorSelectionToPreview = (scrollIntoViewIfFound) => {
-        const previewContent = document.getElementById('bbcodePreviewContent');
-        if (!previewContent) {
-            return;
-        }
-
-        const query = findPreviewLinkQuery();
-        if (!query.length) {
-            bbcodeLastLinkedPreviewQuery = '';
-            clearLinkedPreviewElement();
-            return;
-        }
-        if (query === bbcodeLastLinkedPreviewQuery && bbcodePreviewLinkedElement) {
-            return;
-        }
-
-        const candidates = Array.from(previewContent.querySelectorAll('p, li, blockquote, .codebox, td, dd, dt, div, span'))
-            .filter((element) => {
-                if (!element || element.children.length > 8) {
-                    return false;
-                }
-                const normalizedText = normalizePreviewSearchText(element.textContent);
-                return normalizedText.length >= query.length && normalizedText.indexOf(query) !== -1;
-            })
-            .sort((left, right) => normalizePreviewSearchText(left.textContent).length - normalizePreviewSearchText(right.textContent).length);
-
-        clearLinkedPreviewElement();
-        bbcodeLastLinkedPreviewQuery = query;
-
-        if (!candidates.length) {
-            return;
-        }
-
-        bbcodePreviewLinkedElement = candidates[0];
-        bbcodePreviewLinkedElement.classList.add('bbcode-preview-linked');
-        if (scrollIntoViewIfFound) {
-            bbcodePreviewLinkedElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        }
-    };
-
-    const syncEditorScrollToPreview = () => {
-        const previewPane = document.getElementById('bbcodePreview');
-        if (!editor || !previewPane || bbcodePreviewSyncingFromPane) {
-            return;
-        }
-
-        const scroller = editor.getScrollerElement();
-        const editorScrollable = scroller.scrollHeight - scroller.clientHeight;
-        const previewScrollable = previewPane.scrollHeight - previewPane.clientHeight;
-        if (editorScrollable <= 0 || previewScrollable <= 0) {
-            return;
-        }
-
-        const ratio = scroller.scrollTop / editorScrollable;
-        bbcodePreviewSyncingFromEditor = true;
-        previewPane.scrollTop = ratio * previewScrollable;
-        window.requestAnimationFrame(() => { bbcodePreviewSyncingFromEditor = false; });
-    };
-
-    const syncPreviewScrollToEditor = () => {
-        const previewPane = document.getElementById('bbcodePreview');
-        if (!editor || !previewPane || bbcodePreviewSyncingFromEditor) {
-            return;
-        }
-
-        const scroller = editor.getScrollerElement();
-        const editorScrollable = scroller.scrollHeight - scroller.clientHeight;
-        const previewScrollable = previewPane.scrollHeight - previewPane.clientHeight;
-        if (editorScrollable <= 0 || previewScrollable <= 0) {
-            return;
-        }
-
-        const ratio = previewPane.scrollTop / previewScrollable;
-        bbcodePreviewSyncingFromPane = true;
-        scroller.scrollTop = ratio * editorScrollable;
-        window.requestAnimationFrame(() => { bbcodePreviewSyncingFromPane = false; });
+        if (bbcodePreviewSync) { bbcodePreviewSync.linkSelection(scrollIntoViewIfFound); }
     };
 
     const setupBBCodePreviewSync = () => {
-        const previewPane = document.getElementById('bbcodePreview');
-        if (!editor || !previewPane || previewPane.dataset.syncBound === '1') {
-            return;
-        }
-
-        previewPane.dataset.syncBound = '1';
-        editor.on('scroll', syncEditorScrollToPreview);
-        editor.on('cursorActivity', () => { linkEditorSelectionToPreview(false); });
-        previewPane.addEventListener('scroll', syncPreviewScrollToEditor);
-        syncEditorScrollToPreview();
+        if (bbcodePreviewSync) { bbcodePreviewSync.destroy(); }
+        bbcodePreviewSync = createBBCodePreviewSync(
+            editor,
+            document.getElementById('bbcodePreview'),
+            document.getElementById('bbcodePreviewContent'),
+            document.getElementById('bbcodeScrollSync'),
+            `bbcode_preview_scroll_sync_${proj.pid}`
+        );
     };
 
     const updateBBCodeToolbarState = () => {
@@ -1007,10 +898,16 @@ if (!isset($pm)) { die('Ahem ahem'); }
     };
 
     const _updatePreviewImpl = () => {
-        const src = editor.getValue().trim();
-        if (!src.length) { return; }
+        const requestEditor = editor;
+        const previewContent = document.getElementById('bbcodePreviewContent');
+        const src = editor.getValue();
+        const requestSequence = ++bbcodePreviewRequestSequence;
         ajaxAction('preview_bbcode', `source=${encodeURIComponent(src)}`, (resp) => {
-            document.getElementById('bbcodePreviewContent').innerHTML = (resp && resp.html) ? resp.html : '';
+            if (requestSequence !== bbcodePreviewRequestSequence || editor !== requestEditor ||
+                !previewContent.isConnected || editor.getValue() !== src) { return; }
+            const previewPane = document.getElementById('bbcodePreview');
+            const previousScrollTop = previewPane.scrollTop;
+            previewContent.innerHTML = (resp && resp.html) ? resp.html : '';
             document.getElementById('bbcodeRenderTime').textContent = (resp && resp.renderTime) ? (resp.renderTime + 'ms') : '?';
             applyPreviewLanguageMode();
             window.do_mathJax && do_mathJax();
@@ -1040,8 +937,15 @@ if (!isset($pm)) { die('Ahem ahem'); }
             } catch(e) {
                 // Best-effort: ignore analysis errors
             }
-            syncEditorScrollToPreview();
-            linkEditorSelectionToPreview(false);
+            // Keep independently scrolled previews in place when sync is disabled.
+            previewPane.scrollTop = previousScrollTop;
+            bbcodePreviewSync.refresh(src);
+            requestAnimationFrame(() => {
+                if (editor !== requestEditor || !previewContent.isConnected || editor.getValue() !== src ||
+                    requestSequence !== bbcodePreviewRequestSequence) { return; }
+                bbcodePreviewSync.syncFromEditor();
+                linkEditorSelectionToPreview(true);
+            });
         }, () => {}, null);
     };
     const updatePreview = debounce(_updatePreviewImpl, 400);

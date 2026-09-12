@@ -38,6 +38,9 @@ $isAnonymousViewer = $currUser->isAnonymous();
     </div>
 
     <div class="bbcodePreviewToolbarMeta">
+        <label class="bbcodeScrollSyncLabel" title="Synchronize source and preview scrolling">
+            <input type="checkbox" id="bbcodeScrollSync" checked> Sync scrolling
+        </label>
         <span style="padding: 2px"><b>Render time:</b> <span id="bbcodeRenderTime">?</span></span>
         <div id="bbcodePreviewLanguageToolbar" class="btn-group btn-group-sm" role="group" aria-label="Preview language">
             <button type="button" class="btn btn-default bbcode-preview-language-button" data-preview-language-mode="fr" title="Force French preview">🇫🇷 FR</button>

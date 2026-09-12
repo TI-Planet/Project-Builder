@@ -29,6 +29,7 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
 </script>
 
 <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
+<script src="<?= cacheBusterPath("{$modulePath}js/preview_sync.js") ?>"></script>
 <?php if (!$pm->currentUserCanWriteCurrentProject()) { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
 <?php } ?>
