@@ -51,6 +51,7 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
 </script>
 
 <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
+<script src="<?= cacheBusterPath("{$modulePath}js/python_sdk.js") ?>"></script>
 <script>
     window.pbPythonCompilerConfig = <?= json_encode([
         'workerUrl' => cacheBusterPath("{$modulePath}js/mpy_worker.js"),

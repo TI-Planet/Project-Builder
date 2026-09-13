@@ -20,9 +20,16 @@ require_once __DIR__ . '/../PythonCodeEditorBackend.class.php';
 
 final class python_eZ80ProjectBackend extends PythonCodeEditorBackend
 {
+    protected array $pylintImportPaths = [__DIR__ . '/internal/python', __DIR__ . '/internal/menu_python'];
+
     public function __construct(python_eZ80Project $project, $projFolder)
     {
         parent::__construct($project, $projFolder, self::TEMPLATE_PY_FILE_PATH, '8xv', '# Your code here');
+    }
+
+    protected function getSDKCtags()
+    {
+        return json_decode(file_get_contents(__DIR__ . '/internal/python_sdk.json'), true);
     }
 
     protected function addFile($fileName, $content = '')

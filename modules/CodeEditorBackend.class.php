@@ -21,6 +21,7 @@ require_once __DIR__ . '/PHPBasedBackend.class.php';
 abstract class CodeEditorBackend extends PHPBasedBackend
 {
     protected string $defaultNewFileContent;
+    protected array $pylintImportPaths = [];
 
     protected function __construct(Project $project, $projFolder, string $templateFilePath, string $projPrgmExtension, string $defaultNewFileContent)
     {
@@ -235,7 +236,13 @@ abstract class CodeEditorBackend extends PHPBasedBackend
         }
 
         chdir($this->projFolder . 'src');
-        exec("pylint -j0 --disable=I,R,C --output-format=json {$src_file}", $analysis, $retval);
+        $importOption = '';
+        if ($this->pylintImportPaths) {
+            // Project modules first, then calculator SDK definitions, then host Python.
+            $hook = 'import os, sys; sys.path[:0] = [os.getcwd()] + ' . json_encode($this->pylintImportPaths, JSON_UNESCAPED_SLASHES);
+            $importOption = ' --init-hook=' . escapeshellarg($hook);
+        }
+        exec('pylint -j0 --disable=I,R,C --output-format=json' . $importOption . ' ' . escapeshellarg($src_file), $analysis, $retval);
         if (is_array($analysis))
         {
             array_map('trim', $analysis);

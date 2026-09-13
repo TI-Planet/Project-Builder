@@ -22,6 +22,7 @@ var build_check  = [];
 var code_analysis = [];
 var ctags = [];
 var sdk_ctags = [];
+var enable_sdk_ctags = true;
 var lastSavedSource = '';
 
 function applyPrgmNameChange(name)

@@ -1,0 +1,4367 @@
+{
+  "brightns.py": [
+    {
+      "n": "brightns",
+      "k": "module",
+      "l": 1,
+      "d": "TI-Innovator built-in brightness sensor (example p. 25)."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "(minimum, maximum)",
+      "d": "Set the brightness range, typically 0 to 100. Guide p. 25."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 13,
+      "s": "",
+      "a": "()",
+      "d": "Read the brightness measurement. Guide pp. 25, 50."
+    }
+  ],
+  "ce_chart.py": [
+    {
+      "n": "ce_chart",
+      "k": "module",
+      "l": 1,
+      "d": "CE chart 1.0 API. Source: https://tiplanet.org/forum/viewtopic.php?f=41&t=23854#PY55CEC4"
+    },
+    {
+      "n": "pal",
+      "k": "variable",
+      "l": 6,
+      "s": ""
+    },
+    {
+      "n": "chart",
+      "k": "class",
+      "l": 8,
+      "s": "",
+      "a": "()",
+      "d": "Histogram chart; TI-Planet exploration screenshots AZF38vP, Ppgb1p7."
+    },
+    {
+      "n": "pal",
+      "k": "variable",
+      "l": 11,
+      "s": "chart"
+    },
+    {
+      "n": "data",
+      "k": "function",
+      "l": 17,
+      "s": "chart",
+      "a": "(values)",
+      "d": "Set a list of label/value tuples."
+    },
+    {
+      "n": "title",
+      "k": "function",
+      "l": 21,
+      "s": "chart",
+      "a": "(text)",
+      "d": "Set the chart title."
+    },
+    {
+      "n": "frequencies",
+      "k": "function",
+      "l": 25,
+      "s": "chart",
+      "a": "(*args)",
+      "d": "Set frequencies; the menu shows a number argument."
+    },
+    {
+      "n": "show",
+      "k": "function",
+      "l": 29,
+      "s": "chart",
+      "a": "()",
+      "d": "Display the chart."
+    },
+    {
+      "n": "rectangle",
+      "k": "class",
+      "l": 33,
+      "s": "",
+      "a": "(x, y, width, height, color)",
+      "d": "Rectangle in plot coordinates; TI-Planet menu kVzdAON and example."
+    },
+    {
+      "n": "area",
+      "k": "variable",
+      "l": 36,
+      "s": "rectangle"
+    },
+    {
+      "n": "draw",
+      "k": "function",
+      "l": 42,
+      "s": "rectangle",
+      "a": "()",
+      "d": "Draw the rectangle."
+    },
+    {
+      "n": "draw_fx",
+      "k": "function",
+      "l": 46,
+      "s": "",
+      "a": "(*args)",
+      "d": "Draw a function curve. The article example uses (xmin, xmax, function, steps, color); its menu shows a different order, so arguments remain permissive."
+    },
+    {
+      "n": "version",
+      "k": "function",
+      "l": 50,
+      "s": "",
+      "a": "()",
+      "d": "Return module version (article: chart 1.0)."
+    },
+    {
+      "n": "plt",
+      "k": "variable",
+      "l": 3,
+      "s": "",
+      "m": "ti_plotlib",
+      "d": "Module alias for ti_plotlib."
+    },
+    {
+      "n": "ceil",
+      "k": "variable",
+      "l": 4,
+      "s": "",
+      "d": "Imported from math. "
+    }
+  ],
+  "ce_quivr.py": [
+    {
+      "n": "ce_quivr",
+      "k": "module",
+      "l": 1,
+      "d": "CE quiver 1.0 API. Source: https://tiplanet.org/forum/viewtopic.php?f=41&t=23853#PY55CEQ4"
+    },
+    {
+      "n": "pal",
+      "k": "variable",
+      "l": 5,
+      "s": ""
+    },
+    {
+      "n": "quiver",
+      "k": "function",
+      "l": 7,
+      "s": "",
+      "a": "(x, y, u, v, scale, color)",
+      "d": "Draw a vector field. Menu oqjenjs shows x,y,u,v,scale,color; exploration tTKqfu3 confirms the function."
+    },
+    {
+      "n": "version",
+      "k": "function",
+      "l": 11,
+      "s": "",
+      "a": "()",
+      "d": "Return module version (article: ce_quivr 1.0)."
+    },
+    {
+      "n": "plt",
+      "k": "variable",
+      "l": 3,
+      "s": "",
+      "m": "ti_plotlib",
+      "d": "Module alias for ti_plotlib."
+    }
+  ],
+  "color.py": [
+    {
+      "n": "color",
+      "k": "module",
+      "l": 1,
+      "d": "TI-Innovator built-in RGB output (BLNKSND example p. 52)."
+    },
+    {
+      "n": "rgb",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "(r, g, b)",
+      "d": "Set RGB light components. Guide p. 52."
+    },
+    {
+      "n": "blink",
+      "k": "function",
+      "l": 13,
+      "s": "",
+      "a": "(frequency, time)",
+      "d": "Blink the RGB light. Guide p. 52."
+    }
+  ],
+  "sound.py": [
+    {
+      "n": "sound",
+      "k": "module",
+      "l": 1,
+      "d": "TI-Innovator built-in sound output (menus p. 25)."
+    },
+    {
+      "n": "tone",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "(frequency, time, tempo=None)",
+      "d": "Play a frequency for a duration, optionally with tempo. Guide p. 25."
+    },
+    {
+      "n": "note",
+      "k": "function",
+      "l": 13,
+      "s": "",
+      "a": "(note, time, tempo=None)",
+      "d": "Play a named note for a duration, optionally with tempo. Guide p. 25."
+    }
+  ],
+  "ti_draw.py": [
+    {
+      "n": "ti_draw",
+      "k": "module",
+      "l": 1,
+      "d": "TI drawing add-on: shapes, text, pen and drawing window."
+    },
+    {
+      "n": "draw_line",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "(x1, y1, x2, y2)",
+      "d": "Draw a line between two points. Guide p. 29."
+    },
+    {
+      "n": "draw_rect",
+      "k": "function",
+      "l": 13,
+      "s": "",
+      "a": "(x, y, w, h)",
+      "d": "Draw a rectangle border. Guide p. 29."
+    },
+    {
+      "n": "fill_rect",
+      "k": "function",
+      "l": 18,
+      "s": "",
+      "a": "(x, y, w, h)",
+      "d": "Fill a rectangle with the current pen color. Guide p. 30."
+    },
+    {
+      "n": "draw_circle",
+      "k": "function",
+      "l": 23,
+      "s": "",
+      "a": "(x, y, r)",
+      "d": "Draw a circle border. Guide p. 30."
+    },
+    {
+      "n": "fill_circle",
+      "k": "function",
+      "l": 28,
+      "s": "",
+      "a": "(x, y, r)",
+      "d": "Fill a circle with the current pen color. Guide p. 30."
+    },
+    {
+      "n": "draw_text",
+      "k": "function",
+      "l": 33,
+      "s": "",
+      "a": "(x, y, text)",
+      "d": "Draw text at the upper-left pixel position (x, y). Guide p. 30."
+    },
+    {
+      "n": "draw_poly",
+      "k": "function",
+      "l": 38,
+      "s": "",
+      "a": "(xlist, ylist)",
+      "d": "Draw connected polygon edges. Guide p. 30."
+    },
+    {
+      "n": "fill_poly",
+      "k": "function",
+      "l": 43,
+      "s": "",
+      "a": "(xlist, ylist)",
+      "d": "Fill the polygon defined by equal-length coordinate lists. Guide p. 30."
+    },
+    {
+      "n": "plot_xy",
+      "k": "function",
+      "l": 48,
+      "s": "",
+      "a": "(x, y, shape)",
+      "d": "Draw marker 1-13 at (x, y). Guide p. 30 calls this poly_xy; the supplied ti_draw.menu uses plot_xy."
+    },
+    {
+      "n": "clear",
+      "k": "function",
+      "l": 53,
+      "s": "",
+      "a": "()",
+      "d": "Clear the Shell drawing area before drawing. Guide p. 31."
+    },
+    {
+      "n": "clear_rect",
+      "k": "function",
+      "l": 58,
+      "s": "",
+      "a": "(x, y, w, h, color=(255, 255, 255))",
+      "d": "Clear a pixel rectangle, optionally using an RGB tuple. Guide p. 31."
+    },
+    {
+      "n": "set_color",
+      "k": "function",
+      "l": 63,
+      "s": "",
+      "a": "(r, g, b)",
+      "d": "Set pen RGB components in the range 0-255. Guide p. 31."
+    },
+    {
+      "n": "set_pen",
+      "k": "function",
+      "l": 68,
+      "s": "",
+      "a": "(size='thin', style='solid')",
+      "d": "Set thin/medium/thick pen and solid/dotted/dashed style. Guide p. 31."
+    },
+    {
+      "n": "set_window",
+      "k": "function",
+      "l": 73,
+      "s": "",
+      "a": "(xmin, xmax, ymin, ymax)",
+      "d": "Set drawing coordinates; the default window is (0, 319, 0, 209). Guide p. 31."
+    },
+    {
+      "n": "show_draw",
+      "k": "function",
+      "l": 78,
+      "s": "",
+      "a": "()",
+      "d": "Display the drawing and wait for Clear. Guide pp. 31-32."
+    },
+    {
+      "n": "version",
+      "k": "variable",
+      "l": 83,
+      "s": ""
+    }
+  ],
+  "ti_graphics.py": [
+    {
+      "n": "ti_graphics",
+      "k": "module",
+      "l": 1,
+      "d": "Legacy TI graphics API. Source: https://tiplanet.org/forum/viewtopic.php?f=41&t=23791#PY55C1"
+    },
+    {
+      "n": "Color",
+      "k": "class",
+      "l": 7,
+      "s": "",
+      "d": "RGB color constants from exploration screenshot W7h2RQs."
+    },
+    {
+      "n": "BLACK",
+      "k": "variable",
+      "l": 9,
+      "s": "Color"
+    },
+    {
+      "n": "BLUE",
+      "k": "variable",
+      "l": 10,
+      "s": "Color"
+    },
+    {
+      "n": "CYAN",
+      "k": "variable",
+      "l": 11,
+      "s": "Color"
+    },
+    {
+      "n": "GREEN",
+      "k": "variable",
+      "l": 12,
+      "s": "Color"
+    },
+    {
+      "n": "MAGENTA",
+      "k": "variable",
+      "l": 13,
+      "s": "Color"
+    },
+    {
+      "n": "RED",
+      "k": "variable",
+      "l": 14,
+      "s": "Color"
+    },
+    {
+      "n": "WHITE",
+      "k": "variable",
+      "l": 15,
+      "s": "Color"
+    },
+    {
+      "n": "YELLOW",
+      "k": "variable",
+      "l": 16,
+      "s": "Color"
+    },
+    {
+      "n": "Style",
+      "k": "class",
+      "l": 19,
+      "s": "",
+      "d": "Pen style constants from exploration screenshot MDa6oBk."
+    },
+    {
+      "n": "SMOOTH",
+      "k": "variable",
+      "l": 21,
+      "s": "Style"
+    },
+    {
+      "n": "DOTTED",
+      "k": "variable",
+      "l": 22,
+      "s": "Style"
+    },
+    {
+      "n": "DASHED",
+      "k": "variable",
+      "l": 23,
+      "s": "Style"
+    },
+    {
+      "n": "cls",
+      "k": "function",
+      "l": 26,
+      "s": "",
+      "a": "()",
+      "d": "Clear the screen. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "cursor",
+      "k": "function",
+      "l": 30,
+      "s": "",
+      "a": "(c=1)",
+      "d": "Hide the text cursor with 1 (default), show it with 0. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "getPixel",
+      "k": "function",
+      "l": 34,
+      "s": "",
+      "a": "(x, y)",
+      "d": "Return an RGB tuple for a pixel. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "setPixel",
+      "k": "function",
+      "l": 38,
+      "s": "",
+      "a": "(x, y, color)",
+      "d": "Set a pixel using an RGB tuple. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "setColor",
+      "k": "function",
+      "l": 42,
+      "s": "",
+      "a": "(r, g=None, b=None)",
+      "d": "Set pen RGB; the article also uses a single RGB tuple. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "setPen",
+      "k": "function",
+      "l": 46,
+      "s": "",
+      "a": "(size, style)",
+      "d": "Set numeric pen size and style. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "drawLine",
+      "k": "function",
+      "l": 50,
+      "s": "",
+      "a": "(x1, y1, x2, y2)",
+      "d": "Draw a line segment. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "drawPolyLine",
+      "k": "function",
+      "l": 54,
+      "s": "",
+      "a": "(points)",
+      "d": "Draw connected segments through coordinate pairs. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "fillPolygon",
+      "k": "function",
+      "l": 58,
+      "s": "",
+      "a": "(points)",
+      "d": "Fill a polygon from coordinate pairs. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "drawRect",
+      "k": "function",
+      "l": 62,
+      "s": "",
+      "a": "(x, y, w, h)",
+      "d": "Draw a rectangle. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "fillRect",
+      "k": "function",
+      "l": 66,
+      "s": "",
+      "a": "(x, y, w, h)",
+      "d": "Fill a rectangle. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "drawArc",
+      "k": "function",
+      "l": 70,
+      "s": "",
+      "a": "(x, y, w, h, t1, t2)",
+      "d": "Draw an ellipse arc; angles are tenths of degrees. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "fillArc",
+      "k": "function",
+      "l": 74,
+      "s": "",
+      "a": "(x, y, w, h, t1, t2)",
+      "d": "Fill an ellipse sector; angles are tenths of degrees. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "fillCircle",
+      "k": "function",
+      "l": 78,
+      "s": "",
+      "a": "(x, y, r)",
+      "d": "Fill a circle. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "drawString",
+      "k": "function",
+      "l": 82,
+      "s": "",
+      "a": "(text, x, y)",
+      "d": "Draw text at pixel coordinates. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "hsv_to_rgb",
+      "k": "function",
+      "l": 86,
+      "s": "",
+      "a": "(h, s, v)",
+      "d": "Convert HSV to RGB; hue is in degrees. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "pushImage",
+      "k": "function",
+      "l": 90,
+      "s": "",
+      "a": "(x, y, w, h)",
+      "d": "Save an image region; article example uses x,y,w,h. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "popImage",
+      "k": "function",
+      "l": 94,
+      "s": "",
+      "a": "()",
+      "d": "Restore the saved image region. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "drawImage",
+      "k": "function",
+      "l": 98,
+      "s": "",
+      "a": "(*args)",
+      "d": "Image helper; the article does not establish its signature. Source: TI-Planet ti_graphics exploration (2020)."
+    },
+    {
+      "n": "math",
+      "k": "variable",
+      "l": 3,
+      "s": "",
+      "m": "math",
+      "d": "Module alias for math."
+    },
+    {
+      "n": "sys",
+      "k": "variable",
+      "l": 4,
+      "s": "",
+      "m": "sys",
+      "d": "Module alias for sys."
+    },
+    {
+      "n": "sleep",
+      "k": "variable",
+      "l": 5,
+      "s": "",
+      "d": "Imported from time. "
+    }
+  ],
+  "ti_hub.py": [
+    {
+      "n": "ti_hub",
+      "k": "module",
+      "l": 1,
+      "d": "TI-Innovator Hub low-level API (menus pp. 24-25; exports p. 159)."
+    },
+    {
+      "n": "tihubException",
+      "k": "class",
+      "l": 7,
+      "s": "",
+      "d": "Hub API exception (guide p. 159)."
+    },
+    {
+      "n": "connect",
+      "k": "function",
+      "l": 11,
+      "s": "",
+      "a": "(obj, *args)",
+      "d": "Connect a Hub object using its port/options. Guide p. 24."
+    },
+    {
+      "n": "disconnect",
+      "k": "function",
+      "l": 16,
+      "s": "",
+      "a": "(obj, *args)",
+      "d": "Disconnect a Hub object. Guide p. 24."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 21,
+      "s": "",
+      "a": "(obj, *args)",
+      "d": "Set the value of a Hub object. Guide p. 24."
+    },
+    {
+      "n": "read",
+      "k": "function",
+      "l": 26,
+      "s": "",
+      "a": "(obj, *args)",
+      "d": "Read a Hub object. Guide p. 24."
+    },
+    {
+      "n": "calibrate",
+      "k": "function",
+      "l": 31,
+      "s": "",
+      "a": "(obj, *args)",
+      "d": "Calibrate a Hub object. Guide p. 24."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 36,
+      "s": "",
+      "a": "(obj, *args)",
+      "d": "Set the range of a Hub object. Guide p. 24."
+    },
+    {
+      "n": "version",
+      "k": "function",
+      "l": 41,
+      "s": "",
+      "a": "()",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "begin",
+      "k": "function",
+      "l": 46,
+      "s": "",
+      "a": "()",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "start",
+      "k": "function",
+      "l": 51,
+      "s": "",
+      "a": "()",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "about",
+      "k": "function",
+      "l": 56,
+      "s": "",
+      "a": "(*args)",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "isti",
+      "k": "function",
+      "l": 61,
+      "s": "",
+      "a": "(*args)",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "what",
+      "k": "function",
+      "l": 66,
+      "s": "",
+      "a": "(*args)",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "who",
+      "k": "function",
+      "l": 71,
+      "s": "",
+      "a": "(*args)",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "last_error",
+      "k": "function",
+      "l": 76,
+      "s": "",
+      "a": "(*args)",
+      "d": "Hub information/control helper. Guide pp. 24, 159."
+    },
+    {
+      "n": "get",
+      "k": "function",
+      "l": 81,
+      "s": "",
+      "a": "(*args)",
+      "d": "Receive Hub data; detailed signature is not specified in this guide. Guide p. 159."
+    },
+    {
+      "n": "send",
+      "k": "function",
+      "l": 86,
+      "s": "",
+      "a": "(command)",
+      "d": "Send a command to the Hub. Guide p. 159."
+    },
+    {
+      "n": "sleep",
+      "k": "function",
+      "l": 91,
+      "s": "",
+      "a": "(seconds)",
+      "d": "Pause for the given number of seconds. Guide p. 159."
+    },
+    {
+      "n": "wait",
+      "k": "function",
+      "l": 96,
+      "s": "",
+      "a": "(*args)",
+      "d": "Wait helper; the guide does not specify its arguments. Guide p. 159."
+    }
+  ],
+  "ti_image.py": [
+    {
+      "n": "ti_image",
+      "k": "module",
+      "l": 1,
+      "d": "TI image add-on: archived images and RGB pixels."
+    },
+    {
+      "n": "load_image",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "(name)",
+      "d": "Load the case-sensitive name of an archived Python image AppVar. Guide p. 34."
+    },
+    {
+      "n": "show_image",
+      "k": "function",
+      "l": 13,
+      "s": "",
+      "a": "(x, y)",
+      "d": "Display the loaded image with its upper-left corner at (x, y). Guide p. 34."
+    },
+    {
+      "n": "clear_image",
+      "k": "function",
+      "l": 18,
+      "s": "",
+      "a": "(x=0, y=0, w=320, h=210, color=(255, 255, 255))",
+      "d": "Clear the screen, or (x, y, w, h) with an optional RGB tuple. Guide p. 35."
+    },
+    {
+      "n": "get_pixel",
+      "k": "function",
+      "l": 23,
+      "s": "",
+      "a": "(x, y)",
+      "d": "Return the pixel color as an (r, g, b) tuple. Guide p. 35."
+    },
+    {
+      "n": "set_pixel",
+      "k": "function",
+      "l": 28,
+      "s": "",
+      "a": "(x, y, color)",
+      "d": "Set a pixel using an (r, g, b) tuple. Guide p. 35."
+    },
+    {
+      "n": "show_screen",
+      "k": "function",
+      "l": 33,
+      "s": "",
+      "a": "()",
+      "d": "Keep the drawing visible until Clear is pressed. Guide p. 35."
+    },
+    {
+      "n": "version",
+      "k": "variable",
+      "l": 38,
+      "s": ""
+    }
+  ],
+  "ti_plotlib.py": [
+    {
+      "n": "ti_plotlib",
+      "k": "module",
+      "l": 1,
+      "d": "TI plotting: setup, drawing, regression and window properties."
+    },
+    {
+      "n": "xmin",
+      "k": "variable",
+      "l": 7,
+      "s": ""
+    },
+    {
+      "n": "xmax",
+      "k": "variable",
+      "l": 8,
+      "s": ""
+    },
+    {
+      "n": "ymin",
+      "k": "variable",
+      "l": 9,
+      "s": ""
+    },
+    {
+      "n": "ymax",
+      "k": "variable",
+      "l": 10,
+      "s": ""
+    },
+    {
+      "n": "a",
+      "k": "variable",
+      "l": 11,
+      "s": ""
+    },
+    {
+      "n": "b",
+      "k": "variable",
+      "l": 12,
+      "s": ""
+    },
+    {
+      "n": "cls",
+      "k": "function",
+      "l": 15,
+      "s": "",
+      "a": "()",
+      "d": "Clear the plotting screen. Guide p. 65."
+    },
+    {
+      "n": "grid",
+      "k": "function",
+      "l": 20,
+      "s": "",
+      "a": "(xscl=1.0, yscl=1.0, style='dot', color=(192, 192, 192))",
+      "d": "Draw a grid with dot/dash/solid/point style and optional RGB color. Guide pp. 87-88."
+    },
+    {
+      "n": "window",
+      "k": "function",
+      "l": 25,
+      "s": "",
+      "a": "(xmin, xmax, ymin, ymax)",
+      "d": "Define the plotting window before plotting. Guide p. 136."
+    },
+    {
+      "n": "auto_window",
+      "k": "function",
+      "l": 30,
+      "s": "",
+      "a": "(xlist, ylist)",
+      "d": "Fit the plotting window to the data. Guide p. 61."
+    },
+    {
+      "n": "axes",
+      "k": "function",
+      "l": 35,
+      "s": "",
+      "a": "(mode='on')",
+      "d": "Draw axes: off, on, axes, or window. Guide p. 62."
+    },
+    {
+      "n": "labels",
+      "k": "function",
+      "l": 40,
+      "s": "",
+      "a": "(xlabel, ylabel, x=12, y=2)",
+      "d": "Label the axes at the given screen rows. Guide p. 98."
+    },
+    {
+      "n": "title",
+      "k": "function",
+      "l": 45,
+      "s": "",
+      "a": "(text)",
+      "d": "Set the centered plot title. Guide p. 130."
+    },
+    {
+      "n": "show_plot",
+      "k": "function",
+      "l": 50,
+      "s": "",
+      "a": "()",
+      "d": "Display the completed plot and wait for Clear. Guide p. 123."
+    },
+    {
+      "n": "color",
+      "k": "function",
+      "l": 55,
+      "s": "",
+      "a": "(r, g, b)",
+      "d": "Set subsequent plotting RGB color, components 0-255. Guide p. 66."
+    },
+    {
+      "n": "scatter",
+      "k": "function",
+      "l": 60,
+      "s": "",
+      "a": "(xlist, ylist, mark='o')",
+      "d": "Plot points with o, +, x, or . markers. Guide p. 121."
+    },
+    {
+      "n": "plot",
+      "k": "function",
+      "l": 65,
+      "s": "",
+      "a": "(x, y, mark='o')",
+      "d": "Plot a point or connected coordinate lists with a marker. Guide pp. 110-111."
+    },
+    {
+      "n": "line",
+      "k": "function",
+      "l": 70,
+      "s": "",
+      "a": "(x1, y1, x2, y2, mode='')",
+      "d": "Draw a segment, or an arrow when mode is arrow. Guide p. 99."
+    },
+    {
+      "n": "lin_reg",
+      "k": "function",
+      "l": 75,
+      "s": "",
+      "a": "(xlist, ylist, display='center', row=11)",
+      "d": "Draw linear regression and update a (slope) and b (intercept). Guide p. 100."
+    },
+    {
+      "n": "pen",
+      "k": "function",
+      "l": 80,
+      "s": "",
+      "a": "(size='thin', style='solid')",
+      "d": "Set thin/medium/thick pen and solid/dot/dash style. Guide p. 108."
+    },
+    {
+      "n": "text_at",
+      "k": "function",
+      "l": 85,
+      "s": "",
+      "a": "(row, text, align='left', clear=1)",
+      "d": "Draw text on row 1-12; optional clear controls line clearing. Guide p. 129."
+    }
+  ],
+  "ti_rover.py": [
+    {
+      "n": "ti_rover",
+      "k": "module",
+      "l": 1,
+      "d": "TI-Innovator Rover API (menu reference pp. 26-27)."
+    },
+    {
+      "n": "tiroverException",
+      "k": "class",
+      "l": 7,
+      "s": "",
+      "d": "Rover API exception (guide p. 161)."
+    },
+    {
+      "n": "forward",
+      "k": "function",
+      "l": 11,
+      "s": "",
+      "a": "(distance, *options)",
+      "d": "Move forward; optional distance unit, speed and speed unit. Guide p. 26."
+    },
+    {
+      "n": "backward",
+      "k": "function",
+      "l": 16,
+      "s": "",
+      "a": "(distance, *options)",
+      "d": "Move backward; optional distance unit, speed and speed unit. Guide p. 26."
+    },
+    {
+      "n": "left",
+      "k": "function",
+      "l": 21,
+      "s": "",
+      "a": "(angle, unit='degrees')",
+      "d": "Turn left, optionally specifying angle units. Guide p. 26."
+    },
+    {
+      "n": "right",
+      "k": "function",
+      "l": 26,
+      "s": "",
+      "a": "(angle, unit='degrees')",
+      "d": "Turn right, optionally specifying angle units. Guide p. 26."
+    },
+    {
+      "n": "stay",
+      "k": "function",
+      "l": 31,
+      "s": "",
+      "a": "(seconds)",
+      "d": "Remain in place for the given time. Guide p. 26."
+    },
+    {
+      "n": "to_xy",
+      "k": "function",
+      "l": 36,
+      "s": "",
+      "a": "(x, y)",
+      "d": "Move to the given coordinates. Guide p. 26."
+    },
+    {
+      "n": "to_polar",
+      "k": "function",
+      "l": 41,
+      "s": "",
+      "a": "(r, theta)",
+      "d": "Move to polar coordinates, theta in degrees. Guide p. 26."
+    },
+    {
+      "n": "to_angle",
+      "k": "function",
+      "l": 46,
+      "s": "",
+      "a": "(angle)",
+      "d": "Turn to the given heading. Guide p. 26."
+    },
+    {
+      "n": "forward_time",
+      "k": "function",
+      "l": 51,
+      "s": "",
+      "a": "(time, *options)",
+      "d": "Move forward for a duration, optionally with speed and unit. Guide p. 26."
+    },
+    {
+      "n": "backward_time",
+      "k": "function",
+      "l": 56,
+      "s": "",
+      "a": "(time, *options)",
+      "d": "Move backward for a duration, optionally with speed and unit. Guide p. 26."
+    },
+    {
+      "n": "position",
+      "k": "function",
+      "l": 61,
+      "s": "",
+      "a": "(x, y, heading, *options)",
+      "d": "Set position and heading, optionally specifying units. Guide p. 26."
+    },
+    {
+      "n": "grid_m_unit",
+      "k": "function",
+      "l": 66,
+      "s": "",
+      "a": "(scale_value)",
+      "d": "Set grid scale in meters. Guide p. 26."
+    },
+    {
+      "n": "color_rgb",
+      "k": "function",
+      "l": 71,
+      "s": "",
+      "a": "(r, g, b)",
+      "d": "Set the Rover RGB light (0-255 per component). Guide p. 26."
+    },
+    {
+      "n": "color_blink",
+      "k": "function",
+      "l": 76,
+      "s": "",
+      "a": "(frequency, time)",
+      "d": "Blink the Rover light. Guide p. 26."
+    },
+    {
+      "n": "motor_left",
+      "k": "function",
+      "l": 81,
+      "s": "",
+      "a": "(speed, time)",
+      "d": "Run the left motor at a signed speed (-255 to 255). Guide p. 26."
+    },
+    {
+      "n": "motor_right",
+      "k": "function",
+      "l": 86,
+      "s": "",
+      "a": "(speed, time)",
+      "d": "Run the right motor at a signed speed (-255 to 255). Guide p. 26."
+    },
+    {
+      "n": "motors",
+      "k": "function",
+      "l": 91,
+      "s": "",
+      "a": "(left_direction, left_speed, right_direction, right_speed, time)",
+      "d": "Control both motors. Guide p. 26."
+    },
+    {
+      "n": "stop",
+      "k": "function",
+      "l": 96,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "resume",
+      "k": "function",
+      "l": 101,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "disconnect_rv",
+      "k": "function",
+      "l": 106,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "wait_until_done",
+      "k": "function",
+      "l": 111,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "path_done",
+      "k": "function",
+      "l": 116,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "grid_origin",
+      "k": "function",
+      "l": 121,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "path_clear",
+      "k": "function",
+      "l": 126,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "zero_gyro",
+      "k": "function",
+      "l": 131,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "color_off",
+      "k": "function",
+      "l": 136,
+      "s": "",
+      "a": "()",
+      "d": "Rover control/status helper. Guide p. 26."
+    },
+    {
+      "n": "ranger_measurement",
+      "k": "function",
+      "l": 141,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "color_measurement",
+      "k": "function",
+      "l": 146,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "red_measurement",
+      "k": "function",
+      "l": 151,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "green_measurement",
+      "k": "function",
+      "l": 156,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "blue_measurement",
+      "k": "function",
+      "l": 161,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "gray_measurement",
+      "k": "function",
+      "l": 166,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "encoders_gyro_measurement",
+      "k": "function",
+      "l": 171,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "gyro_measurement",
+      "k": "function",
+      "l": 176,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "ranger_time",
+      "k": "function",
+      "l": 181,
+      "s": "",
+      "a": "()",
+      "d": "Read a Rover sensor value. Guide p. 26."
+    },
+    {
+      "n": "waypoint_xythdrn",
+      "k": "function",
+      "l": 186,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_prev",
+      "k": "function",
+      "l": 191,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_eta",
+      "k": "function",
+      "l": 196,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_x",
+      "k": "function",
+      "l": 201,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_y",
+      "k": "function",
+      "l": 206,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_time",
+      "k": "function",
+      "l": 211,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_heading",
+      "k": "function",
+      "l": 216,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_distance",
+      "k": "function",
+      "l": 221,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_revs",
+      "k": "function",
+      "l": 226,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "pathlist_cmdnum",
+      "k": "function",
+      "l": 231,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_x",
+      "k": "function",
+      "l": 236,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_y",
+      "k": "function",
+      "l": 241,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_time",
+      "k": "function",
+      "l": 246,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_heading",
+      "k": "function",
+      "l": 251,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_distance",
+      "k": "function",
+      "l": 256,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    },
+    {
+      "n": "waypoint_revs",
+      "k": "function",
+      "l": 261,
+      "s": "",
+      "a": "()",
+      "d": "Read Rover path or waypoint data. Guide p. 26."
+    }
+  ],
+  "ti_system.py": [
+    {
+      "n": "ti_system",
+      "k": "module",
+      "l": 1,
+      "d": "TI calculator keyboard, display, OS lists and timing."
+    },
+    {
+      "n": "escape",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "()",
+      "d": "Return whether Clear was pressed, then reset that flag. Guide p. 75."
+    },
+    {
+      "n": "wait_key",
+      "k": "function",
+      "l": 13,
+      "s": "",
+      "a": "()",
+      "d": "Wait for a key and return its keycode, including modifier keys. Guide p. 135."
+    },
+    {
+      "n": "recall_list",
+      "k": "function",
+      "l": 18,
+      "s": "",
+      "a": "(name)",
+      "d": "Return an OS list: 1-6 or its custom uppercase name. Guide p. 118."
+    },
+    {
+      "n": "store_list",
+      "k": "function",
+      "l": 23,
+      "s": "",
+      "a": "(name, values)",
+      "d": "Store a Python list of up to 100 elements in an OS list. Guide p. 127."
+    },
+    {
+      "n": "recall_RegEQ",
+      "k": "function",
+      "l": 28,
+      "s": "",
+      "a": "()",
+      "d": "Return the regression equation previously computed in the OS. Guide p. 119."
+    },
+    {
+      "n": "sleep",
+      "k": "function",
+      "l": 33,
+      "s": "",
+      "a": "(seconds)",
+      "d": "Pause for the given number of seconds. Guide p. 124."
+    },
+    {
+      "n": "wait",
+      "k": "function",
+      "l": 38,
+      "s": "",
+      "a": "(*args)",
+      "d": "Timing helper exported by ti_system. Guide p. 156."
+    },
+    {
+      "n": "disp_at",
+      "k": "function",
+      "l": 43,
+      "s": "",
+      "a": "(row, *args)",
+      "d": "Display text: (row, col, text[, align, color, background]) or (row, text[, align, color, background]). Guide pp. 69-70."
+    },
+    {
+      "n": "disp_clr",
+      "k": "function",
+      "l": 48,
+      "s": "",
+      "a": "(row=None)",
+      "d": "Clear the text screen, or one row when supplied. Guide p. 71."
+    },
+    {
+      "n": "disp_wait",
+      "k": "function",
+      "l": 53,
+      "s": "",
+      "a": "()",
+      "d": "Display the screen and wait for Clear. Guide p. 73."
+    },
+    {
+      "n": "disp_cursor",
+      "k": "function",
+      "l": 58,
+      "s": "",
+      "a": "(state=1)",
+      "d": "Show (1) or hide (0) the Shell cursor. Guide p. 72."
+    }
+  ],
+  "turtle.py": [
+    {
+      "n": "turtle",
+      "k": "module",
+      "l": 1,
+      "d": "TI Turtle 2.0.0 API (not desktop Python turtle). Analysis-only definitions."
+    },
+    {
+      "n": "Turtle",
+      "k": "class",
+      "l": 6,
+      "s": "",
+      "a": "()",
+      "d": "TI Turtle object; Getting Started Guide p. 3, TURTLE menu version 2.0.0."
+    },
+    {
+      "n": "forward",
+      "k": "function",
+      "l": 13,
+      "s": "Turtle",
+      "a": "(distance)",
+      "d": "Move forward by a distance in pixels. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "backward",
+      "k": "function",
+      "l": 17,
+      "s": "Turtle",
+      "a": "(distance)",
+      "d": "Move backward in pixels. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "right",
+      "k": "function",
+      "l": 21,
+      "s": "Turtle",
+      "a": "(degrees)",
+      "d": "Turn right in degrees. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "left",
+      "k": "function",
+      "l": 25,
+      "s": "Turtle",
+      "a": "(degrees)",
+      "d": "Turn left in degrees. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "goto",
+      "k": "function",
+      "l": 29,
+      "s": "Turtle",
+      "a": "(x, y=None)",
+      "d": "Move to x,y or a coordinate tuple; tuple form in Guide p. 17. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "done",
+      "k": "function",
+      "l": 33,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Keep the drawing visible; place at the end of the program. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "fillcolor",
+      "k": "function",
+      "l": 37,
+      "s": "Turtle",
+      "a": "(r, g, b)",
+      "d": "Set the fill RGB color, 0-255 per component. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "begin_fill",
+      "k": "function",
+      "l": 41,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Start a filled shape. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "end_fill",
+      "k": "function",
+      "l": 45,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Finish and fill the shape. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "circle",
+      "k": "function",
+      "l": 49,
+      "s": "Turtle",
+      "a": "(radius, arc=360)",
+      "d": "Draw a circle or optional arc in degrees. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "dot",
+      "k": "function",
+      "l": 53,
+      "s": "Turtle",
+      "a": "(diameter)",
+      "d": "Draw a filled dot. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "write",
+      "k": "function",
+      "l": 57,
+      "s": "Turtle",
+      "a": "(text)",
+      "d": "Write text at the turtle position. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "penup",
+      "k": "function",
+      "l": 61,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Lift the pen. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "pendown",
+      "k": "function",
+      "l": 65,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Lower the pen. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "pencolor",
+      "k": "function",
+      "l": 69,
+      "s": "Turtle",
+      "a": "(r, g, b)",
+      "d": "Set the pen RGB color, 0-255 per component. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "pensize",
+      "k": "function",
+      "l": 73,
+      "s": "Turtle",
+      "a": "(size)",
+      "d": "Set pen size 1-4. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "clear",
+      "k": "function",
+      "l": 77,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Clear the drawing. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "hideturtle",
+      "k": "function",
+      "l": 81,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Hide the turtle cursor. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "showturtle",
+      "k": "function",
+      "l": 85,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Show the turtle cursor. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "hidegrid",
+      "k": "function",
+      "l": 89,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Hide the grid background. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "speed",
+      "k": "function",
+      "l": 93,
+      "s": "Turtle",
+      "a": "(value)",
+      "d": "Set speed 0-10. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "home",
+      "k": "function",
+      "l": 97,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Return to the origin. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "setheading",
+      "k": "function",
+      "l": 101,
+      "s": "Turtle",
+      "a": "(degrees)",
+      "d": "Set the heading in degrees. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "xcor",
+      "k": "function",
+      "l": 105,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Return the x coordinate. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "ycor",
+      "k": "function",
+      "l": 109,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Return the y coordinate. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "pos",
+      "k": "function",
+      "l": 113,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Return the coordinate pair. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "heading",
+      "k": "function",
+      "l": 117,
+      "s": "Turtle",
+      "a": "()",
+      "d": "Return the heading in degrees. Source: TURTLE.8xv menu, Turtle Getting Started Guide."
+    },
+    {
+      "n": "escape",
+      "k": "function",
+      "l": 8,
+      "s": "",
+      "a": "()",
+      "d": "Imported from ti_system. Return whether Clear was pressed, then reset that flag. Guide p. 75."
+    }
+  ],
+  "ce_turtl.py": [
+    {
+      "n": "ce_turtl",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "turtle",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "backward",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.backward(pixels)",
+      "s": "turtle",
+      "a": "(pixels)"
+    },
+    {
+      "n": "circle",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.circle(radius)",
+      "s": "turtle",
+      "a": "(radius)"
+    },
+    {
+      "n": "clear",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.clear()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "color",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.color(r,g,b)",
+      "s": "turtle",
+      "a": "(r,g,b)"
+    },
+    {
+      "n": "dot",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.dot(radius)",
+      "s": "turtle",
+      "a": "(radius)"
+    },
+    {
+      "n": "forward",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.forward(pixels)",
+      "s": "turtle",
+      "a": "(pixels)"
+    },
+    {
+      "n": "goto",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.goto(x,y)",
+      "s": "turtle",
+      "a": "(x,y)"
+    },
+    {
+      "n": "heading",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.heading()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "home",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.home()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "isdown",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.isdown()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "left",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.left(degrees)",
+      "s": "turtle",
+      "a": "(degrees)"
+    },
+    {
+      "n": "pendown",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.pendown()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "pensize",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.pensize(size 0,1,2)",
+      "s": "turtle",
+      "a": "(size 0,1,2)"
+    },
+    {
+      "n": "penup",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.penup()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "position",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.position()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "right",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.right(degrees)",
+      "s": "turtle",
+      "a": "(degrees)"
+    },
+    {
+      "n": "setheading",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.setheading(angle)",
+      "s": "turtle",
+      "a": "(angle)"
+    },
+    {
+      "n": "show",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.show()",
+      "s": "turtle",
+      "a": "()"
+    },
+    {
+      "n": "speed",
+      "k": "function",
+      "l": 1,
+      "d": "turtle.speed(speed  0,1)",
+      "s": "turtle",
+      "a": "(speed  0,1)"
+    }
+  ],
+  "dash_in.py": [
+    {
+      "n": "dash_in",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "is_clap",
+      "k": "function",
+      "l": 1,
+      "d": "is_clap()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "is_close",
+      "k": "function",
+      "l": 1,
+      "d": "is_close(\"direction\")",
+      "s": "",
+      "a": "(\"direction\")"
+    },
+    {
+      "n": "is_pressed",
+      "k": "function",
+      "l": 1,
+      "d": "is_pressed(\"button\")",
+      "s": "",
+      "a": "(\"button\")"
+    },
+    {
+      "n": "wait_for_clap",
+      "k": "function",
+      "l": 1,
+      "d": "wait_for_clap()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "wait_for_press",
+      "k": "function",
+      "l": 1,
+      "d": "wait_for_press(\"button\")",
+      "s": "",
+      "a": "(\"button\")"
+    },
+    {
+      "n": "was_pressed",
+      "k": "function",
+      "l": 1,
+      "d": "was_pressed(\"button\")",
+      "s": "",
+      "a": "(\"button\")"
+    }
+  ],
+  "dash_out.py": [
+    {
+      "n": "dash_out",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "eye_brightness",
+      "k": "function",
+      "l": 1,
+      "d": "eye_brightness(value)   0-255",
+      "s": "",
+      "a": "(value)"
+    },
+    {
+      "n": "look_down",
+      "k": "function",
+      "l": 1,
+      "d": "look_down(angle)          0-7",
+      "s": "",
+      "a": "(angle)"
+    },
+    {
+      "n": "look_forward",
+      "k": "function",
+      "l": 1,
+      "d": "look_forward()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "look_left",
+      "k": "function",
+      "l": 1,
+      "d": "look_left(angle)       0-130°",
+      "s": "",
+      "a": "(angle)"
+    },
+    {
+      "n": "look_right",
+      "k": "function",
+      "l": 1,
+      "d": "look_right(angle)      0-130°",
+      "s": "",
+      "a": "(angle)"
+    },
+    {
+      "n": "look_up",
+      "k": "function",
+      "l": 1,
+      "d": "look_up(angle)           0-22",
+      "s": "",
+      "a": "(angle)"
+    },
+    {
+      "n": "play_sound",
+      "k": "function",
+      "l": 1,
+      "d": "play_sound(\"sound\")",
+      "s": "",
+      "a": "(\"sound\")"
+    },
+    {
+      "n": "play_tone",
+      "k": "function",
+      "l": 1,
+      "d": "play_tone(frequency,duration)",
+      "s": "",
+      "a": "(frequency,duration)"
+    },
+    {
+      "n": "set_eye_pattern",
+      "k": "function",
+      "l": 1,
+      "d": "set_eye_pattern(\"pattern\")",
+      "s": "",
+      "a": "(\"pattern\")"
+    },
+    {
+      "n": "set_eye_positions",
+      "k": "function",
+      "l": 1,
+      "d": "set_eye_positions(position)        0-15",
+      "s": "",
+      "a": "(position)"
+    },
+    {
+      "n": "set_light",
+      "k": "function",
+      "l": 1,
+      "d": "set_light(\"light\",\"color\")",
+      "s": "",
+      "a": "(\"light\",\"color\")"
+    },
+    {
+      "n": "set_volume",
+      "k": "function",
+      "l": 1,
+      "d": "set_volume(loudness)      0-6",
+      "s": "",
+      "a": "(loudness)"
+    }
+  ],
+  "dash_pth.py": [
+    {
+      "n": "dash_pth",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "path_clear",
+      "k": "function",
+      "l": 1,
+      "d": "path_clear()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "pathlist_distance",
+      "k": "function",
+      "l": 1,
+      "d": "pathlist_distance()      list",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "pathlist_heading",
+      "k": "function",
+      "l": 1,
+      "d": "pathlist_heading()       list",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "pathlist_time",
+      "k": "function",
+      "l": 1,
+      "d": "pathlist_time()          list",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "pathlist_x",
+      "k": "function",
+      "l": 1,
+      "d": "pathlist_x()             list",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "pathlist_y",
+      "k": "function",
+      "l": 1,
+      "d": "pathlist_y()             list",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "store_list",
+      "k": "function",
+      "l": 1,
+      "d": "store_list(\"name\",var)    1-6",
+      "s": "",
+      "a": "(\"name\",var)"
+    },
+    {
+      "n": "waypoint_heading",
+      "k": "function",
+      "l": 1,
+      "d": "waypoint_heading()      value",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "waypoint_x",
+      "k": "function",
+      "l": 1,
+      "d": "waypoint_x()            value",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "waypoint_y",
+      "k": "function",
+      "l": 1,
+      "d": "waypoint_y()            value",
+      "s": "",
+      "a": "()"
+    }
+  ],
+  "hachage.py": [
+    {
+      "n": "hachage",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "sha_hash",
+      "k": "function",
+      "l": 1,
+      "d": "var=sha_hash(\"chane\")",
+      "s": "",
+      "a": "(\"chane\")"
+    }
+  ],
+  "mb_audio.py": [
+    {
+      "n": "mb_audio",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "Sound",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "GIGGLE",
+      "k": "variable",
+      "l": 1,
+      "d": "GIGGLE",
+      "s": "Sound"
+    },
+    {
+      "n": "HAPPY",
+      "k": "variable",
+      "l": 1,
+      "d": "HAPPY",
+      "s": "Sound"
+    },
+    {
+      "n": "HELLO",
+      "k": "variable",
+      "l": 1,
+      "d": "HELLO",
+      "s": "Sound"
+    },
+    {
+      "n": "MYSTERIOUS",
+      "k": "variable",
+      "l": 1,
+      "d": "MYSTERIOUS",
+      "s": "Sound"
+    },
+    {
+      "n": "SAD",
+      "k": "variable",
+      "l": 1,
+      "d": "SAD",
+      "s": "Sound"
+    },
+    {
+      "n": "SLIDE",
+      "k": "variable",
+      "l": 1,
+      "d": "SLIDE",
+      "s": "Sound"
+    },
+    {
+      "n": "SOARING",
+      "k": "variable",
+      "l": 1,
+      "d": "SOARING",
+      "s": "Sound"
+    },
+    {
+      "n": "SPRING",
+      "k": "variable",
+      "l": 1,
+      "d": "SPRING",
+      "s": "Sound"
+    },
+    {
+      "n": "TWINKLE",
+      "k": "variable",
+      "l": 1,
+      "d": "TWINKLE",
+      "s": "Sound"
+    },
+    {
+      "n": "YAWN",
+      "k": "variable",
+      "l": 1,
+      "d": "YAWN",
+      "s": "Sound"
+    },
+    {
+      "n": "audio",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "play",
+      "k": "function",
+      "l": 1,
+      "d": ".play(sound)\n.play(son)",
+      "s": "audio",
+      "a": "(sound)"
+    },
+    {
+      "n": "stop",
+      "k": "function",
+      "l": 1,
+      "d": ".stop()",
+      "s": "audio",
+      "a": "()"
+    }
+  ],
+  "mb_butns.py": [
+    {
+      "n": "mb_butns",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "button_a",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "get_presses",
+      "k": "function",
+      "l": 1,
+      "d": ".get_presses()\nvar=.get_presses()",
+      "s": "button_a",
+      "a": "()"
+    },
+    {
+      "n": "is_pressed",
+      "k": "function",
+      "l": 1,
+      "d": ".is_pressed()",
+      "s": "button_a",
+      "a": "()"
+    },
+    {
+      "n": "was_pressed",
+      "k": "function",
+      "l": 1,
+      "d": ".was_pressed()",
+      "s": "button_a",
+      "a": "()"
+    },
+    {
+      "n": "button_b",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "get_presses",
+      "k": "function",
+      "l": 1,
+      "d": ".get_presses()\nvar=.get_presses()",
+      "s": "button_b",
+      "a": "()"
+    },
+    {
+      "n": "is_pressed",
+      "k": "function",
+      "l": 1,
+      "d": ".is_pressed()",
+      "s": "button_b",
+      "a": "()"
+    },
+    {
+      "n": "was_pressed",
+      "k": "function",
+      "l": 1,
+      "d": ".was_pressed()",
+      "s": "button_b",
+      "a": "()"
+    },
+    {
+      "n": "pin_logo",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "is_touched",
+      "k": "function",
+      "l": 1,
+      "d": ".is_touched()",
+      "s": "pin_logo",
+      "a": "()"
+    }
+  ],
+  "mb_disp.py": [
+    {
+      "n": "mb_disp",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "Image",
+      "k": "class",
+      "l": 1,
+      "d": "var=Image(':'':'':'':'':')\nvar=Image(chaine)\nvar=Image(string)",
+      "s": "",
+      "a": "(':'':'':'':'':')"
+    },
+    {
+      "n": "ANGRY",
+      "k": "variable",
+      "l": 1,
+      "d": "ANGRY",
+      "s": "Image"
+    },
+    {
+      "n": "ASLEEP",
+      "k": "variable",
+      "l": 1,
+      "d": "ASLEEP",
+      "s": "Image"
+    },
+    {
+      "n": "BUTTERFLY",
+      "k": "variable",
+      "l": 1,
+      "d": "BUTTERFLY",
+      "s": "Image"
+    },
+    {
+      "n": "CHESSBOARD",
+      "k": "variable",
+      "l": 1,
+      "d": "CHESSBOARD",
+      "s": "Image"
+    },
+    {
+      "n": "CONFUSED",
+      "k": "variable",
+      "l": 1,
+      "d": "CONFUSED",
+      "s": "Image"
+    },
+    {
+      "n": "COW",
+      "k": "variable",
+      "l": 1,
+      "d": "COW",
+      "s": "Image"
+    },
+    {
+      "n": "DIAMOND",
+      "k": "variable",
+      "l": 1,
+      "d": "DIAMOND",
+      "s": "Image"
+    },
+    {
+      "n": "DIAMOND_SMALL",
+      "k": "variable",
+      "l": 1,
+      "d": "DIAMOND_SMALL",
+      "s": "Image"
+    },
+    {
+      "n": "DUCK",
+      "k": "variable",
+      "l": 1,
+      "d": "DUCK",
+      "s": "Image"
+    },
+    {
+      "n": "FABULOUS",
+      "k": "variable",
+      "l": 1,
+      "d": "FABULOUS",
+      "s": "Image"
+    },
+    {
+      "n": "HAPPY",
+      "k": "variable",
+      "l": 1,
+      "d": "HAPPY",
+      "s": "Image"
+    },
+    {
+      "n": "HEART",
+      "k": "variable",
+      "l": 1,
+      "d": "HEART",
+      "s": "Image"
+    },
+    {
+      "n": "HEART_SMALL",
+      "k": "variable",
+      "l": 1,
+      "d": "HEART_SMALL",
+      "s": "Image"
+    },
+    {
+      "n": "HOUSE",
+      "k": "variable",
+      "l": 1,
+      "d": "HOUSE",
+      "s": "Image"
+    },
+    {
+      "n": "MEH",
+      "k": "variable",
+      "l": 1,
+      "d": "MEH",
+      "s": "Image"
+    },
+    {
+      "n": "MUSIC_CROTCHET",
+      "k": "variable",
+      "l": 1,
+      "d": "MUSIC_CROTCHET",
+      "s": "Image"
+    },
+    {
+      "n": "MUSIC_QUAVER",
+      "k": "variable",
+      "l": 1,
+      "d": "MUSIC_QUAVER",
+      "s": "Image"
+    },
+    {
+      "n": "MUSIC_QUAVERS",
+      "k": "variable",
+      "l": 1,
+      "d": "MUSIC_QUAVERS",
+      "s": "Image"
+    },
+    {
+      "n": "NO",
+      "k": "variable",
+      "l": 1,
+      "d": "NO",
+      "s": "Image"
+    },
+    {
+      "n": "PACMAN",
+      "k": "variable",
+      "l": 1,
+      "d": "PACMAN",
+      "s": "Image"
+    },
+    {
+      "n": "PITCHFORK",
+      "k": "variable",
+      "l": 1,
+      "d": "PITCHFORK",
+      "s": "Image"
+    },
+    {
+      "n": "RABBIT",
+      "k": "variable",
+      "l": 1,
+      "d": "RABBIT",
+      "s": "Image"
+    },
+    {
+      "n": "ROLLERSKATE",
+      "k": "variable",
+      "l": 1,
+      "d": "ROLLERSKATE",
+      "s": "Image"
+    },
+    {
+      "n": "SAD",
+      "k": "variable",
+      "l": 1,
+      "d": "SAD",
+      "s": "Image"
+    },
+    {
+      "n": "SILLY",
+      "k": "variable",
+      "l": 1,
+      "d": "SILLY",
+      "s": "Image"
+    },
+    {
+      "n": "SMILE",
+      "k": "variable",
+      "l": 1,
+      "d": "SMILE",
+      "s": "Image"
+    },
+    {
+      "n": "SQUARE",
+      "k": "variable",
+      "l": 1,
+      "d": "SQUARE",
+      "s": "Image"
+    },
+    {
+      "n": "SQUARE_SMALL",
+      "k": "variable",
+      "l": 1,
+      "d": "SQUARE_SMALL",
+      "s": "Image"
+    },
+    {
+      "n": "SURPRISED",
+      "k": "variable",
+      "l": 1,
+      "d": "SURPRISED",
+      "s": "Image"
+    },
+    {
+      "n": "TARGET",
+      "k": "variable",
+      "l": 1,
+      "d": "TARGET",
+      "s": "Image"
+    },
+    {
+      "n": "TORTOISE",
+      "k": "variable",
+      "l": 1,
+      "d": "TORTOISE",
+      "s": "Image"
+    },
+    {
+      "n": "TRIANGLE",
+      "k": "variable",
+      "l": 1,
+      "d": "TRIANGLE",
+      "s": "Image"
+    },
+    {
+      "n": "TRIANGLE_LEFT",
+      "k": "variable",
+      "l": 1,
+      "d": "TRIANGLE_LEFT",
+      "s": "Image"
+    },
+    {
+      "n": "TSHIRT",
+      "k": "variable",
+      "l": 1,
+      "d": "TSHIRT",
+      "s": "Image"
+    },
+    {
+      "n": "XMAS",
+      "k": "variable",
+      "l": 1,
+      "d": "XMAS",
+      "s": "Image"
+    },
+    {
+      "n": "YES",
+      "k": "variable",
+      "l": 1,
+      "d": "YES",
+      "s": "Image"
+    },
+    {
+      "n": "display",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "clear",
+      "k": "function",
+      "l": 1,
+      "d": ".clear()",
+      "s": "display",
+      "a": "()"
+    },
+    {
+      "n": "read_light_level",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_light_level()",
+      "s": "display",
+      "a": "()"
+    },
+    {
+      "n": "scroll",
+      "k": "function",
+      "l": 1,
+      "d": ".scroll(val)\n.scroll(val,del=400,wait=True)",
+      "s": "display",
+      "a": "(val)"
+    },
+    {
+      "n": "set_pixel",
+      "k": "function",
+      "l": 1,
+      "d": ".set_pixel(x,y,val)",
+      "s": "display",
+      "a": "(x,y,val)"
+    },
+    {
+      "n": "show",
+      "k": "function",
+      "l": 1,
+      "d": ".show(val)\n.show(val,del=400),wait=True)\n.show(val,del=400,wait=True)",
+      "s": "display",
+      "a": "(val)"
+    }
+  ],
+  "mb_file.py": [
+    {
+      "n": "mb_file",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "delete_file",
+      "k": "function",
+      "l": 1,
+      "d": "delete_file(\"name\")\ndelete_file(\"nom\")",
+      "s": "",
+      "a": "(\"name\")"
+    },
+    {
+      "n": "list_file",
+      "k": "function",
+      "l": 1,
+      "d": "list_file()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "read_file",
+      "k": "function",
+      "l": 1,
+      "d": "var=read_file(\"name\")\nvar=read_file(\"nom\")",
+      "s": "",
+      "a": "(\"name\")"
+    },
+    {
+      "n": "write_file",
+      "k": "function",
+      "l": 1,
+      "d": "write_file(\"name\",\"string\")\nwrite_file(\"nom\",\"chane\")",
+      "s": "",
+      "a": "(\"name\",\"string\")"
+    }
+  ],
+  "mb_grove.py": [
+    {
+      "n": "mb_grove",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "grove",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "calibrate_pressure",
+      "k": "function",
+      "l": 1,
+      "d": "calibrate_pressure(m,b)",
+      "s": "grove",
+      "a": "(m,b)"
+    },
+    {
+      "n": "power",
+      "k": "function",
+      "l": 1,
+      "d": ".power(pin,value)\n.power(pin,valeur)",
+      "s": "grove",
+      "a": "(pin,value)"
+    },
+    {
+      "n": "read_bme280",
+      "k": "function",
+      "l": 1,
+      "d": "t,h,p=.read_bme280()\nt,p,h=.read_bme280()",
+      "s": "grove",
+      "a": "()"
+    },
+    {
+      "n": "read_dht20",
+      "k": "function",
+      "l": 1,
+      "d": "var(t),var(h)=.read_dht20()",
+      "s": "grove",
+      "a": "(t)"
+    },
+    {
+      "n": "read_lightlevel",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_lightlevel(pin)",
+      "s": "grove",
+      "a": "(pin)"
+    },
+    {
+      "n": "read_moisture",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_moisture(pin)",
+      "s": "grove",
+      "a": "(pin)"
+    },
+    {
+      "n": "read_pressure",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_pressure(pin)",
+      "s": "grove",
+      "a": "(pin)"
+    },
+    {
+      "n": "read_ranger_cm",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_ranger_cm(pin)",
+      "s": "grove",
+      "a": "(pin)"
+    },
+    {
+      "n": "read_ranger_time",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_ranger_time(pin)",
+      "s": "grove",
+      "a": "(pin)"
+    },
+    {
+      "n": "read_sgp30",
+      "k": "function",
+      "l": 1,
+      "d": "co2,tvoc=.read_sgp30()",
+      "s": "grove",
+      "a": "()"
+    },
+    {
+      "n": "read_sht35",
+      "k": "function",
+      "l": 1,
+      "d": "var(t),var(h)=.read_sht()",
+      "s": "grove",
+      "a": "(t)"
+    },
+    {
+      "n": "read_temperature",
+      "k": "function",
+      "l": 1,
+      "d": "var=.read_temperature(pin)",
+      "s": "grove",
+      "a": "(pin)"
+    },
+    {
+      "n": "relay",
+      "k": "function",
+      "l": 1,
+      "d": ".relay(pin,value)\n.relay(pin,valeur)",
+      "s": "grove",
+      "a": "(pin,value)"
+    },
+    {
+      "n": "set_servo",
+      "k": "function",
+      "l": 1,
+      "d": ".set_servo(pin,deg,min,max)",
+      "s": "grove",
+      "a": "(pin,deg,min,max)"
+    },
+    {
+      "n": "pin0",
+      "k": "variable",
+      "l": 1,
+      "d": "pin0",
+      "s": ""
+    },
+    {
+      "n": "pin1",
+      "k": "variable",
+      "l": 1,
+      "d": "pin1",
+      "s": ""
+    },
+    {
+      "n": "pin14",
+      "k": "variable",
+      "l": 1,
+      "d": "pin14\npin16",
+      "s": ""
+    },
+    {
+      "n": "pin15",
+      "k": "variable",
+      "l": 1,
+      "d": "pin15\npin16",
+      "s": ""
+    },
+    {
+      "n": "pin16",
+      "k": "variable",
+      "l": 1,
+      "d": "pin16",
+      "s": ""
+    },
+    {
+      "n": "pin2",
+      "k": "variable",
+      "l": 1,
+      "d": "pin2",
+      "s": ""
+    },
+    {
+      "n": "pin8",
+      "k": "variable",
+      "l": 1,
+      "d": "pin8",
+      "s": ""
+    }
+  ],
+  "mb_log.py": [
+    {
+      "n": "mb_log",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "data_log",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "set_duration",
+      "k": "function",
+      "l": 1,
+      "d": ".set_duration(seconds)\n.set_duration(secondes)",
+      "s": "data_log",
+      "a": "(seconds)"
+    },
+    {
+      "n": "set_range",
+      "k": "function",
+      "l": 1,
+      "d": ".set_range(Y-min,Y-max)",
+      "s": "data_log",
+      "a": "(Y-min,Y-max)"
+    },
+    {
+      "n": "set_sensor",
+      "k": "function",
+      "l": 1,
+      "d": ".set_sensor(sensor)\n.set_sensor(capteur)",
+      "s": "data_log",
+      "a": "(sensor)"
+    },
+    {
+      "n": "start",
+      "k": "function",
+      "l": 1,
+      "d": ".start()",
+      "s": "data_log",
+      "a": "()"
+    }
+  ],
+  "mb_mic.py": [
+    {
+      "n": "mb_mic",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "SoundEvent",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "LOUD",
+      "k": "variable",
+      "l": 1,
+      "d": "SoundEvent.LOUD",
+      "s": "SoundEvent"
+    },
+    {
+      "n": "QUIET",
+      "k": "variable",
+      "l": 1,
+      "d": "SoundEvent.QUIET",
+      "s": "SoundEvent"
+    },
+    {
+      "n": "microphone",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "current_event",
+      "k": "function",
+      "l": 1,
+      "d": "var=.current_event()",
+      "s": "microphone",
+      "a": "()"
+    },
+    {
+      "n": "is_event",
+      "k": "function",
+      "l": 1,
+      "d": ".is_event(SoundEvent)\n.is_event(EventSon)",
+      "s": "microphone",
+      "a": "(SoundEvent)"
+    },
+    {
+      "n": "set_threshold",
+      "k": "function",
+      "l": 1,
+      "d": ".set_threshold(SoundEvent,val)\n.set_threshold(EventSon,val)",
+      "s": "microphone",
+      "a": "(SoundEvent,val)"
+    },
+    {
+      "n": "sound_level",
+      "k": "function",
+      "l": 1,
+      "d": "var=.sound_level()",
+      "s": "microphone",
+      "a": "()"
+    },
+    {
+      "n": "was_event",
+      "k": "function",
+      "l": 1,
+      "d": ".was_event(SoundEvent)\n.was_event(EventSon)",
+      "s": "microphone",
+      "a": "(SoundEvent)"
+    }
+  ],
+  "mb_music.py": [
+    {
+      "n": "mb_music",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "music",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "pitch",
+      "k": "function",
+      "l": 1,
+      "d": ".pitch(frequency,duration)\n.pitch(frquence,dure)\n.pitch(frequency,t,wait=True)",
+      "s": "music",
+      "a": "(frequency,duration)"
+    },
+    {
+      "n": "play",
+      "k": "function",
+      "l": 1,
+      "d": ".play(song)\n.play(mlodie)\n.play(song,wait=True)",
+      "s": "music",
+      "a": "(song)"
+    },
+    {
+      "n": "set_tempo",
+      "k": "function",
+      "l": 1,
+      "d": ".set_tempo(ticks,BPM)",
+      "s": "music",
+      "a": "(ticks,BPM)"
+    },
+    {
+      "n": "set_volume",
+      "k": "function",
+      "l": 1,
+      "d": ".set_volume(0-255)",
+      "s": "music",
+      "a": "(0-255)"
+    }
+  ],
+  "mb_neopx.py": [
+    {
+      "n": "mb_neopx",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "Color",
+      "k": "class",
+      "l": 1,
+      "d": "var=Color(pin)",
+      "s": "",
+      "a": "(pin)"
+    },
+    {
+      "n": "rgb",
+      "k": "function",
+      "l": 1,
+      "d": ".rgb(r,g,b)",
+      "s": "Color",
+      "a": "(r,g,b)"
+    },
+    {
+      "n": "NeoPixel",
+      "k": "class",
+      "l": 1,
+      "d": "np=NeoPixel(pin,pixels)",
+      "s": "",
+      "a": "(pin,pixels)"
+    },
+    {
+      "n": "clear",
+      "k": "function",
+      "l": 1,
+      "d": "np.clear()",
+      "s": "NeoPixel",
+      "a": "()"
+    },
+    {
+      "n": "show",
+      "k": "function",
+      "l": 1,
+      "d": "np.show()",
+      "s": "NeoPixel",
+      "a": "()"
+    },
+    {
+      "n": "color",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "rgb",
+      "k": "function",
+      "l": 1,
+      "d": "color.rgb(r,g,b)",
+      "s": "color",
+      "a": "(r,g,b)"
+    },
+    {
+      "n": "pin0",
+      "k": "variable",
+      "l": 1,
+      "d": "pin0",
+      "s": ""
+    },
+    {
+      "n": "pin1",
+      "k": "variable",
+      "l": 1,
+      "d": "pin1",
+      "s": ""
+    },
+    {
+      "n": "pin13",
+      "k": "variable",
+      "l": 1,
+      "d": "pin13",
+      "s": ""
+    },
+    {
+      "n": "pin2",
+      "k": "variable",
+      "l": 1,
+      "d": "pin2",
+      "s": ""
+    },
+    {
+      "n": "pin8",
+      "k": "variable",
+      "l": 1,
+      "d": "pin8",
+      "s": ""
+    }
+  ],
+  "mb_notes.py": [
+    {
+      "n": "mb_notes",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    }
+  ],
+  "mb_pins.py": [
+    {
+      "n": "mb_pins",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "pin",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin(number)",
+      "s": "",
+      "a": "(number)"
+    },
+    {
+      "n": "pin0",
+      "k": "class",
+      "l": 1,
+      "d": "pin0",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin0",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin0",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin0",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin0",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin0",
+      "a": "(value)"
+    },
+    {
+      "n": "pin1",
+      "k": "class",
+      "l": 1,
+      "d": "pin1",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin1",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin1",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin1",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin1",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin1",
+      "a": "(value)"
+    },
+    {
+      "n": "pin13",
+      "k": "class",
+      "l": 1,
+      "d": "pin13",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin13",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin13",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin13",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin13",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin13",
+      "a": "(value)"
+    },
+    {
+      "n": "pin14",
+      "k": "class",
+      "l": 1,
+      "d": "pin14",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin14",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin14",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin14",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin14",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin14",
+      "a": "(value)"
+    },
+    {
+      "n": "pin15",
+      "k": "class",
+      "l": 1,
+      "d": "pin15",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin15",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin15",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin15",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin15",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin15",
+      "a": "(value)"
+    },
+    {
+      "n": "pin16",
+      "k": "class",
+      "l": 1,
+      "d": "pin16",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin16",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin16",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin16",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin16",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin16",
+      "a": "(value)"
+    },
+    {
+      "n": "pin2",
+      "k": "class",
+      "l": 1,
+      "d": "pin2",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin2",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin2",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin2",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin2",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin2",
+      "a": "(value)"
+    },
+    {
+      "n": "pin8",
+      "k": "class",
+      "l": 1,
+      "d": "pin8",
+      "s": ""
+    },
+    {
+      "n": "read_analog",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_analog()",
+      "s": "pin8",
+      "a": "()"
+    },
+    {
+      "n": "read_digital",
+      "k": "function",
+      "l": 1,
+      "d": "var=pin.read_digital()",
+      "s": "pin8",
+      "a": "()"
+    },
+    {
+      "n": "set_analog_period",
+      "k": "function",
+      "l": 1,
+      "d": "pin.set_analog_period(value)\npin.set_analog_period(valeur)",
+      "s": "pin8",
+      "a": "(value)"
+    },
+    {
+      "n": "write_analog",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_analog(value)\npin.write_analog(valeur)",
+      "s": "pin8",
+      "a": "(value)"
+    },
+    {
+      "n": "write_digital",
+      "k": "function",
+      "l": 1,
+      "d": "pin.write_digital(value)\npin.write_digital(valeur)",
+      "s": "pin8",
+      "a": "(value)"
+    }
+  ],
+  "mb_radio.py": [
+    {
+      "n": "mb_radio",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "radio",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "config",
+      "k": "function",
+      "l": 1,
+      "d": ".config(len,chn,pwr,grp)\n.config(long,chn,puiss,grp)",
+      "s": "radio",
+      "a": "(len,chn,pwr,grp)"
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 1,
+      "d": ".off()",
+      "s": "radio",
+      "a": "()"
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 1,
+      "d": ".on()",
+      "s": "radio",
+      "a": "()"
+    },
+    {
+      "n": "receive",
+      "k": "function",
+      "l": 1,
+      "d": "var=.receive()",
+      "s": "radio",
+      "a": "()"
+    },
+    {
+      "n": "receive_number",
+      "k": "function",
+      "l": 1,
+      "d": "var=.receive_number()",
+      "s": "radio",
+      "a": "()"
+    },
+    {
+      "n": "send",
+      "k": "function",
+      "l": 1,
+      "d": ".send(\"message\")",
+      "s": "radio",
+      "a": "(\"message\")"
+    },
+    {
+      "n": "send_number",
+      "k": "function",
+      "l": 1,
+      "d": ".send_number(val)\n.send_number(number)",
+      "s": "radio",
+      "a": "(val)"
+    }
+  ],
+  "mb_sensr.py": [
+    {
+      "n": "mb_sensr",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "accelerometer",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "current_gesture",
+      "k": "function",
+      "l": 1,
+      "d": ".current_gesture()",
+      "s": "accelerometer",
+      "a": "()"
+    },
+    {
+      "n": "get_values",
+      "k": "function",
+      "l": 1,
+      "d": "var,var,var= .get_values()\nvar,var,var=.get_values()",
+      "s": "accelerometer",
+      "a": "()"
+    },
+    {
+      "n": "get_x",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_x()",
+      "s": "accelerometer",
+      "a": "()"
+    },
+    {
+      "n": "get_y",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_y()",
+      "s": "accelerometer",
+      "a": "()"
+    },
+    {
+      "n": "get_z",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_z()",
+      "s": "accelerometer",
+      "a": "()"
+    },
+    {
+      "n": "is_gesture",
+      "k": "function",
+      "l": 1,
+      "d": ".is_gesture(\"gesture\")\n.is_gesture(\"geste\")",
+      "s": "accelerometer",
+      "a": "(\"gesture\")"
+    },
+    {
+      "n": "magnitude",
+      "k": "function",
+      "l": 1,
+      "d": "var=.magnitude()",
+      "s": "accelerometer",
+      "a": "()"
+    },
+    {
+      "n": "was_gesture",
+      "k": "function",
+      "l": 1,
+      "d": ".was_gesture(\"gesture\")\n.was_gesture(\"geste\")",
+      "s": "accelerometer",
+      "a": "(\"gesture\")"
+    },
+    {
+      "n": "compass",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "calibrate",
+      "k": "function",
+      "l": 1,
+      "d": ".calibrate()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "clear_calibration",
+      "k": "function",
+      "l": 1,
+      "d": ".clear_calibration()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "get_field_strength",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_field_strength()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "get_x",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_x()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "get_y",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_y()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "get_z",
+      "k": "function",
+      "l": 1,
+      "d": "var=.get_z()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "heading",
+      "k": "function",
+      "l": 1,
+      "d": "var=.heading()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "is_calibrated",
+      "k": "function",
+      "l": 1,
+      "d": "var=.is_calibrated()",
+      "s": "compass",
+      "a": "()"
+    },
+    {
+      "n": "temperature",
+      "k": "function",
+      "l": 1,
+      "d": "var=temperature()",
+      "s": "",
+      "a": "()"
+    }
+  ],
+  "microbit.py": [
+    {
+      "n": "microbit",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "disp_clr",
+      "k": "function",
+      "l": 1,
+      "d": "disp_clr()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "escape",
+      "k": "function",
+      "l": 1,
+      "d": "while not escape():  [clear]\nwhile not escape():  [annul]\nwhile not escape():   [annul]",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "runtime_version",
+      "k": "function",
+      "l": 1,
+      "d": "runtime_version()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "sleep",
+      "k": "function",
+      "l": 1,
+      "d": "sleep(mSec)\nsleep(ms)",
+      "s": "",
+      "a": "(mSec)"
+    },
+    {
+      "n": "store_list",
+      "k": "function",
+      "l": 1,
+      "d": "store_list(\"1\" - \"6\",list)\nstore_list(\"1\" - \"6\",liste)",
+      "s": "",
+      "a": "(\"1\" - \"6\",list)"
+    },
+    {
+      "n": "temperature",
+      "k": "function",
+      "l": 1,
+      "d": "var=temperature()",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "version",
+      "k": "variable",
+      "l": 1,
+      "d": "***  Micro:bit Modules   ***\n***   Version 2.1.0      ***\n***   Version 2.5.0      ***\n***    Version 4.0       ***",
+      "s": ""
+    }
+  ],
+  "setdash.py": [
+    {
+      "n": "setdash",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "main",
+      "k": "function",
+      "l": 1,
+      "d": "setdash.main()     rerun setup",
+      "s": "",
+      "a": "()"
+    }
+  ],
+  "tello.py": [
+    {
+      "n": "tello",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "disp_clr",
+      "k": "function",
+      "l": 1,
+      "d": "disp_clr()        clear shell",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "sleep",
+      "k": "function",
+      "l": 1,
+      "d": "sleep(time)      milliseconds",
+      "s": "",
+      "a": "(time)"
+    },
+    {
+      "n": "store_list",
+      "k": "function",
+      "l": 1,
+      "d": "store_list(\"#\",list)      1-6",
+      "s": "",
+      "a": "(\"#\",list)"
+    },
+    {
+      "n": "tello",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "altitude",
+      "k": "function",
+      "l": 1,
+      "d": "var=altitude()    absolute cm",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "backward",
+      "k": "function",
+      "l": 1,
+      "d": "backward(distance)   20-500cm",
+      "s": "tello",
+      "a": "(distance)"
+    },
+    {
+      "n": "backward_time",
+      "k": "function",
+      "l": 1,
+      "d": "backward_time(time)     1-10s",
+      "s": "tello",
+      "a": "(time)"
+    },
+    {
+      "n": "barometer",
+      "k": "function",
+      "l": 1,
+      "d": "var=barometer()      pressure",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "battery",
+      "k": "function",
+      "l": 1,
+      "d": "var=battery()        charge %",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "down",
+      "k": "function",
+      "l": 1,
+      "d": "down(distance)       20-500cm",
+      "s": "tello",
+      "a": "(distance)"
+    },
+    {
+      "n": "enable_mission_pad",
+      "k": "function",
+      "l": 1,
+      "d": "enable_mission_pad(number) ID",
+      "s": "tello",
+      "a": "(number)"
+    },
+    {
+      "n": "flight_time",
+      "k": "function",
+      "l": 1,
+      "d": "var=flight_time()           s",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "flip_backward",
+      "k": "function",
+      "l": 1,
+      "d": "flip_backward()   charge >50%",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "flip_forward",
+      "k": "function",
+      "l": 1,
+      "d": "flip_forward()    charge >50%",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "flip_left",
+      "k": "function",
+      "l": 1,
+      "d": "flip_left()       charge >50%",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "flip_right",
+      "k": "function",
+      "l": 1,
+      "d": "flip_right()      charge >50%",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "fly_left",
+      "k": "function",
+      "l": 1,
+      "d": "fly_left(distance)   20-500cm",
+      "s": "tello",
+      "a": "(distance)"
+    },
+    {
+      "n": "fly_right",
+      "k": "function",
+      "l": 1,
+      "d": "fly_right(distance)  20-500cm",
+      "s": "tello",
+      "a": "(distance)"
+    },
+    {
+      "n": "forward",
+      "k": "function",
+      "l": 1,
+      "d": "forward(distance)    20-500cm",
+      "s": "tello",
+      "a": "(distance)"
+    },
+    {
+      "n": "forward_time",
+      "k": "function",
+      "l": 1,
+      "d": "forward_time(time)      1-10s",
+      "s": "tello",
+      "a": "(time)"
+    },
+    {
+      "n": "goto",
+      "k": "function",
+      "l": 1,
+      "d": "goto(x,y,z)                cm",
+      "s": "tello",
+      "a": "(x,y,z)"
+    },
+    {
+      "n": "heading",
+      "k": "function",
+      "l": 1,
+      "d": "var=heading()          0-360°",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "height",
+      "k": "function",
+      "l": 1,
+      "d": "var=height()      relative cm",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "hover",
+      "k": "function",
+      "l": 1,
+      "d": "hover(time)               sec",
+      "s": "tello",
+      "a": "(time)"
+    },
+    {
+      "n": "land",
+      "k": "function",
+      "l": 1,
+      "d": "land()",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "motors_off",
+      "k": "function",
+      "l": 1,
+      "d": "motors_off()",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "motors_on",
+      "k": "function",
+      "l": 1,
+      "d": "motors_on()       spin motors",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "set_feedback",
+      "k": "function",
+      "l": 1,
+      "d": "set_feedback(state) show/hide",
+      "s": "tello",
+      "a": "(state)"
+    },
+    {
+      "n": "set_speed",
+      "k": "function",
+      "l": 1,
+      "d": "set_speed(speed)   10-100cm/s",
+      "s": "tello",
+      "a": "(speed)"
+    },
+    {
+      "n": "takeoff",
+      "k": "function",
+      "l": 1,
+      "d": "takeoff() check surroundings!",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "temperature",
+      "k": "function",
+      "l": 1,
+      "d": "var=temperature()          °C",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "throw_and_fly",
+      "k": "function",
+      "l": 1,
+      "d": "throw_and_fly()   hand launch",
+      "s": "tello",
+      "a": "()"
+    },
+    {
+      "n": "turn_left",
+      "k": "function",
+      "l": 1,
+      "d": "turn_left(angle)       0-360°",
+      "s": "tello",
+      "a": "(angle)"
+    },
+    {
+      "n": "turn_right",
+      "k": "function",
+      "l": 1,
+      "d": "turn_right(angle)      0-360°",
+      "s": "tello",
+      "a": "(angle)"
+    },
+    {
+      "n": "up",
+      "k": "function",
+      "l": 1,
+      "d": "up(distance)         20-500cm",
+      "s": "tello",
+      "a": "(distance)"
+    }
+  ],
+  "tellocfg.py": [
+    {
+      "n": "tellocfg",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "configure",
+      "k": "function",
+      "l": 1,
+      "d": "configure()    one-time setup",
+      "s": "",
+      "a": "()"
+    }
+  ],
+  "ww_dash.py": [
+    {
+      "n": "ww_dash",
+      "k": "module",
+      "l": 1,
+      "d": "API from bundled calculator menus."
+    },
+    {
+      "n": "dash",
+      "k": "class",
+      "l": 1,
+      "d": "",
+      "s": ""
+    },
+    {
+      "n": "backward",
+      "k": "function",
+      "l": 1,
+      "d": "backward(distance)       unit\nbackward(distance,\"unit\")\nbackward(D,\"unit\",S,\"unit\")",
+      "s": "dash",
+      "a": "(distance)"
+    },
+    {
+      "n": "backward_time",
+      "k": "function",
+      "l": 1,
+      "d": "backward_time(time)   seconds\nbackward_time(T,S,\"unit\")",
+      "s": "dash",
+      "a": "(time)"
+    },
+    {
+      "n": "forward",
+      "k": "function",
+      "l": 1,
+      "d": "forward(distance)        unit\nforward(distance,\"unit\")\nforward(D,\"unit\",S,\"unit\")",
+      "s": "dash",
+      "a": "(distance)"
+    },
+    {
+      "n": "forward_time",
+      "k": "function",
+      "l": 1,
+      "d": "forward_time(time)    seconds\nforward_time(T,S,\"unit\")",
+      "s": "dash",
+      "a": "(time)"
+    },
+    {
+      "n": "grid_m_unit",
+      "k": "function",
+      "l": 1,
+      "d": "grid_m_unit(scale_value)",
+      "s": "dash",
+      "a": "(scale_value)"
+    },
+    {
+      "n": "left",
+      "k": "function",
+      "l": 1,
+      "d": "left(angle)           degrees\nleft(angle,\"unit\")",
+      "s": "dash",
+      "a": "(angle)"
+    },
+    {
+      "n": "position",
+      "k": "function",
+      "l": 1,
+      "d": "position(x,y)",
+      "s": "dash",
+      "a": "(x,y)"
+    },
+    {
+      "n": "right",
+      "k": "function",
+      "l": 1,
+      "d": "right(angle)          degrees\nright(angle,\"unit\")",
+      "s": "dash",
+      "a": "(angle)"
+    },
+    {
+      "n": "set_speed",
+      "k": "function",
+      "l": 1,
+      "d": "set_speed(speed)          1-9",
+      "s": "dash",
+      "a": "(speed)"
+    },
+    {
+      "n": "stay",
+      "k": "function",
+      "l": 1,
+      "d": "stay(time)            seconds",
+      "s": "dash",
+      "a": "(time)"
+    },
+    {
+      "n": "to_angle",
+      "k": "function",
+      "l": 1,
+      "d": "to_angle(angle)       degrees",
+      "s": "dash",
+      "a": "(angle)"
+    },
+    {
+      "n": "to_polar",
+      "k": "function",
+      "l": 1,
+      "d": "to_polar(r,theta)     degrees",
+      "s": "dash",
+      "a": "(r,theta)"
+    },
+    {
+      "n": "to_xy",
+      "k": "function",
+      "l": 1,
+      "d": "to_xy(x,y)",
+      "s": "dash",
+      "a": "(x,y)"
+    },
+    {
+      "n": "disp_at",
+      "k": "function",
+      "l": 1,
+      "d": "disp_at(row,\"text\",\"align\") →",
+      "s": "",
+      "a": "(row,\"text\",\"align\")"
+    },
+    {
+      "n": "disp_clr",
+      "k": "function",
+      "l": 1,
+      "d": "disp_clr()  clear text screen",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "disp_cursor",
+      "k": "function",
+      "l": 1,
+      "d": "disp_cursor(state) 0=off 1=on",
+      "s": "",
+      "a": "(state)"
+    },
+    {
+      "n": "disp_wait",
+      "k": "function",
+      "l": 1,
+      "d": "disp_wait()           [clear]",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "escape",
+      "k": "function",
+      "l": 1,
+      "d": "while not escape():   [clear]",
+      "s": "",
+      "a": "()"
+    },
+    {
+      "n": "sleep",
+      "k": "function",
+      "l": 1,
+      "d": "sleep(seconds)",
+      "s": "",
+      "a": "(seconds)"
+    }
+  ]
+}

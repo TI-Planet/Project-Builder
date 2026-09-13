@@ -487,7 +487,7 @@ function do_cm_custom()
         {
             const target = evt.target;
             const targetText = target.innerText.trim();
-            if (target.innerText !== "asm" && (target.classList.contains("cm-variable") || target.classList.contains("cm-asm-variable")))
+            if (target.innerText !== "asm" && (target.classList.contains("cm-variable") || target.classList.contains("cm-property") || target.classList.contains("cm-asm-variable")))
             {
                 editor.currentHighlightedWord = target;
                 target.style.textDecoration = "underline";
@@ -533,16 +533,19 @@ function do_cm_custom()
                     else
                     {
                         // Then try from sdk ctags
-                        if (word.length >= 4)
+                        if (word.length > 0)
                         {
-                            const defFromSDK = window.sdk_ctags.filter( (tag) => wordRegexp.test(tag.n) ).map( (val) => {
+                            const sdkContext = window.getEditorCompletionContext(editor, {
+                                cur: wordRange.head, curLine: editor.getLine(wordRange.anchor.line), start: wordRange.anchor.ch
+                            });
+                            const defFromSDK = (sdkContext?.sdkCtags || []).filter(tag => tag.n === word).map((val) => {
                                 const retType = (val.r && !val.r.startsWith("__anon")) ? (val.r + ' ') : '';
                                 const name    = val.n ? val.n : '';
                                 const args    = val.a ? val.a : '';
                                 const kind    =   (val.k === 'enumerator') ? 'enum value'
                                                 : (val.k === 'prototype')  ? 'function'
                                                 :  val.k;
-                                const comment =  `# ${kind} from ${val.file}, line ${val.l}`;
+                                const comment =  `# ${kind} from ${val.file}, line ${val.l}` + (val.d ? `\n# ${val.d.replace(/\n/g, '\n# ')}` : '');
                                 return comment + `\n${retType}${name}${args}`;
                             });
 

@@ -73,3 +73,58 @@ COOP/COEP headers (including a missing-Worker-header failure check), download ac
 native compiler comparisons, TI container parsing/roundtrips, existing source
 export regression checks, syntax errors, cancellation and resource limits.
 It does not establish deployment or execution on physical calculators.
+
+## TI Python analysis and completion
+
+The backend adds analysis-only SDK import paths to Pylint for `python_eZ80`.
+Project modules take precedence, followed by the calculator SDK and then host Python (important for `turtle`). Unknown modules/members and ordinary Python
+errors remain diagnostics; no import or name warnings are globally suppressed.
+Other project types retain their existing Pylint configuration.
+
+`internal/python/` defines the documented TI APIs: `ti_system`, `ti_draw`,
+`ti_image`, `ti_plotlib`, `ti_hub`, `ti_rover`, `brightns`, `sound`, and `color`.
+Sources are TI's **TI-PyAppPrgG_v570_EN.pdf**, printed pages 23–35, 52–53,
+the alphabetical reference on pages 69–136, and the module tables on page 159.
+Individual definitions include page references. Undocumented argument lists
+remain permissive. These are API definitions, not calculator emulation.
+
+`internal/menus/` contains the supplied `tipycomp/ports/evo` menu files, including
+its generated English/French micro:bit variants. The manifest records every
+original relative path; 77 source files are stored as 62 byte-identical-deduplicated
+files, with original notices retained. Two additional menus are extracted from the
+supplied modern and legacy turtle AppVars. Dash, Tello, micro:bit and related names
+are extracted from insertion text into `internal/menu_python/`. Duplicate symbols
+are merged across variants. Labels provide hints; menu-only function arguments
+remain permissive because insertion templates do not specify all valid calls.
+The bundled SDK is a union of these APIs; availability still depends on installed
+calculator modules and hardware. Merely mentioned add-ons without API definitions
+in these sources are not invented.
+
+Generate the checked-in menu stubs and completion metadata with Python 3.9+:
+
+```sh
+python3 internal/build_python_sdk.py
+PYLINT=pylint python3 tests/python_sdk_test.py
+```
+
+The SDK also covers `turtle` (TI Turtle 2.0.0), `ce_turtl`, `ce_chart`, `ce_quivr`,
+and legacy `ti_graphics`. See [internal/SOURCES.md](internal/SOURCES.md) for the
+AppVar extraction, turtle guide references, and full-size TI-Planet capture links.
+
+`internal/python_sdk.json` combines the guide definitions with menu symbols,
+preferring the guide's signatures where both exist. CodeMirror offers module
+names in imports, members after module/object qualifiers, imported names and
+aliases, wildcard imports, and members of simple constructor assignments such as
+`t = Turtle()`. Re-exported SDK namespaces such as `ce_chart.plt` are recognized. Comments and strings are excluded from import
+scanning. Ctrl/Cmd-hover hints include the source documentation and menu labels.
+
+Deploy the backend changes, `internal/python/`, `internal/menu_python/`,
+`internal/python_sdk.json`, the updated templates, and JavaScript together.
+Generation does not run on the server. SDK files stay outside users' project
+sources and are not included in source, ZIP, bytecode, or transfer exports.
+
+Local validation used Pylint 4.0.8/Astroid 4.0.4, the real PHP backend actions,
+and Chromium with actual PB templates, CodeMirror and AJAX responses. It covers
+valid TI imports, retained typo/signature diagnostics, project-module precedence,
+and SDK completion across source/menu navigation. Deployment and calculator
+execution are separate from these checks.
