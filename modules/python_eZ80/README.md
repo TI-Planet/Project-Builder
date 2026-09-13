@@ -128,3 +128,43 @@ and Chromium with actual PB templates, CodeMirror and AJAX responses. It covers
 valid TI imports, retained typo/signature diagnostics, project-module precedence,
 and SDK completion across source/menu navigation. Deployment and calculator
 execution are separate from these checks.
+
+## Evo 7.1 frozen modules
+
+The SDK additionally includes `ti_rover_bt` version **1.0.0.65** and 28 neighboring
+Hub sensor/control modules from the supplied **TI84Evo_Package.84pk2**, OS
+**7.1.0.4421**. The package SHA-256 is
+`c706d8555e41325fbd6f9c03a9fc87a04c6e1d0875031020d1bbc9b6a08584df`;
+its extracted OS payload SHA-256 is
+`83d5fb93f5896a5722d7bc4e17e5a6906aa90b33ca68d5b59bd047786d90922d`.
+
+Definitions come from the frozen bytecode's actual module/class bindings,
+argument names, default values, and inheritance. Each definition records its
+raw-code descriptor address in a source comment. Public functions and classes
+are included; internal Bluetooth protocol classes are omitted from completion.
+The analysis stubs perform no device discovery or hardware I/O.
+
+Rover BT coverage includes mathematical paths, motion, pen control, motor/RGB
+controls, battery/status, and `ranger`, `digital`, and `led` objects. For example:
+
+```python
+import ti_rover_bt as rv
+rv.forward()                 # dist=1, speed=None, acc=None
+rv.drive_line(1, 0)
+light = rv.led(1)            # inherits digital controls
+light.on()
+```
+
+The neighboring modules are `analgout`, `analogin`, `bbport`, `collect`,
+`colorinp`, `conservo`, `dht`, `digital`, `led`, `light`, `lightlvl`, `loudness`,
+`magnetic`, `moisture`, `potentio`, `power`, `ranger`, `relay`, `rgb`, `rgb_arr`,
+`servo`, `speaker`, `squarewv`, `temperat`, `thermist`, `timer`, `vernier`, and
+`vibmotor`. Class names retain the firmware spelling, such as
+`analogin.analog_in`, `conservo.continuous_servo`, and `timer.hub_time`.
+`color.off` and the Evo `ti_system.get_key` alias are also recognized.
+
+The firmware catalog contains inconsistencies: `ti_rover_bt` does not export
+`servo` or `module_version`, and `digital.pwm` takes `(freq, duty=None, time=None)`.
+The SDK follows the actual definitions. The separate `servo` module is available.
+This validates API names/signatures for editing and linting; hardware execution
+and module availability on other OS versions are not established by these checks.

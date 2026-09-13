@@ -13,3 +13,9 @@ def rgb(r, g, b):
 def blink(frequency, time):
     """Blink the RGB light. Guide p. 52."""
     raise NotImplementedError("This API is provided by the TI calculator.")
+
+
+# Frozen raw-code descriptor: see Evo 7.1 color.py module table.
+def off():
+    """Turn off the Hub RGB light. Present in the Evo 7.1 frozen color module."""
+    raise NotImplementedError("This API is provided by the TI calculator.")

@@ -1,4 +1,132 @@
 {
+  "analgout.py": [
+    {
+      "n": "analgout",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen analgout.py."
+    },
+    {
+      "n": "analog_out",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "analog_out interface from analgout (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 25,
+      "s": "analog_out",
+      "a": "(pwm)",
+      "d": "Calculator API: analgout.set (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 30,
+      "s": "analog_out",
+      "a": "()",
+      "d": "Calculator API: analgout.off (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 35,
+      "s": "analog_out",
+      "a": "()",
+      "d": "Calculator API: analgout.on (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "analog_out",
+      "a": "()",
+      "d": "Calculator API: analgout.release (Evo 7.1)."
+    }
+  ],
+  "analogin.py": [
+    {
+      "n": "analogin",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen analogin.py."
+    },
+    {
+      "n": "analog_in",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "analog_in interface from analogin (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "analog_in",
+      "a": "()",
+      "d": "Calculator API: analogin.measurement (Evo 7.1)."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 30,
+      "s": "analog_in",
+      "a": "(min=None, max=None)",
+      "d": "Calculator API: analogin.range (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "analog_in",
+      "a": "()",
+      "d": "Calculator API: analogin.release (Evo 7.1)."
+    }
+  ],
+  "bbport.py": [
+    {
+      "n": "bbport",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen bbport.py."
+    },
+    {
+      "n": "bb_port",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(mask=None)",
+      "d": "bb_port interface from bbport (Evo 7.1)."
+    },
+    {
+      "n": "read_port",
+      "k": "function",
+      "l": 25,
+      "s": "bb_port",
+      "a": "(mask=None)",
+      "d": "Calculator API: bbport.read_port (Evo 7.1)."
+    },
+    {
+      "n": "write_port",
+      "k": "function",
+      "l": 30,
+      "s": "bb_port",
+      "a": "(value, mask=None)",
+      "d": "Calculator API: bbport.write_port (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "bb_port",
+      "a": "()",
+      "d": "Calculator API: bbport.release (Evo 7.1)."
+    }
+  ],
   "brightns.py": [
     {
       "n": "brightns",
@@ -174,6 +302,175 @@
       "d": "Module alias for ti_plotlib."
     }
   ],
+  "collect.py": [
+    {
+      "n": "collect",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen collect.py."
+    },
+    {
+      "n": "ihsensors",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "d": "ihsensors interface from collect (Evo 7.1)."
+    },
+    {
+      "n": "DHT",
+      "k": "variable",
+      "l": 14,
+      "s": "ihsensors"
+    },
+    {
+      "n": "LOUDNESS",
+      "k": "variable",
+      "l": 15,
+      "s": "ihsensors"
+    },
+    {
+      "n": "MAGNETIC",
+      "k": "variable",
+      "l": 16,
+      "s": "ihsensors"
+    },
+    {
+      "n": "POTENTIOMETER",
+      "k": "variable",
+      "l": 17,
+      "s": "ihsensors"
+    },
+    {
+      "n": "TEMPERATURE",
+      "k": "variable",
+      "l": 18,
+      "s": "ihsensors"
+    },
+    {
+      "n": "RANGER",
+      "k": "variable",
+      "l": 19,
+      "s": "ihsensors"
+    },
+    {
+      "n": "LIGHTLEVEL",
+      "k": "variable",
+      "l": 20,
+      "s": "ihsensors"
+    },
+    {
+      "n": "MOISTURE",
+      "k": "variable",
+      "l": 21,
+      "s": "ihsensors"
+    },
+    {
+      "n": "VERNIER",
+      "k": "variable",
+      "l": 22,
+      "s": "ihsensors"
+    },
+    {
+      "n": "ANALOG",
+      "k": "variable",
+      "l": 23,
+      "s": "ihsensors"
+    },
+    {
+      "n": "DIGITAL",
+      "k": "variable",
+      "l": 24,
+      "s": "ihsensors"
+    },
+    {
+      "n": "THERMISTOR",
+      "k": "variable",
+      "l": 25,
+      "s": "ihsensors"
+    },
+    {
+      "n": "BBPORT",
+      "k": "variable",
+      "l": 26,
+      "s": "ihsensors"
+    },
+    {
+      "n": "BRIGHTNESS",
+      "k": "variable",
+      "l": 27,
+      "s": "ihsensors"
+    },
+    {
+      "n": "SENSORS",
+      "k": "variable",
+      "l": 28,
+      "s": "ihsensors"
+    },
+    {
+      "n": "collect",
+      "k": "class",
+      "l": 32,
+      "s": "",
+      "a": "(*args)",
+      "d": "collect interface from collect (Evo 7.1)."
+    },
+    {
+      "n": "done",
+      "k": "function",
+      "l": 36,
+      "s": "collect",
+      "a": "()",
+      "d": "Calculator API: collect.done (Evo 7.1)."
+    },
+    {
+      "n": "set_sensors",
+      "k": "function",
+      "l": 46,
+      "s": "collect",
+      "a": "(*args)",
+      "d": "Calculator API: collect.set_sensors (Evo 7.1)."
+    },
+    {
+      "n": "set_time",
+      "k": "function",
+      "l": 51,
+      "s": "collect",
+      "a": "(time=10)",
+      "d": "Calculator API: collect.set_time (Evo 7.1)."
+    },
+    {
+      "n": "set_rate",
+      "k": "function",
+      "l": 56,
+      "s": "collect",
+      "a": "(rate=4)",
+      "d": "Calculator API: collect.set_rate (Evo 7.1)."
+    },
+    {
+      "n": "set_wait",
+      "k": "function",
+      "l": 61,
+      "s": "collect",
+      "a": "(wait=True)",
+      "d": "Calculator API: collect.set_wait (Evo 7.1)."
+    },
+    {
+      "n": "start",
+      "k": "function",
+      "l": 66,
+      "s": "collect",
+      "a": "(wait=None)",
+      "d": "Calculator API: collect.start (Evo 7.1)."
+    },
+    {
+      "n": "measurements",
+      "k": "function",
+      "l": 81,
+      "s": "collect",
+      "a": "(sensor, opt=None)",
+      "d": "Calculator API: collect.measurements (Evo 7.1)."
+    }
+  ],
   "color.py": [
     {
       "n": "color",
@@ -196,6 +493,910 @@
       "s": "",
       "a": "(frequency, time)",
       "d": "Blink the RGB light. Guide p. 52."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 19,
+      "s": "",
+      "a": "()",
+      "d": "Turn off the Hub RGB light. Present in the Evo 7.1 frozen color module."
+    }
+  ],
+  "colorinp.py": [
+    {
+      "n": "colorinp",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen colorinp.py."
+    },
+    {
+      "n": "color_input",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin=None)",
+      "d": "color_input interface from colorinp (Evo 7.1)."
+    },
+    {
+      "n": "color_number",
+      "k": "function",
+      "l": 25,
+      "s": "color_input",
+      "a": "()",
+      "d": "Calculator API: colorinp.color_number (Evo 7.1)."
+    },
+    {
+      "n": "red",
+      "k": "function",
+      "l": 30,
+      "s": "color_input",
+      "a": "()",
+      "d": "Calculator API: colorinp.red (Evo 7.1)."
+    },
+    {
+      "n": "blue",
+      "k": "function",
+      "l": 35,
+      "s": "color_input",
+      "a": "()",
+      "d": "Calculator API: colorinp.blue (Evo 7.1)."
+    },
+    {
+      "n": "green",
+      "k": "function",
+      "l": 40,
+      "s": "color_input",
+      "a": "()",
+      "d": "Calculator API: colorinp.green (Evo 7.1)."
+    },
+    {
+      "n": "gray",
+      "k": "function",
+      "l": 45,
+      "s": "color_input",
+      "a": "()",
+      "d": "Calculator API: colorinp.gray (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 50,
+      "s": "color_input",
+      "a": "()",
+      "d": "Calculator API: colorinp.release (Evo 7.1)."
+    }
+  ],
+  "conservo.py": [
+    {
+      "n": "conservo",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen conservo.py."
+    },
+    {
+      "n": "continuous_servo",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "continuous_servo interface from conservo (Evo 7.1)."
+    },
+    {
+      "n": "set_cw",
+      "k": "function",
+      "l": 25,
+      "s": "continuous_servo",
+      "a": "(speed, time=None)",
+      "d": "Calculator API: conservo.set_cw (Evo 7.1)."
+    },
+    {
+      "n": "set_ccw",
+      "k": "function",
+      "l": 30,
+      "s": "continuous_servo",
+      "a": "(speed, time=None)",
+      "d": "Calculator API: conservo.set_ccw (Evo 7.1)."
+    },
+    {
+      "n": "stop",
+      "k": "function",
+      "l": 35,
+      "s": "continuous_servo",
+      "a": "()",
+      "d": "Calculator API: conservo.stop (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "continuous_servo",
+      "a": "()",
+      "d": "Calculator API: conservo.release (Evo 7.1)."
+    }
+  ],
+  "dht.py": [
+    {
+      "n": "dht",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen dht.py."
+    },
+    {
+      "n": "dht",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin, option=None)",
+      "d": "dht interface from dht (Evo 7.1)."
+    },
+    {
+      "n": "temp_measurement",
+      "k": "function",
+      "l": 25,
+      "s": "dht",
+      "a": "()",
+      "d": "Calculator API: dht.temp_measurement (Evo 7.1)."
+    },
+    {
+      "n": "humidity_measurement",
+      "k": "function",
+      "l": 30,
+      "s": "dht",
+      "a": "()",
+      "d": "Calculator API: dht.humidity_measurement (Evo 7.1)."
+    },
+    {
+      "n": "t_h_measurements",
+      "k": "function",
+      "l": 35,
+      "s": "dht",
+      "a": "()",
+      "d": "Calculator API: dht.t_h_measurements (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "dht",
+      "a": "()",
+      "d": "Calculator API: dht.release (Evo 7.1)."
+    }
+  ],
+  "digital.py": [
+    {
+      "n": "digital",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen digital.py."
+    },
+    {
+      "n": "digital",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "digital interface from digital (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: digital.measurement (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 30,
+      "s": "digital",
+      "a": "(val)",
+      "d": "Calculator API: digital.set (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 35,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: digital.on (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 40,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: digital.off (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 45,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: digital.release (Evo 7.1)."
+    }
+  ],
+  "led.py": [
+    {
+      "n": "led",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen led.py."
+    },
+    {
+      "n": "led",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "led interface from led (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 25,
+      "s": "led",
+      "a": "()",
+      "d": "Calculator API: led.on (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 30,
+      "s": "led",
+      "a": "()",
+      "d": "Calculator API: led.off (Evo 7.1)."
+    },
+    {
+      "n": "blink",
+      "k": "function",
+      "l": 35,
+      "s": "led",
+      "a": "(rate=None, secs=None)",
+      "d": "Calculator API: led.blink (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "led",
+      "a": "()",
+      "d": "Calculator API: led.release (Evo 7.1)."
+    }
+  ],
+  "light.py": [
+    {
+      "n": "light",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen light.py."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 11,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: light.on (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 16,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: light.off (Evo 7.1)."
+    },
+    {
+      "n": "blink",
+      "k": "function",
+      "l": 21,
+      "s": "",
+      "a": "(rate=None, secs=None)",
+      "d": "Calculator API: light.blink (Evo 7.1)."
+    }
+  ],
+  "lightlvl.py": [
+    {
+      "n": "lightlvl",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen lightlvl.py."
+    },
+    {
+      "n": "light_level",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "light_level interface from lightlvl (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "light_level",
+      "a": "()",
+      "d": "Calculator API: lightlvl.measurement (Evo 7.1)."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 30,
+      "s": "light_level",
+      "a": "(min=None, max=None)",
+      "d": "Calculator API: lightlvl.range (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "light_level",
+      "a": "()",
+      "d": "Calculator API: lightlvl.release (Evo 7.1)."
+    }
+  ],
+  "loudness.py": [
+    {
+      "n": "loudness",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen loudness.py."
+    },
+    {
+      "n": "loudness",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "loudness interface from loudness (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "loudness",
+      "a": "()",
+      "d": "Calculator API: loudness.measurement (Evo 7.1)."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 30,
+      "s": "loudness",
+      "a": "(min=None, max=None)",
+      "d": "Calculator API: loudness.range (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "loudness",
+      "a": "()",
+      "d": "Calculator API: loudness.release (Evo 7.1)."
+    }
+  ],
+  "magnetic.py": [
+    {
+      "n": "magnetic",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen magnetic.py."
+    },
+    {
+      "n": "magnetic",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "magnetic interface from magnetic (Evo 7.1)."
+    },
+    {
+      "n": "trigger",
+      "k": "function",
+      "l": 25,
+      "s": "magnetic",
+      "a": "(t=None)",
+      "d": "Calculator API: magnetic.trigger (Evo 7.1)."
+    },
+    {
+      "n": "magnet_close",
+      "k": "function",
+      "l": 30,
+      "s": "magnetic",
+      "a": "()",
+      "d": "Calculator API: magnetic.magnet_close (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 35,
+      "s": "magnetic",
+      "a": "()",
+      "d": "Calculator API: magnetic.measurement (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "magnetic",
+      "a": "()",
+      "d": "Calculator API: magnetic.release (Evo 7.1)."
+    }
+  ],
+  "moisture.py": [
+    {
+      "n": "moisture",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen moisture.py."
+    },
+    {
+      "n": "moisture",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "moisture interface from moisture (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "moisture",
+      "a": "()",
+      "d": "Calculator API: moisture.measurement (Evo 7.1)."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 30,
+      "s": "moisture",
+      "a": "(min=None, max=None)",
+      "d": "Calculator API: moisture.range (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "moisture",
+      "a": "()",
+      "d": "Calculator API: moisture.release (Evo 7.1)."
+    }
+  ],
+  "potentio.py": [
+    {
+      "n": "potentio",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen potentio.py."
+    },
+    {
+      "n": "potentiometer",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "potentiometer interface from potentio (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "potentiometer",
+      "a": "()",
+      "d": "Calculator API: potentio.measurement (Evo 7.1)."
+    },
+    {
+      "n": "range",
+      "k": "function",
+      "l": 30,
+      "s": "potentiometer",
+      "a": "(min=None, max=None)",
+      "d": "Calculator API: potentio.range (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "potentiometer",
+      "a": "()",
+      "d": "Calculator API: potentio.release (Evo 7.1)."
+    }
+  ],
+  "power.py": [
+    {
+      "n": "power",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen power.py."
+    },
+    {
+      "n": "power",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "power interface from power (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 25,
+      "s": "power",
+      "a": "(val)",
+      "d": "Calculator API: power.set (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 30,
+      "s": "power",
+      "a": "()",
+      "d": "Calculator API: power.on (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 35,
+      "s": "power",
+      "a": "()",
+      "d": "Calculator API: power.off (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "power",
+      "a": "()",
+      "d": "Calculator API: power.release (Evo 7.1)."
+    }
+  ],
+  "ranger.py": [
+    {
+      "n": "ranger",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen ranger.py."
+    },
+    {
+      "n": "ranger",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin, echo=None)",
+      "d": "ranger interface from ranger (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "ranger",
+      "a": "()",
+      "d": "Calculator API: ranger.measurement (Evo 7.1)."
+    },
+    {
+      "n": "measurement_time",
+      "k": "function",
+      "l": 30,
+      "s": "ranger",
+      "a": "()",
+      "d": "Calculator API: ranger.measurement_time (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "ranger",
+      "a": "()",
+      "d": "Calculator API: ranger.release (Evo 7.1)."
+    }
+  ],
+  "relay.py": [
+    {
+      "n": "relay",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen relay.py."
+    },
+    {
+      "n": "relay",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "relay interface from relay (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 25,
+      "s": "relay",
+      "a": "(time=None)",
+      "d": "Calculator API: relay.on (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 30,
+      "s": "relay",
+      "a": "(time=None)",
+      "d": "Calculator API: relay.off (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "relay",
+      "a": "()",
+      "d": "Calculator API: relay.release (Evo 7.1)."
+    }
+  ],
+  "rgb.py": [
+    {
+      "n": "rgb",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen rgb.py."
+    },
+    {
+      "n": "rgb",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(r, g, b)",
+      "d": "rgb interface from rgb (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 25,
+      "s": "rgb",
+      "a": "()",
+      "d": "Calculator API: rgb.off (Evo 7.1)."
+    },
+    {
+      "n": "rgb",
+      "k": "function",
+      "l": 30,
+      "s": "rgb",
+      "a": "(r, g, b)",
+      "d": "Calculator API: rgb.rgb (Evo 7.1)."
+    },
+    {
+      "n": "blink",
+      "k": "function",
+      "l": 35,
+      "s": "rgb",
+      "a": "(rate=None, secs=None)",
+      "d": "Calculator API: rgb.blink (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "rgb",
+      "a": "()",
+      "d": "Calculator API: rgb.release (Evo 7.1)."
+    }
+  ],
+  "rgb_arr.py": [
+    {
+      "n": "rgb_arr",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen rgb_arr.py."
+    },
+    {
+      "n": "rgb_array",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(options=None)",
+      "d": "rgb_array interface from rgb_arr (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 25,
+      "s": "rgb_array",
+      "a": "(pix, r, g, b)",
+      "d": "Calculator API: rgb_arr.set (Evo 7.1)."
+    },
+    {
+      "n": "set_all",
+      "k": "function",
+      "l": 30,
+      "s": "rgb_array",
+      "a": "(r, g, b)",
+      "d": "Calculator API: rgb_arr.set_all (Evo 7.1)."
+    },
+    {
+      "n": "all_off",
+      "k": "function",
+      "l": 35,
+      "s": "rgb_array",
+      "a": "()",
+      "d": "Calculator API: rgb_arr.all_off (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 40,
+      "s": "rgb_array",
+      "a": "()",
+      "d": "Calculator API: rgb_arr.measurement (Evo 7.1)."
+    },
+    {
+      "n": "pattern",
+      "k": "function",
+      "l": 45,
+      "s": "rgb_array",
+      "a": "(pattern, r=None, g=None, b=None)",
+      "d": "Calculator API: rgb_arr.pattern (Evo 7.1)."
+    },
+    {
+      "n": "value",
+      "k": "function",
+      "l": 50,
+      "s": "rgb_array",
+      "a": "(pix)",
+      "d": "Calculator API: rgb_arr.value (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 55,
+      "s": "rgb_array",
+      "a": "(pix)",
+      "d": "Calculator API: rgb_arr.off (Evo 7.1)."
+    },
+    {
+      "n": "draw",
+      "k": "function",
+      "l": 60,
+      "s": "rgb_array",
+      "a": "()",
+      "d": "Calculator API: rgb_arr.draw (Evo 7.1)."
+    },
+    {
+      "n": "count",
+      "k": "function",
+      "l": 65,
+      "s": "rgb_array",
+      "a": "(value)",
+      "d": "Calculator API: rgb_arr.count (Evo 7.1)."
+    },
+    {
+      "n": "power",
+      "k": "function",
+      "l": 70,
+      "s": "rgb_array",
+      "a": "(value)",
+      "d": "Calculator API: rgb_arr.power (Evo 7.1)."
+    },
+    {
+      "n": "left",
+      "k": "function",
+      "l": 75,
+      "s": "rgb_array",
+      "a": "(count)",
+      "d": "Calculator API: rgb_arr.left (Evo 7.1)."
+    },
+    {
+      "n": "right",
+      "k": "function",
+      "l": 80,
+      "s": "rgb_array",
+      "a": "(count)",
+      "d": "Calculator API: rgb_arr.right (Evo 7.1)."
+    },
+    {
+      "n": "rotate",
+      "k": "function",
+      "l": 85,
+      "s": "rgb_array",
+      "a": "(count)",
+      "d": "Calculator API: rgb_arr.rotate (Evo 7.1)."
+    },
+    {
+      "n": "shift",
+      "k": "function",
+      "l": 90,
+      "s": "rgb_array",
+      "a": "(count)",
+      "d": "Calculator API: rgb_arr.shift (Evo 7.1)."
+    },
+    {
+      "n": "interval",
+      "k": "function",
+      "l": 95,
+      "s": "rgb_array",
+      "a": "(val)",
+      "d": "Calculator API: rgb_arr.interval (Evo 7.1)."
+    },
+    {
+      "n": "duration",
+      "k": "function",
+      "l": 100,
+      "s": "rgb_array",
+      "a": "(val)",
+      "d": "Calculator API: rgb_arr.duration (Evo 7.1)."
+    },
+    {
+      "n": "stop",
+      "k": "function",
+      "l": 105,
+      "s": "rgb_array",
+      "a": "()",
+      "d": "Calculator API: rgb_arr.stop (Evo 7.1)."
+    },
+    {
+      "n": "intensity",
+      "k": "function",
+      "l": 110,
+      "s": "rgb_array",
+      "a": "(value)",
+      "d": "Calculator API: rgb_arr.intensity (Evo 7.1)."
+    },
+    {
+      "n": "pixel",
+      "k": "function",
+      "l": 115,
+      "s": "rgb_array",
+      "a": "(pix, colorname, value)",
+      "d": "Calculator API: rgb_arr.pixel (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 120,
+      "s": "rgb_array",
+      "a": "()",
+      "d": "Calculator API: rgb_arr.release (Evo 7.1)."
+    }
+  ],
+  "servo.py": [
+    {
+      "n": "servo",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen servo.py."
+    },
+    {
+      "n": "servo",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "servo interface from servo (Evo 7.1)."
+    },
+    {
+      "n": "set_position",
+      "k": "function",
+      "l": 25,
+      "s": "servo",
+      "a": "(pos)",
+      "d": "Calculator API: servo.set_position (Evo 7.1)."
+    },
+    {
+      "n": "zero",
+      "k": "function",
+      "l": 30,
+      "s": "servo",
+      "a": "()",
+      "d": "Calculator API: servo.zero (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "servo",
+      "a": "()",
+      "d": "Calculator API: servo.release (Evo 7.1)."
     }
   ],
   "sound.py": [
@@ -220,6 +1421,158 @@
       "s": "",
       "a": "(note, time, tempo=None)",
       "d": "Play a named note for a duration, optionally with tempo. Guide p. 25."
+    }
+  ],
+  "speaker.py": [
+    {
+      "n": "speaker",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen speaker.py."
+    },
+    {
+      "n": "speaker",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "speaker interface from speaker (Evo 7.1)."
+    },
+    {
+      "n": "note",
+      "k": "function",
+      "l": 25,
+      "s": "speaker",
+      "a": "(note=None, dur=None, tempo=None)",
+      "d": "Calculator API: speaker.note (Evo 7.1)."
+    },
+    {
+      "n": "tone",
+      "k": "function",
+      "l": 30,
+      "s": "speaker",
+      "a": "(freq=None, dur=None, tempo=None)",
+      "d": "Calculator API: speaker.tone (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "speaker",
+      "a": "()",
+      "d": "Calculator API: speaker.release (Evo 7.1)."
+    }
+  ],
+  "squarewv.py": [
+    {
+      "n": "squarewv",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen squarewv.py."
+    },
+    {
+      "n": "squarewave",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "squarewave interface from squarewv (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 25,
+      "s": "squarewave",
+      "a": "(freq, duty=None, t=None)",
+      "d": "Calculator API: squarewv.set (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 30,
+      "s": "squarewave",
+      "a": "()",
+      "d": "Calculator API: squarewv.off (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "squarewave",
+      "a": "()",
+      "d": "Calculator API: squarewv.release (Evo 7.1)."
+    }
+  ],
+  "temperat.py": [
+    {
+      "n": "temperat",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen temperat.py."
+    },
+    {
+      "n": "temperature",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin, opt=None)",
+      "d": "temperature interface from temperat (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "temperature",
+      "a": "()",
+      "d": "Calculator API: temperat.measurement (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 30,
+      "s": "temperature",
+      "a": "()",
+      "d": "Calculator API: temperat.release (Evo 7.1)."
+    }
+  ],
+  "thermist.py": [
+    {
+      "n": "thermist",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen thermist.py."
+    },
+    {
+      "n": "thermistor",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "thermistor interface from thermist (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "thermistor",
+      "a": "()",
+      "d": "Calculator API: thermist.measurement (Evo 7.1)."
+    },
+    {
+      "n": "calibrate",
+      "k": "function",
+      "l": 30,
+      "s": "thermistor",
+      "a": "(c1, c2, c3, r)",
+      "d": "Calculator API: thermist.calibrate (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "thermistor",
+      "a": "()",
+      "d": "Calculator API: thermist.release (Evo 7.1)."
     }
   ],
   "ti_draw.py": [
@@ -1427,6 +2780,558 @@
       "d": "Read Rover path or waypoint data. Guide p. 26."
     }
   ],
+  "ti_rover_bt.py": [
+    {
+      "n": "ti_rover_bt",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen ti_rover_bt.py."
+    },
+    {
+      "n": "get_locale",
+      "k": "function",
+      "l": 12,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.get_locale (Evo 7.1)."
+    },
+    {
+      "n": "RoverError",
+      "k": "class",
+      "l": 17,
+      "s": "",
+      "a": "(value)",
+      "d": "RoverError interface from ti_rover_bt (Evo 7.1)."
+    },
+    {
+      "n": "ver",
+      "k": "function",
+      "l": 27,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.ver (Evo 7.1)."
+    },
+    {
+      "n": "version",
+      "k": "function",
+      "l": 32,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.version (Evo 7.1)."
+    },
+    {
+      "n": "isConnected",
+      "k": "function",
+      "l": 37,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.isConnected (Evo 7.1)."
+    },
+    {
+      "n": "roverCommand",
+      "k": "function",
+      "l": 42,
+      "s": "",
+      "a": "(cmd, waitForMoveTime=0.5)",
+      "d": "Calculator API: ti_rover_bt.roverCommand (Evo 7.1)."
+    },
+    {
+      "n": "roverCommand_noWait",
+      "k": "function",
+      "l": 47,
+      "s": "",
+      "a": "(cmd)",
+      "d": "Calculator API: ti_rover_bt.roverCommand_noWait (Evo 7.1)."
+    },
+    {
+      "n": "roverStatus",
+      "k": "function",
+      "l": 52,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.roverStatus (Evo 7.1)."
+    },
+    {
+      "n": "roverLongStatus",
+      "k": "function",
+      "l": 57,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.roverLongStatus (Evo 7.1)."
+    },
+    {
+      "n": "delay",
+      "k": "function",
+      "l": 62,
+      "s": "",
+      "a": "(seconds)",
+      "d": "Calculator API: ti_rover_bt.delay (Evo 7.1)."
+    },
+    {
+      "n": "isti",
+      "k": "function",
+      "l": 67,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.isti (Evo 7.1)."
+    },
+    {
+      "n": "who",
+      "k": "function",
+      "l": 72,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.who (Evo 7.1)."
+    },
+    {
+      "n": "what",
+      "k": "function",
+      "l": 77,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.what (Evo 7.1)."
+    },
+    {
+      "n": "about",
+      "k": "function",
+      "l": 82,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.about (Evo 7.1)."
+    },
+    {
+      "n": "rover_version",
+      "k": "function",
+      "l": 87,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.rover_version (Evo 7.1)."
+    },
+    {
+      "n": "pen_up",
+      "k": "function",
+      "l": 92,
+      "s": "",
+      "a": "()",
+      "d": "Raise the Rover pen. Evo 7.1."
+    },
+    {
+      "n": "pen_down",
+      "k": "function",
+      "l": 97,
+      "s": "",
+      "a": "()",
+      "d": "Lower the Rover pen. Evo 7.1."
+    },
+    {
+      "n": "set_speed",
+      "k": "function",
+      "l": 102,
+      "s": "",
+      "a": "(speed)",
+      "d": "Calculator API: ti_rover_bt.set_speed (Evo 7.1)."
+    },
+    {
+      "n": "set_acceleration",
+      "k": "function",
+      "l": 107,
+      "s": "",
+      "a": "(acc)",
+      "d": "Calculator API: ti_rover_bt.set_acceleration (Evo 7.1)."
+    },
+    {
+      "n": "forward",
+      "k": "function",
+      "l": 112,
+      "s": "",
+      "a": "(dist=1, speed=None, acc=None)",
+      "d": "Move forward by dist, optionally specifying speed and acceleration. Evo 7.1."
+    },
+    {
+      "n": "backward",
+      "k": "function",
+      "l": 117,
+      "s": "",
+      "a": "(dist=1, speed=None, acc=None)",
+      "d": "Move backward by dist, optionally specifying speed and acceleration. Evo 7.1."
+    },
+    {
+      "n": "forward_time",
+      "k": "function",
+      "l": 122,
+      "s": "",
+      "a": "(time=5, speed=None)",
+      "d": "Calculator API: ti_rover_bt.forward_time (Evo 7.1)."
+    },
+    {
+      "n": "backward_time",
+      "k": "function",
+      "l": 127,
+      "s": "",
+      "a": "(time=5, speed=None)",
+      "d": "Calculator API: ti_rover_bt.backward_time (Evo 7.1)."
+    },
+    {
+      "n": "left",
+      "k": "function",
+      "l": 132,
+      "s": "",
+      "a": "(angle=90.0, units='DEGREES')",
+      "d": "Calculator API: ti_rover_bt.left (Evo 7.1)."
+    },
+    {
+      "n": "right",
+      "k": "function",
+      "l": 137,
+      "s": "",
+      "a": "(angle=90.0, units='DEGREES')",
+      "d": "Calculator API: ti_rover_bt.right (Evo 7.1)."
+    },
+    {
+      "n": "grid_origin",
+      "k": "function",
+      "l": 142,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.grid_origin (Evo 7.1)."
+    },
+    {
+      "n": "position",
+      "k": "function",
+      "l": 147,
+      "s": "",
+      "a": "(x, y, heading=0.0, units='DEGREES')",
+      "d": "Set x/y position, optionally heading and angle units. Evo 7.1."
+    },
+    {
+      "n": "grid_m_unit",
+      "k": "function",
+      "l": 152,
+      "s": "",
+      "a": "(value=0.01)",
+      "d": "Calculator API: ti_rover_bt.grid_m_unit (Evo 7.1)."
+    },
+    {
+      "n": "stay",
+      "k": "function",
+      "l": 157,
+      "s": "",
+      "a": "(time=30)",
+      "d": "Calculator API: ti_rover_bt.stay (Evo 7.1)."
+    },
+    {
+      "n": "to_angle",
+      "k": "function",
+      "l": 162,
+      "s": "",
+      "a": "(angle=90.0, units='DEGREES')",
+      "d": "Calculator API: ti_rover_bt.to_angle (Evo 7.1)."
+    },
+    {
+      "n": "to_xy",
+      "k": "function",
+      "l": 167,
+      "s": "",
+      "a": "(x=0.0, y=0.0)",
+      "d": "Calculator API: ti_rover_bt.to_xy (Evo 7.1)."
+    },
+    {
+      "n": "to_polar",
+      "k": "function",
+      "l": 172,
+      "s": "",
+      "a": "(r=0.0, t=0.0, units='DEGREES')",
+      "d": "Calculator API: ti_rover_bt.to_polar (Evo 7.1)."
+    },
+    {
+      "n": "motor_left",
+      "k": "function",
+      "l": 177,
+      "s": "",
+      "a": "(speed=0, time=5)",
+      "d": "Calculator API: ti_rover_bt.motor_left (Evo 7.1)."
+    },
+    {
+      "n": "motor_right",
+      "k": "function",
+      "l": 182,
+      "s": "",
+      "a": "(speed=0, time=5)",
+      "d": "Calculator API: ti_rover_bt.motor_right (Evo 7.1)."
+    },
+    {
+      "n": "motors",
+      "k": "function",
+      "l": 187,
+      "s": "",
+      "a": "(ldir='CCW', lspd=0, rdir='CW', rspd=0, time=5)",
+      "d": "Calculator API: ti_rover_bt.motors (Evo 7.1)."
+    },
+    {
+      "n": "color_rgb",
+      "k": "function",
+      "l": 192,
+      "s": "",
+      "a": "(r, g, b)",
+      "d": "Calculator API: ti_rover_bt.color_rgb (Evo 7.1)."
+    },
+    {
+      "n": "color_blink",
+      "k": "function",
+      "l": 197,
+      "s": "",
+      "a": "(frequency=None, time=None)",
+      "d": "Calculator API: ti_rover_bt.color_blink (Evo 7.1)."
+    },
+    {
+      "n": "color_off",
+      "k": "function",
+      "l": 202,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.color_off (Evo 7.1)."
+    },
+    {
+      "n": "set_domain",
+      "k": "function",
+      "l": 207,
+      "s": "",
+      "a": "(newXMin=0, newXMax=10)",
+      "d": "Set the domain for mathematical paths; defaults to 0 through 10. Evo 7.1."
+    },
+    {
+      "n": "drive_line",
+      "k": "function",
+      "l": 212,
+      "s": "",
+      "a": "(m, b)",
+      "d": "Drive the line y = m*x + b within the selected domain. Evo 7.1."
+    },
+    {
+      "n": "drive_parabola",
+      "k": "function",
+      "l": 217,
+      "s": "",
+      "a": "(a, b, c)",
+      "d": "Drive the parabola y = a*x**2 + b*x + c. Evo 7.1."
+    },
+    {
+      "n": "drive_cubic",
+      "k": "function",
+      "l": 222,
+      "s": "",
+      "a": "(a, b, c, d)",
+      "d": "Drive the cubic y = a*x**3 + b*x**2 + c*x + d. Evo 7.1."
+    },
+    {
+      "n": "drive_sin",
+      "k": "function",
+      "l": 227,
+      "s": "",
+      "a": "(a, b, c, d)",
+      "d": "Calculator API: ti_rover_bt.drive_sin (Evo 7.1)."
+    },
+    {
+      "n": "drive_cos",
+      "k": "function",
+      "l": 232,
+      "s": "",
+      "a": "(a, b, c, d)",
+      "d": "Calculator API: ti_rover_bt.drive_cos (Evo 7.1)."
+    },
+    {
+      "n": "drive_circle",
+      "k": "function",
+      "l": 237,
+      "s": "",
+      "a": "(*args)",
+      "d": "Drive a circle: drive_circle(radius) or drive_circle(radius, h, k). Evo 7.1."
+    },
+    {
+      "n": "drive_ellipse",
+      "k": "function",
+      "l": 242,
+      "s": "",
+      "a": "(orientation, a, b, h=0, k=0)",
+      "d": "Calculator API: ti_rover_bt.drive_ellipse (Evo 7.1)."
+    },
+    {
+      "n": "ranger_measurement",
+      "k": "function",
+      "l": 247,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.ranger_measurement (Evo 7.1)."
+    },
+    {
+      "n": "ranger_time",
+      "k": "function",
+      "l": 252,
+      "s": "",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.ranger_time (Evo 7.1)."
+    },
+    {
+      "n": "ranger",
+      "k": "class",
+      "l": 257,
+      "s": "",
+      "a": "(port)",
+      "d": "ranger interface from ti_rover_bt (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 266,
+      "s": "ranger",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.measurement (Evo 7.1)."
+    },
+    {
+      "n": "measurement_time",
+      "k": "function",
+      "l": 271,
+      "s": "ranger",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.measurement_time (Evo 7.1)."
+    },
+    {
+      "n": "digital",
+      "k": "class",
+      "l": 277,
+      "s": "",
+      "a": "(port)",
+      "d": "digital interface from ti_rover_bt (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 286,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.measurement (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 291,
+      "s": "digital",
+      "a": "(val)",
+      "d": "Calculator API: ti_rover_bt.set (Evo 7.1)."
+    },
+    {
+      "n": "pwm",
+      "k": "function",
+      "l": 296,
+      "s": "digital",
+      "a": "(freq, duty=None, time=None)",
+      "d": "Set PWM using frequency first, then optional duty and time. Evo 7.1."
+    },
+    {
+      "n": "toggle",
+      "k": "function",
+      "l": 301,
+      "s": "digital",
+      "a": "(frequency=1, time=None)",
+      "d": "Calculator API: ti_rover_bt.toggle (Evo 7.1)."
+    },
+    {
+      "n": "blink",
+      "k": "function",
+      "l": 306,
+      "s": "digital",
+      "a": "(frequency, time)",
+      "d": "Calculator API: ti_rover_bt.blink (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 311,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.off (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 316,
+      "s": "digital",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.on (Evo 7.1)."
+    },
+    {
+      "n": "led",
+      "k": "class",
+      "l": 322,
+      "s": "",
+      "a": "(port)",
+      "d": "led interface from ti_rover_bt (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 286,
+      "s": "led",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.measurement (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 291,
+      "s": "led",
+      "a": "(val)",
+      "d": "Calculator API: ti_rover_bt.set (Evo 7.1)."
+    },
+    {
+      "n": "pwm",
+      "k": "function",
+      "l": 296,
+      "s": "led",
+      "a": "(freq, duty=None, time=None)",
+      "d": "Set PWM using frequency first, then optional duty and time. Evo 7.1."
+    },
+    {
+      "n": "toggle",
+      "k": "function",
+      "l": 301,
+      "s": "led",
+      "a": "(frequency=1, time=None)",
+      "d": "Calculator API: ti_rover_bt.toggle (Evo 7.1)."
+    },
+    {
+      "n": "blink",
+      "k": "function",
+      "l": 306,
+      "s": "led",
+      "a": "(frequency, time)",
+      "d": "Calculator API: ti_rover_bt.blink (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 311,
+      "s": "led",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.off (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 316,
+      "s": "led",
+      "a": "()",
+      "d": "Calculator API: ti_rover_bt.on (Evo 7.1)."
+    },
+    {
+      "n": "battery_level",
+      "k": "function",
+      "l": 327,
+      "s": "",
+      "a": "()",
+      "d": "Read the Rover battery level. Evo 7.1."
+    }
+  ],
   "ti_system.py": [
     {
       "n": "ti_system",
@@ -1521,6 +3426,54 @@
       "s": "",
       "a": "(state=1)",
       "d": "Show (1) or hide (0) the Shell cursor. Guide p. 72."
+    },
+    {
+      "n": "get_key",
+      "k": "function",
+      "l": 63,
+      "s": "",
+      "a": "()",
+      "d": "Read the current key. Evo 7.1 exports this alias for ti_sys.getKey."
+    }
+  ],
+  "timer.py": [
+    {
+      "n": "timer",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen timer.py."
+    },
+    {
+      "n": "hub_time",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "()",
+      "d": "hub_time interface from timer (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "hub_time",
+      "a": "()",
+      "d": "Calculator API: timer.measurement (Evo 7.1)."
+    },
+    {
+      "n": "reset_time",
+      "k": "function",
+      "l": 30,
+      "s": "hub_time",
+      "a": "()",
+      "d": "Calculator API: timer.reset_time (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "hub_time",
+      "a": "()",
+      "d": "Calculator API: timer.release (Evo 7.1)."
     }
   ],
   "turtle.py": [
@@ -1761,6 +3714,94 @@
       "s": "",
       "a": "()",
       "d": "Imported from ti_system. Return whether Clear was pressed, then reset that flag. Guide p. 75."
+    }
+  ],
+  "vernier.py": [
+    {
+      "n": "vernier",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen vernier.py."
+    },
+    {
+      "n": "vernier",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin, type=None)",
+      "d": "vernier interface from vernier (Evo 7.1)."
+    },
+    {
+      "n": "measurement",
+      "k": "function",
+      "l": 25,
+      "s": "vernier",
+      "a": "()",
+      "d": "Calculator API: vernier.measurement (Evo 7.1)."
+    },
+    {
+      "n": "calibrate",
+      "k": "function",
+      "l": 30,
+      "s": "vernier",
+      "a": "(a, b, c=None, r=None)",
+      "d": "Calculator API: vernier.calibrate (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 35,
+      "s": "vernier",
+      "a": "()",
+      "d": "Calculator API: vernier.release (Evo 7.1)."
+    }
+  ],
+  "vibmotor.py": [
+    {
+      "n": "vibmotor",
+      "k": "module",
+      "l": 1,
+      "d": "Evo OS 7.1.0.4421 frozen vibmotor.py."
+    },
+    {
+      "n": "vibration_motor",
+      "k": "class",
+      "l": 11,
+      "s": "",
+      "a": "(pin)",
+      "d": "vibration_motor interface from vibmotor (Evo 7.1)."
+    },
+    {
+      "n": "set",
+      "k": "function",
+      "l": 25,
+      "s": "vibration_motor",
+      "a": "(pwm)",
+      "d": "Calculator API: vibmotor.set (Evo 7.1)."
+    },
+    {
+      "n": "off",
+      "k": "function",
+      "l": 30,
+      "s": "vibration_motor",
+      "a": "()",
+      "d": "Calculator API: vibmotor.off (Evo 7.1)."
+    },
+    {
+      "n": "on",
+      "k": "function",
+      "l": 35,
+      "s": "vibration_motor",
+      "a": "()",
+      "d": "Calculator API: vibmotor.on (Evo 7.1)."
+    },
+    {
+      "n": "release",
+      "k": "function",
+      "l": 40,
+      "s": "vibration_motor",
+      "a": "()",
+      "d": "Calculator API: vibmotor.release (Evo 7.1)."
     }
   ],
   "ce_turtl.py": [

@@ -58,3 +58,8 @@ def disp_wait():
 def disp_cursor(state=1):
     """Show (1) or hide (0) the Shell cursor. Guide p. 72."""
     raise NotImplementedError("This API is provided by the TI calculator.")
+
+
+def get_key():
+    """Read the current key. Evo 7.1 exports this alias for ti_sys.getKey."""
+    raise NotImplementedError("This API is provided by the TI calculator.")
