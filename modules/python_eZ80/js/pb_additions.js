@@ -357,6 +357,46 @@ function downloadPythonAppVar()
     window['saveAs'](blob, `${proj.prgmName}.8xv`);
 }
 
+let pythonBytecodeExport = null;
+
+async function getPythonBytecodeSources()
+{
+    return {filename: proj.currFile, source: editor.getValue()};
+}
+
+async function downloadPythonBytecode(target)
+{
+    if (pythonBytecodeExport) return;
+    const controller = new AbortController();
+    pythonBytecodeExport = controller;
+    const buttons = $('.python-bytecode-download');
+    buttons.attr('aria-disabled', 'true').parent().addClass('disabled');
+    const status = showNotification('info', 'Compiling bytecode module…',
+        'Compiling in your browser. <a href="#" class="cancelPythonBytecode">Cancel</a>', null, 999999);
+    status?.$ele?.[0]?.querySelector('.cancelPythonBytecode')?.addEventListener('click', event => {
+        event.preventDefault();
+        controller.abort();
+    });
+    try {
+        const input = await getPythonBytecodeSources();
+        const result = await window.pbPythonBytecode.compile({...input, target, signal: controller.signal});
+        const lib = await window.pbTIVarsLibReady;
+        if (!lib) throw new Error('TI file converter is still loading. Please retry.');
+        if (controller.signal.aborted) return;
+        const output = window.pbPythonBytecode.packageModule(lib, {...input, ...result, target});
+        window.saveAs(new Blob([output.file], {type: 'application/octet-stream'}), output.filename);
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            // Compiler diagnostics contain source text: notifications interpret HTML.
+            showNotification('danger', 'Bytecode export failed', $('<div>').text(error.message || String(error)).html(), null, 15000);
+        }
+    } finally {
+        status?.close();
+        buttons.removeAttr('aria-disabled').parent().removeClass('disabled');
+        pythonBytecodeExport = null;
+    }
+}
+
 function transferToEmu()
 {
     // TODO: use a flag

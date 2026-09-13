@@ -1,0 +1,21 @@
+{
+  "emscripten": "6.0.9",
+  "targets": {
+    "ce": {
+      "version": "1.9.3",
+      "commit": "fe45d78b1edd6d2202c3544797885cb0b12d4f03",
+      "url": "https://codeload.github.com/micropython/micropython/tar.gz/refs/tags/v1.9.3",
+      "sha256": "ce6b5c4548e85d84075635ff3e94d5cd3356b5fcc7593a7b49dd513612b6ed01",
+      "mpyHeader": "4d03021f",
+      "arguments": ["-msmall-int-bits=31"]
+    },
+    "evo": {
+      "version": "1.13",
+      "commit": "b0932fcf2e2f9a81abf7737ed4b2573bd9ad4a49",
+      "url": "https://codeload.github.com/micropython/micropython/tar.gz/refs/tags/v1.13",
+      "sha256": "31466dacebeb3af60dc80a071a07c3e15b657219a826e0b6ac741f9f22472f23",
+      "mpyHeader": "4d05031f",
+      "arguments": ["-msmall-int-bits=31", "-mcache-lookup-bc"]
+    }
+  }
+}

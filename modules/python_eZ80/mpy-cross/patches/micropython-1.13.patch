@@ -1,0 +1,106 @@
+--- a/mpy-cross/main.c
++++ b/mpy-cross/main.c
+@@ -45,7 +45,11 @@
+ 
+ // Heap size of GC heap (if enabled)
+ // Make it larger on a 64 bit machine, because pointers are larger.
++#if defined(__EMSCRIPTEN__)
++long heap_size = 16 * 1024 * 1024;
++#else
+ long heap_size = 1024 * 1024 * (sizeof(mp_uint_t) / 4);
++#endif
+ 
+ STATIC void stderr_print_strn(void *env, const char *str, size_t len) {
+     (void)env;
+@@ -186,8 +190,24 @@
+ 
+     pre_process_options(argc, argv);
+ 
++    #if defined(__EMSCRIPTEN__)
++    // A fresh compiler instance owns this bounded arena for one compilation.
++    if (heap_size < 16 * 1024 || heap_size > 16 * 1024 * 1024) {
++        fprintf(stderr, "Compiler heap must be between 16 KiB and 16 MiB\n");
++        return 1;
++    }
++    #endif
+     char *heap = malloc(heap_size);
++    if (heap == NULL) {
++        fprintf(stderr, "Unable to allocate compiler memory\n");
++        return 1;
++    }
+     gc_init(heap, heap + heap_size);
++    #if defined(__EMSCRIPTEN__)
++    // setjmp cannot expose WebAssembly locals to the old conservative GC.
++    // Keep explicit frees; fail with MemoryError instead of scanning roots.
++    MP_STATE_MEM(gc_auto_collect_enabled) = 0;
++    #endif
+ 
+     mp_init();
+     #ifdef _WIN32
+--- a/mpy-cross/mpconfigport.h
++++ b/mpy-cross/mpconfigport.h
+@@ -30,16 +30,16 @@
+ #define MICROPY_PERSISTENT_CODE_LOAD (0)
+ #define MICROPY_PERSISTENT_CODE_SAVE (1)
+ 
+-#define MICROPY_EMIT_X64            (1)
+-#define MICROPY_EMIT_X86            (1)
+-#define MICROPY_EMIT_THUMB          (1)
+-#define MICROPY_EMIT_INLINE_THUMB   (1)
+-#define MICROPY_EMIT_INLINE_THUMB_ARMV7M (1)
+-#define MICROPY_EMIT_INLINE_THUMB_FLOAT (1)
+-#define MICROPY_EMIT_ARM            (1)
+-#define MICROPY_EMIT_XTENSA         (1)
+-#define MICROPY_EMIT_INLINE_XTENSA  (1)
+-#define MICROPY_EMIT_XTENSAWIN      (1)
++#define MICROPY_EMIT_X64            (0)
++#define MICROPY_EMIT_X86            (0)
++#define MICROPY_EMIT_THUMB          (0)
++#define MICROPY_EMIT_INLINE_THUMB   (0)
++#define MICROPY_EMIT_INLINE_THUMB_ARMV7M (0)
++#define MICROPY_EMIT_INLINE_THUMB_FLOAT (0)
++#define MICROPY_EMIT_ARM            (0)
++#define MICROPY_EMIT_XTENSA         (0)
++#define MICROPY_EMIT_INLINE_XTENSA  (0)
++#define MICROPY_EMIT_XTENSAWIN      (0)
+ 
+ #define MICROPY_DYNAMIC_COMPILER    (1)
+ #define MICROPY_COMP_CONST_FOLDING  (1)
+--- a/py/vm.c
++++ b/py/vm.c
+@@ -804,8 +804,8 @@
+                     obj = mp_getiter(obj, iter_buf);
+                     if (obj != MP_OBJ_FROM_PTR(iter_buf)) {
+                         // Iterator didn't use the stack so indicate that with MP_OBJ_NULL.
+-                        sp[-MP_OBJ_ITER_BUF_NSLOTS + 1] = MP_OBJ_NULL;
+-                        sp[-MP_OBJ_ITER_BUF_NSLOTS + 2] = obj;
++                        sp[-(mp_int_t)MP_OBJ_ITER_BUF_NSLOTS + 1] = MP_OBJ_NULL;
++                        sp[-(mp_int_t)MP_OBJ_ITER_BUF_NSLOTS + 2] = obj;
+                     }
+                     DISPATCH();
+                 }
+@@ -816,10 +816,10 @@
+                     DECODE_ULABEL; // the jump offset if iteration finishes; for labels are always forward
+                     code_state->sp = sp;
+                     mp_obj_t obj;
+-                    if (sp[-MP_OBJ_ITER_BUF_NSLOTS + 1] == MP_OBJ_NULL) {
+-                        obj = sp[-MP_OBJ_ITER_BUF_NSLOTS + 2];
++                    if (sp[-(mp_int_t)MP_OBJ_ITER_BUF_NSLOTS + 1] == MP_OBJ_NULL) {
++                        obj = sp[-(mp_int_t)MP_OBJ_ITER_BUF_NSLOTS + 2];
+                     } else {
+-                        obj = MP_OBJ_FROM_PTR(&sp[-MP_OBJ_ITER_BUF_NSLOTS + 1]);
++                        obj = MP_OBJ_FROM_PTR(&sp[-(mp_int_t)MP_OBJ_ITER_BUF_NSLOTS + 1]);
+                     }
+                     mp_obj_t value = mp_iternext_allow_raise(obj);
+                     if (value == MP_OBJ_STOP_ITERATION) {
+--- a/py/compile.c
++++ b/py/compile.c
+@@ -856,7 +856,7 @@
+         compile_syntax_error(comp, name_nodes[1], MP_ERROR_TEXT("invalid micropython decorator"));
+     }
+ 
+-    #if MICROPY_DYNAMIC_COMPILER
++    #if MICROPY_DYNAMIC_COMPILER && (MICROPY_EMIT_NATIVE || MICROPY_EMIT_INLINE_ASM)
+     if (*emit_options == MP_EMIT_OPT_NATIVE_PYTHON || *emit_options == MP_EMIT_OPT_VIPER) {
+         if (emit_native_table[mp_dynamic_compiler.native_arch] == NULL) {
+             compile_syntax_error(comp, name_nodes[1], MP_ERROR_TEXT("invalid arch"));

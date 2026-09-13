@@ -1,0 +1,5 @@
+# Non-BBCode Project Builder pages require an isolated Worker response, just as
+# the transfer Workers in modules/_shared/ do.
+<Files "mpy_worker.js">
+    Header always set Cross-Origin-Embedder-Policy "require-corp"
+</Files>

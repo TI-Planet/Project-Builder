@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "emscripten": "emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.9 (4e4223852a0835923411059a3929907d7df1232e)",
+  "factory": "createMpyCross",
+  "runtimeMethods": [
+    "FS",
+    "callMain"
+  ],
+  "memory": {
+    "initialBytes": 33554432,
+    "maximumBytes": 67108864,
+    "stackBytes": 1048576,
+    "compilerArenaBytes": 16777216,
+    "automaticGarbageCollection": false
+  },
+  "buildInputs": {
+    "build.py": "5a2234ad894f2b073b5f5468b84ce52c0eab027620f73324a2cd6f0ce4601c42",
+    "sources.json": "99b00e0ed3629ab8f33796fc4cfad70b7d4251cf70351ad9f25f412bdec7c9e4",
+    "version-header.py": "9c43fb846b3503dd2536daf908dbfc2f2a605a1bedeabdd39e39caedb75e7c84",
+    "wasm-gccollect.c": "9e8dbbdfe26088b6412b255497415759f76f209affd80c00ddee342d6455b92d",
+    "patches/micropython-1.9.3.patch": "031348e1594ab609873116c41ce798edc11d84a495b3a7d8db2ce66ec14fa3ec",
+    "patches/micropython-1.13.patch": "5adad99732457da722c16e19d832e01f53465e6459f202ff399e6085307a7b0f"
+  },
+  "targets": {
+    "ce": {
+      "version": "1.9.3",
+      "commit": "fe45d78b1edd6d2202c3544797885cb0b12d4f03",
+      "url": "https://codeload.github.com/micropython/micropython/tar.gz/refs/tags/v1.9.3",
+      "sha256": "ce6b5c4548e85d84075635ff3e94d5cd3356b5fcc7593a7b49dd513612b6ed01",
+      "mpyHeader": "4d03021f",
+      "arguments": [
+        "-msmall-int-bits=31"
+      ],
+      "files": {
+        "js": {
+          "name": "ce-mpy-cross.js",
+          "bytes": 59559,
+          "gzipBytes": 16776,
+          "sha256": "7c47d12880c8df4f4049a2abe83db840a947c4f2c6b95dd7015673ba8ee1c464"
+        },
+        "wasm": {
+          "name": "ce-mpy-cross.wasm",
+          "bytes": 155234,
+          "gzipBytes": 77024,
+          "sha256": "7d3226c11f1e18daca234a3d903a2b1726c7f6afdf3d2f5f7e35d0c4f797bdff"
+        }
+      }
+    },
+    "evo": {
+      "version": "1.13",
+      "commit": "b0932fcf2e2f9a81abf7737ed4b2573bd9ad4a49",
+      "url": "https://codeload.github.com/micropython/micropython/tar.gz/refs/tags/v1.13",
+      "sha256": "31466dacebeb3af60dc80a071a07c3e15b657219a826e0b6ac741f9f22472f23",
+      "mpyHeader": "4d05031f",
+      "arguments": [
+        "-msmall-int-bits=31",
+        "-mcache-lookup-bc"
+      ],
+      "files": {
+        "js": {
+          "name": "evo-mpy-cross.js",
+          "bytes": 59560,
+          "gzipBytes": 16777,
+          "sha256": "9e956b9e620ea072760f796f81231ce4a55bb65674efbd13442d79670287811a"
+        },
+        "wasm": {
+          "name": "evo-mpy-cross.wasm",
+          "bytes": 155173,
+          "gzipBytes": 77201,
+          "sha256": "db13e7f053df38ee85dd3ba204c668c34c38c6314a603173afd806f3735221fc"
+        }
+      }
+    }
+  },
+  "buildId": "f59910350a8730acbd835904f99c5d22671fca79e5aa64096dd3a94db007f324"
+}

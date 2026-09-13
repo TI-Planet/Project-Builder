@@ -51,16 +51,31 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
 </script>
 
 <script src="<?= cacheBusterPath("{$modulePath}js/pb_additions.js") ?>"></script>
+<script>
+    window.pbPythonCompilerConfig = <?= json_encode([
+        'workerUrl' => cacheBusterPath("{$modulePath}js/mpy_worker.js"),
+        'targets' => [
+            'ce' => ['js' => cacheBusterPath("{$modulePath}mpy-cross/ce-mpy-cross.js"), 'wasm' => cacheBusterPath("{$modulePath}mpy-cross/ce-mpy-cross.wasm")],
+            'evo' => ['js' => cacheBusterPath("{$modulePath}mpy-cross/evo-mpy-cross.js"), 'wasm' => cacheBusterPath("{$modulePath}mpy-cross/evo-mpy-cross.wasm")],
+        ],
+    ], $jsonFlags) ?>;
+</script>
+<script src="<?= cacheBusterPath("{$modulePath}js/python_bytecode.js") ?>"></script>
 <script>window.pbWebTILPTransferWasmUrl = <?= json_encode(cacheBusterPath("./modules/_shared/webtilp_transfer_module.wasm"), $jsonFlags) ?>;</script>
 <script src="<?= cacheBusterPath("./modules/_shared/webtilp_transfer_module.js") ?>"></script>
 <script src="<?= cacheBusterPath("./modules/_shared/calculator_transfer.js") ?>"></script>
 <?php if (!$pm->currentUserCanWriteCurrentProject()) { ?>
     <script>function saveFile(callback) { if (typeof callback === "function") callback(); }</script>
-<?php } else { ?>
+<?php } ?>
+<?php if (!$currUser->isAnonymous()) { ?>
     <script src="<?= cacheBusterPath("js/FileSaver.min.js") ?>"></script>
     <script type="module">
         import TIVarsLib from '<?= cacheBusterPath("./modules/_shared/TIVarsLib.js") ?>';
-        window.TIVarsLib = await TIVarsLib();
+        window.pbTIVarsLibReady = TIVarsLib({
+            locateFile: (path, prefix) => path.endsWith('.wasm')
+                ? <?= json_encode(cacheBusterPath('./modules/_shared/TIVarsLib.wasm'), $jsonFlags) ?> : prefix + path
+        }).then(lib => (window.TIVarsLib = lib));
+        window.pbTIVarsLibReady.catch(error => console.error('Unable to load TIVarsLib:', error));
     </script>
 <?php } ?>
 
