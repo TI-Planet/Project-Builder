@@ -24,4 +24,18 @@ final class python_eZ80ProjectBackend extends PythonCodeEditorBackend
     {
         parent::__construct($project, $projFolder, self::TEMPLATE_PY_FILE_PATH, '8xv', '# Your code here');
     }
+
+    protected function addFile($fileName, $content = '')
+    {
+        $default = $this->defaultNewFileContent;
+        if (preg_match('/\.menu$/i', $fileName)) {
+            // Start the graphical editor empty, without inserting Python code.
+            $this->defaultNewFileContent = '';
+        }
+        try {
+            return parent::addFile($fileName, $content);
+        } finally {
+            $this->defaultNewFileContent = $default;
+        }
+    }
 }

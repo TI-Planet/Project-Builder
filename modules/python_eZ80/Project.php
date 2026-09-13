@@ -23,7 +23,7 @@ final class python_eZ80Project extends Project
     const PROJECT_MODULE_NAME        = 'Python IDE for the TI CE calculators';
     const PROJECT_MODULE_DESCRIPTION = 'Python IDE for the TI-84 Plus CE / TI-83 Premium CE';
 
-    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.py$/i";
+    const REGEXP_GOOD_FILE_PATTERN = "/^([a-z0-9_]+)\\.(py|menu)$/i";
     const TEMPLATE_FILE            = 'script.py';
 
     public function __construct($db_id, $pid, UserInfo $author, $type, $name, $internalName, $multiuser, $readonly, $chatEnabled, $cTime, $uTime, $isReadWriteCustom = false, array $readWriteAllowedUserIDs = [])

@@ -4,7 +4,7 @@ The normal Python AppVar, Python source and project ZIP downloads retain their
 existing behavior. The download menu additionally offers **Bytecode Module
 .8xv** (CE Python Edition) and **Bytecode Module .8mp2** (Evo OS 7.1+).
 
-Bytecode export takes a snapshot of the active Python buffer, compiles it in a
+Bytecode export takes a snapshot of the selected Python source, compiles it in a
 fresh Web Worker and packages the resulting MPY stream through TIVarsLib. No
 compiler runs on the web server. Compiler assets are loaded only when requested;
 the export notification supports cancellation. The source filename's basename
@@ -14,6 +14,41 @@ truncating names. Existing source exports keep their own naming behavior.
 
 See [mpy-cross/README.md](mpy-cross/README.md) for compiler sources, reproducible
 builds, versions, licenses, resource limits and regression checks.
+
+## Menu files
+
+Use matching, case-sensitive basenames: `FOOBAR.py` and `FOOBAR.menu`. The file
+tabs group these pairs using the same layout as native C/header files. Create,
+rename, import, save, delete and ZIP-export `.menu` files through the usual PB
+controls. New menu files start empty; use **Add group** to begin.
+
+Opening a `.menu` file displays a graphical menu editor, a raw directive editor,
+live calculator preview and diagnostics.
+The raw editor highlights directives and tags, with Ctrl/Cmd-Space completion.
+Groups, pages, items, import entries, insertion offsets, symbols and annotations
+can be edited in place. The widget uses the ordinary saved/Firepad document, with
+the same read-only state and shared undo/redo shortcuts. Python lint and outline
+helpers are disabled for menu files.
+
+Either file in a pair can initiate a bytecode download. The active editor buffer
+is snapshotted immediately (including unsaved edits); companion files are read
+from the saved project through its authenticated source endpoint. Normal file
+navigation saves the current buffer before changing tabs. Missing Python files,
+duplicate matching extensions and unreadable companions stop the export.
+An unrelated `.menu` is never included. Without a matching menu, `.py` bytecode
+export still works normally.
+
+Menu text and placeholder tags are passed unexpanded to the packer: a `PYMP`
+metadata record for CE (as in `tipycomp`) or a subtype-2 menu section for Evo.
+The packer adds record/section terminators. Menu saves do not strip trailing
+whitespace; the text editor uses its normal newline handling. Graphical edits
+serialize a canonical menu; unknown/invalid raw directives remain editable and
+are not silently rewritten. Preview diagnostics follow Evo's reference parser;
+CE firmware limits may differ. Menus are included only in bytecode exports.
+Source Python export and ordinary calculator transfers keep their behavior;
+while editing a menu, the primary download saves the `.menu` itself.
+
+Run `node tests/menu_editor_test.cjs` for parser/serialization regressions.
 
 ## Shared packaging assets
 

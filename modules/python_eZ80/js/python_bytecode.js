@@ -53,7 +53,7 @@
         return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
-    function packageModule(lib, {target, filename, bytes}) {
+    function packageModule(lib, {target, filename, bytes, menuText = null}) {
         const name = moduleName(filename);
         const expected = target === 'ce' ? [0x4d, 3, 2, 31] : target === 'evo' ? [0x4d, 5, 3, 31] : [];
         if (expected.length !== 4 || !(bytes instanceof Uint8Array)
@@ -61,15 +61,25 @@
             throw new Error('The compiler produced incompatible MicroPython bytecode.');
         }
         const isEvo = target === 'evo';
+        if (menuText !== null && (typeof menuText !== 'string' || menuText.includes('\0'))) {
+            throw new Error('Menu files must contain text without NUL characters.');
+        }
         const variableName = name.toUpperCase();
         const file = lib.TIVarFile.createNew(isEvo ? 'PythonAppVar' : 'PythonModuleAppVar', variableName, isEvo ? '84Evo' : '83PCEEP');
         let path;
         try {
-            file.setContentFromString(JSON.stringify(isEvo ? {
+            const content = isEvo ? {
                 python: {compiledModule: true, name, bodyHex: hex(bytes)}
             } : {
                 typeName: 'PythonModuleAppVar', filename: name, compiledDataHex: hex(bytes)
-            }));
+            };
+            // Preserve menu text and placeholders.
+            // The packer supplies CE metadata / Evo section terminators itself.
+            if (menuText !== null) {
+                if (isEvo) content.python.menuDefinitionHex = hex(new TextEncoder().encode(menuText));
+                else content.menuDefinitions = menuText;
+            }
+            file.setContentFromString(JSON.stringify(content));
             if (isEvo) file.convertToEvoPythonFormat('8mp2');
             // The CE file's 16-bit data-section size includes a 17-byte entry
             // header in addition to the complete (size-prefixed) AppVar data.

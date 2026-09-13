@@ -17,6 +17,25 @@
 
 function do_cm_custom()
 {
+    if (isPythonMenuFile()) {
+        // The visual/raw menu widget handles its own editing controls. Keep
+        // CodeMirror as the saved/collaborative document without Python helpers.
+        window.updateHints = () => {};
+        window.stripTrailingSpaces = () => {};
+        window.setupAutocompletionAutoDisplayDelay = () => {};
+        window.toggleOutline = () => {};
+        window.filterOutline = () => {};
+        window.dispCodeOutline = () => {};
+        window.recalcOutlineSize = () => {};
+        window.refreshOutlineSize = () => {};
+        editor.on('change', () => {
+            savedSinceLastChange = false;
+            lastChangeTS = Date.now();
+            const saveButton = document.getElementById('saveButton');
+            if (saveButton) saveButton.disabled = false;
+        });
+        return;
+    }
     let widgets = [];
 
     const clearWidgets = function()

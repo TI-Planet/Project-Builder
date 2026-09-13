@@ -81,12 +81,12 @@ function renameFile(oldName)
 {
     $('.tooltip').hide();
     let err = false;
-    const newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: py)", oldName);
+    const newName = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extensions: py, menu)", oldName);
     if (newName === null || !isValidFileName(newName))
     {
         err = true;
         if (newName) {
-            showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: py");
+            showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extensions: py, menu");
         }
     }
     if (newName === oldName) {
@@ -109,7 +109,7 @@ const _saveFile_impl = (callback) =>
     const saveButton = document.getElementById('saveButton');
 
     const currSource = editor.getValue();
-    if (currSource.length > 0 && currSource != lastSavedSource)
+    if ((currSource.length > 0 || isPythonMenuFile()) && currSource != lastSavedSource)
     {
         removeClass(saveButton.children[1], "hidden");
         saveButton.disabled = true;
@@ -149,13 +149,14 @@ function saveFile(callback)
     if (!canProceedWithCollaborativeSave(() => { saveFile(callback); })) {
         return;
     }
-    stripTrailingSpaces();
+    // Menu insertion strings and raw catalogs may contain significant whitespace.
+    if (!isPythonMenuFile()) stripTrailingSpaces();
     _saveFile_impl(callback);
 }
 
 function isValidFileName(name)
 {
-    return /^[a-zA-Z0-9_]+\.py$/i.test(name);
+    return /^[a-zA-Z0-9_]+\.(py|menu)$/i.test(name);
 }
 
 function createFileWithContent(name, content, cb, isLast, numFiles)
@@ -176,7 +177,7 @@ function createFileWithContent(name, content, cb, isLast, numFiles)
             if (typeof(cb) === "function") { cb(name); }
         }
     } else {
-        showNotification("warning", "File not imported", `'${escapedName}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extension: py)`, null, 10000);
+        showNotification("warning", "File not imported", `'${escapedName}' is not a valid name (Chars: a-z,A-Z,0-9,_ Extensions: py, menu)`, null, 10000);
         if (typeof(cb) === "function") { cb(name); }
     }
 }
@@ -208,12 +209,12 @@ function addFile(name)
     let err = false;
     if (!name || !isValidFileName(name))
     {
-        name = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extension: py)");
+        name = prompt("Enter the new file name (Chars: a-z,A-Z,0-9,_ Extensions: py, menu)");
         if (name === null || !isValidFileName(name))
         {
             err = true;
             if (name) {
-                showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extension: py");
+                showNotification("danger", "Invalid name", "Chars: a-z,A-Z,0-9,_ Extensions: py, menu");
             }
         }
     }
@@ -232,8 +233,11 @@ function addFile(name)
 
 function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 {
+    if (isPythonMenuFile()) { code_analysis = []; return; }
+    const filename = proj.currFile;
     // Call pylint
-    ajaxAction("getAnalysis", `file=${proj.currFile}`, (pylintOutput) => {
+    ajaxAction("getAnalysis", `file=${filename}`, (pylintOutput) => {
+        if (proj.currFile !== filename) return;
         code_analysis = parseAnalysisLog(pylintOutput);
         doUpdateHints && updateHints(true);
     });
@@ -241,8 +245,11 @@ function getAnalysisLogAndUpdateHintsMaybe(doUpdateHints)
 
 function getCtags(scope, cb)
 {
+    if (isPythonMenuFile()) { ctags = []; if (typeof cb === 'function') cb(); return; }
+    const filename = proj.currFile;
     if (scope === undefined) { scope = proj.currFile; }
     ajaxAction("getCtags", `scope=${scope}`, (allCtags) => {
+        if (proj.currFile !== filename) return;
         const list = [];
         Object.keys(allCtags).map( (tagFile) =>
         {
@@ -359,11 +366,6 @@ function downloadPythonAppVar()
 
 let pythonBytecodeExport = null;
 
-async function getPythonBytecodeSources()
-{
-    return {filename: proj.currFile, source: editor.getValue()};
-}
-
 async function downloadPythonBytecode(target)
 {
     if (pythonBytecodeExport) return;
@@ -378,7 +380,7 @@ async function downloadPythonBytecode(target)
         controller.abort();
     });
     try {
-        const input = await getPythonBytecodeSources();
+        const input = await getPythonBytecodeSources(controller.signal);
         const result = await window.pbPythonBytecode.compile({...input, target, signal: controller.signal});
         const lib = await window.pbTIVarsLibReady;
         if (!lib) throw new Error('TI file converter is still loading. Please retry.');

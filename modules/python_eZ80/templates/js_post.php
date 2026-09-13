@@ -31,6 +31,7 @@ require_once 'utils.php';
 
     function init_post_js_1()
     {
+        destroyPythonMenuEditor();
         textarea = document.getElementById('codearea');
         fakeContainer = document.getElementById('fakeContainer');
 
@@ -48,7 +49,7 @@ require_once 'utils.php';
             foldGutter: true,
             showTrailingSpace: true,
             dragDrop: false,
-            mode: 'text/x-python',
+            mode: isPythonMenuFile() ? 'text/plain' : 'text/x-python',
             gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             extraKeys: {"Ctrl-Space": "autocomplete", 'Ctrl-/': toggleComment, 'Cmd-/': toggleComment },
             highlightSelectionMatches: {showToken: /\w/},
@@ -56,6 +57,7 @@ require_once 'utils.php';
             readOnly: <?= $currProject->canUserEditCurrentFile($currUser) ? 'false' : 'true' ?>
         });
         savedSinceLastChange = true; lastChangeTS = (new Date).getTime();
+        initPythonMenuEditor();
     }
     init_post_js_1();
 </script>
@@ -165,7 +167,7 @@ require_once 'utils.php';
         <?php } ?>
 
         <?php if ($currProject->getAuthorID() === $currUser->getID() || $currUser->isModeratorOrMore()) { ?>
-        if ((!window.sdk_ctags || window.sdk_ctags.length === 0) && editor.getMode().name !== 'yaml')
+        if (!isPythonMenuFile() && (!window.sdk_ctags || window.sdk_ctags.length === 0) && editor.getMode().name !== 'yaml')
         {
             getSDKCtags();
         }

@@ -61,6 +61,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
     ], $jsonFlags) ?>;
 </script>
 <script src="<?= cacheBusterPath("{$modulePath}js/python_bytecode.js") ?>"></script>
+<script src="<?= cacheBusterPath("{$modulePath}js/python_menu.js") ?>"></script>
+<script src="<?= cacheBusterPath("{$modulePath}js/menu_editor.js") ?>"></script>
+<script src="<?= cacheBusterPath("{$modulePath}js/menu_integration.js") ?>"></script>
 <script>window.pbWebTILPTransferWasmUrl = <?= json_encode(cacheBusterPath("./modules/_shared/webtilp_transfer_module.wasm"), $jsonFlags) ?>;</script>
 <script src="<?= cacheBusterPath("./modules/_shared/webtilp_transfer_module.js") ?>"></script>
 <script src="<?= cacheBusterPath("./modules/_shared/calculator_transfer.js") ?>"></script>
@@ -118,6 +121,7 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_
             window.history.pushState(null, "", newURL);
             const oldConsoleContent = $("#consoletextarea").val();
             typeof(removeMyselfFromFirepad) === "function" && removeMyselfFromFirepad();
+            destroyPythonMenuEditor();
             editorContainer.empty().html(nextEditorHTML);
             $("#consoletextarea").val(oldConsoleContent);
             $(".firepad-userlist").remove();
