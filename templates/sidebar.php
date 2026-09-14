@@ -108,11 +108,11 @@ function genSidebar()
                             </button>
                             <ul class="dropdown-menu dropbox-menu-right" style="min-width: 0;">
                               <li><a href="/pb/?new=1&amp;type=native_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE C/C++</a></li>
-                              <li><a href="/pb/?new=1&amp;type=python_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE Python</a></li>
-                              <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=basic_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE/Evo TI-Basic</a></li>
+                              <li><a href="/pb/?new=1&amp;type=python_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE/Evo Python</a></li>
+                              <li><a href="/pb/?new=1&amp;type=basic_eZ80&amp;csrf_token=' . $currUser->getSID() . '">CE/Evo TI-Basic</a></li>
                               <li><hr style="margin: 2px"></li>
-                              <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=lua_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire Lua</a></li>
-                              <li title="Alpha version" data-toggle="tooltip" data-placement="right"><a href="/pb/?new=1&amp;type=python_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire CX II Python</a></li>';
+                              <li><a href="/pb/?new=1&amp;type=lua_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire Lua</a></li>
+                              <li><a href="/pb/?new=1&amp;type=python_nspire&amp;csrf_token=' . $currUser->getSID() . '">TI-Nspire CX II Python</a></li>';
         if ($currUser->isModeratorOrMore()) {
             $content .= '
                               <li><hr style="margin: 2px"></li>
