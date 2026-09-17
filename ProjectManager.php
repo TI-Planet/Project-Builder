@@ -616,11 +616,17 @@ final class ProjectManager
             $ok = $this->pmdb->commit();
             if ($ok)
             {
+                $this->logActionInDB('setReadWriteAllowedUserIDsForProject',
+                                      substr(json_encode([ 'proj_id' => (int)$projectDBID, 'user_ids' => $userIDs ]), 0, 49),
+                                      true);
                 return true;
             }
         }
 
         $this->pmdb->rollBack();
+        $this->logActionInDB('setReadWriteAllowedUserIDsForProject',
+                              substr(json_encode([ 'proj_id' => (int)$projectDBID, 'user_ids' => $userIDs ]), 0, 49),
+                              false);
         return false;
     }
 
